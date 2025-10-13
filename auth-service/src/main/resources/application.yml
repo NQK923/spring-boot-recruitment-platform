@@ -1,0 +1,41 @@
+server:
+  port: 0 # Assign a random port
+
+spring:
+  application:
+    name: AUTH-SERVICE
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth_db # <-- IMPORTANT: Change this
+    username: your-username # <-- IMPORTANT: Change this
+    password: your-password # <-- IMPORTANT: Change this
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+app:
+  jwt:
+    secret: "# IMPORTANT: Change this to a long, random, base64-encoded string"
+    expiration-ms: 86400000 # 24 hours
+
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      bindings:
+        # This defines an output channel named 'userInvited-out-0'
+        userInvited-out-0:
+          destination: user.events # It will send to this queue/topic
