@@ -1,0 +1,33 @@
+server:
+  port: 0 # Random port
+
+spring:
+  application:
+    name: JOB-SERVICE
+  datasource:
+    url: jdbc:postgresql://localhost:5432/job_db # <-- IMPORTANT: Create this database
+    username: your-username # <-- IMPORTANT: Change this
+    password: your-password # <-- IMPORTANT: Change this
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # This should point to the JWK Set URI of your auth server
+          # For simplicity with shared secret, we configure it in code
+          issuer-uri: http://localhost:8080/api/auth # A placeholder, not used with shared secret
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+app:
+  jwt:
+    secret: "# IMPORTANT: Must be the same as in auth-service"
