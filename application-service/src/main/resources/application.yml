@@ -1,0 +1,31 @@
+server:
+  port: 0 # Random port
+
+spring:
+  application:
+    name: APPLICATION-SERVICE
+  datasource:
+    url: jdbc:postgresql://localhost:5432/application_db # <-- IMPORTANT: Create this database
+    username: your-username # <-- IMPORTANT: Change this
+    password: your-password # <-- IMPORTANT: Change this
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/api/auth # Placeholder
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+app:
+  jwt:
+    secret: "# IMPORTANT: Must be the same as in auth-service"
