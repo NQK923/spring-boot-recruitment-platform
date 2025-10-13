@@ -1,0 +1,30 @@
+server:
+  port: 0 # Random port
+
+spring:
+  application:
+    name: NOTIFICATION-SERVICE
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      bindings:
+        # This defines an input channel named 'userInvitedEventConsumer-in-0'
+        userInvitedEventConsumer-in-0:
+          destination: user.events # It will listen to this queue/topic
+  mail:
+    host: smtp.example.com # <-- IMPORTANT: Change this
+    port: 587
+    username: your-email@example.com # <-- IMPORTANT: Change this
+    password: your-email-password # <-- IMPORTANT: Change this
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
