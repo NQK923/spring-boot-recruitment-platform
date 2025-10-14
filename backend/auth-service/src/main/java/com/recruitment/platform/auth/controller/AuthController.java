@@ -6,12 +6,14 @@ import com.recruitment.platform.auth.service.JwtTokenProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,6 +27,12 @@ public class AuthController {
         this.authService = authService;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<MeResponse> getMe(Principal principal) {
+        return ResponseEntity.ok(authService.getMe(principal.getName()));
     }
 
     @PostMapping("/register")

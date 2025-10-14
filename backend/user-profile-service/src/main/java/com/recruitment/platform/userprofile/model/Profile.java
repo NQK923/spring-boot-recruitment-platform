@@ -16,7 +16,7 @@ public class Profile {
     @JoinColumn(name = "profile_user_id")
     private List<Experience> experiences;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Cv> cvs;
 
     // Getters & Setters
@@ -24,4 +24,6 @@ public class Profile {
     public void setUserId(Long userId) { this.userId = userId; }
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
+    public List<Cv> getCvs() { return cvs; }
+    public void setCvs(List<Cv> cvs) { this.cvs = cvs; }
 }

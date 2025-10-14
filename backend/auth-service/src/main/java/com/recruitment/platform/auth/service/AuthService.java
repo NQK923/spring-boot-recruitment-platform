@@ -1,5 +1,9 @@
 package com.recruitment.platform.auth.service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.recruitment.platform.auth.client.CompanyServiceClient;
+import com.recruitment.platform.auth.client.dto.UserInvitedEvent;
 import com.recruitment.platform.auth.dto.*;
 import com.recruitment.platform.auth.event.UserRegisteredEvent;
 import com.recruitment.platform.auth.model.Invitation;
@@ -244,5 +248,16 @@ public class AuthService {
         log.info("Sending UserRegisteredEvent for new {} user {}: {}", provider, event.email(), sent ? "SUCCESS" : "FAILED");
 
         return savedUser;
+    }
+
+    public MeResponse getMe(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        return new MeResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getRoles().stream().map(Role::getName).collect(Collectors.toList())
+        );
     }
 }
