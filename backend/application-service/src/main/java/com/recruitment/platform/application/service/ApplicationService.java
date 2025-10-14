@@ -1,0 +1,98 @@
+package com.recruitment.platform.application.service;
+
+import com.recruitment.platform.application.dto.ApplyRequest;
+import com.recruitment.platform.application.dto.UpdateApplicationStatusRequest;
+import com.recruitment.platform.application.event.ApplicationStatusChangedEvent;
+import com.recruitment.platform.application.model.Application;
+import com.recruitment.platform.application.model.ApplicationHistory;
+import com.recruitment.platform.application.model.ApplicationStatus;
+import com.recruitment.platform.application.repository.ApplicationHistoryRepository;
+import com.recruitment.platform.application.repository.ApplicationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class ApplicationService {
+
+    private static final Logger log = LoggerFactory.getLogger(ApplicationService.class);
+    private final ApplicationRepository applicationRepository;
+    private final ApplicationHistoryRepository historyRepository;
+    private final StreamBridge streamBridge;
+
+    public ApplicationService(ApplicationRepository applicationRepository, ApplicationHistoryRepository historyRepository, StreamBridge streamBridge) {
+        this.applicationRepository = applicationRepository;
+        this.historyRepository = historyRepository;
+        this.streamBridge = streamBridge;
+    }
+
+    @Transactional
+    public Application submitApplication(Long candidateId, ApplyRequest request) {
+        // TODO: Add validation: check if job is open, if candidate has already applied, etc.
+
+        Application app = new Application();
+        app.setCandidateId(candidateId);
+        app.setJobPostingId(request.jobPostingId());
+        app.setCvId(request.cvId());
+        app.setStatus(ApplicationStatus.APPLIED);
+
+        Application savedApp = applicationRepository.save(app);
+
+        // Publish status change event
+        publishStatusChangeEvent(savedApp, null, candidateId);
+
+        return savedApp;
+    }
+
+    @Transactional
+    public Application updateApplicationStatus(Long applicationId, UpdateApplicationStatusRequest request, Long changedByUserId) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+
+        ApplicationStatus oldStatus = application.getStatus();
+        ApplicationStatus newStatus = ApplicationStatus.valueOf(request.newStatus().toUpperCase());
+
+        if (oldStatus == newStatus) {
+            return application;
+        }
+
+        application.setStatus(newStatus);
+        Application savedApplication = applicationRepository.save(application);
+
+        ApplicationHistory history = new ApplicationHistory();
+        history.setApplicationId(applicationId);
+        history.setFromStatus(oldStatus);
+        history.setToStatus(newStatus);
+        history.setChangedByUserId(changedByUserId);
+        historyRepository.save(history);
+
+        publishStatusChangeEvent(savedApplication, oldStatus, changedByUserId);
+
+        return savedApplication;
+    }
+
+    public List<Application> findApplicationsByCandidateId(Long candidateId) {
+        return applicationRepository.findByCandidateId(candidateId);
+    }
+
+    public List<Application> findApplicationsByJobPostingId(Long jobPostingId) {
+        return applicationRepository.findByJobPostingId(jobPostingId);
+    }
+
+    private void publishStatusChangeEvent(Application app, ApplicationStatus oldStatus, Long changedByUserId) {
+        var event = new ApplicationStatusChangedEvent(
+                app.getId(),
+                app.getCandidateId(),
+                app.getJobPostingId(),
+                oldStatus != null ? oldStatus.name() : null,
+                app.getStatus().name(),
+                changedByUserId
+        );
+        streamBridge.send("applicationStatusChanged-out-0", event);
+        log.info("Published status change event for application {}: {} -> {}", app.getId(), oldStatus, app.getStatus());
+    }
+}
