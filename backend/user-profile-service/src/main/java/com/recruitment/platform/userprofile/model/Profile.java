@@ -16,6 +16,9 @@ public class Profile {
     @JoinColumn(name = "profile_user_id")
     private List<Experience> experiences;
 
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cv> cvs;
+
     // Getters & Setters
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }

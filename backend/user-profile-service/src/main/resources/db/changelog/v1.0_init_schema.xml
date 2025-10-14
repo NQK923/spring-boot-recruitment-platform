@@ -34,8 +34,9 @@
             <column name="profile_user_id" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="fk_cv_profile" references="profiles(user_id)"/>
             </column>
-            <column name="file_id" type="VARCHAR(255)"/>
+            <column name="file_id" type="UUID"/>
             <column name="version_name" type="VARCHAR(255)"/>
+            <column name="is_default" type="BOOLEAN" defaultValueBoolean="false"/>
             <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
         </createTable>
     </changeSet>
