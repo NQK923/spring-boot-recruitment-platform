@@ -16,20 +16,18 @@
             <column name="scheduled_time" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
+            <column name="timezone" type="VARCHAR(100)"/>
             <column name="format" type="VARCHAR(50)"/>
             <column name="location_or_link" type="VARCHAR(255)"/>
             <column name="outcome" type="VARCHAR(50)"/>
         </createTable>
 
         <createTable tableName="interview_participants">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
             <column name="interview_id" type="BIGINT">
-                <constraints nullable="false" foreignKeyName="fk_participant_interview" references="interviews(id)"/>
+                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_participant_interview" references="interviews(id)"/>
             </column>
             <column name="user_id" type="BIGINT">
-                <constraints nullable="false"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="role" type="VARCHAR(50)"/> <!-- CANDIDATE or INTERVIEWER -->
         </createTable>

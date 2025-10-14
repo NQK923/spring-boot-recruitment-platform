@@ -20,6 +20,11 @@ public class Interview {
     @OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InterviewParticipant> participants = new ArrayList<>();
 
+    @OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InterviewFeedback> feedback = new ArrayList<>();
+
+    private String outcome;
+
     // Getters & Setters
     public Long getId() { return id; }
     public void setApplicationId(Long applicationId) { this.applicationId = applicationId; }
