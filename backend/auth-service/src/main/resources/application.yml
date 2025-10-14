@@ -39,3 +39,18 @@ spring:
         # This defines an output channel named 'userInvited-out-0'
         userInvited-out-0:
           destination: user.events # It will send to this queue/topic
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: "# PASTE_YOUR_GOOGLE_CLIENT_ID_HERE"
+            client-secret: "# PASTE_YOUR_GOOGLE_CLIENT_SECRET_HERE"
+            scope:
+              - email
+              - profile
+          github:
+            client-id: "# PASTE_YOUR_GITHUB_CLIENT_ID_HERE"
+            client-secret: "# PASTE_YOUR_GITHUB_CLIENT_SECRET_HERE"
+            scope:
+              - user:email

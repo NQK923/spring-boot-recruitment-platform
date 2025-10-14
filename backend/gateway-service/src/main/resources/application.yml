@@ -34,6 +34,12 @@ spring:
           uri: lb://INTERVIEW-SERVICE
           predicates:
             - Path=/api/interviews/**
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
 
 eureka:
   client:

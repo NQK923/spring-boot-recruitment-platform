@@ -1,9 +1,6 @@
 package com.recruitment.platform.auth.controller;
 
-import com.recruitment.platform.auth.dto.AcceptInviteRequest;
-import com.recruitment.platform.auth.dto.JwtAuthenticationResponse;
-import com.recruitment.platform.auth.dto.LoginRequest;
-import com.recruitment.platform.auth.dto.RegisterRequest;
+import com.recruitment.platform.auth.dto.*;
 import com.recruitment.platform.auth.service.AuthService;
 import com.recruitment.platform.auth.service.JwtTokenProvider;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +9,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -40,6 +40,18 @@ public class AuthController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+    }
+
+    @PostMapping("/oauth/google")
+    public ResponseEntity<JwtAuthenticationResponse> googleLogin(@RequestBody GoogleLoginRequest loginRequest) throws GeneralSecurityException, IOException {
+        String jwt = authService.processGoogleLogin(loginRequest.idToken());
+        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+    }
+
+    @PostMapping("/oauth/github")
+    public ResponseEntity<JwtAuthenticationResponse> githubLogin(@RequestBody GitHubLoginRequest loginRequest) {
+        String jwt = authService.processGitHubLogin(loginRequest.code());
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
