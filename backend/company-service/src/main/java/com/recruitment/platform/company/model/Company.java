@@ -1,9 +1,14 @@
 package com.recruitment.platform.company.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Instant;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "companies")
 public class Company {
     @Id
@@ -15,9 +20,4 @@ public class Company {
     private String logoUrl;
     private Instant createdAt = Instant.now();
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    // ... other getters and setters
 }

@@ -1,9 +1,15 @@
 package com.recruitment.platform.userprofile.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "cvs")
 public class Cv {
     @Id
@@ -22,9 +28,4 @@ public class Cv {
 
     private Instant createdAt = Instant.now();
 
-    // Getters and Setters
-    public void setProfile(Profile profile) { this.profile = profile; }
-    public void setFileId(UUID fileId) { this.fileId = fileId; }
-    public void setVersionName(String versionName) { this.versionName = versionName; }
-    public void setDefault(boolean isDefault) { this.isDefault = isDefault; }
 }

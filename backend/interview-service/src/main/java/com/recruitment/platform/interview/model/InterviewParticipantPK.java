@@ -1,13 +1,18 @@
 package com.recruitment.platform.interview.model;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
+@Getter
+@Setter
 public class InterviewParticipantPK implements Serializable {
-    private Long interviewId;
-    private Long userId;
+    Long interviewId;
+    Long userId;
 
     // equals and hashCode
     @Override

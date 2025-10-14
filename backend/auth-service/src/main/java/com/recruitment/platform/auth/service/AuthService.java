@@ -3,6 +3,7 @@ package com.recruitment.platform.auth.service;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.recruitment.platform.auth.client.CompanyServiceClient;
+import com.recruitment.platform.auth.client.dto.AddUserToCompanyRequest;
 import com.recruitment.platform.auth.client.dto.UserInvitedEvent;
 import com.recruitment.platform.auth.dto.*;
 import com.recruitment.platform.auth.event.UserRegisteredEvent;

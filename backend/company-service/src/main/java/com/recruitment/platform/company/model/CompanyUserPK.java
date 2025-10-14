@@ -1,10 +1,15 @@
 package com.recruitment.platform.company.model;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
+@Getter
+@Setter
 public class CompanyUserPK implements Serializable {
     private Long companyId;
     private Long userId;

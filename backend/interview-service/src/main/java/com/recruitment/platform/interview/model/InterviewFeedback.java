@@ -1,8 +1,12 @@
 package com.recruitment.platform.interview.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "interview_feedback")
 public class InterviewFeedback {
     @Id
@@ -21,6 +25,4 @@ public class InterviewFeedback {
     private String comments;
 
     private String outcome;
-
-    // Getters & Setters
 }

@@ -1,11 +1,16 @@
 package com.recruitment.platform.interview.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "interviews")
 public class Interview {
     @Id
@@ -24,14 +29,4 @@ public class Interview {
     private List<InterviewFeedback> feedback = new ArrayList<>();
 
     private String outcome;
-
-    // Getters & Setters
-    public Long getId() { return id; }
-    public void setApplicationId(Long applicationId) { this.applicationId = applicationId; }
-    public void setScheduleTime(Instant scheduleTime) { this.scheduleTime = scheduleTime; }
-    public void setTimezone(String timezone) { this.timezone = timezone; }
-    public void setFormat(String format) { this.format = format; }
-    public void setLocationOrLink(String locationOrLink) { this.locationOrLink = locationOrLink; }
-    public List<InterviewParticipant> getParticipants() { return participants; }
-    public void setParticipants(List<InterviewParticipant> participants) { this.participants = participants; }
 }

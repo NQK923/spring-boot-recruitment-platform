@@ -1,9 +1,14 @@
 package com.recruitment.platform.job.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Instant;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "job_postings")
 public class JobPosting {
     @Id
@@ -28,9 +33,4 @@ public class JobPosting {
     private Instant createdAt = Instant.now();
     private Instant updatedAt;
 
-    // Getters & Setters
-    public Long getId() { return id; }
-    public String getTitle() { return title; }
-    public String getDescription() { return description; }
-    public JobStatus getStatus() { return status; }
 }
