@@ -1,6 +1,9 @@
 package com.recruitment.platform.notification.service;
 
+import com.recruitment.platform.notification.event.ApplicationStatusChangedEvent;
+import com.recruitment.platform.notification.event.InterviewScheduledEvent;
 import com.recruitment.platform.notification.event.UserInvitedEvent;
+import com.recruitment.platform.notification.event.UserRegisteredEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -24,21 +27,35 @@ public class NotificationEventListener {
     public Consumer<UserInvitedEvent> userInvitedEventConsumer() {
         return event -> {
             log.info("Received UserInvitedEvent for email: {}", event.email());
+            // Simulate sending email
+            log.info("Simulating sending invitation email to {}", event.email());
+        };
+    }
 
-            // Construct and send the email
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(event.email());
-            message.setSubject("You have been invited to join the Recruitment Platform");
-            // In a real app, use a URL from config
-            String invitationUrl = "http://localhost:3000/accept-invite?token=" + event.token();
-            message.setText("Hello!\n\nYou have been invited to join as a " + event.roleToGrant() + ". Please click the link below to accept:\n" + invitationUrl);
-            
-            try {
-                // mailSender.send(message);
-                log.info("Simulated sending email to {}", event.email());
-            } catch (Exception e) {
-                log.error("Error sending email: {}", e.getMessage());
-            }
+    @Bean
+    public Consumer<UserRegisteredEvent> userRegisteredEventConsumer() {
+        return event -> {
+            log.info("Received UserRegisteredEvent for email: {}", event.email());
+            // Simulate sending welcome/verification email
+            log.info("Simulating sending welcome email to {}", event.email());
+        };
+    }
+
+    @Bean
+    public Consumer<ApplicationStatusChangedEvent> applicationStatusChangedEventConsumer() {
+        return event -> {
+            log.info("Received ApplicationStatusChangedEvent for application ID: {}", event.applicationId());
+            // In a real app, you would look up the candidate's email from their ID
+            log.info("Simulating sending status update email for application {} to candidate {}", event.applicationId(), event.candidateId());
+        };
+    }
+
+    @Bean
+    public Consumer<InterviewScheduledEvent> interviewScheduledEventConsumer() {
+        return event -> {
+            log.info("Received InterviewScheduledEvent for interview ID: {}", event.interviewId());
+            // In a real app, you would look up emails for all participant IDs
+            log.info("Simulating sending interview schedule notification to participants: {}", event.participantUserIds());
         };
     }
 }
