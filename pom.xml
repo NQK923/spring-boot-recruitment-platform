@@ -18,16 +18,16 @@
     </properties>
 
     <modules>
-        <module>discovery-service</module>
-        <module>gateway-service</module>
-        <module>auth-service</module>
-        <module>company-service</module>
-        <module>job-service</module>
-        <module>user-profile-service</module>
-        <module>application-service</module>
-        <module>interview-service</module>
-        <module>notification-service</module>
-        <module>file-storage-service</module>
+        <module>backend/discovery-service</module>
+        <module>backend/gateway-service</module>
+        <module>backend/auth-service</module>
+        <module>backend/company-service</module>
+        <module>backend/job-service</module>
+        <module>backend/user-profile-service</module>
+        <module>backend/application-service</module>
+        <module>backend/interview-service</module>
+        <module>backend/notification-service</module>
+        <module>backend/file-storage-service</module>
     </modules>
 
     <dependencyManagement>
