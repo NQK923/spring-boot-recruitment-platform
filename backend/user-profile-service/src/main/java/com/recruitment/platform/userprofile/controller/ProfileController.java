@@ -50,4 +50,13 @@ public class ProfileController {
         Cv savedCv = profileService.uploadCv(userId, versionName, file);
         return new ResponseEntity<>(savedCv, HttpStatus.CREATED);
     }
+
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN')")
+    public ResponseEntity<Profile> getCandidateProfile(@PathVariable Long userId) {
+        // TODO: Add check to ensure the recruiter has access to this candidate's company applications
+        return profileService.getProfile(userId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

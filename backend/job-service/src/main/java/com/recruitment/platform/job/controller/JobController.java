@@ -1,10 +1,14 @@
 package com.recruitment.platform.job.controller;
 
+import com.recruitment.platform.job.dto.CreateJobRequest;
 import com.recruitment.platform.job.dto.JobPostingPublicDto;
 import com.recruitment.platform.job.model.JobPosting;
-import com.recruitment.platform.job.model.JobStatus;
 import com.recruitment.platform.job.service.JobPostingService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,13 +35,13 @@ public class JobController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Secured endpoint - left for future implementation
-    /*
     @PostMapping
-    public JobPosting createJob(@RequestBody JobPosting newJob) {
-        // In a real app, you'd use a DTO and set companyId from the JWT
-        newJob.setStatus(JobStatus.DRAFT);
-        return repository.save(newJob);
+    @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN')")
+    public ResponseEntity<JobPosting> createJob(@RequestBody CreateJobRequest request,
+                                                @RequestHeader("X-Company-ID") Long companyId,
+                                                @AuthenticationPrincipal Jwt jwt) {
+        Long recruiterId = Long.valueOf(jwt.getSubject());
+        JobPosting createdJob = service.createJob(request, companyId, recruiterId);
+        return new ResponseEntity<>(createdJob, HttpStatus.CREATED);
     }
-    */
 }
