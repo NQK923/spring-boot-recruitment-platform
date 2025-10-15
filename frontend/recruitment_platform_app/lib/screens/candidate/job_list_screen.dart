@@ -4,7 +4,7 @@ import '../../providers/job_provider.dart';
 import './job_detail_screen.dart';
 
 class JobListScreen extends StatelessWidget {
-  const JobListScreen({Key? key}) : super(key: key);
+  const JobListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -7,7 +7,7 @@ import '../../providers/profile_provider.dart';
 class JobDetailScreen extends StatelessWidget {
   final Job job;
 
-  const JobDetailScreen({Key? key, required this.job}) : super(key: key);
+  const JobDetailScreen({super.key, required this.job});
 
   void _apply(BuildContext context) {
     final profile = Provider.of<ProfileProvider>(context, listen: false).profile;

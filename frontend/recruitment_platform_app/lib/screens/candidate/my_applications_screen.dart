@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../providers/application_provider.dart';
 
 class MyApplicationsScreen extends StatelessWidget {
-  const MyApplicationsScreen({Key? key}) : super(key: key);
+  const MyApplicationsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

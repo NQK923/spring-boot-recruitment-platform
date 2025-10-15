@@ -4,7 +4,7 @@ import './my_applications_screen.dart';
 import './profile_screen.dart';
 
 class CandidateDashboard extends StatefulWidget {
-  const CandidateDashboard({Key? key}) : super(key: key);
+  const CandidateDashboard({super.key});
 
   @override
   _CandidateDashboardState createState() => _CandidateDashboardState();
