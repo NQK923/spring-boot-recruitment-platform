@@ -4,6 +4,8 @@ import './providers/application_provider.dart';
 import './providers/auth_provider.dart';
 import './providers/job_provider.dart';
 import './providers/profile_provider.dart';
+import './providers/recruiter_provider.dart';
+import './providers/interview_provider.dart';
 import './screens/auth_wrapper.dart';
 
 void main() {
@@ -26,6 +28,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<AuthProvider, ProfileProvider>(
           create: (ctx) => ProfileProvider(Provider.of<AuthProvider>(ctx, listen: false)),
           update: (ctx, auth, previous) => ProfileProvider(auth),
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, RecruiterProvider>(
+          create: (ctx) => RecruiterProvider(Provider.of<AuthProvider>(ctx, listen: false)),
+          update: (ctx, auth, previous) => RecruiterProvider(auth),
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, InterviewProvider>(
+          create: (ctx) => InterviewProvider(Provider.of<AuthProvider>(ctx, listen: false)),
+          update: (ctx, auth, previous) => InterviewProvider(auth),
         ),
       ],
       child: MaterialApp(

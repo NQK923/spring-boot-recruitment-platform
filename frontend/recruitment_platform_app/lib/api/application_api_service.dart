@@ -40,4 +40,22 @@ class ApplicationApiService {
       throw Exception('Failed to apply for job');
     }
   }
+
+  Future<void> updateApplicationStatus(String token, int applicationId, String newStatus) async {
+    final url = Uri.parse('$BASE_URL/applications/$applicationId/status');
+    final response = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'newStatus': newStatus,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update application status');
+    }
+  }
 }
