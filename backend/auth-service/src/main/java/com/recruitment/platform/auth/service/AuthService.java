@@ -261,4 +261,10 @@ public class AuthService {
                 user.getRoles().stream().map(Role::getName).collect(Collectors.toList())
         );
     }
+
+    public List<UserEmailInfo> getUsersByIds(List<Long> userIds) {
+        return userRepository.findByIdIn(userIds).stream()
+                .map(user -> new UserEmailInfo(user.getId(), user.getEmail()))
+                .collect(Collectors.toList());
+    }
 }
