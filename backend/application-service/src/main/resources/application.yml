@@ -2,24 +2,25 @@ server:
   port: 0 # Random port
 
 spring:
-  application:
-    name: APPLICATION-SERVICE
   datasource:
-    url: jdbc:postgresql://localhost:5432/application_db # <-- IMPORTANT: Create this database
-    username: your-username # <-- IMPORTANT: Change this
-    password: your-password # <-- IMPORTANT: Change this
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: none
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: khanh090203
+    hikari:
+      connectionInitSql: CREATE SCHEMA IF NOT EXISTS application_service
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080/api/auth # Placeholder
+    default-schema: application_service
+    liquibase-schema: public
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate.default_schema: application_service
+
 
 eureka:
   client:
@@ -29,3 +30,11 @@ eureka:
 app:
   jwt:
     secret: "# IMPORTANT: Must be the same as in auth-service"
+
+security:
+  oauth2:
+    resourceserver:
+      jwt:
+        # IMPORTANT: Uncomment and provide a valid issuer-uri or jwk-set-uri
+        # issuer-uri: http://localhost:8080/api/auth # Placeholder
+        # jwk-set-uri: http://localhost:8080/api/auth/jwks
