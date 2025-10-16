@@ -71,7 +71,7 @@ class _CandidateListScreenState extends State<CandidateListScreen> {
                     children: [
                       ListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('Candidate ID: ${app.candidateId}'),
+                        title: Text(app.candidateName ?? 'Candidate ID: ${app.candidateId}'),
                         subtitle: Text('Applied on: ${app.appliedAt.toLocal().toString().split(' ')[0]}'),
                         onTap: () {
                           Navigator.of(context).push(MaterialPageRoute(

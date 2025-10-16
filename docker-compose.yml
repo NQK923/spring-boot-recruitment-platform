@@ -48,7 +48,6 @@ services:
       - "8080:8080"
     depends_on:
       - discovery-service
-      - auth-service # Depends on auth for JWT keys
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - APP_JWT_SECRET=${APP_JWT_SECRET} # Pass secret from .env file
@@ -146,7 +145,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/file_storage_db
       - APP_JWT_SECRET=${APP_JWT_SECRET}
-      - APP_STORAGE_UPLOAD-DIR=/uploads # Use a path inside the container
+      - app.storage.upload-dir=/uploads # Use a path inside the container
     volumes:
       - file_storage_data:/uploads
     networks: [recruitment-net]
