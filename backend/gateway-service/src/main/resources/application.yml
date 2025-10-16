@@ -6,14 +6,11 @@ spring:
     name: gateway-service
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: false # Disable automatic routing to prevent exposing internal APIs
       routes:
         - id: auth-service
           uri: lb://AUTH-SERVICE
           predicates:
-            - Path=/api/auth/** # Only public auth APIs are routed
+            - Path=/api/auth/**
         - id: company-service
           uri: lb://COMPANY-SERVICE
           predicates:
@@ -34,12 +31,42 @@ spring:
           uri: lb://INTERVIEW-SERVICE
           predicates:
             - Path=/api/interviews/**
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
+        # Internal routes - exposed for service-to-service communication via gateway
+        - id: user-profile-internal-batch
+          uri: lb://USER-PROFILE-SERVICE
+          predicates:
+            - Path=/api/internal/profiles/batch
+        - id: auth-internal-invites
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/internal/auth/invites
+        - id: auth-internal-users-batch
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/api/internal/auth/users/batch
+        - id: company-internal-users
+          uri: lb://COMPANY-SERVICE
+          predicates:
+            - Path=/api/internal/companies/users
+        - id: company-internal-users-company
+          uri: lb://COMPANY-SERVICE
+          predicates:
+            - Path=/api/internal/companies/users/{userId}/company
+        - id: files-upload # Route for file uploads
+          uri: lb://FILE-STORAGE-SERVICE
+          predicates:
+            - Path=/api/files/upload
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                          allowedOrigins: "*"
+                          allowedMethods: "*"
+                          allowedHeaders: "*"
 
 eureka:
   client:

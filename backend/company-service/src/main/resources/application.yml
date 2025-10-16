@@ -5,29 +5,33 @@ spring:
   application:
     name: COMPANY-SERVICE
   datasource:
-    url: jdbc:postgresql://localhost:5432/company_db # <-- IMPORTANT: Change this
-    username: your-username # <-- IMPORTANT: Change this
-    password: your-password # <-- IMPORTANT: Change this
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres # <-- IMPORTANT: Change this
+    username: postgres # <-- IMPORTANT: Change this
+    password: khanh090203 # <-- IMPORTANT: Change this
+    hikari:
+      connectionInitSql: CREATE SCHEMA IF NOT EXISTS company_service
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
+    properties:
+      hibernate.default_schema: company_service
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
+    default-schema: company_service
+    liquibase-schema: public
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "http://localhost:8080/api/auth/token_keys" # This is a placeholder, we will use a shared secret for now
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
-spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: "http://localhost:8080/api/auth/token_keys" # This is a placeholder, we will use a shared secret for now
 
 app:
   jwt:

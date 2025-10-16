@@ -10,8 +10,8 @@ spring:
       max-request-size: 10MB
   datasource:
     url: jdbc:postgresql://localhost:5432/file_storage_db # <-- IMPORTANT: Create this database
-    username: your-username # <-- IMPORTANT: Change this
-    password: your-password # <-- IMPORTANT: Change this
+    username: postgres # <-- IMPORTANT: Change this
+    password: khanh090203 # <-- IMPORTANT: Change this
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

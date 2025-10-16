@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -36,7 +37,7 @@ public class StorageService {
 
     @Transactional
     public FileMetadata storeFile(MultipartFile file, Long uploaderId) {
-        String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
         try {
             if (originalFileName.contains("..")) {
@@ -49,7 +50,7 @@ public class StorageService {
                 fileExtension = originalFileName.substring(dotIndex);
             }
 
-            String newFileName = UUID.randomUUID().toString() + fileExtension;
+            String newFileName = UUID.randomUUID() + fileExtension;
             Path targetLocation = this.fileStorageLocation.resolve(newFileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
