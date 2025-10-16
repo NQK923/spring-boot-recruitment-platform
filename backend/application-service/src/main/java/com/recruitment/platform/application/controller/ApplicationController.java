@@ -1,5 +1,6 @@
 package com.recruitment.platform.application.controller;
 
+import com.recruitment.platform.application.dto.ApplicationDetailsDto;
 import com.recruitment.platform.application.dto.ApplyRequest;
 import com.recruitment.platform.application.dto.UpdateApplicationStatusRequest;
 import com.recruitment.platform.application.model.Application;
@@ -41,7 +42,7 @@ public class ApplicationController {
     @GetMapping
     @RequestMapping("/jobs/{jobPostingId}/applications")
     @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN') or hasAnyRole('RECRUITER', 'COMPANY_ADMIN')")
-    public List<Application> getApplicationsForJob(@PathVariable Long jobPostingId) {
+    public List<ApplicationDetailsDto> getApplicationsForJob(@PathVariable Long jobPostingId) {
         // TODO: Add check to ensure the recruiter has access to this job posting's company
         return service.findApplicationsByJobPostingId(jobPostingId);
     }

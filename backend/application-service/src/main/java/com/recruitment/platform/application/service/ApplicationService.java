@@ -1,5 +1,8 @@
 package com.recruitment.platform.application.service;
 
+import com.recruitment.platform.application.client.UserProfileServiceClient;
+import com.recruitment.platform.application.client.dto.UserProfileDto;
+import com.recruitment.platform.application.dto.ApplicationDetailsDto;
 import com.recruitment.platform.application.dto.ApplyRequest;
 import com.recruitment.platform.application.dto.UpdateApplicationStatusRequest;
 import com.recruitment.platform.application.event.ApplicationStatusChangedEvent;
@@ -14,7 +17,10 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ApplicationService {
@@ -23,11 +29,13 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final ApplicationHistoryRepository historyRepository;
     private final StreamBridge streamBridge;
+    private final UserProfileServiceClient userProfileServiceClient;
 
-    public ApplicationService(ApplicationRepository applicationRepository, ApplicationHistoryRepository historyRepository, StreamBridge streamBridge) {
+    public ApplicationService(ApplicationRepository applicationRepository, ApplicationHistoryRepository historyRepository, StreamBridge streamBridge, UserProfileServiceClient userProfileServiceClient) {
         this.applicationRepository = applicationRepository;
         this.historyRepository = historyRepository;
         this.streamBridge = streamBridge;
+        this.userProfileServiceClient = userProfileServiceClient;
     }
 
     @Transactional
@@ -79,8 +87,29 @@ public class ApplicationService {
         return applicationRepository.findByCandidateId(candidateId);
     }
 
-    public List<Application> findApplicationsByJobPostingId(Long jobPostingId) {
-        return applicationRepository.findByJobPostingId(jobPostingId);
+    public List<ApplicationDetailsDto> findApplicationsByJobPostingId(Long jobPostingId) {
+        List<Application> applications = applicationRepository.findByJobPostingId(jobPostingId);
+        if (applications.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Extract candidate IDs
+        List<Long> candidateIds = applications.stream()
+                .map(Application::getCandidateId)
+                .distinct()
+                .toList();
+
+        // Fetch profiles in a batch
+        List<UserProfileDto> profiles = userProfileServiceClient.getProfilesInBatch(new UserProfileServiceClient.BatchUserIdsRequest(candidateIds));
+        Map<Long, String> candidateIdToNameMap = profiles.stream()
+                .collect(Collectors.toMap(UserProfileDto::userId, UserProfileDto::fullName));
+
+        // Enrich DTOs
+        return applications.stream().map(app -> {
+            ApplicationDetailsDto dto = ApplicationDetailsDto.fromApplication(app);
+            dto.setCandidateName(candidateIdToNameMap.get(app.getCandidateId()));
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     private void publishStatusChangeEvent(Application app, ApplicationStatus oldStatus, Long changedByUserId) {
