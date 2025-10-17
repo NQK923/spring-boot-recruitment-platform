@@ -47,12 +47,17 @@ public class AddCompanyIdHeaderFilter implements GlobalFilter, Ordered {
             // For a production app, consider using reactive Feign or WebClient with block() or subscribeOn().
             CompanyUser companyUser = companyServiceClient.getCompanyForUser(userId);
 
+            ServerWebExchange mutatedExchange = exchange;
+
             if (companyUser != null && companyUser.getId() != null) {
                 String companyId = companyUser.getId().getCompanyId().toString();
-                exchange.getRequest().mutate()
-                        .header("X-Company-ID", companyId)
+                var requestWithCompany = exchange.getRequest().mutate()
+                        .headers(headers -> headers.set("X-Company-ID", companyId))
                         .build();
+                mutatedExchange = exchange.mutate().request(requestWithCompany).build();
             }
+
+            return chain.filter(mutatedExchange);
 
         } catch (Exception e) {
             // Log error, but don't block the request if the call fails
