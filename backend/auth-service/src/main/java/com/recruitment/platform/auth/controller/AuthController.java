@@ -63,6 +63,18 @@ public class AuthController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
+    @PostMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@RequestBody VerifyEmailRequest request) {
+        authService.verifyEmail(request);
+        return ResponseEntity.ok("Email verified successfully.");
+    }
+
+    @PostMapping("/invites/verify")
+    public ResponseEntity<?> verifyInvitation(@RequestBody AcceptInviteRequest request) {
+        authService.acceptInvitation(request);
+        return ResponseEntity.ok("Invitation accepted successfully. You can now log in.");
+    }
+
     @PostMapping("/invites/accept")
     public ResponseEntity<?> acceptInvitation(@RequestBody AcceptInviteRequest acceptInviteRequest) {
         authService.acceptInvitation(acceptInviteRequest);

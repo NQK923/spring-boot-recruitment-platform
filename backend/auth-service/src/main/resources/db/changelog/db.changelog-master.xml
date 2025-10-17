@@ -7,5 +7,6 @@
 
     <include file="v1.0_init_schema.xml" relativeToChangelogFile="true"/>
     <include file="v1.1_add_roles_invites.xml" relativeToChangelogFile="true"/>
+    <include file="v1.2_add_email_verification_tokens.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

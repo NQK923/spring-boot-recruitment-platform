@@ -7,9 +7,11 @@ import com.recruitment.platform.auth.client.dto.AddUserToCompanyRequest;
 import com.recruitment.platform.auth.client.dto.UserInvitedEvent;
 import com.recruitment.platform.auth.dto.*;
 import com.recruitment.platform.auth.event.UserRegisteredEvent;
+import com.recruitment.platform.auth.model.EmailVerificationToken;
 import com.recruitment.platform.auth.model.Invitation;
 import com.recruitment.platform.auth.model.Role;
 import com.recruitment.platform.auth.model.User;
+import com.recruitment.platform.auth.repository.EmailVerificationTokenRepository;
 import com.recruitment.platform.auth.repository.InvitationRepository;
 import com.recruitment.platform.auth.repository.RoleRepository;
 import com.recruitment.platform.auth.repository.UserRepository;
@@ -43,6 +45,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final InvitationRepository invitationRepository;
     private final RoleRepository roleRepository;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final CompanyServiceClient companyServiceClient;
     private final StreamBridge streamBridge;
     private final GoogleIdTokenVerifier googleVerifier;
@@ -55,11 +58,12 @@ public class AuthService {
     @Value("${spring.security.oauth2.client.registration.github.client-secret}")
     private String githubClientSecret;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, InvitationRepository invitationRepository, RoleRepository roleRepository, CompanyServiceClient companyServiceClient, StreamBridge streamBridge, GoogleIdTokenVerifier googleVerifier, JwtTokenProvider tokenProvider, RestTemplate restTemplate) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, InvitationRepository invitationRepository, RoleRepository roleRepository, EmailVerificationTokenRepository emailVerificationTokenRepository, CompanyServiceClient companyServiceClient, StreamBridge streamBridge, GoogleIdTokenVerifier googleVerifier, JwtTokenProvider tokenProvider, RestTemplate restTemplate) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.invitationRepository = invitationRepository;
         this.roleRepository = roleRepository;
+        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.companyServiceClient = companyServiceClient;
         this.streamBridge = streamBridge;
         this.googleVerifier = googleVerifier;
@@ -95,12 +99,15 @@ public class AuthService {
         user.setEmail(request.email());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setRoles(Set.of(role));
-        user.setEmailVerifiedAt(Instant.now()); // Or implement email verification flow
+        user.setEmailVerifiedAt(null);
 
         User savedUser = userRepository.save(user);
+        emailVerificationTokenRepository.deleteByUserId(savedUser.getId());
+
+        EmailVerificationToken verificationToken = createEmailVerificationToken(savedUser.getId());
 
         // Send event for user registration
-        UserRegisteredEvent event = new UserRegisteredEvent(savedUser.getId(), savedUser.getEmail());
+        UserRegisteredEvent event = new UserRegisteredEvent(savedUser.getId(), savedUser.getEmail(), verificationToken.getToken());
         boolean sent = streamBridge.send("userRegistered-out-0", event);
         log.info("Sending UserRegisteredEvent for email {}: {}", event.email(), sent ? "SUCCESS" : "FAILED");
 
@@ -241,7 +248,7 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         // Publish event for user registration
-        UserRegisteredEvent event = new UserRegisteredEvent(savedUser.getId(), savedUser.getEmail());
+        UserRegisteredEvent event = new UserRegisteredEvent(savedUser.getId(), savedUser.getEmail(), null);
         boolean sent = streamBridge.send("userRegistered-out-0", event);
         log.info("Sending UserRegisteredEvent for new {} user {}: {}", provider, event.email(), sent ? "SUCCESS" : "FAILED");
 
@@ -259,9 +266,45 @@ public class AuthService {
         );
     }
 
+    @Transactional
+    public void verifyEmail(VerifyEmailRequest request) {
+        Objects.requireNonNull(request, "request must not be null");
+        String tokenValue = Objects.requireNonNull(request.token(), "token must not be null");
+
+        EmailVerificationToken token = emailVerificationTokenRepository.findByToken(tokenValue)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid verification token."));
+
+        if (token.isUsed()) {
+            throw new IllegalStateException("Verification token already used.");
+        }
+
+        if (token.getExpiresAt().isBefore(Instant.now())) {
+            throw new IllegalStateException("Verification token has expired.");
+        }
+
+        User user = userRepository.findById(token.getUserId())
+                .orElseThrow(() -> new IllegalStateException("User not found for verification token."));
+        user.setEmailVerifiedAt(Instant.now());
+        userRepository.save(user);
+
+        token.setUsed(true);
+        emailVerificationTokenRepository.save(token);
+    }
+
     public List<UserEmailInfo> getUsersByIds(List<Long> userIds) {
         return userRepository.findByIdIn(userIds).stream()
                 .map(user -> new UserEmailInfo(user.getId(), user.getEmail()))
                 .collect(Collectors.toList());
+    }
+
+    private EmailVerificationToken createEmailVerificationToken(Long userId) {
+        emailVerificationTokenRepository.deleteByUserId(userId);
+
+        EmailVerificationToken token = new EmailVerificationToken();
+        token.setUserId(userId);
+        token.setToken(UUID.randomUUID().toString());
+        token.setExpiresAt(Instant.now().plus(24, ChronoUnit.HOURS));
+
+        return emailVerificationTokenRepository.save(token);
     }
 }

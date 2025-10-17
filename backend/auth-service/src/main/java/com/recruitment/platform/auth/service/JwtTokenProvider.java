@@ -1,5 +1,6 @@
 package com.recruitment.platform.auth.service;
 
+import com.recruitment.platform.auth.model.Role;
 import com.recruitment.platform.auth.model.User;
 import com.recruitment.platform.auth.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
@@ -38,9 +41,18 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(Long.toString(user.getId())) // Use user ID as subject
+                .claim("email", user.getEmail())
+                .claim("roles", mapRoles(user))
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
+    }
+
+    private List<String> mapRoles(User user) {
+        return user.getRoles()
+                .stream()
+                .map(Role::getName)
+                .collect(Collectors.toList());
     }
 }
