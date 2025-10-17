@@ -7,6 +7,7 @@
         <groupId>com.recruitment.platform</groupId>
         <artifactId>recruitment-platform-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../..</relativePath> <!-- Add this line -->
     </parent>
 
     <artifactId>discovery-service</artifactId>

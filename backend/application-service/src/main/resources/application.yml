@@ -2,24 +2,22 @@ server:
   port: 0 # Random port
 
 spring:
+  application:
+    name: APPLICATION-SERVICE
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/application_db
     username: postgres
     password: khanh090203
-    hikari:
-      connectionInitSql: CREATE SCHEMA IF NOT EXISTS application_service
+    driver-class-name: org.postgresql.Driver
+
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
-    default-schema: application_service
-    liquibase-schema: public
 
   jpa:
     hibernate:
       ddl-auto: none
-    properties:
-      hibernate.default_schema: application_service
 
 
 eureka:
@@ -29,7 +27,7 @@ eureka:
 
 app:
   jwt:
-    secret: "# IMPORTANT: Must be the same as in auth-service"
+    secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"
 
 security:
   oauth2:

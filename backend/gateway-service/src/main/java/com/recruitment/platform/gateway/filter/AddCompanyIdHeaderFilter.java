@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class AddCompanyIdHeaderFilter implements GlobalFilter, Ordered {
     private final CompanyServiceClient companyServiceClient;
     private final SecretKey jwtSecretKey;
 
-    public AddCompanyIdHeaderFilter(CompanyServiceClient companyServiceClient, @Value("${app.jwt.secret}") String secret) {
+    public AddCompanyIdHeaderFilter(@Lazy CompanyServiceClient companyServiceClient, @Value("${app.jwt.secret}") String secret) {
         this.companyServiceClient = companyServiceClient;
         this.jwtSecretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }

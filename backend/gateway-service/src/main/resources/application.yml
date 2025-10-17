@@ -75,4 +75,4 @@ eureka:
 
 app:
   jwt:
-    secret: "# IMPORTANT: Must be the same as in auth-service"
+    secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"

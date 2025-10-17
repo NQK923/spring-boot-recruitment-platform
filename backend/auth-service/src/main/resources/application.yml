@@ -5,28 +5,25 @@ spring:
   application:
     name: AUTH-SERVICE
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/auth_db
     username: postgres
     password: khanh090203
-    hikari:
-      connectionInitSql: CREATE SCHEMA IF NOT EXISTS auth_service
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
-    properties:
-      hibernate.default_schema: auth_service
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
-    default-schema: auth_service
-    liquibase-schema: public
+
   rabbitmq:
     host: localhost
     port: 5672
     username: guest
     password: guest
+
   cloud:
     stream:
       bindings:
@@ -56,5 +53,5 @@ eureka:
 
 app:
   jwt:
-    secret: "# IMPORTANT: Change this to a long, random, base64-encoded string"
+    secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"
     expiration-ms: 86400000 # 24 hours

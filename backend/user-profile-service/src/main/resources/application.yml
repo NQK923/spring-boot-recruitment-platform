@@ -5,9 +5,9 @@ spring:
   application:
     name: USER-PROFILE-SERVICE
   datasource:
-    url: jdbc:postgresql://localhost:5432/user_profile_db # <-- IMPORTANT: Create this database
-    username: your-username # <-- IMPORTANT: Change this
-    password: your-password # <-- IMPORTANT: Change this
+    url: jdbc:postgresql://localhost:5432/user_profile_db
+    username: postgres
+    password: khanh090203
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -28,4 +28,4 @@ eureka:
 
 app:
   jwt:
-    secret: "# IMPORTANT: Must be the same as in auth-service"
+    secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"

@@ -5,22 +5,19 @@ spring:
   application:
     name: COMPANY-SERVICE
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres # <-- IMPORTANT: Change this
-    username: postgres # <-- IMPORTANT: Change this
-    password: khanh090203 # <-- IMPORTANT: Change this
-    hikari:
-      connectionInitSql: CREATE SCHEMA IF NOT EXISTS company_service
+    url: jdbc:postgresql://localhost:5432/company_db # <-- IMPORTANT: Change this
+    username: postgres
+    password: khanh090203
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
-    properties:
-      hibernate.default_schema: company_service
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
-    default-schema: company_service
-    liquibase-schema: public
+
   security:
     oauth2:
       resourceserver:
@@ -35,4 +32,4 @@ eureka:
 
 app:
   jwt:
-    secret: "# IMPORTANT: Change this to a long, random, base64-encoded string" # Must be the same as in auth-service
+    secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"

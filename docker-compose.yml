@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   # Infrastructure Services
   postgres:
-    image: postgres:15-alpine
+    image: postgres:latest
     container_name: postgres_db
     environment:
       - POSTGRES_USER=your-username
@@ -20,7 +18,7 @@ services:
       - recruitment-net
 
   rabbitmq:
-    image: rabbitmq:3.11-management-alpine
+    image: rabbitmq:latest
     container_name: rabbitmq
     ports:
       - "5672:5672" # AMQP port
@@ -32,7 +30,9 @@ services:
   discovery-service:
     build:
       context: .
-      dockerfile: backend/discovery-service/Dockerfile
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE_PATH: backend/discovery-service/target/discovery-service-1.0.0-SNAPSHOT.jar
     container_name: discovery-service
     ports:
       - "8761:8761"
@@ -42,7 +42,9 @@ services:
   gateway-service:
     build:
       context: .
-      dockerfile: backend/gateway-service/Dockerfile
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE_PATH: backend/gateway-service/target/gateway-service-1.0.0-SNAPSHOT.jar
     container_name: gateway-service
     ports:
       - "8080:8080"
@@ -50,14 +52,16 @@ services:
       - discovery-service
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - APP_JWT_SECRET=${APP_JWT_SECRET} # Pass secret from .env file
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
     networks:
       - recruitment-net
 
   auth-service:
     build:
       context: .
-      dockerfile: backend/auth-service/Dockerfile
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE_PATH: backend/auth-service/target/auth-service-1.0.0-SNAPSHOT.jar
     container_name: auth-service
     depends_on:
       - discovery-service
@@ -75,9 +79,12 @@ services:
     networks:
       - recruitment-net
 
-  # Define other microservices similarly...
   company-service:
-    build: { context: ., dockerfile: backend/company-service/Dockerfile }
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE_PATH: backend/company-service/target/company-service-1.0.0-SNAPSHOT.jar
     container_name: company-service
     depends_on: [discovery-service, postgres]
     environment:
@@ -87,7 +94,11 @@ services:
     networks: [recruitment-net]
 
   user-profile-service:
-    build: { context: ., dockerfile: backend/user-profile-service/Dockerfile }
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE_PATH: backend/user-profile-service/target/user-profile-service-1.0.0-SNAPSHOT.jar
     container_name: user-profile-service
     depends_on: [discovery-service, postgres]
     environment:
@@ -97,7 +108,11 @@ services:
     networks: [recruitment-net]
 
   job-service:
-    build: { context: ., dockerfile: backend/job-service/Dockerfile }
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE_PATH: backend/job-service/target/job-service-1.0.0-SNAPSHOT.jar
     container_name: job-service
     depends_on: [discovery-service, postgres]
     environment:
@@ -107,7 +122,11 @@ services:
     networks: [recruitment-net]
 
   application-service:
-    build: { context: ., dockerfile: backend/application-service/Dockerfile }
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE_PATH: backend/application-service/target/application-service-1.0.0-SNAPSHOT.jar
     container_name: application-service
     depends_on: [discovery-service, postgres, rabbitmq]
     environment:
@@ -118,7 +137,11 @@ services:
     networks: [recruitment-net]
 
   interview-service:
-    build: { context: ., dockerfile: backend/interview-service/Dockerfile }
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE_PATH: backend/interview-service/target/interview-service-1.0.0-SNAPSHOT.jar
     container_name: interview-service
     depends_on: [discovery-service, postgres, rabbitmq]
     environment:
@@ -129,7 +152,11 @@ services:
     networks: [recruitment-net]
 
   notification-service:
-    build: { context: ., dockerfile: backend/notification-service/Dockerfile }
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE_PATH: backend/notification-service/target/notification-service-1.0.0-SNAPSHOT.jar
     container_name: notification-service
     depends_on: [discovery-service, rabbitmq]
     environment:
@@ -138,7 +165,11 @@ services:
     networks: [recruitment-net]
 
   file-storage-service:
-    build: { context: ., dockerfile: backend/file-storage-service/Dockerfile }
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE_PATH: backend/file-storage-service/target/file-storage-service-1.0.0-SNAPSHOT.jar
     container_name: file-storage-service
     depends_on: [discovery-service, postgres]
     environment:
