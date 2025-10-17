@@ -4,11 +4,14 @@ import com.recruitment.platform.application.client.UserProfileServiceClient;
 import com.recruitment.platform.application.client.dto.UserProfileDto;
 import com.recruitment.platform.application.dto.ApplicationDetailsDto;
 import com.recruitment.platform.application.dto.ApplyRequest;
+import com.recruitment.platform.application.dto.CreateApplicationNoteRequest;
 import com.recruitment.platform.application.dto.UpdateApplicationStatusRequest;
 import com.recruitment.platform.application.event.ApplicationStatusChangedEvent;
 import com.recruitment.platform.application.model.Application;
 import com.recruitment.platform.application.model.ApplicationHistory;
+import com.recruitment.platform.application.model.ApplicationNote;
 import com.recruitment.platform.application.model.ApplicationStatus;
+import com.recruitment.platform.application.repository.ApplicationNoteRepository;
 import com.recruitment.platform.application.repository.ApplicationHistoryRepository;
 import com.recruitment.platform.application.repository.ApplicationRepository;
 import org.slf4j.Logger;
@@ -28,12 +31,18 @@ public class ApplicationService {
     private static final Logger log = LoggerFactory.getLogger(ApplicationService.class);
     private final ApplicationRepository applicationRepository;
     private final ApplicationHistoryRepository historyRepository;
+    private final ApplicationNoteRepository noteRepository;
     private final StreamBridge streamBridge;
     private final UserProfileServiceClient userProfileServiceClient;
 
-    public ApplicationService(ApplicationRepository applicationRepository, ApplicationHistoryRepository historyRepository, StreamBridge streamBridge, UserProfileServiceClient userProfileServiceClient) {
+    public ApplicationService(ApplicationRepository applicationRepository,
+                              ApplicationHistoryRepository historyRepository,
+                              ApplicationNoteRepository noteRepository,
+                              StreamBridge streamBridge,
+                              UserProfileServiceClient userProfileServiceClient) {
         this.applicationRepository = applicationRepository;
         this.historyRepository = historyRepository;
+        this.noteRepository = noteRepository;
         this.streamBridge = streamBridge;
         this.userProfileServiceClient = userProfileServiceClient;
     }
@@ -46,6 +55,7 @@ public class ApplicationService {
         app.setCandidateId(candidateId);
         app.setJobPostingId(request.jobPostingId());
         app.setCvId(request.cvId());
+        app.setSource(request.source());
         app.setStatus(ApplicationStatus.APPLIED);
 
         Application savedApp = applicationRepository.save(app);
@@ -87,6 +97,10 @@ public class ApplicationService {
         return applicationRepository.findByCandidateId(candidateId);
     }
 
+    public Optional<Application> findById(Long applicationId) {
+        return applicationRepository.findById(applicationId);
+    }
+
     public List<ApplicationDetailsDto> findApplicationsByJobPostingId(Long jobPostingId) {
         List<Application> applications = applicationRepository.findByJobPostingId(jobPostingId);
         if (applications.isEmpty()) {
@@ -110,6 +124,22 @@ public class ApplicationService {
             dto.setCandidateName(candidateIdToNameMap.get(app.getCandidateId()));
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public List<ApplicationNote> getNotes(Long applicationId) {
+        return noteRepository.findByApplicationIdOrderByCreatedAtDesc(applicationId);
+    }
+
+    @Transactional
+    public ApplicationNote addNote(Long applicationId, Long authorUserId, String content) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+
+        ApplicationNote note = new ApplicationNote();
+        note.setApplicationId(application.getId());
+        note.setAuthorUserId(authorUserId);
+        note.setContent(content);
+        return noteRepository.save(note);
     }
 
     private void publishStatusChangeEvent(Application app, ApplicationStatus oldStatus, Long changedByUserId) {

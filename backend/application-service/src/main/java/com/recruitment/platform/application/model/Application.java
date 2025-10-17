@@ -14,10 +14,10 @@ public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    // Getters & Setters
     private Long jobPostingId;
     private Long candidateId;
     private Long cvId;
+    private String source;
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
     private Instant appliedAt = Instant.now();

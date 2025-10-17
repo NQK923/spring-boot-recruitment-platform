@@ -5,7 +5,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="v1.0_init_schema.xml" relativeToChangelogFile="true"/>
-    <include file="v1.1_add_application_source.xml" relativeToChangelogFile="true"/>
-    <include file="v1.2_create_application_notes.xml" relativeToChangelogFile="true"/>
+    <changeSet id="2-add-application-source" author="nqk923">
+        <addColumn tableName="applications">
+            <column name="source" type="VARCHAR(100)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
