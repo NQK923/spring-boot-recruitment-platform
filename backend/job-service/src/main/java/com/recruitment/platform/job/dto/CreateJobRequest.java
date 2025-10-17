@@ -6,6 +6,7 @@ public record CreateJobRequest(
     String description,
     String requirements,
     String location,
-    String workType
+    String workType,
+    Long positionId
     // recruiterId will be set from JWT, companyId from header
 ) {}
