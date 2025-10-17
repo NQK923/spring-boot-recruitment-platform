@@ -49,7 +49,16 @@ public class NotificationEventListener {
         return event -> {
             log.info("Received UserRegisteredEvent for email: {}", event.email());
             String subject = "Welcome to the Recruitment Platform!";
-            String text = "Hello!\n\nThank you for registering. We are excited to have you on board.";
+            String text;
+            if (event.verificationToken() != null) {
+                String verificationUrl = "http://localhost:3000/verify-email?token=" + event.verificationToken();
+                text = String.format(
+                        "Hello!%n%nThank you for registering. Please verify your email by clicking the link below:%n%s%n%nIf you didn't create an account, please ignore this email.",
+                        verificationUrl
+                );
+            } else {
+                text = "Hello!\n\nThank you for registering. We are excited to have you on board.";
+            }
             sendEmail(event.email(), subject, text);
         };
     }
