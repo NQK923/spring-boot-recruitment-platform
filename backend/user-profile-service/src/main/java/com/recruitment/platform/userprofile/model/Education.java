@@ -9,15 +9,14 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-@Table(name = "experiences")
-public class Experience {
+@Table(name = "education")
+public class Education {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    private String companyName;
-    @Column(columnDefinition = "TEXT")
-    private String description;
+
+    private String school;
+    private String degree;
     private LocalDate startDate;
     private LocalDate endDate;
 }

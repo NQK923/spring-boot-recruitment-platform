@@ -1,5 +1,6 @@
 package com.recruitment.platform.userprofile.controller;
 
+import com.recruitment.platform.userprofile.dto.GenerateCvRequest;
 import com.recruitment.platform.userprofile.dto.UpdateProfileRequest;
 import com.recruitment.platform.userprofile.model.Cv;
 import com.recruitment.platform.userprofile.model.Profile;
@@ -12,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/profiles")
@@ -51,6 +54,22 @@ public class ProfileController {
         return new ResponseEntity<>(savedCv, HttpStatus.CREATED);
     }
 
+    @GetMapping("/me/cvs")
+    @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
+    public ResponseEntity<List<Cv>> getMyCvs(@AuthenticationPrincipal Jwt jwt) {
+        Long userId = Long.valueOf(jwt.getSubject());
+        return ResponseEntity.ok(profileService.listCvs(userId));
+    }
+
+    @PostMapping("/me/cvs/generate")
+    @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
+    public ResponseEntity<Cv> generateCv(@AuthenticationPrincipal Jwt jwt,
+                                         @RequestBody GenerateCvRequest request) {
+        Long userId = Long.valueOf(jwt.getSubject());
+        Cv generatedCv = profileService.generateCv(userId, request.versionName());
+        return new ResponseEntity<>(generatedCv, HttpStatus.CREATED);
+    }
+
     @GetMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN')")
     public ResponseEntity<Profile> getCandidateProfile(@PathVariable Long userId) {
@@ -58,5 +77,11 @@ public class ProfileController {
         return profileService.getProfile(userId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/candidates/{userId}/profile")
+    @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN')")
+    public ResponseEntity<Profile> getCandidateProfileByRecruiter(@PathVariable Long userId) {
+        return getCandidateProfile(userId);
     }
 }

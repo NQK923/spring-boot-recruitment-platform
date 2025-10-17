@@ -79,4 +79,21 @@ public class ProfileService {
 
         return cvRepository.save(cv);
     }
+
+    public List<Cv> listCvs(Long userId) {
+        return cvRepository.findByProfile_UserId(userId);
+    }
+
+    @Transactional
+    public Cv generateCv(Long userId, String versionName) {
+        Profile profile = profileRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("Profile not found for user " + userId));
+
+        Cv cv = new Cv();
+        cv.setProfile(profile);
+        cv.setVersionName(versionName);
+        cv.setDefault(false);
+
+        return cvRepository.save(cv);
+    }
 }

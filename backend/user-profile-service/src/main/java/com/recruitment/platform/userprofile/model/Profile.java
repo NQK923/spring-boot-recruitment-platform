@@ -21,6 +21,14 @@ public class Profile {
     @JoinColumn(name = "profile_user_id")
     private List<Experience> experiences;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profile_user_id")
+    private List<Education> education;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profile_user_id")
+    private List<Skill> skills;
+
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Cv> cvs;
 
