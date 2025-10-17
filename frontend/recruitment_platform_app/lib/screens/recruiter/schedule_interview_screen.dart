@@ -7,7 +7,7 @@ class ScheduleInterviewScreen extends StatefulWidget {
   final int applicationId;
   final int candidateId;
 
-  const ScheduleInterviewScreen({Key? key, required this.applicationId, required this.candidateId}) : super(key: key);
+  const ScheduleInterviewScreen({super.key, required this.applicationId, required this.candidateId});
 
   @override
   _ScheduleInterviewScreenState createState() => _ScheduleInterviewScreenState();

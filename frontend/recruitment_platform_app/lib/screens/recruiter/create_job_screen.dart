@@ -4,7 +4,7 @@ import '../../models/create_job_request.dart';
 import '../../providers/recruiter_provider.dart';
 
 class CreateJobScreen extends StatefulWidget {
-  const CreateJobScreen({Key? key}) : super(key: key);
+  const CreateJobScreen({super.key});
 
   @override
   _CreateJobScreenState createState() => _CreateJobScreenState();

@@ -5,7 +5,7 @@ import '../../providers/recruiter_provider.dart';
 class CandidateProfileScreen extends StatefulWidget {
   final int candidateId;
 
-  const CandidateProfileScreen({Key? key, required this.candidateId}) : super(key: key);
+  const CandidateProfileScreen({super.key, required this.candidateId});
 
   @override
   _CandidateProfileScreenState createState() => _CandidateProfileScreenState();

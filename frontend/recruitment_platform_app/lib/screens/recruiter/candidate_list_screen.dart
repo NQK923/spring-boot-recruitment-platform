@@ -9,7 +9,7 @@ class CandidateListScreen extends StatefulWidget {
   final int jobId;
   final String jobTitle;
 
-  const CandidateListScreen({Key? key, required this.jobId, required this.jobTitle}) : super(key: key);
+  const CandidateListScreen({super.key, required this.jobId, required this.jobTitle});
 
   @override
   _CandidateListScreenState createState() => _CandidateListScreenState();
