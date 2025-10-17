@@ -5,8 +5,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="v1.0_init_schema.xml" relativeToChangelogFile="true"/>
-    <include file="v1.1_add_company_users.xml" relativeToChangelogFile="true"/>
-    <include file="v1.2_add_company_config.xml" relativeToChangelogFile="true"/>
+    <changeSet id="3-add-config-json-to-companies" author="nqk923">
+        <addColumn tableName="companies">
+            <column name="config_json" type="TEXT"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
