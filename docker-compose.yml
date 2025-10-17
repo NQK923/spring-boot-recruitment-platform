@@ -4,8 +4,8 @@ services:
     image: postgres:latest
     container_name: postgres_db
     environment:
-      - POSTGRES_USER=your-username
-      - POSTGRES_PASSWORD=your-password
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=khanh090203
       # Create databases for each service
       - POSTGRES_MULTIPLE_DATABASES=auth_db,company_db,user_profile_db,job_db,application_db,interview_db,file_storage_db
     ports:

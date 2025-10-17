@@ -6,7 +6,7 @@
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1-create-application-tables" author="nqk923">
-        <createTable schemaName="application_service" tableName="applications">
+        <createTable  tableName="applications">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -23,14 +23,14 @@
             <column name="applied_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
         </createTable>
 
-        <createTable schemaName="application_service" tableName="application_history">
+        <createTable tableName="application_history">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="application_id" type="BIGINT">
                 <constraints nullable="false"
                              foreignKeyName="fk_history_application"
-                             references="application_service.applications(id)"/>
+                             references="applications(id)"/>
             </column>
             <column name="from_status" type="VARCHAR(50)"/>
             <column name="to_status" type="VARCHAR(50)"/>
