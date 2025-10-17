@@ -1,5 +1,6 @@
 package com.recruitment.platform.interview.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,10 +12,15 @@ import java.util.Objects;
 @Getter
 @Setter
 public class InterviewParticipantPK implements Serializable {
-    Long interviewId;
-    Long userId;
 
-    // equals and hashCode
+    private static final long serialVersionUID = 1L;
+
+    @Column(name = "interview_id")
+    private Long interviewId;
+
+    @Column(name = "user_id")
+    private Long userId;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
