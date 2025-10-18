@@ -48,15 +48,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
     if (!success && mounted) {
       final error = Provider.of<AuthProvider>(context, listen: false).error;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error ?? 'Failed to login'),
-          backgroundColor: Colors.red.shade700,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: const EdgeInsets.all(12),
-        ),
-      );
+      _showErrorSnackBar(error ?? 'Failed to login');
     }
 
     if (mounted) {
@@ -64,6 +56,56 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.loginWithGoogle();
+
+    if (!success && mounted) {
+      _showErrorSnackBar(authProvider.error ?? 'Failed to login with Google');
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loginWithGitHub() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.loginWithGitHub();
+
+    if (!success && mounted) {
+      _showErrorSnackBar(authProvider.error ?? 'Failed to login with GitHub');
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(12),
+      ),
+    );
   }
 
   @override
@@ -76,7 +118,6 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
@@ -281,6 +322,71 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                     fontSize: 17,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Social login divider
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(
+                                    color: Colors.grey.shade400,
+                                  ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 12.0),
+                                  child: Text('OR'),
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    color: Colors.grey.shade400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Google login button
+                            SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: OutlinedButton.icon(
+                                onPressed: _isLoading ? null : _loginWithGoogle,
+                                icon: const Icon(Icons.g_translate, size: 24),
+                                label: const Text(
+                                  'Continue with Google',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.black87,
+                                  side: BorderSide(color: Colors.grey.shade400),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
+                            // GitHub login button
+                            SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: OutlinedButton.icon(
+                                onPressed: _isLoading ? null : _loginWithGitHub,
+                                icon: const Icon(Icons.code, size: 22),
+                                label: const Text(
+                                  'Continue with GitHub',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.black87,
+                                  side: BorderSide(color: Colors.grey.shade400),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
                                 ),
                               ),
