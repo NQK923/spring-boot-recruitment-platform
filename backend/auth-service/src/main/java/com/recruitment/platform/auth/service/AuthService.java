@@ -76,6 +76,7 @@ public class AuthService {
         invitation.setEmail(request.email());
         invitation.setCompanyId(request.companyId());
         invitation.setRoleToGrant(request.roleToGrant());
+        invitation.setCreatedByUserId(request.createdByUserId());
         invitation.setToken(UUID.randomUUID().toString());
         invitation.setExpiresAt(Instant.now().plus(48, ChronoUnit.HOURS));
         invitationRepository.save(invitation);
@@ -139,7 +140,7 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         // Add user to the company via Company Service
-        companyServiceClient.addUserToCompany(new AddUserToCompanyRequest(invitation.getCompanyId(), savedUser.getId(), role.getName()));
+        companyServiceClient.addUserToCompany(new AddUserToCompanyRequest(savedUser.getId(), invitation.getCompanyId(), role.getName()));
 
         invitationRepository.delete(invitation);
         log.info("User {} created from invitation and added to company {}", savedUser.getEmail(), invitation.getCompanyId());
@@ -255,8 +256,16 @@ public class AuthService {
         return savedUser;
     }
 
-    public MeResponse getMe(String email) {
-        User user = userRepository.findByEmail(email)
+    public MeResponse getMe(String principalName) {
+        Optional<User> userOptional;
+        try {
+            Long userId = Long.parseLong(principalName);
+            userOptional = userRepository.findById(userId);
+        } catch (NumberFormatException ex) {
+            userOptional = userRepository.findByEmail(principalName);
+        }
+
+        User user = userOptional
                 .orElseThrow(() -> new IllegalStateException("User not found"));
 
         return new MeResponse(

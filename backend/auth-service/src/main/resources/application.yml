@@ -26,10 +26,18 @@ spring:
 
   cloud:
     stream:
+      defaultBinder: rabbit
+      binders:
+        rabbit:
+          type: rabbit
       bindings:
         # This defines an output channel named 'userInvited-out-0'
         userInvited-out-0:
-          destination: user.events # It will send to this queue/topic
+          binder: rabbit
+          destination: user.invited
+        userRegistered-out-0:
+          binder: rabbit
+          destination: user.registered
   security:
     oauth2:
       client:

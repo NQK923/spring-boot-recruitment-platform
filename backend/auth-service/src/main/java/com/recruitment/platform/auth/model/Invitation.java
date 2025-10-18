@@ -21,4 +21,6 @@ public class Invitation {
     private Instant expiresAt;
     private boolean isUsed = false;
     private Instant createdAt = Instant.now();
+    @Column(name = "created_by_user_id")
+    private Long createdByUserId;
 }
