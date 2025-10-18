@@ -21,13 +21,15 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _tryAutoLogin() async {
     final storedToken = await _storage.read(key: 'jwt');
-    if (storedToken != null) {
-      _token = storedToken;
+    if (storedToken != null && storedToken.isNotEmpty) {
       try {
-        _user = await _apiService.getMe(_token!);
+        final user = await _apiService.getMe(storedToken);
+        _token = storedToken;
+        _user = user;
       } catch (e) {
-        // Token might be expired, log out
-        logout();
+        await _storage.delete(key: 'jwt');
+        _token = null;
+        _user = null;
       }
     }
     notifyListeners();
@@ -37,13 +39,19 @@ class AuthProvider with ChangeNotifier {
     _error = null;
     try {
       final token = await _apiService.login(email, password);
+      final user = await _apiService.getMe(token);
+
       _token = token;
+      _user = user;
       await _storage.write(key: 'jwt', value: _token);
-      _user = await _apiService.getMe(_token!);
+
       notifyListeners();
       return true;
     } catch (e) {
       _error = _extractMessage(e);
+      _token = null;
+      _user = null;
+      await _storage.delete(key: 'jwt');
       notifyListeners();
       return false;
     }
