@@ -17,9 +17,12 @@ class AuthApiService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      // The backend sends { "token": "..." }, we need to extract the value.
-      // My previous implementation was wrong, it should be responseData['jwt'] based on backend's JwtAuthenticationResponse
-      return responseData['jwt'];
+      // Backend returns JwtAuthenticationResponse { "accessToken": "..." }
+      final token = responseData['accessToken'] as String?;
+      if (token == null || token.isEmpty) {
+        throw Exception('Auth service did not return an access token');
+      }
+      return token;
     }
 
     String errorMessage = 'Failed to login';
