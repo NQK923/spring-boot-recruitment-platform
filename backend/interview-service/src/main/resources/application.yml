@@ -20,6 +20,24 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/api/auth # Placeholder
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      defaultBinder: rabbit
+      binders:
+        rabbit:
+          type: rabbit
+      bindings:
+        interviewScheduled-out-0:
+          binder: rabbit
+          destination: interview.scheduled
+        interviewRescheduled-out-0:
+          binder: rabbit
+          destination: interview.rescheduled
 
 eureka:
   client:
