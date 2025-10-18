@@ -107,14 +107,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         width: 100,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [primaryColor, primaryColor.withValues()],
+                            colors: [primaryColor, primaryColor.withOpacity(0.85)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(30),
                           boxShadow: [
                             BoxShadow(
-                              color: primaryColor.withValues(),
+                              color: primaryColor.withOpacity(0.35),
                               spreadRadius: 1,
                               blurRadius: 15,
                               offset: const Offset(0, 8),

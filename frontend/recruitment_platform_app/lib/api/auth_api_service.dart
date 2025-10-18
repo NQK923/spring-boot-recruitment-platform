@@ -10,7 +10,7 @@ class AuthApiService {
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'email': email,
+        'email': email.trim(),
         'password': password,
       }),
     );
@@ -43,12 +43,12 @@ class AuthApiService {
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'email': email,
+        'email': email.trim(),
         'password': password,
       }),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return;
     }
 
