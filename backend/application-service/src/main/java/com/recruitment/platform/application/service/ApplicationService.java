@@ -4,7 +4,6 @@ import com.recruitment.platform.application.client.UserProfileServiceClient;
 import com.recruitment.platform.application.client.dto.UserProfileDto;
 import com.recruitment.platform.application.dto.ApplicationDetailsDto;
 import com.recruitment.platform.application.dto.ApplyRequest;
-import com.recruitment.platform.application.dto.CreateApplicationNoteRequest;
 import com.recruitment.platform.application.dto.UpdateApplicationStatusRequest;
 import com.recruitment.platform.application.event.ApplicationStatusChangedEvent;
 import com.recruitment.platform.application.model.Application;
@@ -23,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,23 +107,13 @@ public class ApplicationService {
             return Collections.emptyList();
         }
 
-        // Extract candidate IDs
-        List<Long> candidateIds = applications.stream()
-                .map(Application::getCandidateId)
-                .distinct()
-                .toList();
+        Map<Long, String> candidateNames = fetchCandidateNames(
+                applications.stream().map(Application::getCandidateId).distinct().toList()
+        );
 
-        // Fetch profiles in a batch
-        List<UserProfileDto> profiles = userProfileServiceClient.getProfilesInBatch(new UserProfileServiceClient.BatchUserIdsRequest(candidateIds));
-        Map<Long, String> candidateIdToNameMap = profiles.stream()
-                .collect(Collectors.toMap(UserProfileDto::userId, UserProfileDto::fullName));
-
-        // Enrich DTOs
-        return applications.stream().map(app -> {
-            ApplicationDetailsDto dto = ApplicationDetailsDto.fromApplication(app);
-            dto.setCandidateName(candidateIdToNameMap.get(app.getCandidateId()));
-            return dto;
-        }).collect(Collectors.toList());
+        return applications.stream()
+                .map(app -> enrichWithCandidateName(ApplicationDetailsDto.fromApplication(app), candidateNames))
+                .collect(Collectors.toList());
     }
 
     public List<ApplicationNote> getNotes(Long applicationId) {
@@ -140,6 +130,28 @@ public class ApplicationService {
         note.setAuthorUserId(authorUserId);
         note.setContent(content);
         return noteRepository.save(note);
+    }
+
+    public ApplicationDetailsDto getApplicationDetails(Long applicationId) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+        Map<Long, String> candidateNames = fetchCandidateNames(List.of(application.getCandidateId()));
+        return enrichWithCandidateName(ApplicationDetailsDto.fromApplication(application), candidateNames);
+    }
+
+    private Map<Long, String> fetchCandidateNames(List<Long> candidateIds) {
+        if (candidateIds == null || candidateIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<UserProfileDto> profiles =
+                userProfileServiceClient.getProfilesInBatch(new UserProfileServiceClient.BatchUserIdsRequest(candidateIds));
+        return profiles.stream()
+                .collect(Collectors.toMap(UserProfileDto::userId, UserProfileDto::fullName));
+    }
+
+    private ApplicationDetailsDto enrichWithCandidateName(ApplicationDetailsDto dto, Map<Long, String> candidateNames) {
+        dto.setCandidateName(candidateNames.get(dto.getCandidateId()));
+        return dto;
     }
 
     private void publishStatusChangeEvent(Application app, ApplicationStatus oldStatus, Long changedByUserId) {

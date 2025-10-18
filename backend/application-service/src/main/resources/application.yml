@@ -19,6 +19,23 @@ spring:
     hibernate:
       ddl-auto: none
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  cloud:
+    stream:
+      defaultBinder: rabbit
+      binders:
+        rabbit:
+          type: rabbit
+      bindings:
+        applicationStatusChanged-out-0:
+          binder: rabbit
+          destination: application.status.changed
+
 
 eureka:
   client:
