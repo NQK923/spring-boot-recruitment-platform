@@ -43,14 +43,14 @@ spring:
       client:
         registration:
           google:
-            client-id: "# PASTE_YOUR_GOOGLE_CLIENT_ID_HERE"
-            client-secret: "# PASTE_YOUR_GOOGLE_CLIENT_SECRET_HERE"
+            client-id: ${GOOGLE_CLIENT_ID:}
+            client-secret: ${GOOGLE_CLIENT_SECRET:}
             scope:
               - email
               - profile
           github:
-            client-id: "# PASTE_YOUR_GITHUB_CLIENT_ID_HERE"
-            client-secret: "# PASTE_YOUR_GITHUB_CLIENT_SECRET_HERE"
+            client-id: ${GITHUB_CLIENT_ID:}
+            client-secret: ${GITHUB_CLIENT_SECRET:}
             scope:
               - user:email
 
@@ -63,3 +63,6 @@ app:
   jwt:
     secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"
     expiration-ms: 86400000 # 24 hours
+  oauth:
+    github:
+      redirect-uri: ${GITHUB_REDIRECT_URI:recruitment-platform://auth/callback}

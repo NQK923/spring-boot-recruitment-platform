@@ -3,6 +3,7 @@ package com.recruitment.platform.auth.controller;
 import com.recruitment.platform.auth.dto.*;
 import com.recruitment.platform.auth.service.AuthService;
 import com.recruitment.platform.auth.service.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,11 +25,22 @@ public class AuthController {
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
+    private final String googleClientId;
+    private final String githubClientId;
+    private final String githubRedirectUri;
 
-    public AuthController(AuthService authService, AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider) {
+    public AuthController(AuthService authService,
+                          AuthenticationManager authenticationManager,
+                          JwtTokenProvider tokenProvider,
+                          @Value("${spring.security.oauth2.client.registration.google.client-id:}") String googleClientId,
+                          @Value("${spring.security.oauth2.client.registration.github.client-id:}") String githubClientId,
+                          @Value("${app.oauth.github.redirect-uri:}") String githubRedirectUri) {
         this.authService = authService;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
+        this.googleClientId = googleClientId;
+        this.githubClientId = githubClientId;
+        this.githubRedirectUri = githubRedirectUri;
     }
 
     @GetMapping("/me")
@@ -63,6 +75,11 @@ public class AuthController {
     public ResponseEntity<JwtAuthenticationResponse> githubLogin(@RequestBody GitHubLoginRequest loginRequest) {
         String jwt = authService.processGitHubLogin(loginRequest.code());
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+    }
+
+    @GetMapping("/oauth/config")
+    public ResponseEntity<OAuthConfigResponse> getOAuthConfig() {
+        return ResponseEntity.ok(new OAuthConfigResponse(googleClientId, githubClientId, githubRedirectUri));
     }
 
     @PostMapping("/verify-email")
