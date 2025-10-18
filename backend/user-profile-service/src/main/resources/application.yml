@@ -20,6 +20,23 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/api/auth # Placeholder
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      defaultBinder: rabbit
+      function:
+        definition: userRegisteredEventConsumer
+      binders:
+        rabbit:
+          type: rabbit
+      bindings:
+        userRegisteredEventConsumer-in-0:
+          binder: rabbit
+          destination: user.registered
 
 eureka:
   client:

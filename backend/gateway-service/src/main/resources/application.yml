@@ -15,6 +15,10 @@ spring:
           uri: lb://COMPANY-SERVICE
           predicates:
             - Path=/api/companies/**
+        - id: application-service-job-applications
+          uri: lb://APPLICATION-SERVICE
+          predicates:
+            - Path=/api/jobs/*/applications
         - id: job-service
           uri: lb://JOB-SERVICE
           predicates:
@@ -56,17 +60,15 @@ spring:
           uri: lb://FILE-STORAGE-SERVICE
           predicates:
             - Path=/api/files/upload
-      server:
-        webflux:
-          discovery:
-            locator:
-              enabled: false
-          globalcors:
-            cors-configurations:
-              '[/**]':
-                          allowedOrigins: "*"
-                          allowedMethods: "*"
-                          allowedHeaders: "*"
+      discovery:
+        locator:
+          enabled: false
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
 
 eureka:
   client:
