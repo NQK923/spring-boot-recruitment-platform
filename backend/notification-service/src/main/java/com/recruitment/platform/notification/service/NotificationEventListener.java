@@ -2,6 +2,7 @@ package com.recruitment.platform.notification.service;
 
 import com.recruitment.platform.notification.client.AuthServiceClient;
 import com.recruitment.platform.notification.event.ApplicationStatusChangedEvent;
+import com.recruitment.platform.notification.event.InterviewRescheduledEvent;
 import com.recruitment.platform.notification.event.InterviewScheduledEvent;
 import com.recruitment.platform.notification.event.UserInvitedEvent;
 import com.recruitment.platform.notification.event.UserRegisteredEvent;
@@ -94,6 +95,29 @@ public class NotificationEventListener {
             String subject = "An interview has been scheduled";
             String text = String.format("Hello!\n\nAn interview for your application #%d has been scheduled for %s at %s.\n\nLocation/Link: %s",
                     event.applicationId(), event.scheduleTime(), event.timezone(), event.locationOrLink());
+
+            event.participantUserIds().forEach(userId -> {
+                String participantEmail = userIdToEmailMap.get(userId);
+                if (participantEmail != null) {
+                    sendEmail(participantEmail, subject, text);
+                } else {
+                    log.warn("Could not find email for participant with ID: {}", userId);
+                }
+            });
+        };
+    }
+
+    @Bean
+    public Consumer<InterviewRescheduledEvent> interviewRescheduledEventConsumer() {
+        return event -> {
+            log.info("Received InterviewRescheduledEvent for interview ID: {}", event.interviewId());
+
+            List<AuthServiceClient.UserEmailInfo> users = authServiceClient.getUsersByIds(new AuthServiceClient.BatchUserIdsRequest(event.participantUserIds()));
+            Map<Long, String> userIdToEmailMap = users.stream().collect(Collectors.toMap(AuthServiceClient.UserEmailInfo::id, AuthServiceClient.UserEmailInfo::email));
+
+            String subject = "Interview schedule updated";
+            String text = String.format("Hello!\n\nYour interview for application #%d has been rescheduled for %s (%s).\n\nUpdated Location/Link: %s",
+                    event.applicationId(), event.newScheduleTime(), event.timezone(), event.locationOrLink());
 
             event.participantUserIds().forEach(userId -> {
                 String participantEmail = userIdToEmailMap.get(userId);

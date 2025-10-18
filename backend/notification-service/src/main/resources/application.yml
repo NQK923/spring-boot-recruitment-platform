@@ -11,10 +11,29 @@ spring:
     password: guest
   cloud:
     stream:
+      defaultBinder: rabbit
+      function:
+        definition: userInvitedEventConsumer;userRegisteredEventConsumer;applicationStatusChangedEventConsumer;interviewScheduledEventConsumer;interviewRescheduledEventConsumer
+      binders:
+        rabbit:
+          type: rabbit
       bindings:
         # This defines an input channel named 'userInvitedEventConsumer-in-0'
         userInvitedEventConsumer-in-0:
-          destination: user.events # It will listen to this queue/topic
+          binder: rabbit
+          destination: user.invited
+        userRegisteredEventConsumer-in-0:
+          binder: rabbit
+          destination: user.registered
+        applicationStatusChangedEventConsumer-in-0:
+          binder: rabbit
+          destination: application.status.changed
+        interviewScheduledEventConsumer-in-0:
+          binder: rabbit
+          destination: interview.scheduled
+        interviewRescheduledEventConsumer-in-0:
+          binder: rabbit
+          destination: interview.rescheduled
   mail:
     host: smtp.example.com # <-- IMPORTANT: Change this
     port: 587
