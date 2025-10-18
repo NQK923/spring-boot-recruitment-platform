@@ -22,7 +22,7 @@ class JobDetailScreen extends StatelessWidget {
     final cvId = profile.cvs.first.id;
 
     Provider.of<ApplicationProvider>(context, listen: false)
-        .applyForJob(job.id, cvId)
+        .applyForJob(job.id, cvId, source: 'DIRECT')
         .then((success) {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(

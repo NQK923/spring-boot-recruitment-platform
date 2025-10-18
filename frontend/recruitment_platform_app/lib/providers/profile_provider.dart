@@ -4,7 +4,7 @@ import '../models/profile.dart';
 import './auth_provider.dart';
 
 class ProfileProvider with ChangeNotifier {
-  final AuthProvider authProvider;
+  AuthProvider _authProvider;
   final _apiService = ProfileApiService();
 
   Profile? _profile;
@@ -14,22 +14,40 @@ class ProfileProvider with ChangeNotifier {
   Profile? get profile => _profile;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  AuthProvider get authProvider => _authProvider;
 
-  ProfileProvider(this.authProvider) {
-    if (authProvider.isAuthenticated) {
+  ProfileProvider(this._authProvider) {
+    if (_authProvider.isAuthenticated) {
+      fetchMyProfile();
+    }
+  }
+
+  void updateAuth(AuthProvider auth) {
+    final wasAuthenticated = _authProvider.isAuthenticated;
+    _authProvider = auth;
+
+    if (!auth.isAuthenticated) {
+      _profile = null;
+      _error = null;
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    if (!wasAuthenticated || _profile == null) {
       fetchMyProfile();
     }
   }
 
   Future<void> fetchMyProfile() async {
-    if (authProvider.token == null) return;
+    if (_authProvider.token == null) return;
 
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _profile = await _apiService.getMyProfile(authProvider.token!);
+      _profile = await _apiService.getMyProfile(_authProvider.token!);
     } catch (e) {
       _error = e.toString();
     }
@@ -39,14 +57,14 @@ class ProfileProvider with ChangeNotifier {
   }
 
   Future<bool> updateMyProfile(Profile profile) async {
-     if (authProvider.token == null) return false;
+     if (_authProvider.token == null) return false;
 
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _profile = await _apiService.updateMyProfile(authProvider.token!, profile);
+      _profile = await _apiService.updateMyProfile(_authProvider.token!, profile);
       _isLoading = false;
       notifyListeners();
       return true;
@@ -59,16 +77,35 @@ class ProfileProvider with ChangeNotifier {
   }
 
   Future<bool> uploadCv(String versionName, String filePath) async {
-    if (authProvider.token == null) return false;
+    if (_authProvider.token == null) return false;
 
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      await _apiService.uploadCv(authProvider.token!, versionName, filePath);
+      await _apiService.uploadCv(_authProvider.token!, versionName, filePath);
       // After upload, refresh the profile to get the new CV list
       await fetchMyProfile(); 
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> generateCv(String versionName) async {
+    if (_authProvider.token == null) return false;
+
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _apiService.generateCv(_authProvider.token!, versionName);
+      await fetchMyProfile();
       return true;
     } catch (e) {
       _error = e.toString();

@@ -56,4 +56,22 @@ class ProfileApiService {
       throw Exception('Failed to upload CV');
     }
   }
+
+  Future<Cv> generateCv(String token, String versionName) async {
+    final url = Uri.parse('$BASE_URL/profiles/me/cvs/generate');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'versionName': versionName}),
+    );
+
+    if (response.statusCode != 201) {
+      throw Exception('Failed to generate CV');
+    }
+
+    return Cv.fromJson(json.decode(response.body));
+  }
 }

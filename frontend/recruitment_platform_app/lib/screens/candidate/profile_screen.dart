@@ -85,6 +85,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _generateCv() async {
+    String versionName = await _showVersionNameDialog() ?? 'Generated CV ${DateTime.now().toIso8601String()}';
+
+    final success = await Provider.of<ProfileProvider>(context, listen: false)
+        .generateCv(versionName);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(success ? 'CV generated!' : 'Failed to generate CV.')),
+      );
+    }
+  }
+
   Future<String?> _showVersionNameDialog() {
     final controller = TextEditingController();
     return showDialog<String>(
@@ -163,9 +176,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         )),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
-                    onPressed: _uploadCv,
+                    onPressed: profileProvider.isLoading ? null : _uploadCv,
                     icon: const Icon(Icons.upload_file),
                     label: const Text('Upload New CV'),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    onPressed: profileProvider.isLoading ? null : _generateCv,
+                    icon: const Icon(Icons.auto_fix_high_outlined),
+                    label: const Text('Generate CV from profile'),
                   ),
                 ],
               ),

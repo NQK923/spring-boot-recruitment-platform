@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/application.dart';
+import '../models/application_note.dart';
 import '../utils/constants.dart';
 
 class ApplicationApiService {
@@ -22,7 +23,7 @@ class ApplicationApiService {
     }
   }
 
-  Future<void> applyForJob(String token, int jobPostingId, int cvId) async {
+  Future<void> applyForJob(String token, int jobPostingId, int cvId, {String source = 'DIRECT'}) async {
     final url = Uri.parse('$BASE_URL/applications');
     final response = await http.post(
       url,
@@ -33,6 +34,7 @@ class ApplicationApiService {
       body: json.encode({
         'jobPostingId': jobPostingId,
         'cvId': cvId,
+        'source': source,
       }),
     );
 
@@ -57,5 +59,41 @@ class ApplicationApiService {
     if (response.statusCode != 200) {
       throw Exception('Failed to update application status');
     }
+  }
+
+  Future<List<ApplicationNote>> getApplicationNotes(String token, int applicationId) async {
+    final url = Uri.parse('$BASE_URL/applications/$applicationId/notes');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load application notes');
+    }
+
+    final List<dynamic> body = json.decode(response.body);
+    return body.map((e) => ApplicationNote.fromJson(e)).toList();
+  }
+
+  Future<ApplicationNote> addApplicationNote(String token, int applicationId, String content) async {
+    final url = Uri.parse('$BASE_URL/applications/$applicationId/notes');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'content': content}),
+    );
+
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      throw Exception('Failed to add note');
+    }
+
+    return ApplicationNote.fromJson(json.decode(response.body));
   }
 }
