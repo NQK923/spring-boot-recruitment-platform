@@ -19,11 +19,19 @@ class AuthApiService {
       final responseData = json.decode(response.body);
       // The backend sends { "token": "..." }, we need to extract the value.
       // My previous implementation was wrong, it should be responseData['jwt'] based on backend's JwtAuthenticationResponse
-      return responseData['jwt']; 
-    } else {
-      // TODO: Handle different error status codes
-      throw Exception('Failed to login');
+      return responseData['jwt'];
     }
+
+    String errorMessage = 'Failed to login';
+    try {
+      final responseData = json.decode(response.body);
+      if (responseData is Map && responseData['message'] is String) {
+        errorMessage = responseData['message'] as String;
+      }
+    } catch (_) {
+      // Ignore parsing errors and fall back to default message.
+    }
+    throw Exception(errorMessage);
   }
 
   Future<void> register(String email, String password) async {
@@ -37,10 +45,20 @@ class AuthApiService {
       }),
     );
 
-    if (response.statusCode != 200) {
-      // TODO: Handle different error status codes
-      throw Exception('Failed to register');
+    if (response.statusCode == 200) {
+      return;
     }
+
+    String errorMessage = 'Failed to register';
+    try {
+      final responseData = json.decode(response.body);
+      if (responseData is Map && responseData['message'] is String) {
+        errorMessage = responseData['message'] as String;
+      }
+    } catch (_) {
+      // Ignore parsing errors and fall back to default message.
+    }
+    throw Exception(errorMessage);
   }
 
   Future<User> getMe(String token) async {

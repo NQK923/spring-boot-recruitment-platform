@@ -43,7 +43,7 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _error = e.toString();
+      _error = _extractMessage(e);
       notifyListeners();
       return false;
     }
@@ -56,7 +56,7 @@ class AuthProvider with ChangeNotifier {
       // After successful registration, let the user login manually.
       return true;
     } catch (e) {
-      _error = e.toString();
+      _error = _extractMessage(e);
       notifyListeners();
       return false;
     }
@@ -67,5 +67,14 @@ class AuthProvider with ChangeNotifier {
     _user = null;
     await _storage.delete(key: 'jwt');
     notifyListeners();
+  }
+
+  String _extractMessage(Object error) {
+    final message = error.toString();
+    const prefix = 'Exception: ';
+    if (message.startsWith(prefix)) {
+      return message.substring(prefix.length);
+    }
+    return message;
   }
 }
