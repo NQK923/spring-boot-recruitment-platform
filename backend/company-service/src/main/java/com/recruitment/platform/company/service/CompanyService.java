@@ -36,7 +36,7 @@ public class CompanyService {
         this.companyRepository = companyRepository;
     }
 
-    public void inviteUser(Long companyId, UserInviteRequest inviteRequest) {
+    public void inviteUser(Long companyId, Long createdByUserId, UserInviteRequest inviteRequest) {
         // In a real app, you'd add more logic here:
         // 1. Verify the company exists (companyRepository.existsById(companyId)).
         // 2. Verify the calling user has permission to invite to this specific company.
@@ -44,7 +44,8 @@ public class CompanyService {
         InternalInviteRequest internalRequest = new InternalInviteRequest(
                 inviteRequest.email(),
                 inviteRequest.role(),
-                companyId
+                companyId,
+                createdByUserId
         );
         authServiceClient.createInvitation(internalRequest);
     }
