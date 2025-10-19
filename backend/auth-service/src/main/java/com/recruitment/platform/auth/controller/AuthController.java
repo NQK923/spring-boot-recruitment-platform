@@ -11,12 +11,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Principal;
 
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -28,19 +30,22 @@ public class AuthController {
     private final String googleClientId;
     private final String githubClientId;
     private final String githubRedirectUri;
+    private final String githubAuthorizeRedirectUri;
 
     public AuthController(AuthService authService,
                           AuthenticationManager authenticationManager,
                           JwtTokenProvider tokenProvider,
                           @Value("${spring.security.oauth2.client.registration.google.client-id:}") String googleClientId,
                           @Value("${spring.security.oauth2.client.registration.github.client-id:}") String githubClientId,
-                          @Value("${app.oauth.github.redirect-uri:}") String githubRedirectUri) {
+                          @Value("${app.oauth.github.redirect-uri:}") String githubRedirectUri,
+                          @Value("${app.oauth.github.authorize-redirect-uri:}") String githubAuthorizeRedirectUri) {
         this.authService = authService;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
         this.googleClientId = googleClientId;
         this.githubClientId = githubClientId;
         this.githubRedirectUri = githubRedirectUri;
+        this.githubAuthorizeRedirectUri = githubAuthorizeRedirectUri;
     }
 
     @GetMapping("/me")
@@ -77,9 +82,33 @@ public class AuthController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
+    @GetMapping("/oauth/github/callback")
+    public void githubCallback(@RequestParam(required = false) String code,
+                               @RequestParam(required = false) String state,
+                               @RequestParam(required = false, name = "error") String error,
+                               @RequestParam(required = false, name = "error_description") String errorDescription,
+                               HttpServletResponse response) throws IOException {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(githubRedirectUri);
+
+        if (code != null) {
+            builder.queryParam("code", code);
+        }
+        if (state != null) {
+            builder.queryParam("state", state);
+        }
+        if (error != null) {
+            builder.queryParam("error", error);
+        }
+        if (errorDescription != null) {
+            builder.queryParam("error_description", errorDescription);
+        }
+
+        response.sendRedirect(builder.build(true).toUriString());
+    }
+
     @GetMapping("/oauth/config")
     public ResponseEntity<OAuthConfigResponse> getOAuthConfig() {
-        return ResponseEntity.ok(new OAuthConfigResponse(googleClientId, githubClientId, githubRedirectUri));
+        return ResponseEntity.ok(new OAuthConfigResponse(googleClientId, githubClientId, githubRedirectUri, githubAuthorizeRedirectUri));
     }
 
     @PostMapping("/verify-email")

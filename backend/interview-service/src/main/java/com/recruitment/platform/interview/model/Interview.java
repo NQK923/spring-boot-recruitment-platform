@@ -17,6 +17,7 @@ public class Interview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long applicationId;
+    @Column(name = "scheduled_time")
     private Instant scheduleTime;
     private String timezone;
     private String format; // e.g., ONLINE, OFFLINE

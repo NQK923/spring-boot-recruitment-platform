@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -56,8 +57,16 @@ class AuthProvider with ChangeNotifier {
     _error = null;
     try {
       final config = await _loadOAuthConfig();
+      if (!config.hasGoogleClientId) {
+        _error = 'Google login is not configured';
+        notifyListeners();
+        return false;
+      }
+
+      final googleClientId = config.googleClientId;
       final googleSignIn = GoogleSignIn(
-        clientId: config.hasGoogleClientId ? config.googleClientId : null,
+        clientId: kIsWeb ? googleClientId : null,
+        serverClientId: googleClientId,
         scopes: const ['email', 'profile'],
       );
 
@@ -92,17 +101,18 @@ class AuthProvider with ChangeNotifier {
     _error = null;
     try {
       final config = await _loadOAuthConfig();
-      if (!config.hasGitHubClientId || !config.hasGitHubRedirect) {
+      if (!config.hasGitHubClientId || !config.hasGitHubRedirect || !config.hasGitHubAuthorizeRedirect) {
         _error = 'GitHub login is not configured';
         notifyListeners();
         return false;
       }
 
       final redirectUri = Uri.parse(config.githubRedirectUri);
+      final authorizeRedirectUri = Uri.parse(config.githubAuthorizeRedirectUri);
       final authorizeUrl = Uri.https('github.com', '/login/oauth/authorize', {
         'client_id': config.githubClientId,
         'scope': 'user:email',
-        'redirect_uri': config.githubRedirectUri,
+        'redirect_uri': authorizeRedirectUri.toString(),
       });
 
       final result = await FlutterWebAuth2.authenticate(
