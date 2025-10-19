@@ -118,7 +118,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
 
     return Scaffold(
       body: Container(
@@ -127,9 +128,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
+              primaryColor.withOpacity(0.08),
               Colors.white,
-              Colors.grey.shade100,
-              Colors.grey.shade200,
+              theme.colorScheme.secondary.withOpacity(0.05),
             ],
           ),
         ),
@@ -173,19 +174,16 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       // Welcome text
                       Text(
                         'Welcome Back',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade800,
-                          letterSpacing: 0.5,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: theme.colorScheme.primary.withOpacity(0.95),
                         ),
                       ),
                       const SizedBox(height: 10),
                       Text(
                         'Sign in to continue',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey.shade600,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.textTheme.bodySmall?.color,
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -333,16 +331,19 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               children: [
                                 Expanded(
                                   child: Divider(
-                                    color: Colors.grey.shade400,
+                                    color: theme.colorScheme.primary.withOpacity(0.15),
                                   ),
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 12.0),
-                                  child: Text('OR'),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                  child: Text(
+                                    'or continue with',
+                                    style: theme.textTheme.bodySmall,
+                                  ),
                                 ),
                                 Expanded(
                                   child: Divider(
-                                    color: Colors.grey.shade400,
+                                    color: theme.colorScheme.primary.withOpacity(0.15),
                                   ),
                                 ),
                               ],
@@ -362,7 +363,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.black87,
-                                  side: BorderSide(color: Colors.grey.shade400),
+                                  backgroundColor: Colors.white,
+                                  side: BorderSide(color: Colors.grey.shade200),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
@@ -384,7 +386,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.black87,
-                                  side: BorderSide(color: Colors.grey.shade400),
+                                  backgroundColor: Colors.white,
+                                  side: BorderSide(color: Colors.grey.shade200),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),

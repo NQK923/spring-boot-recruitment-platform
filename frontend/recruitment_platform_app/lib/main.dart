@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import './providers/application_provider.dart';
-import './providers/auth_provider.dart';
-import './providers/company_admin_provider.dart';
-import './providers/job_provider.dart';
-import './providers/profile_provider.dart';
-import './providers/recruiter_provider.dart';
-import './providers/interview_provider.dart';
-import './providers/super_admin_provider.dart';
-import './screens/auth_wrapper.dart';
+import 'providers/application_provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/company_admin_provider.dart';
+import 'providers/job_provider.dart';
+import 'providers/profile_provider.dart';
+import 'providers/recruiter_provider.dart';
+import 'providers/interview_provider.dart';
+import 'providers/super_admin_provider.dart';
+import 'screens/auth_wrapper.dart';
+import 'utils/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -74,10 +75,8 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Recruitment Platform',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-        ),
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
         home: const AuthWrapper(),
       ),
     );

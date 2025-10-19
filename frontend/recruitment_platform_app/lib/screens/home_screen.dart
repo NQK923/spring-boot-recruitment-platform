@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
       );
     }
 
-    // A simple way to dispatch based on role. 
+    // A simple way to dispatch based on role.
     // A more robust app might use a dedicated role management system.
     final bool isSuperAdmin = user.hasRole('SUPER_ADMIN');
     final bool isRecruiter = user.hasRole('RECRUITER') || user.hasRole('COMPANY_ADMIN');
@@ -42,13 +42,16 @@ class HomeScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      body: dashboard,
-      floatingActionButton: FloatingActionButton(
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: dashboard,
+      ),
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Provider.of<AuthProvider>(context, listen: false).logout();
         },
-        tooltip: 'Logout',
-        child: const Icon(Icons.logout),
+        label: const Text('Log out'),
+        icon: const Icon(Icons.logout),
       ),
     );
   }

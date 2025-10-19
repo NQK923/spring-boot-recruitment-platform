@@ -140,14 +140,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Profile'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
+          FilledButton.icon(
             onPressed: _saveProfile,
+            icon: const Icon(Icons.save_outlined),
+            label: const Text('Save'),
           ),
+          const SizedBox(width: 12),
         ],
       ),
       body: Consumer<ProfileProvider>(
@@ -155,61 +159,340 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (profileProvider.isLoading && profileProvider.profile == null) {
             return const Center(child: CircularProgressIndicator());
           }
+
           if (profileProvider.error != null && profileProvider.profile == null) {
-            return Center(child: Text('Error: ${profileProvider.error}'));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.error_outline, color: theme.colorScheme.error, size: 48),
+                    const SizedBox(height: 16),
+                    Text(
+                      'We couldn’t load your profile',
+                      style: theme.textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      profileProvider.error!,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 20),
+                    OutlinedButton.icon(
+                      onPressed: profileProvider.fetchMyProfile,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
 
           final profile = profileProvider.profile;
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                children: [
-                  Text('User Info', style: Theme.of(context).textTheme.headlineSmall),
-                  const Divider(),
-                  TextFormField(
-                    controller: _fullNameController,
-                    decoration: const InputDecoration(labelText: 'Full Name'),
-                  ),
-                  TextFormField(
-                    controller: _phoneController,
-                    decoration: const InputDecoration(labelText: 'Phone Number'),
-                  ),
-                  TextFormField(
-                    controller: _summaryController,
-                    decoration: const InputDecoration(labelText: 'Summary'),
-                    maxLines: 5,
-                  ),
-                  const SizedBox(height: 30),
-                  Text('My CVs', style: Theme.of(context).textTheme.headlineSmall),
-                  const Divider(),
-                  if (profile?.cvs.isEmpty ?? true)
-                    const Text('No CVs uploaded yet.'),
-                  if (profile != null)
-                    ...profile.cvs.map((cv) => ListTile(
-                          leading: const Icon(Icons.description),
-                          title: Text(cv.versionName),
-                          trailing: cv.isDefault ? const Chip(label: Text('Default')) : null,
-                        )),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    onPressed: profileProvider.isLoading ? null : _uploadCv,
-                    icon: const Icon(Icons.upload_file),
-                    label: const Text('Upload New CV'),
-                  ),
-                  const SizedBox(height: 10),
-                  OutlinedButton.icon(
-                    onPressed: profileProvider.isLoading ? null : _generateCv,
-                    icon: const Icon(Icons.auto_fix_high_outlined),
-                    label: const Text('Generate CV from profile'),
-                  ),
-                ],
+          return Stack(
+            children: [
+              RefreshIndicator(
+                onRefresh: profileProvider.fetchMyProfile,
+                displacement: 28,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  children: [
+                    _buildHeader(
+                      fullName: _fullNameController.text.isNotEmpty
+                          ? _fullNameController.text
+                          : 'Your name',
+                      email: profileProvider.authProvider.user?.email ?? '',
+                      summary: _summaryController.text,
+                    ),
+                    Transform.translate(
+                      offset: const Offset(0, -50),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: _buildProfileCard(context, profileProvider, profile),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
-            ),
+              if (profileProvider.isLoading)
+                const Align(
+                  alignment: Alignment.topCenter,
+                  child: LinearProgressIndicator(minHeight: 2),
+                ),
+            ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildProfileCard(
+    BuildContext context,
+    ProfileProvider provider,
+    Profile? profile,
+  ) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            offset: const Offset(0, 20),
+            blurRadius: 40,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(22, 26, 22, 28),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Personal details',
+              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 18),
+            TextFormField(
+              controller: _fullNameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Full name',
+                prefixIcon: Icon(Icons.person_outline),
+              ),
+            ),
+            const SizedBox(height: 18),
+            TextFormField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: 'Phone number',
+                prefixIcon: Icon(Icons.phone_outlined),
+              ),
+            ),
+            const SizedBox(height: 18),
+            TextFormField(
+              controller: _summaryController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                labelText: 'Professional summary',
+                alignLabelWithHint: true,
+                prefixIcon: Icon(Icons.subject_outlined),
+              ),
+            ),
+            const SizedBox(height: 30),
+            Row(
+              children: [
+                Text(
+                  'Curriculum vitae',
+                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(width: 8),
+                if (profile?.cvs.isNotEmpty ?? false)
+                  Chip(
+                    label: Text('${profile!.cvs.length} uploaded'),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (profile?.cvs.isEmpty ?? true)
+              Container(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.06),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                padding: const EdgeInsets.all(18),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.upload_file, color: theme.colorScheme.primary),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Upload your first CV to quickly apply for roles and let recruiters learn more about your experience.',
+                        style: textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              Column(
+                children: profile!.cvs
+                    .map(
+                      (cv) => Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          color: theme.colorScheme.surface,
+                          border: Border.all(
+                            color: cv.isDefault
+                                ? theme.colorScheme.primary.withOpacity(0.25)
+                                : Colors.grey.withOpacity(0.15),
+                          ),
+                        ),
+                        child: ListTile(
+                          leading: Container(
+                            height: 44,
+                            width: 44,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: theme.colorScheme.primary.withOpacity(0.12),
+                            ),
+                            child: Icon(
+                              cv.isDefault ? Icons.star_rounded : Icons.description_outlined,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          title: Text(
+                            cv.versionName,
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'File ID: ${cv.fileId}',
+                            style: textTheme.bodySmall,
+                          ),
+                          trailing: cv.isDefault
+                              ? Chip(
+                                  backgroundColor:
+                                      theme.colorScheme.primary.withOpacity(0.12),
+                                  label: Text(
+                                    'Default',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: provider.isLoading ? null : _uploadCv,
+                    icon: const Icon(Icons.upload_file),
+                    label: const Text('Upload CV'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: provider.isLoading ? null : _generateCv,
+                    icon: const Icon(Icons.auto_fix_high_outlined),
+                    label: const Text('Generate CV'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader({
+    required String fullName,
+    required String email,
+    required String summary,
+  }) {
+    final theme = Theme.of(context);
+    final initials = fullName.trim().isEmpty
+        ? 'YOU'
+        : fullName.trim().split(' ').take(2).map((e) => e.isNotEmpty ? e[0] : '').join().toUpperCase();
+
+    return Container(
+      height: 240,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary.withOpacity(0.85),
+            theme.colorScheme.secondary.withOpacity(0.85),
+          ],
+        ),
+      ),
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                height: 76,
+                width: 76,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.15),
+                ),
+                child: Center(
+                  child: Text(
+                    initials,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 18),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      fullName.isEmpty ? 'Complete your profile' : fullName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      email.isEmpty ? 'Add an email address' : email,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.85),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Text(
+            summary.isEmpty
+                ? 'Tell recruiters about your experience, achievements, and what excites you.'
+                : summary,
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.9),
+              fontSize: 15,
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
