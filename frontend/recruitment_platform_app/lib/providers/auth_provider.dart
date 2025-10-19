@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +10,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../api/auth_api_service.dart';
 import '../models/oauth_config.dart';
 import '../models/user.dart';
+import '../utils/github_oauth.dart';
 
 class AuthProvider with ChangeNotifier {
   final _storage = const FlutterSecureStorage();
@@ -107,30 +111,57 @@ class AuthProvider with ChangeNotifier {
         return false;
       }
 
-      final redirectUri = Uri.parse(config.githubRedirectUri);
+      final state = _buildOAuthState(kIsWeb ? 'web' : 'mobile');
       final authorizeRedirectUri = Uri.parse(config.githubAuthorizeRedirectUri);
-      final authorizeUrl = Uri.https('github.com', '/login/oauth/authorize', {
+      final queryParameters = {
         'client_id': config.githubClientId,
         'scope': 'user:email',
         'redirect_uri': authorizeRedirectUri.toString(),
-      });
+        'state': state,
+      };
 
-      final result = await FlutterWebAuth2.authenticate(
-        url: authorizeUrl.toString(),
-        callbackUrlScheme: redirectUri.scheme,
-      );
+      if (kIsWeb) {
+        final authorizeUrl = Uri.https('github.com', '/login/oauth/authorize', queryParameters);
+        final code = await startGitHubWebOAuth(authorizeUrl, state);
+        if (code == null || code.isEmpty) {
+          _error = 'GitHub login failed: missing authorization code';
+          notifyListeners();
+          return false;
+        }
 
-      final returnedUri = Uri.parse(result);
-      final code = returnedUri.queryParameters['code'];
-      if (code == null || code.isEmpty) {
-        _error = 'GitHub login failed: missing authorization code';
-        notifyListeners();
-        return false;
+        final token = await _apiService.loginWithGitHub(code);
+        await _completeAuthentication(token);
+        return true;
+      } else {
+        final redirectUri = Uri.parse(config.githubRedirectUri);
+        final authorizeUrl = Uri.https('github.com', '/login/oauth/authorize', queryParameters);
+        final result = await FlutterWebAuth2.authenticate(
+          url: authorizeUrl.toString(),
+          callbackUrlScheme: redirectUri.scheme,
+        );
+
+        final returnedUri = Uri.parse(result);
+        final returnedState = returnedUri.queryParameters['state'];
+        if (returnedState != state) {
+          _error = 'GitHub login failed: invalid state returned';
+          notifyListeners();
+          return false;
+        }
+
+        final code = returnedUri.queryParameters['code'];
+        if (code == null || code.isEmpty) {
+          final errorParam = returnedUri.queryParameters['error_description'] ??
+              returnedUri.queryParameters['error'] ??
+              'missing authorization code';
+          _error = 'GitHub login failed: $errorParam';
+          notifyListeners();
+          return false;
+        }
+
+        final token = await _apiService.loginWithGitHub(code);
+        await _completeAuthentication(token);
+        return true;
       }
-
-      final token = await _apiService.loginWithGitHub(code);
-      await _completeAuthentication(token);
-      return true;
     } on PlatformException catch (e) {
       if (e.code == 'CANCELED' || e.code == 'USER_CANCELED' || e.code == 'USER_CANCELLED') {
         _error = 'GitHub sign-in was cancelled';
@@ -195,5 +226,12 @@ class AuthProvider with ChangeNotifier {
       return message.substring(prefix.length);
     }
     return message;
+  }
+
+  String _buildOAuthState(String prefix) {
+    final random = Random.secure();
+    final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+    final encoded = base64UrlEncode(bytes).replaceAll('=', '');
+    return '$prefix-$encoded';
   }
 }

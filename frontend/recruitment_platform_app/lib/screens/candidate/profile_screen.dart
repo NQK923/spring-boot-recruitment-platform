@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/profile.dart';
@@ -65,15 +66,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _uploadCv() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      withData: kIsWeb,
+    );
 
     if (result != null) {
-      PlatformFile file = result.files.first;
-      // Simple dialog to get a version name
-      String versionName = await _showVersionNameDialog() ?? 'CV ${DateTime.now().toIso8601String()}';
+      final PlatformFile file = result.files.first;
+      final versionName = await _showVersionNameDialog() ?? 'CV ${DateTime.now().toIso8601String()}';
 
-      final success = await Provider.of<ProfileProvider>(context, listen: false)
-          .uploadCv(versionName, file.path!);
+      if (!mounted) return;
+
+      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      bool success = false;
+
+      if (file.path != null || file.bytes != null) {
+        success = await profileProvider.uploadCv(
+          versionName: versionName,
+          filePath: file.path,
+          fileBytes: file.bytes,
+          fileName: file.name,
+        );
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to read the selected file.')),
+        );
+        return;
+      }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

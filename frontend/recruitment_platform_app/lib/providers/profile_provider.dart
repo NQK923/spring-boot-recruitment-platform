@@ -76,7 +76,13 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> uploadCv(String versionName, String filePath) async {
+  Future<bool> uploadCv({
+    required String versionName,
+    String? filePath,
+    List<int>? fileBytes,
+    String? fileName,
+    String? contentType,
+  }) async {
     if (_authProvider.token == null) return false;
 
     _isLoading = true;
@@ -84,7 +90,14 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      await _apiService.uploadCv(_authProvider.token!, versionName, filePath);
+      await _apiService.uploadCv(
+        _authProvider.token!,
+        versionName,
+        filePath: filePath,
+        fileBytes: fileBytes,
+        fileName: fileName,
+        contentType: contentType,
+      );
       // After upload, refresh the profile to get the new CV list
       await fetchMyProfile(); 
       return true;

@@ -1,5 +1,6 @@
 package com.recruitment.platform.auth.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recruitment.platform.auth.dto.*;
 import com.recruitment.platform.auth.service.AuthService;
 import com.recruitment.platform.auth.service.JwtTokenProvider;
@@ -16,6 +17,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,6 +34,7 @@ public class AuthController {
     private final String githubClientId;
     private final String githubRedirectUri;
     private final String githubAuthorizeRedirectUri;
+    private final ObjectMapper objectMapper;
 
     public AuthController(AuthService authService,
                           AuthenticationManager authenticationManager,
@@ -38,7 +42,8 @@ public class AuthController {
                           @Value("${spring.security.oauth2.client.registration.google.client-id:}") String googleClientId,
                           @Value("${spring.security.oauth2.client.registration.github.client-id:}") String githubClientId,
                           @Value("${app.oauth.github.redirect-uri:}") String githubRedirectUri,
-                          @Value("${app.oauth.github.authorize-redirect-uri:}") String githubAuthorizeRedirectUri) {
+                          @Value("${app.oauth.github.authorize-redirect-uri:}") String githubAuthorizeRedirectUri,
+                          ObjectMapper objectMapper) {
         this.authService = authService;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
@@ -46,6 +51,7 @@ public class AuthController {
         this.githubClientId = githubClientId;
         this.githubRedirectUri = githubRedirectUri;
         this.githubAuthorizeRedirectUri = githubAuthorizeRedirectUri;
+        this.objectMapper = objectMapper;
     }
 
     @GetMapping("/me")
@@ -88,6 +94,35 @@ public class AuthController {
                                @RequestParam(value = "error", required = false) String error,
                                @RequestParam(value = "error_description", required = false) String errorDescription,
                                HttpServletResponse response) throws IOException {
+        if (state != null && state.startsWith("web")) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("text/html;charset=UTF-8");
+
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("source", "github-auth");
+            payload.put("state", state);
+            if (code != null) {
+                payload.put("code", code);
+            }
+            if (error != null) {
+                payload.put("error", error);
+            }
+            if (errorDescription != null) {
+                payload.put("error_description", errorDescription);
+            }
+
+            String jsonPayload = objectMapper.writeValueAsString(payload);
+            try (var writer = response.getWriter()) {
+                writer.append("<!DOCTYPE html><html><head><meta charset=\"UTF-8\"></head><body><script>");
+                writer.append("if (window.opener) { window.opener.postMessage(")
+                        .append(jsonPayload)
+                        .append(", '*'); }");
+                writer.append("window.close();");
+                writer.append("</script></body></html>");
+            }
+            return;
+        }
+
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(githubRedirectUri);
 
         if (code != null) {
