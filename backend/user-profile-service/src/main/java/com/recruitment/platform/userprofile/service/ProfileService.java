@@ -47,18 +47,34 @@ public class ProfileService {
         return profileRepository.findById(userId);
     }
 
+    @Transactional
+    public Profile getOrCreateProfile(Long userId) {
+        return profileRepository.findById(userId)
+                .orElseGet(() -> {
+                    Profile profile = new Profile();
+                    profile.setUserId(userId);
+                    return profileRepository.save(profile);
+                });
+    }
+
     public List<Profile> getProfilesInBatch(List<Long> userIds) {
         return profileRepository.findByUserIdIn(userIds);
     }
 
     @Transactional
-    public Optional<Profile> updateProfile(Long userId, UpdateProfileRequest request) {
-        return profileRepository.findById(userId).map(profile -> {
-            profile.setFullName(request.fullName());
-            profile.setPhoneNumber(request.phoneNumber());
-            profile.setSummary(request.summary());
-            return profileRepository.save(profile);
-        });
+    public Profile updateProfile(Long userId, UpdateProfileRequest request) {
+        Profile profile = profileRepository.findById(userId)
+                .orElseGet(() -> {
+                    Profile newProfile = new Profile();
+                    newProfile.setUserId(userId);
+                    return newProfile;
+                });
+
+        profile.setFullName(request.fullName());
+        profile.setPhoneNumber(request.phoneNumber());
+        profile.setSummary(request.summary());
+
+        return profileRepository.save(profile);
     }
 
     @Transactional

@@ -1,5 +1,6 @@
 package com.recruitment.platform.interview.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -21,6 +22,7 @@ public class InterviewParticipant {
     @ManyToOne
     @MapsId("interviewId")
     @JoinColumn(name = "interview_id")
+    @JsonIgnore
     private Interview interview;
 
     private String role; // e.g., INTERVIEWER, CANDIDATE

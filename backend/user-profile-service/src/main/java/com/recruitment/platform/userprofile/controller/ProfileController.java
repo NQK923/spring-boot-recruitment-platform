@@ -30,18 +30,16 @@ public class ProfileController {
     @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
     public ResponseEntity<Profile> getMyProfile(@AuthenticationPrincipal Jwt jwt) {
         Long userId = Long.valueOf(jwt.getSubject());
-        return profileService.getProfile(userId)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Profile profile = profileService.getOrCreateProfile(userId);
+        return ResponseEntity.ok(profile);
     }
 
     @PutMapping("/me")
     @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
     public ResponseEntity<Profile> updateMyProfile(@AuthenticationPrincipal Jwt jwt, @RequestBody UpdateProfileRequest request) {
         Long userId = Long.valueOf(jwt.getSubject());
-        return profileService.updateProfile(userId, request)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Profile updatedProfile = profileService.updateProfile(userId, request);
+        return ResponseEntity.ok(updatedProfile);
     }
 
     @PostMapping(value = "/me/cvs/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

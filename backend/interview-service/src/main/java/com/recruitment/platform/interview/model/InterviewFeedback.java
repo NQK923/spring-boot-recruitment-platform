@@ -1,5 +1,6 @@
 package com.recruitment.platform.interview.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ public class InterviewFeedback {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interview_id")
+    @JsonIgnore
     private Interview interview;
 
     private Long interviewerId;
