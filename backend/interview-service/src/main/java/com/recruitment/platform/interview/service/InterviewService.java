@@ -1,6 +1,9 @@
 package com.recruitment.platform.interview.service;
 
 import com.recruitment.platform.interview.dto.FeedbackRequest;
+import com.recruitment.platform.interview.dto.InterviewFeedbackResponse;
+import com.recruitment.platform.interview.dto.InterviewParticipantResponse;
+import com.recruitment.platform.interview.dto.InterviewResponse;
 import com.recruitment.platform.interview.dto.ScheduleRequest;
 import com.recruitment.platform.interview.dto.UpdateInterviewRequest;
 import com.recruitment.platform.interview.event.InterviewRescheduledEvent;
@@ -76,8 +79,37 @@ public class InterviewService {
         return savedInterview;
     }
 
-    public List<Interview> getInterviewsForUser(Long userId) {
-        return interviewRepository.findAllByParticipantUserId(userId);
+    @Transactional(readOnly = true)
+    public List<InterviewResponse> getInterviewsForUser(Long userId) {
+        List<Interview> interviews = interviewRepository.findAllByParticipantUserId(userId);
+        return interviews.stream()
+                .map(interview -> {
+                    List<InterviewParticipantResponse> participants = interview.getParticipants().stream()
+                            .map(participant -> new InterviewParticipantResponse(participant.getUserId(), participant.getRole()))
+                            .toList();
+
+                    List<InterviewFeedbackResponse> feedback = interview.getFeedback().stream()
+                            .map(item -> new InterviewFeedbackResponse(
+                                    item.getInterviewerId(),
+                                    Integer.valueOf(item.getScore()),
+                                    item.getComments(),
+                                    item.getOutcome()
+                            ))
+                            .toList();
+
+                    return new InterviewResponse(
+                            interview.getId(),
+                            interview.getApplicationId(),
+                            interview.getScheduleTime(),
+                            interview.getTimezone(),
+                            interview.getFormat(),
+                            interview.getLocationOrLink(),
+                            participants,
+                            feedback,
+                            interview.getOutcome()
+                    );
+                })
+                .toList();
     }
 
     @Transactional

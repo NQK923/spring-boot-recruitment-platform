@@ -1,6 +1,7 @@
 package com.recruitment.platform.interview.controller;
 
 import com.recruitment.platform.interview.dto.FeedbackRequest;
+import com.recruitment.platform.interview.dto.InterviewResponse;
 import com.recruitment.platform.interview.dto.ScheduleRequest;
 import com.recruitment.platform.interview.dto.UpdateInterviewRequest;
 import com.recruitment.platform.interview.model.Interview;
@@ -37,7 +38,7 @@ public class InterviewController {
 
     @GetMapping("/my")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Interview>> getMyInterviews(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<List<InterviewResponse>> getMyInterviews(@AuthenticationPrincipal Jwt jwt) {
         Long userId = Long.valueOf(jwt.getSubject());
         return ResponseEntity.ok(service.getInterviewsForUser(userId));
     }
