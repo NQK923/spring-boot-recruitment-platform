@@ -32,8 +32,17 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(Authentication authentication) {
-        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
-        User user = userRepository.findByEmail(userPrincipal.getUsername()).orElseThrow(); // Find user to get ID
+        Object principal = authentication.getPrincipal();
+        String username;
+        if (principal instanceof UserDetails userDetails) {
+            username = userDetails.getUsername();
+        } else if (principal instanceof String stringPrincipal) {
+            username = stringPrincipal;
+        } else {
+            throw new IllegalStateException("Unsupported principal type: " + principal.getClass());
+        }
+
+        User user = userRepository.findByEmail(username).orElseThrow(); // Find user to get ID
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);

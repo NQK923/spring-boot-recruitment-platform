@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import '../models/cv.dart';
 import '../models/profile.dart';
 import '../utils/constants.dart';
+import '../models/cv.dart';
+import '../models/downloaded_file.dart';
 
 class ProfileApiService {
   Future<Profile> getMyProfile(String token) async {
@@ -60,7 +61,10 @@ class ProfileApiService {
     if (filePath != null) {
       filePart = await http.MultipartFile.fromPath('file', filePath);
     } else if (fileBytes != null) {
-      final mediaType = contentType != null ? MediaType.parse(contentType) : MediaType('application', 'octet-stream');
+      final mediaType =
+          contentType != null
+              ? MediaType.parse(contentType)
+              : MediaType('application', 'octet-stream');
       filePart = http.MultipartFile.fromBytes(
         'file',
         fileBytes,
@@ -75,7 +79,8 @@ class ProfileApiService {
 
     final response = await request.send();
 
-    if (response.statusCode == 201) { // Created
+    if (response.statusCode == 201) {
+      // Created
       final responseBody = await response.stream.bytesToString();
       return Cv.fromJson(json.decode(responseBody));
     } else {
@@ -101,6 +106,27 @@ class ProfileApiService {
     return Cv.fromJson(json.decode(response.body));
   }
 
+  Future<DownloadedFile> downloadCvFile(String token, String fileId) async {
+    final url = Uri.parse('$BASE_URL/files/$fileId');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to download CV');
+    }
+
+    final contentDisposition = response.headers['content-disposition'];
+    final fileName = _extractFileName(contentDisposition) ?? 'cv_$fileId';
+
+    return DownloadedFile(
+      bytes: response.bodyBytes,
+      fileName: fileName,
+      contentType: response.headers['content-type'],
+    );
+  }
+
   Map<String, dynamic> _decodeProfileBody(String body) {
     try {
       final decoded = json.decode(body);
@@ -121,5 +147,20 @@ class ProfileApiService {
       }
       throw const FormatException('Profile response is not an object');
     }
+  }
+
+  String? _extractFileName(String? contentDisposition) {
+    if (contentDisposition == null) {
+      return null;
+    }
+    final parts = contentDisposition.split(';');
+    for (final part in parts) {
+      final trimmed = part.trim();
+      if (trimmed.toLowerCase().startsWith('filename=')) {
+        final value = trimmed.substring('filename='.length).trim();
+        return value.replaceAll('"', '');
+      }
+    }
+    return null;
   }
 }

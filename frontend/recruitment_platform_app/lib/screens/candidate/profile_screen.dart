@@ -1,9 +1,15 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../models/cv.dart';
+import '../../models/education.dart';
+import '../../models/experience.dart';
 import '../../models/profile.dart';
+import '../../models/skill.dart';
 import '../../providers/profile_provider.dart';
+import '../../widgets/section_header.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,11 +23,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _fullNameController;
   late TextEditingController _phoneController;
   late TextEditingController _summaryController;
+  String? _downloadingCvId;
+  final DateFormat _monthYearFormat = DateFormat('MMM yyyy');
+  final DateFormat _cvTimestampFormat = DateFormat('MMM d, yyyy â€¢ HH:mm');
 
   @override
   void initState() {
     super.initState();
-    final profile = Provider.of<ProfileProvider>(context, listen: false).profile;
+    final profile =
+        Provider.of<ProfileProvider>(context, listen: false).profile;
     _fullNameController = TextEditingController(text: profile?.fullName ?? '');
     _phoneController = TextEditingController(text: profile?.phoneNumber ?? '');
     _summaryController = TextEditingController(text: profile?.summary ?? '');
@@ -32,9 +42,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.didChangeDependencies();
     // Update controllers if profile re-fetches
     final profile = Provider.of<ProfileProvider>(context).profile;
-     _fullNameController.text = profile?.fullName ?? '';
-     _phoneController.text = profile?.phoneNumber ?? '';
-     _summaryController.text = profile?.summary ?? '';
+    _fullNameController.text = profile?.fullName ?? '';
+    _phoneController.text = profile?.phoneNumber ?? '';
+    _summaryController.text = profile?.summary ?? '';
   }
 
   @override
@@ -47,7 +57,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
-      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      final profileProvider = Provider.of<ProfileProvider>(
+        context,
+        listen: false,
+      );
       final updatedProfile = Profile(
         userId: profileProvider.profile!.userId,
         fullName: _fullNameController.text,
@@ -59,7 +72,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(success ? 'Profile updated!' : 'Failed to update profile.')),
+          SnackBar(
+            content: Text(
+              success ? 'Profile updated!' : 'Failed to update profile.',
+            ),
+          ),
         );
       }
     }
@@ -72,11 +89,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (result != null) {
       final PlatformFile file = result.files.first;
-      final versionName = await _showVersionNameDialog() ?? 'CV ${DateTime.now().toIso8601String()}';
+      final versionName =
+          await _showVersionNameDialog() ??
+          'CV ${DateTime.now().toIso8601String()}';
 
       if (!mounted) return;
 
-      final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      final profileProvider = Provider.of<ProfileProvider>(
+        context,
+        listen: false,
+      );
       bool success = false;
 
       if (file.path != null || file.bytes != null) {
@@ -96,7 +118,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(success ? 'CV uploaded!' : 'Failed to upload CV.')),
+          SnackBar(
+            content: Text(success ? 'CV uploaded!' : 'Failed to upload CV.'),
+          ),
         );
       }
     } else {
@@ -105,15 +129,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _generateCv() async {
-    String versionName = await _showVersionNameDialog() ?? 'Generated CV ${DateTime.now().toIso8601String()}';
+    String versionName =
+        await _showVersionNameDialog() ??
+        'Generated CV ${DateTime.now().toIso8601String()}';
 
-    final success = await Provider.of<ProfileProvider>(context, listen: false)
-        .generateCv(versionName);
+    final success = await Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    ).generateCv(versionName);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(success ? 'CV generated!' : 'Failed to generate CV.')),
+        SnackBar(
+          content: Text(success ? 'CV generated!' : 'Failed to generate CV.'),
+        ),
       );
+    }
+  }
+
+  Future<void> _downloadCv(Cv cv) async {
+    if (cv.fileId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This CV does not have an attached file yet.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _downloadingCvId = cv.fileId;
+    });
+
+    try {
+      final provider = Provider.of<ProfileProvider>(context, listen: false);
+      final location = await provider.downloadCv(cv);
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.showSnackBar(SnackBar(content: Text(location)));
+    } catch (e) {
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      final message = e.toString().replaceFirst('Exception: ', '');
+      messenger.showSnackBar(
+        SnackBar(content: Text('Failed to download CV: $message')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _downloadingCvId = null;
+        });
+      }
     }
   }
 
@@ -121,20 +187,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final controller = TextEditingController();
     return showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('CV Version Name'),
-        content: TextField(controller: controller, decoration: const InputDecoration(hintText: "e.g., 'Software Engineer CV'")),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('CV Version Name'),
+            content: TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                hintText: "e.g., 'Software Engineer CV'",
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(controller.text),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(controller.text),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -160,17 +232,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (profileProvider.error != null && profileProvider.profile == null) {
+          if (profileProvider.error != null &&
+              profileProvider.profile == null) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.error_outline, color: theme.colorScheme.error, size: 48),
+                    Icon(
+                      Icons.error_outline,
+                      color: theme.colorScheme.error,
+                      size: 48,
+                    ),
                     const SizedBox(height: 16),
                     Text(
-                      'We couldn’t load your profile',
+                      'We couldnâ€™t load your profile',
                       style: theme.textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
@@ -203,9 +280,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: EdgeInsets.zero,
                   children: [
                     _buildHeader(
-                      fullName: _fullNameController.text.isNotEmpty
-                          ? _fullNameController.text
-                          : 'Your name',
+                      fullName:
+                          _fullNameController.text.isNotEmpty
+                              ? _fullNameController.text
+                              : 'Your name',
                       email: profileProvider.authProvider.user?.email ?? '',
                       summary: _summaryController.text,
                     ),
@@ -213,7 +291,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       offset: const Offset(0, -50),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: _buildProfileCard(context, profileProvider, profile),
+                        child: _buildProfileCard(
+                          context,
+                          profileProvider,
+                          profile,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -239,6 +321,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+    final cvs = profile?.cvs ?? const <Cv>[];
+    final experiences = profile?.experiences ?? const <Experience>[];
+    final education = profile?.education ?? const <Education>[];
+    final skills = profile?.skills ?? const <Skill>[];
 
     return Container(
       decoration: BoxDecoration(
@@ -246,7 +332,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withAlpha(15),
             offset: const Offset(0, 20),
             blurRadius: 40,
           ),
@@ -258,11 +344,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Personal details',
-              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            SectionHeader(
+              title: 'Personal details',
+              subtitle:
+                  'These details are shared with recruiters when you apply.',
+              padding: EdgeInsets.zero,
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 12),
             TextFormField(
               controller: _fullNameController,
               textCapitalization: TextCapitalization.words,
@@ -291,97 +379,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            Row(
-              children: [
-                Text(
-                  'Curriculum vitae',
-                  style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(width: 8),
-                if (profile?.cvs.isNotEmpty ?? false)
-                  Chip(
-                    label: Text('${profile!.cvs.length} uploaded'),
-                  ),
-              ],
+            SectionHeader(
+              title: 'Curriculum vitae',
+              subtitle:
+                  'Keep different resume versions ready to share or download.',
+              padding: EdgeInsets.zero,
+              trailing:
+                  cvs.isNotEmpty
+                      ? Chip(label: Text('${cvs.length} uploaded'))
+                      : null,
             ),
-            const SizedBox(height: 16),
-            if (profile?.cvs.isEmpty ?? true)
-              Container(
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.06),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                padding: const EdgeInsets.all(18),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.upload_file, color: theme.colorScheme.primary),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Upload your first CV to quickly apply for roles and let recruiters learn more about your experience.',
-                        style: textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            else
-              Column(
-                children: profile!.cvs
-                    .map(
-                      (cv) => Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
-                          color: theme.colorScheme.surface,
-                          border: Border.all(
-                            color: cv.isDefault
-                                ? theme.colorScheme.primary.withOpacity(0.25)
-                                : Colors.grey.withOpacity(0.15),
-                          ),
-                        ),
-                        child: ListTile(
-                          leading: Container(
-                            height: 44,
-                            width: 44,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: theme.colorScheme.primary.withOpacity(0.12),
-                            ),
-                            child: Icon(
-                              cv.isDefault ? Icons.star_rounded : Icons.description_outlined,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                          title: Text(
-                            cv.versionName,
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          subtitle: Text(
-                            'File ID: ${cv.fileId}',
-                            style: textTheme.bodySmall,
-                          ),
-                          trailing: cv.isDefault
-                              ? Chip(
-                                  backgroundColor:
-                                      theme.colorScheme.primary.withOpacity(0.12),
-                                  label: Text(
-                                    'Default',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      color: theme.colorScheme.primary,
-                                    ),
-                                  ),
-                                )
-                              : null,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
+            const SizedBox(height: 12),
+            _buildCvSection(provider, cvs, textTheme),
             const SizedBox(height: 20),
             Row(
               children: [
@@ -402,10 +411,365 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 32),
+            SectionHeader(
+              title: 'Experience',
+              subtitle: 'Highlight the roles that shape your journey.',
+              padding: EdgeInsets.zero,
+            ),
+            const SizedBox(height: 12),
+            _buildExperienceSection(experiences),
+            const SizedBox(height: 32),
+            SectionHeader(
+              title: 'Education',
+              subtitle: 'Share the schools and programs you completed.',
+              padding: EdgeInsets.zero,
+            ),
+            const SizedBox(height: 12),
+            _buildEducationSection(education),
+            const SizedBox(height: 32),
+            SectionHeader(
+              title: 'Skills',
+              subtitle: 'Make it easy for recruiters to spot your strengths.',
+              padding: EdgeInsets.zero,
+            ),
+            const SizedBox(height: 12),
+            _buildSkillsSection(skills),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildCvSection(
+    ProfileProvider provider,
+    List<Cv> cvs,
+    TextTheme textTheme,
+  ) {
+    final theme = Theme.of(context);
+
+    if (cvs.isEmpty) {
+      return _buildSectionEmptyState(
+        icon: Icons.upload_file_outlined,
+        title: 'No CV uploaded yet',
+        subtitle:
+            'Upload or generate a CV so recruiters can review your profile quickly.',
+      );
+    }
+
+    return Column(
+      children:
+          cvs.map((cv) {
+            final isDownloading =
+                _downloadingCvId != null && _downloadingCvId == cv.fileId;
+            final createdAtLabel = _formatCvTimestamp(cv.createdAt);
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                color: theme.colorScheme.surface,
+                border: Border.all(
+                  color:
+                      cv.isDefault
+                          ? theme.colorScheme.primary.withAlpha(64)
+                          : Colors.grey.withAlpha(38),
+                ),
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 12,
+                ),
+                leading: Container(
+                  height: 44,
+                  width: 44,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.colorScheme.primary.withAlpha(31),
+                  ),
+                  child: Icon(
+                    cv.isDefault
+                        ? Icons.star_rounded
+                        : Icons.description_outlined,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                title: Text(
+                  cv.versionName,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (createdAtLabel != null)
+                      Text(createdAtLabel, style: textTheme.bodySmall),
+                    Text(
+                      cv.fileId != null
+                          ? 'File ID: ${cv.fileId}'
+                          : 'File not yet available',
+                      style: textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (cv.isDefault)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Chip(
+                          backgroundColor: theme.colorScheme.primary.withAlpha(
+                            31,
+                          ),
+                          label: Text(
+                            'Default',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    IconButton(
+                      tooltip:
+                          cv.fileId == null
+                              ? 'No file to download'
+                              : 'Download',
+                      onPressed:
+                          (cv.fileId == null ||
+                                  isDownloading ||
+                                  provider.isLoading)
+                              ? null
+                              : () => _downloadCv(cv),
+                      icon:
+                          isDownloading
+                              ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : const Icon(Icons.download_outlined),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+    );
+  }
+
+  Widget _buildExperienceSection(List<Experience> experiences) {
+    if (experiences.isEmpty) {
+      return _buildSectionEmptyState(
+        icon: Icons.work_outline,
+        title: 'Share your professional story',
+        subtitle:
+            'Add roles, achievements, and responsibilities to help recruiters understand your background.',
+      );
+    }
+
+    return Column(children: experiences.map(_buildExperienceCard).toList());
+  }
+
+  Widget _buildEducationSection(List<Education> educationItems) {
+    if (educationItems.isEmpty) {
+      return _buildSectionEmptyState(
+        icon: Icons.school_outlined,
+        title: 'Add your education',
+        subtitle:
+            'Include schools, degrees, and dates so recruiters see your academic foundation.',
+      );
+    }
+
+    return Column(children: educationItems.map(_buildEducationCard).toList());
+  }
+
+  Widget _buildSkillsSection(List<Skill> skills) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final visibleSkills =
+        skills.where((skill) => skill.name.trim().isNotEmpty).toList();
+
+    if (visibleSkills.isEmpty) {
+      return _buildSectionEmptyState(
+        icon: Icons.psychology_alt_outlined,
+        title: 'List the skills you rely on',
+        subtitle:
+            'Adding skills helps your profile show up in more recruiter searches.',
+      );
+    }
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children:
+          visibleSkills
+              .map(
+                (skill) => Chip(
+                  label: Text(skill.name),
+                  backgroundColor: theme.colorScheme.primary.withAlpha(20),
+                  labelStyle: textTheme.bodyMedium,
+                ),
+              )
+              .toList(),
+    );
+  }
+
+  Widget _buildExperienceCard(Experience experience) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final period = _formatDateRange(experience.startDate, experience.endDate);
+    final description = experience.description?.trim();
+    final title =
+        experience.title.trim().isEmpty
+            ? 'Untitled position'
+            : experience.title.trim();
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: theme.dividerColor.withAlpha(102)),
+        color: theme.colorScheme.surface,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          if (experience.companyName.trim().isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              experience.companyName.trim(),
+              style: textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          ],
+          if (period != null) ...[
+            const SizedBox(height: 4),
+            Text(period, style: textTheme.bodySmall),
+          ],
+          if (description != null && description.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(description, style: textTheme.bodyMedium),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEducationCard(Education education) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final period = _formatDateRange(education.startDate, education.endDate);
+    final school =
+        education.school.trim().isEmpty
+            ? 'School not specified'
+            : education.school.trim();
+    final degree =
+        education.degree.trim().isEmpty ? null : education.degree.trim();
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: theme.dividerColor.withAlpha(102)),
+        color: theme.colorScheme.surface,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            school,
+            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          if (degree != null) ...[
+            const SizedBox(height: 4),
+            Text(degree, style: textTheme.bodyMedium),
+          ],
+          if (period != null) ...[
+            const SizedBox(height: 4),
+            Text(period, style: textTheme.bodySmall),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionEmptyState({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withAlpha(89),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: theme.colorScheme.primary),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(subtitle, style: textTheme.bodySmall),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String? _formatDateRange(DateTime? start, DateTime? end) {
+    if (start == null && end == null) {
+      return null;
+    }
+
+    final startLabel = start != null ? _monthYearFormat.format(start) : null;
+    final endLabel = end != null ? _monthYearFormat.format(end) : 'Present';
+
+    if (startLabel != null) {
+      return '$startLabel - $endLabel';
+    }
+
+    return endLabel;
+  }
+
+  String? _formatCvTimestamp(DateTime? date) {
+    if (date == null) {
+      return null;
+    }
+    final local = date.toLocal();
+    return 'Created ${_cvTimestampFormat.format(local)}';
   }
 
   Widget _buildHeader({
@@ -414,9 +778,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String summary,
   }) {
     final theme = Theme.of(context);
-    final initials = fullName.trim().isEmpty
-        ? 'YOU'
-        : fullName.trim().split(' ').take(2).map((e) => e.isNotEmpty ? e[0] : '').join().toUpperCase();
+    final initials =
+        fullName.trim().isEmpty
+            ? 'YOU'
+            : fullName
+                .trim()
+                .split(' ')
+                .take(2)
+                .map((e) => e.isNotEmpty ? e[0] : '')
+                .join()
+                .toUpperCase();
 
     return Container(
       height: 240,
@@ -425,8 +796,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            theme.colorScheme.primary.withOpacity(0.85),
-            theme.colorScheme.secondary.withOpacity(0.85),
+            theme.colorScheme.primary.withAlpha(217),
+            theme.colorScheme.secondary.withAlpha(217),
           ],
         ),
       ),
@@ -441,7 +812,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: 76,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withAlpha(38),
                 ),
                 child: Center(
                   child: Text(
@@ -471,7 +842,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       email.isEmpty ? 'Add an email address' : email,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withAlpha(217),
                         fontSize: 14,
                       ),
                     ),
@@ -485,10 +856,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             summary.isEmpty
                 ? 'Tell recruiters about your experience, achievements, and what excites you.'
                 : summary,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 15,
-            ),
+            style: TextStyle(color: Colors.white.withAlpha(230), fontSize: 15),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),

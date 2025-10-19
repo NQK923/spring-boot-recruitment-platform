@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../api/profile_api_service.dart';
-import '../models/profile.dart';
+import '../models/cv.dart';
 import './auth_provider.dart';
+import '../models/profile.dart';
+import '../utils/file_saver.dart';
 
 class ProfileProvider with ChangeNotifier {
   AuthProvider _authProvider;
@@ -57,14 +59,17 @@ class ProfileProvider with ChangeNotifier {
   }
 
   Future<bool> updateMyProfile(Profile profile) async {
-     if (_authProvider.token == null) return false;
+    if (_authProvider.token == null) return false;
 
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _profile = await _apiService.updateMyProfile(_authProvider.token!, profile);
+      _profile = await _apiService.updateMyProfile(
+        _authProvider.token!,
+        profile,
+      );
       _isLoading = false;
       notifyListeners();
       return true;
@@ -99,7 +104,7 @@ class ProfileProvider with ChangeNotifier {
         contentType: contentType,
       );
       // After upload, refresh the profile to get the new CV list
-      await fetchMyProfile(); 
+      await fetchMyProfile();
       return true;
     } catch (e) {
       _error = e.toString();
@@ -126,5 +131,23 @@ class ProfileProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<String> downloadCv(Cv cv) async {
+    final token = _authProvider.token;
+    if (token == null) {
+      throw Exception('Authentication required to download CV.');
+    }
+    final fileId = cv.fileId;
+    if (fileId == null) {
+      throw Exception('This CV does not have an attached file.');
+    }
+
+    final downloaded = await _apiService.downloadCvFile(token, fileId);
+    return saveFile(
+      fileName: downloaded.fileName,
+      bytes: downloaded.bytes,
+      contentType: downloaded.contentType,
+    );
   }
 }
