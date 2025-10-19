@@ -66,7 +66,7 @@ class AuthProvider with ChangeNotifier {
       final googleClientId = config.googleClientId;
       final googleSignIn = GoogleSignIn(
         clientId: kIsWeb ? googleClientId : null,
-        serverClientId: googleClientId,
+        serverClientId: kIsWeb ? null : googleClientId,
         scopes: const ['email', 'profile'],
       );
 

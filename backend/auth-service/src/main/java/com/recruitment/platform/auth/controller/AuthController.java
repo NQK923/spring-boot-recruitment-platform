@@ -83,10 +83,10 @@ public class AuthController {
     }
 
     @GetMapping("/oauth/github/callback")
-    public void githubCallback(@RequestParam(required = false) String code,
-                               @RequestParam(required = false) String state,
-                               @RequestParam(required = false, name = "error") String error,
-                               @RequestParam(required = false, name = "error_description") String errorDescription,
+    public void githubCallback(@RequestParam(value = "code", required = false) String code,
+                               @RequestParam(value = "state", required = false) String state,
+                               @RequestParam(value = "error", required = false) String error,
+                               @RequestParam(value = "error_description", required = false) String errorDescription,
                                HttpServletResponse response) throws IOException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(githubRedirectUri);
 
