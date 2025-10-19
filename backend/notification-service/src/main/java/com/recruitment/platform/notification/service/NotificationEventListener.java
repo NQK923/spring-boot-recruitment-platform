@@ -4,6 +4,7 @@ import com.recruitment.platform.notification.client.AuthServiceClient;
 import com.recruitment.platform.notification.event.ApplicationStatusChangedEvent;
 import com.recruitment.platform.notification.event.InterviewRescheduledEvent;
 import com.recruitment.platform.notification.event.InterviewScheduledEvent;
+import com.recruitment.platform.notification.event.PasswordResetRequestedEvent;
 import com.recruitment.platform.notification.event.UserInvitedEvent;
 import com.recruitment.platform.notification.event.UserRegisteredEvent;
 import org.slf4j.Logger;
@@ -14,6 +15,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 public class NotificationEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationEventListener.class);
+    private static final DateTimeFormatter OTP_EXPIRY_FORMATTER = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy").withZone(ZoneOffset.UTC);
     private final JavaMailSender mailSender;
     private final AuthServiceClient authServiceClient;
 
@@ -46,16 +50,36 @@ public class NotificationEventListener {
     }
 
     @Bean
+    public Consumer<PasswordResetRequestedEvent> passwordResetRequestedEventConsumer() {
+        return event -> {
+            log.info("Received PasswordResetRequestedEvent for email: {}", event.email());
+            String subject = "Password reset request";
+            String expiryText = event.expiresAt() != null
+                    ? "This code expires at " + OTP_EXPIRY_FORMATTER.format(event.expiresAt()) + " (UTC)."
+                    : "This code will expire shortly.";
+            String text = String.format(
+                    "Hello!%n%nWe received a request to reset your password. Use the code below to continue:%n%s%n%s%n%nIf you didn't request a password reset, please ignore this email.",
+                    event.otp(),
+                    expiryText
+            );
+            sendEmail(event.email(), subject, text);
+        };
+    }
+
+    @Bean
     public Consumer<UserRegisteredEvent> userRegisteredEventConsumer() {
         return event -> {
             log.info("Received UserRegisteredEvent for email: {}", event.email());
             String subject = "Welcome to the Recruitment Platform!";
             String text;
-            if (event.verificationToken() != null) {
-                String verificationUrl = "http://localhost:3000/verify-email?token=" + event.verificationToken();
+            if (event.verificationCode() != null) {
+                String expiryText = event.expiresAt() != null
+                        ? "This code expires at " + OTP_EXPIRY_FORMATTER.format(event.expiresAt()) + " (UTC)."
+                        : "This code will expire shortly.";
                 text = String.format(
-                        "Hello!%n%nThank you for registering. Please verify your email by clicking the link below:%n%s%n%nIf you didn't create an account, please ignore this email.",
-                        verificationUrl
+                        "Hello!%n%nThank you for registering. Your email verification code is: %s%n%s%n%nIf you didn't create an account, please ignore this email.",
+                        event.verificationCode(),
+                        expiryText
                 );
             } else {
                 text = "Hello!\n\nThank you for registering. We are excited to have you on board.";

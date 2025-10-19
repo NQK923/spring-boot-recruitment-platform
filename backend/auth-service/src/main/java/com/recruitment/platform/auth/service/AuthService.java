@@ -6,13 +6,16 @@ import com.recruitment.platform.auth.client.CompanyServiceClient;
 import com.recruitment.platform.auth.client.dto.AddUserToCompanyRequest;
 import com.recruitment.platform.auth.client.dto.UserInvitedEvent;
 import com.recruitment.platform.auth.dto.*;
+import com.recruitment.platform.auth.event.PasswordResetRequestedEvent;
 import com.recruitment.platform.auth.event.UserRegisteredEvent;
 import com.recruitment.platform.auth.model.EmailVerificationToken;
 import com.recruitment.platform.auth.model.Invitation;
+import com.recruitment.platform.auth.model.PasswordResetToken;
 import com.recruitment.platform.auth.model.Role;
 import com.recruitment.platform.auth.model.User;
 import com.recruitment.platform.auth.repository.EmailVerificationTokenRepository;
 import com.recruitment.platform.auth.repository.InvitationRepository;
+import com.recruitment.platform.auth.repository.PasswordResetTokenRepository;
 import com.recruitment.platform.auth.repository.RoleRepository;
 import com.recruitment.platform.auth.repository.UserRepository;
 import org.slf4j.Logger;
@@ -33,6 +36,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -41,11 +45,17 @@ import java.util.stream.Collectors;
 @Service
 public class AuthService {
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+    private static final SecureRandom OTP_RANDOM = new SecureRandom();
+    private static final int OTP_LENGTH = 6;
+    private static final long EMAIL_OTP_EXPIRY_MINUTES = 10;
+    private static final long PASSWORD_RESET_EXPIRY_MINUTES = 10;
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final InvitationRepository invitationRepository;
     private final RoleRepository roleRepository;
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final CompanyServiceClient companyServiceClient;
     private final StreamBridge streamBridge;
     private final GoogleIdTokenVerifier googleVerifier;
@@ -58,12 +68,13 @@ public class AuthService {
     @Value("${spring.security.oauth2.client.registration.github.client-secret}")
     private String githubClientSecret;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, InvitationRepository invitationRepository, RoleRepository roleRepository, EmailVerificationTokenRepository emailVerificationTokenRepository, CompanyServiceClient companyServiceClient, StreamBridge streamBridge, GoogleIdTokenVerifier googleVerifier, JwtTokenProvider tokenProvider, RestTemplate restTemplate) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, InvitationRepository invitationRepository, RoleRepository roleRepository, EmailVerificationTokenRepository emailVerificationTokenRepository, PasswordResetTokenRepository passwordResetTokenRepository, CompanyServiceClient companyServiceClient, StreamBridge streamBridge, GoogleIdTokenVerifier googleVerifier, JwtTokenProvider tokenProvider, RestTemplate restTemplate) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.invitationRepository = invitationRepository;
         this.roleRepository = roleRepository;
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.companyServiceClient = companyServiceClient;
         this.streamBridge = streamBridge;
         this.googleVerifier = googleVerifier;
@@ -103,12 +114,11 @@ public class AuthService {
         user.setEmailVerifiedAt(null);
 
         User savedUser = userRepository.save(user);
-        emailVerificationTokenRepository.deleteByUserId(savedUser.getId());
 
         EmailVerificationToken verificationToken = createEmailVerificationToken(savedUser.getId());
 
         // Send event for user registration
-        UserRegisteredEvent event = new UserRegisteredEvent(savedUser.getId(), savedUser.getEmail(), verificationToken.getToken());
+        UserRegisteredEvent event = new UserRegisteredEvent(savedUser.getId(), savedUser.getEmail(), verificationToken.getToken(), verificationToken.getExpiresAt());
         boolean sent = streamBridge.send("userRegistered-out-0", event);
         log.info("Sending UserRegisteredEvent for email {}: {}", event.email(), sent ? "SUCCESS" : "FAILED");
 
@@ -249,7 +259,7 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         // Publish event for user registration
-        UserRegisteredEvent event = new UserRegisteredEvent(savedUser.getId(), savedUser.getEmail(), null);
+        UserRegisteredEvent event = new UserRegisteredEvent(savedUser.getId(), savedUser.getEmail(), null, null);
         boolean sent = streamBridge.send("userRegistered-out-0", event);
         log.info("Sending UserRegisteredEvent for new {} user {}: {}", provider, event.email(), sent ? "SUCCESS" : "FAILED");
 
@@ -278,26 +288,89 @@ public class AuthService {
     @Transactional
     public void verifyEmail(VerifyEmailRequest request) {
         Objects.requireNonNull(request, "request must not be null");
-        String tokenValue = Objects.requireNonNull(request.token(), "token must not be null");
 
-        EmailVerificationToken token = emailVerificationTokenRepository.findByToken(tokenValue)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid verification token."));
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new IllegalStateException("No user found with the provided email."));
+
+        if (user.getEmailVerifiedAt() != null) {
+            throw new IllegalStateException("Email already verified.");
+        }
+
+        EmailVerificationToken token = emailVerificationTokenRepository.findByUserIdAndToken(user.getId(), request.otp())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid verification code."));
 
         if (token.isUsed()) {
-            throw new IllegalStateException("Verification token already used.");
+            throw new IllegalStateException("Verification code already used.");
         }
 
         if (token.getExpiresAt().isBefore(Instant.now())) {
-            throw new IllegalStateException("Verification token has expired.");
+            throw new IllegalStateException("Verification code has expired.");
         }
 
-        User user = userRepository.findById(token.getUserId())
-                .orElseThrow(() -> new IllegalStateException("User not found for verification token."));
         user.setEmailVerifiedAt(Instant.now());
         userRepository.save(user);
 
         token.setUsed(true);
         emailVerificationTokenRepository.save(token);
+    }
+
+    @Transactional
+    public void resendEmailVerificationOtp(ResendEmailOtpRequest request) {
+        Objects.requireNonNull(request, "request must not be null");
+
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new IllegalStateException("No user found with the provided email."));
+
+        if (user.getEmailVerifiedAt() != null) {
+            throw new IllegalStateException("Email already verified.");
+        }
+
+        EmailVerificationToken newToken = createEmailVerificationToken(user.getId());
+        UserRegisteredEvent event = new UserRegisteredEvent(user.getId(), user.getEmail(), newToken.getToken(), newToken.getExpiresAt());
+        boolean sent = streamBridge.send("userRegistered-out-0", event);
+        log.info("Resent verification OTP for email {}: {}", user.getEmail(), sent ? "SUCCESS" : "FAILED");
+    }
+
+    @Transactional
+    public void forgotPassword(ForgotPasswordRequest request) {
+        Objects.requireNonNull(request, "request must not be null");
+
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new IllegalStateException("No user found with the provided email."));
+
+        if (user.getEmailVerifiedAt() == null) {
+            throw new IllegalStateException("Email must be verified before resetting password.");
+        }
+
+        PasswordResetToken resetToken = createPasswordResetToken(user.getId());
+        PasswordResetRequestedEvent event = new PasswordResetRequestedEvent(user.getId(), user.getEmail(), resetToken.getToken(), resetToken.getExpiresAt());
+        boolean sent = streamBridge.send("passwordResetRequested-out-0", event);
+        log.info("Issued password reset OTP for email {}: {}", user.getEmail(), sent ? "SUCCESS" : "FAILED");
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        Objects.requireNonNull(request, "request must not be null");
+
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new IllegalStateException("No user found with the provided email."));
+
+        PasswordResetToken token = passwordResetTokenRepository.findByUserIdAndToken(user.getId(), request.otp())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid reset code."));
+
+        if (token.isUsed()) {
+            throw new IllegalStateException("Reset code already used.");
+        }
+
+        if (token.getExpiresAt().isBefore(Instant.now())) {
+            throw new IllegalStateException("Reset code has expired.");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+
+        token.setUsed(true);
+        passwordResetTokenRepository.save(token);
     }
 
     public List<UserEmailInfo> getUsersByIds(List<Long> userIds) {
@@ -311,9 +384,45 @@ public class AuthService {
 
         EmailVerificationToken token = new EmailVerificationToken();
         token.setUserId(userId);
-        token.setToken(UUID.randomUUID().toString());
-        token.setExpiresAt(Instant.now().plus(24, ChronoUnit.HOURS));
+        token.setToken(generateUniqueEmailOtp());
+        token.setExpiresAt(Instant.now().plus(EMAIL_OTP_EXPIRY_MINUTES, ChronoUnit.MINUTES));
+        token.setUsed(false);
 
         return emailVerificationTokenRepository.save(token);
+    }
+
+    private PasswordResetToken createPasswordResetToken(Long userId) {
+        passwordResetTokenRepository.deleteByUserId(userId);
+
+        PasswordResetToken token = new PasswordResetToken();
+        token.setUserId(userId);
+        token.setToken(generateUniquePasswordOtp());
+        token.setExpiresAt(Instant.now().plus(PASSWORD_RESET_EXPIRY_MINUTES, ChronoUnit.MINUTES));
+        token.setUsed(false);
+
+        return passwordResetTokenRepository.save(token);
+    }
+
+    private String generateUniqueEmailOtp() {
+        String otp;
+        do {
+            otp = generateNumericOtp();
+        } while (emailVerificationTokenRepository.findByToken(otp).isPresent());
+        return otp;
+    }
+
+    private String generateUniquePasswordOtp() {
+        String otp;
+        do {
+            otp = generateNumericOtp();
+        } while (passwordResetTokenRepository.findByToken(otp).isPresent());
+        return otp;
+    }
+
+    private String generateNumericOtp() {
+        int min = (int) Math.pow(10, OTP_LENGTH - 1);
+        int bound = (int) Math.pow(10, OTP_LENGTH);
+        int randomNumber = OTP_RANDOM.nextInt(bound - min) + min;
+        return String.format("%0" + OTP_LENGTH + "d", randomNumber);
     }
 }

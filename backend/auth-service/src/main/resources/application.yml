@@ -38,6 +38,9 @@ spring:
         userRegistered-out-0:
           binder: rabbit
           destination: user.registered
+        passwordResetRequested-out-0:
+          binder: rabbit
+          destination: password.reset.requested
   security:
     oauth2:
       client:

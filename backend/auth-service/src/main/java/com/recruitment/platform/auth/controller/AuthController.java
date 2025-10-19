@@ -147,9 +147,27 @@ public class AuthController {
     }
 
     @PostMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestBody VerifyEmailRequest request) {
+    public ResponseEntity<?> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
         authService.verifyEmail(request);
         return ResponseEntity.ok("Email verified successfully.");
+    }
+
+    @PostMapping("/register/resend-otp")
+    public ResponseEntity<?> resendRegistrationOtp(@Valid @RequestBody ResendEmailOtpRequest request) {
+        authService.resendEmailVerificationOtp(request);
+        return ResponseEntity.ok("Verification code sent.");
+    }
+
+    @PostMapping("/password/forgot")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok("Password reset code sent.");
+    }
+
+    @PostMapping("/password/reset")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok("Password updated successfully.");
     }
 
     @PostMapping("/invites/verify")

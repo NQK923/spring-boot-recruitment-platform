@@ -105,7 +105,9 @@ class AuthProvider with ChangeNotifier {
     _error = null;
     try {
       final config = await _loadOAuthConfig();
-      if (!config.hasGitHubClientId || !config.hasGitHubRedirect || !config.hasGitHubAuthorizeRedirect) {
+      if (!config.hasGitHubClientId ||
+          !config.hasGitHubRedirect ||
+          !config.hasGitHubAuthorizeRedirect) {
         _error = 'GitHub login is not configured';
         notifyListeners();
         return false;
@@ -121,7 +123,11 @@ class AuthProvider with ChangeNotifier {
       };
 
       if (kIsWeb) {
-        final authorizeUrl = Uri.https('github.com', '/login/oauth/authorize', queryParameters);
+        final authorizeUrl = Uri.https(
+          'github.com',
+          '/login/oauth/authorize',
+          queryParameters,
+        );
         final code = await startGitHubWebOAuth(authorizeUrl, state);
         if (code == null || code.isEmpty) {
           _error = 'GitHub login failed: missing authorization code';
@@ -134,7 +140,11 @@ class AuthProvider with ChangeNotifier {
         return true;
       } else {
         final redirectUri = Uri.parse(config.githubRedirectUri);
-        final authorizeUrl = Uri.https('github.com', '/login/oauth/authorize', queryParameters);
+        final authorizeUrl = Uri.https(
+          'github.com',
+          '/login/oauth/authorize',
+          queryParameters,
+        );
         final result = await FlutterWebAuth2.authenticate(
           url: authorizeUrl.toString(),
           callbackUrlScheme: redirectUri.scheme,
@@ -150,7 +160,8 @@ class AuthProvider with ChangeNotifier {
 
         final code = returnedUri.queryParameters['code'];
         if (code == null || code.isEmpty) {
-          final errorParam = returnedUri.queryParameters['error_description'] ??
+          final errorParam =
+              returnedUri.queryParameters['error_description'] ??
               returnedUri.queryParameters['error'] ??
               'missing authorization code';
           _error = 'GitHub login failed: $errorParam';
@@ -163,7 +174,9 @@ class AuthProvider with ChangeNotifier {
         return true;
       }
     } on PlatformException catch (e) {
-      if (e.code == 'CANCELED' || e.code == 'USER_CANCELED' || e.code == 'USER_CANCELLED') {
+      if (e.code == 'CANCELED' ||
+          e.code == 'USER_CANCELED' ||
+          e.code == 'USER_CANCELLED') {
         _error = 'GitHub sign-in was cancelled';
       } else {
         _error = _extractMessage(e);
@@ -182,6 +195,63 @@ class AuthProvider with ChangeNotifier {
     _error = null;
     try {
       await _apiService.register(email, password);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = _extractMessage(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> verifyEmailOtp(String email, String otp) async {
+    _error = null;
+    try {
+      await _apiService.verifyEmailOtp(email, otp);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = _extractMessage(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> resendVerificationOtp(String email) async {
+    _error = null;
+    try {
+      await _apiService.resendVerificationOtp(email);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = _extractMessage(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> requestPasswordReset(String email) async {
+    _error = null;
+    try {
+      await _apiService.requestPasswordReset(email);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = _extractMessage(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> resetPassword(
+    String email,
+    String otp,
+    String newPassword,
+  ) async {
+    _error = null;
+    try {
+      await _apiService.resetPassword(email, otp, newPassword);
+      notifyListeners();
       return true;
     } catch (e) {
       _error = _extractMessage(e);

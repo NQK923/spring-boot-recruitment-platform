@@ -10,10 +10,7 @@ class AuthApiService {
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'email': email.trim(),
-        'password': password,
-      }),
+      body: json.encode({'email': email.trim(), 'password': password}),
     );
 
     if (response.statusCode == 200) {
@@ -26,16 +23,7 @@ class AuthApiService {
       return token;
     }
 
-    String errorMessage = 'Failed to login';
-    try {
-      final responseData = json.decode(response.body);
-      if (responseData is Map && responseData['message'] is String) {
-        errorMessage = responseData['message'] as String;
-      }
-    } catch (_) {
-      // Ignore parsing errors and fall back to default message.
-    }
-    throw Exception(errorMessage);
+    throw Exception(_extractErrorMessage(response, 'Failed to login'));
   }
 
   Future<void> register(String email, String password) async {
@@ -43,26 +31,86 @@ class AuthApiService {
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'email': email.trim(),
-        'password': password,
-      }),
+      body: json.encode({'email': email.trim(), 'password': password}),
     );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       return;
     }
 
-    String errorMessage = 'Failed to register';
-    try {
-      final responseData = json.decode(response.body);
-      if (responseData is Map && responseData['message'] is String) {
-        errorMessage = responseData['message'] as String;
-      }
-    } catch (_) {
-      // Ignore parsing errors and fall back to default message.
+    throw Exception(_extractErrorMessage(response, 'Failed to register'));
+  }
+
+  Future<void> verifyEmailOtp(String email, String otp) async {
+    final url = Uri.parse('$BASE_URL/auth/verify-email');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email.trim(), 'otp': otp.trim()}),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
     }
-    throw Exception(errorMessage);
+
+    throw Exception(_extractErrorMessage(response, 'Failed to verify email'));
+  }
+
+  Future<void> resendVerificationOtp(String email) async {
+    final url = Uri.parse('$BASE_URL/auth/register/resend-otp');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email.trim()}),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
+    }
+
+    throw Exception(
+      _extractErrorMessage(response, 'Failed to resend verification code'),
+    );
+  }
+
+  Future<void> requestPasswordReset(String email) async {
+    final url = Uri.parse('$BASE_URL/auth/password/forgot');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email.trim()}),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
+    }
+
+    throw Exception(
+      _extractErrorMessage(response, 'Failed to request password reset'),
+    );
+  }
+
+  Future<void> resetPassword(
+    String email,
+    String otp,
+    String newPassword,
+  ) async {
+    final url = Uri.parse('$BASE_URL/auth/password/reset');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'email': email.trim(),
+        'otp': otp.trim(),
+        'newPassword': newPassword,
+      }),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
+    }
+
+    throw Exception(_extractErrorMessage(response, 'Failed to reset password'));
   }
 
   Future<String> loginWithGoogle(String idToken) async {
@@ -73,7 +121,10 @@ class AuthApiService {
       body: json.encode({'idToken': idToken}),
     );
 
-    return _parseTokenResponse(response, defaultError: 'Failed to login with Google');
+    return _parseTokenResponse(
+      response,
+      defaultError: 'Failed to login with Google',
+    );
   }
 
   Future<String> loginWithGitHub(String code) async {
@@ -84,7 +135,10 @@ class AuthApiService {
       body: json.encode({'code': code}),
     );
 
-    return _parseTokenResponse(response, defaultError: 'Failed to login with GitHub');
+    return _parseTokenResponse(
+      response,
+      defaultError: 'Failed to login with GitHub',
+    );
   }
 
   Future<OAuthConfig> getOAuthConfig() async {
@@ -92,7 +146,8 @@ class AuthApiService {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
+      final Map<String, dynamic> data =
+          json.decode(response.body) as Map<String, dynamic>;
       return OAuthConfig.fromJson(data);
     }
 
@@ -116,7 +171,10 @@ class AuthApiService {
     }
   }
 
-  String _parseTokenResponse(http.Response response, {required String defaultError}) {
+  String _parseTokenResponse(
+    http.Response response, {
+    required String defaultError,
+  }) {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       if (responseData is Map<String, dynamic>) {
@@ -128,7 +186,11 @@ class AuthApiService {
       throw Exception('Auth service did not return an access token');
     }
 
-    String errorMessage = defaultError;
+    throw Exception(_extractErrorMessage(response, defaultError));
+  }
+
+  String _extractErrorMessage(http.Response response, String defaultMessage) {
+    String errorMessage = defaultMessage;
     try {
       final responseData = json.decode(response.body);
       if (responseData is Map && responseData['message'] is String) {
@@ -137,6 +199,6 @@ class AuthApiService {
     } catch (_) {
       // Ignore parsing errors.
     }
-    throw Exception(errorMessage);
+    return errorMessage;
   }
 }

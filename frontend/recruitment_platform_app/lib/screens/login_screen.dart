@@ -11,7 +11,8 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -28,10 +29,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       duration: const Duration(milliseconds: 1200),
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.forward();
   }
@@ -43,8 +41,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       _isLoading = true;
     });
 
-    final success = await Provider.of<AuthProvider>(context, listen: false)
-        .login(_emailController.text, _passwordController.text);
+    final success = await Provider.of<AuthProvider>(
+      context,
+      listen: false,
+    ).login(_emailController.text, _passwordController.text);
 
     if (!success && mounted) {
       final error = Provider.of<AuthProvider>(context, listen: false).error;
@@ -94,6 +94,222 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _openForgotPasswordDialog() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final emailController = TextEditingController(
+      text: _emailController.text.trim(),
+    );
+    final otpController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final emailFormKey = GlobalKey<FormState>();
+    final resetFormKey = GlobalKey<FormState>();
+
+    bool otpStep = false;
+    bool isSubmitting = false;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            Future<void> handleSendCode() async {
+              FocusScope.of(context).unfocus();
+              if (!emailFormKey.currentState!.validate()) {
+                return;
+              }
+              setModalState(() => isSubmitting = true);
+              final success = await authProvider.requestPasswordReset(
+                emailController.text.trim(),
+              );
+              if (!mounted) return;
+              setModalState(() => isSubmitting = false);
+              if (success) {
+                setModalState(() => otpStep = true);
+                otpController.clear();
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  const SnackBar(
+                    content: Text('We\'ve sent a reset code to your email.'),
+                  ),
+                );
+              } else {
+                _showErrorSnackBar(
+                  authProvider.error ?? 'Failed to send reset code',
+                );
+              }
+            }
+
+            Future<void> handleUpdatePassword() async {
+              FocusScope.of(context).unfocus();
+              if (!resetFormKey.currentState!.validate()) {
+                return;
+              }
+              setModalState(() => isSubmitting = true);
+              final success = await authProvider.resetPassword(
+                emailController.text.trim(),
+                otpController.text.trim(),
+                newPasswordController.text,
+              );
+              if (!mounted) return;
+              setModalState(() => isSubmitting = false);
+              if (success) {
+                Navigator.of(dialogContext).pop();
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Password updated. You can now sign in.'),
+                  ),
+                );
+              } else {
+                _showErrorSnackBar(
+                  authProvider.error ?? 'Failed to update password',
+                );
+              }
+            }
+
+            Future<void> handleResendCode() async {
+              if (isSubmitting) return;
+              setModalState(() => isSubmitting = true);
+              final success = await authProvider.requestPasswordReset(
+                emailController.text.trim(),
+              );
+              if (!mounted) return;
+              setModalState(() => isSubmitting = false);
+              if (success) {
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  const SnackBar(
+                    content: Text('A new reset code has been sent.'),
+                  ),
+                );
+              } else {
+                _showErrorSnackBar(
+                  authProvider.error ?? 'Failed to resend code',
+                );
+              }
+            }
+
+            return AlertDialog(
+              title: Text(otpStep ? 'Reset password' : 'Forgot password'),
+              content: Form(
+                key: otpStep ? resetFormKey : emailFormKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (!otpStep) ...[
+                      const Text(
+                        'Enter the email associated with your account. We\'ll send you a one-time code to reset your password.',
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(
+                          labelText: 'Email address',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Email is required';
+                          }
+                          final emailRegex = RegExp(
+                            r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                          );
+                          if (!emailRegex.hasMatch(value.trim())) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
+                      ),
+                    ] else ...[
+                      Text(
+                        'Enter the code sent to ${emailController.text.trim()} and choose a new password.',
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: otpController,
+                        decoration: const InputDecoration(
+                          labelText: 'Reset code',
+                        ),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: const [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(6),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Code is required';
+                          }
+                          if (value.trim().length != 6) {
+                            return 'Code must be 6 digits';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: newPasswordController,
+                        decoration: const InputDecoration(
+                          labelText: 'New password',
+                        ),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Password is required';
+                          }
+                          if (value.length < 8) {
+                            return 'Password must be at least 8 characters';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed:
+                      isSubmitting
+                          ? null
+                          : () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Cancel'),
+                ),
+                if (otpStep)
+                  TextButton(
+                    onPressed: isSubmitting ? null : handleResendCode,
+                    child: const Text('Send code again'),
+                  ),
+                FilledButton(
+                  onPressed:
+                      isSubmitting
+                          ? null
+                          : () async {
+                            if (otpStep) {
+                              await handleUpdatePassword();
+                            } else {
+                              await handleSendCode();
+                            }
+                          },
+                  child:
+                      isSubmitting
+                          ? const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : Text(otpStep ? 'Update password' : 'Send code'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    emailController.dispose();
+    otpController.dispose();
+    newPasswordController.dispose();
   }
 
   void _showErrorSnackBar(String message) {
@@ -149,7 +365,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         width: 100,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [primaryColor, primaryColor.withOpacity(0.85)],
+                            colors: [
+                              primaryColor,
+                              primaryColor.withOpacity(0.85),
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -198,29 +417,46 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               controller: _emailController,
                               decoration: InputDecoration(
                                 hintText: 'Email',
-                                prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
+                                prefixIcon: Icon(
+                                  Icons.email_outlined,
+                                  color: primaryColor,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                    width: 1,
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(color: primaryColor, width: 1.5),
+                                  borderSide: BorderSide(
+                                    color: primaryColor,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
+                                  borderSide: BorderSide(
+                                    color: Colors.red.shade400,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
+                                  borderSide: BorderSide(
+                                    color: Colors.red.shade400,
+                                    width: 1.5,
+                                  ),
                                 ),
                               ),
                               keyboardType: TextInputType.emailAddress,
@@ -241,10 +477,15 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               controller: _passwordController,
                               decoration: InputDecoration(
                                 hintText: 'Password',
-                                prefixIcon: Icon(Icons.lock_outline, color: primaryColor),
+                                prefixIcon: Icon(
+                                  Icons.lock_outline,
+                                  color: primaryColor,
+                                ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
                                     color: Colors.grey.shade600,
                                   ),
                                   onPressed: () {
@@ -259,22 +500,36 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                    width: 1,
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(color: primaryColor, width: 1.5),
+                                  borderSide: BorderSide(
+                                    color: primaryColor,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
+                                  borderSide: BorderSide(
+                                    color: Colors.red.shade400,
+                                    width: 1.5,
+                                  ),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
-                                  borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
+                                  borderSide: BorderSide(
+                                    color: Colors.red.shade400,
+                                    width: 1.5,
+                                  ),
                                 ),
                               ),
                               obscureText: _obscurePassword,
@@ -305,23 +560,27 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   elevation: 3,
                                   shadowColor: primaryColor.withOpacity(0.5),
                                 ),
-                                child: _isLoading
-                                    ? const SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                )
-                                    : const Text(
-                                  'Login',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
+                                child:
+                                    _isLoading
+                                        ? const SizedBox(
+                                          height: 24,
+                                          width: 24,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2.5,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                  Colors.white,
+                                                ),
+                                          ),
+                                        )
+                                        : const Text(
+                                          'Login',
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
                               ),
                             ),
                             const SizedBox(height: 24),
@@ -331,11 +590,14 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               children: [
                                 Expanded(
                                   child: Divider(
-                                    color: theme.colorScheme.primary.withOpacity(0.15),
+                                    color: theme.colorScheme.primary
+                                        .withOpacity(0.15),
                                   ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0,
+                                  ),
                                   child: Text(
                                     'or continue with',
                                     style: theme.textTheme.bodySmall,
@@ -343,7 +605,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                                 Expanded(
                                   child: Divider(
-                                    color: theme.colorScheme.primary.withOpacity(0.15),
+                                    color: theme.colorScheme.primary
+                                        .withOpacity(0.15),
                                   ),
                                 ),
                               ],
@@ -359,7 +622,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 icon: const Icon(Icons.g_translate, size: 24),
                                 label: const Text(
                                   'Continue with Google',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.black87,
@@ -382,7 +648,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 icon: const Icon(Icons.code, size: 22),
                                 label: const Text(
                                   'Continue with GitHub',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.black87,
@@ -412,9 +681,18 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                     HapticFeedback.lightImpact();
                                     Navigator.of(context).push(
                                       PageRouteBuilder(
-                                        pageBuilder: (context, animation, secondaryAnimation) =>
-                                        const RegisterScreen(),
-                                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                        pageBuilder:
+                                            (
+                                              context,
+                                              animation,
+                                              secondaryAnimation,
+                                            ) => const RegisterScreen(),
+                                        transitionsBuilder: (
+                                          context,
+                                          animation,
+                                          secondaryAnimation,
+                                          child,
+                                        ) {
                                           return FadeTransition(
                                             opacity: animation,
                                             child: child,
@@ -425,7 +703,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   },
                                   style: TextButton.styleFrom(
                                     foregroundColor: primaryColor,
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                    ),
                                   ),
                                   child: const Text(
                                     'Register',
