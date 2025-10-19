@@ -16,8 +16,18 @@ class Profile {
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
-    var cvList = json['cvs'] as List?;
-    List<Cv> cvs = cvList != null ? cvList.map((i) => Cv.fromJson(i)).toList() : [];
+    final dynamic cvData = json['cvs'];
+    final List<Cv> cvs;
+    if (cvData is List) {
+      cvs = cvData.map((item) => Cv.fromJson(Map<String, dynamic>.from(item))).toList();
+    } else if (cvData is Map<String, dynamic>) {
+      cvs = cvData.values
+          .whereType<Map>()
+          .map((item) => Cv.fromJson(Map<String, dynamic>.from(item as Map)))
+          .toList();
+    } else {
+      cvs = const [];
+    }
 
     return Profile(
       userId: json['userId'],

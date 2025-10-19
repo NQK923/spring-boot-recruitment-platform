@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,17 +20,17 @@ public class Profile {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_user_id")
-    private List<Experience> experiences;
+    private List<Experience> experiences = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_user_id")
-    private List<Education> education;
+    private List<Education> education = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_user_id")
-    private List<Skill> skills;
+    private List<Skill> skills = new ArrayList<>();
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Cv> cvs;
+    private List<Cv> cvs = new ArrayList<>();
 
 }

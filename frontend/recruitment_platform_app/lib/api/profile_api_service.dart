@@ -17,7 +17,8 @@ class ProfileApiService {
     );
 
     if (response.statusCode == 200) {
-      return Profile.fromJson(json.decode(response.body));
+      final Map<String, dynamic> data = _decodeProfileBody(response.body);
+      return Profile.fromJson(data);
     } else {
       throw Exception('Failed to load profile');
     }
@@ -35,7 +36,8 @@ class ProfileApiService {
     );
 
     if (response.statusCode == 200) {
-      return Profile.fromJson(json.decode(response.body));
+      final Map<String, dynamic> data = _decodeProfileBody(response.body);
+      return Profile.fromJson(data);
     } else {
       throw Exception('Failed to update profile');
     }
@@ -97,5 +99,27 @@ class ProfileApiService {
     }
 
     return Cv.fromJson(json.decode(response.body));
+  }
+
+  Map<String, dynamic> _decodeProfileBody(String body) {
+    try {
+      final decoded = json.decode(body);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+      throw const FormatException('Profile response is not an object');
+    } on FormatException catch (_) {
+      final sanitized = body
+          .replaceAll('"experiences":]', '"experiences":[]')
+          .replaceAll('"education":]', '"education":[]')
+          .replaceAll('"skills":]', '"skills":[]')
+          .replaceAll('"cvs":]', '"cvs":[]');
+
+      final decoded = json.decode(sanitized);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+      throw const FormatException('Profile response is not an object');
+    }
   }
 }
