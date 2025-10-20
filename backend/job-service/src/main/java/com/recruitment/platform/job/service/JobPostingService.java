@@ -109,6 +109,10 @@ public class JobPostingService {
                 .collect(Collectors.toList());
     }
 
+    public Optional<JobPosting> findJobById(Long id) {
+        return jobPostingRepository.findById(id);
+    }
+
     public Optional<JobPostingPublicDto> findPublicJobById(Long id) {
         return jobPostingRepository.findById(id)
                 .filter(job -> job.getStatus() == JobStatus.OPEN)

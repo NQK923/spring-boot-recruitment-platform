@@ -22,7 +22,13 @@ spring:
         userInvitedEventConsumer-in-0:
           binder: rabbit
           destination: user.invited
-        userRegisteredEventConsumer-in-0:\n          binder: rabbit\n          destination: user.registered\n        passwordResetRequestedEventConsumer-in-0:\n          binder: rabbit\n          destination: password.reset.requested\n        applicationStatusChangedEventConsumer-in-0:\n        applicationStatusChangedEventConsumer-in-0:
+        userRegisteredEventConsumer-in-0:
+          binder: rabbit
+          destination: user.registered
+        passwordResetRequestedEventConsumer-in-0:
+          binder: rabbit
+          destination: password.reset.requested
+        applicationStatusChangedEventConsumer-in-0:
           binder: rabbit
           destination: application.status.changed
         interviewScheduledEventConsumer-in-0:

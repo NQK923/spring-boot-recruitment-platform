@@ -56,6 +56,14 @@ spring:
           uri: lb://COMPANY-SERVICE
           predicates:
             - Path=/api/internal/companies/users/{userId}/company
+        - id: application-internal
+          uri: lb://APPLICATION-SERVICE
+          predicates:
+            - Path=/api/internal/applications/**
+        - id: job-internal
+          uri: lb://JOB-SERVICE
+          predicates:
+            - Path=/api/internal/jobs/**
         - id: files-upload # Route for file uploads
           uri: lb://FILE-STORAGE-SERVICE
           predicates:
