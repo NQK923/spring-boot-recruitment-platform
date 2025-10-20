@@ -70,8 +70,11 @@ public class ProfileController {
 
     @GetMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN')")
-    public ResponseEntity<Profile> getCandidateProfile(@PathVariable Long userId) {
-        // TODO: Add check to ensure the recruiter has access to this candidate's company applications
+    public ResponseEntity<Profile> getCandidateProfile(@PathVariable Long userId,
+                                                       @RequestHeader("X-Company-ID") Long companyId) {
+        if (!profileService.recruiterCanAccessCandidate(userId, companyId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return profileService.getProfile(userId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -79,7 +82,8 @@ public class ProfileController {
 
     @GetMapping("/candidates/{userId}/profile")
     @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN')")
-    public ResponseEntity<Profile> getCandidateProfileByRecruiter(@PathVariable Long userId) {
-        return getCandidateProfile(userId);
+    public ResponseEntity<Profile> getCandidateProfileByRecruiter(@PathVariable Long userId,
+                                                                  @RequestHeader("X-Company-ID") Long companyId) {
+        return getCandidateProfile(userId, companyId);
     }
 }

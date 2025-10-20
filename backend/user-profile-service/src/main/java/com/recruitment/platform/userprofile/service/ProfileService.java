@@ -1,5 +1,6 @@
 package com.recruitment.platform.userprofile.service;
 
+import com.recruitment.platform.userprofile.client.ApplicationServiceClient;
 import com.recruitment.platform.userprofile.client.FileStorageClient;
 import com.recruitment.platform.userprofile.dto.UpdateProfileRequest;
 import com.recruitment.platform.userprofile.event.UserRegisteredEvent;
@@ -24,11 +25,16 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final CvRepository cvRepository;
     private final FileStorageClient fileStorageClient;
+    private final ApplicationServiceClient applicationServiceClient;
 
-    public ProfileService(ProfileRepository profileRepository, CvRepository cvRepository, FileStorageClient fileStorageClient) {
+    public ProfileService(ProfileRepository profileRepository,
+                          CvRepository cvRepository,
+                          FileStorageClient fileStorageClient,
+                          ApplicationServiceClient applicationServiceClient) {
         this.profileRepository = profileRepository;
         this.cvRepository = cvRepository;
         this.fileStorageClient = fileStorageClient;
+        this.applicationServiceClient = applicationServiceClient;
     }
 
     public void createProfileForNewUser(UserRegisteredEvent event) {
@@ -82,6 +88,9 @@ public class ProfileService {
         Profile profile = profileRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("Profile not found for user " + userId));
 
+        List<Cv> existingCvs = cvRepository.findByProfile_UserId(userId);
+        boolean shouldBeDefault = existingCvs.stream().noneMatch(Cv::isDefault);
+
         log.info("Uploading file for user {}", userId);
         UUID fileId = fileStorageClient.uploadFile(file);
         log.info("File uploaded successfully with ID: {}", fileId);
@@ -90,8 +99,7 @@ public class ProfileService {
         cv.setProfile(profile);
         cv.setFileId(fileId);
         cv.setVersionName(versionName);
-        // TODO: Add logic to handle the 'isDefault' flag
-        cv.setDefault(true);
+        cv.setDefault(shouldBeDefault);
 
         return cvRepository.save(cv);
     }
@@ -111,5 +119,18 @@ public class ProfileService {
         cv.setDefault(false);
 
         return cvRepository.save(cv);
+    }
+
+    public boolean recruiterCanAccessCandidate(Long candidateId, Long companyId) {
+        if (candidateId == null || companyId == null) {
+            return false;
+        }
+        try {
+            Boolean result = applicationServiceClient.candidateHasApplicationsForCompany(candidateId, companyId);
+            return Boolean.TRUE.equals(result);
+        } catch (feign.FeignException ex) {
+            log.error("Failed to verify candidate {} access for company {}.", candidateId, companyId, ex);
+            throw new IllegalStateException("Unable to verify recruiter access at this time.");
+        }
     }
 }
