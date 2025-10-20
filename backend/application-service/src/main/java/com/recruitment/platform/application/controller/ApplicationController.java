@@ -43,8 +43,9 @@ public class ApplicationController {
 
     @GetMapping("/jobs/{jobPostingId}/applications")
     @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN') or hasAnyRole('RECRUITER', 'COMPANY_ADMIN')")
-    public List<ApplicationDetailsDto> getApplicationsForJob(@PathVariable Long jobPostingId) {
-        // TODO: Add check to ensure the recruiter has access to this job posting's company
+    public List<ApplicationDetailsDto> getApplicationsForJob(@PathVariable Long jobPostingId,
+                                                             @RequestHeader("X-Company-ID") Long companyId) {
+        service.assertRecruiterAccessToJob(jobPostingId, companyId);
         return service.findApplicationsByJobPostingId(jobPostingId);
     }
 
@@ -53,19 +54,27 @@ public class ApplicationController {
     public ResponseEntity<Application> updateApplicationStatus(
             @PathVariable Long applicationId,
             @RequestBody UpdateApplicationStatusRequest request,
-            @AuthenticationPrincipal Jwt jwt) {
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestHeader("X-Company-ID") Long companyId) {
         Long changedByUserId = Long.valueOf(jwt.getSubject());
-        // TODO: Add check to ensure the recruiter has access to this application's company
-        Application updatedApplication = service.updateApplicationStatus(applicationId, request, changedByUserId);
+        Application updatedApplication = service.updateApplicationStatus(applicationId, request, changedByUserId, companyId);
         return ResponseEntity.ok(updatedApplication);
     }
 
     @GetMapping("/{applicationId}")
     @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN', 'SCOPE_CANDIDATE') or hasAnyRole('RECRUITER', 'COMPANY_ADMIN', 'CANDIDATE')")
     public ResponseEntity<ApplicationDetailsDto> getApplication(@PathVariable Long applicationId,
-                                                                @AuthenticationPrincipal Jwt jwt) {
+                                                                @AuthenticationPrincipal Jwt jwt,
+                                                                @RequestHeader(value = "X-Company-ID", required = false) Long companyId) {
+        boolean isCandidate = isCandidate(jwt);
+        if (!isCandidate) {
+            if (companyId == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            service.assertRecruiterAccessToApplication(applicationId, companyId);
+        }
         ApplicationDetailsDto dto = service.getApplicationDetails(applicationId);
-        if (isCandidate(jwt) && !dto.getCandidateId().equals(Long.valueOf(jwt.getSubject()))) {
+        if (isCandidate && !dto.getCandidateId().equals(Long.valueOf(jwt.getSubject()))) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.ok(dto);
@@ -73,7 +82,9 @@ public class ApplicationController {
 
     @GetMapping("/{applicationId}/notes")
     @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN') or hasAnyRole('RECRUITER', 'COMPANY_ADMIN')")
-    public ResponseEntity<List<ApplicationNote>> getApplicationNotes(@PathVariable Long applicationId) {
+    public ResponseEntity<List<ApplicationNote>> getApplicationNotes(@PathVariable Long applicationId,
+                                                                     @RequestHeader("X-Company-ID") Long companyId) {
+        service.assertRecruiterAccessToApplication(applicationId, companyId);
         return ResponseEntity.ok(service.getNotes(applicationId));
     }
 
@@ -81,8 +92,10 @@ public class ApplicationController {
     @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN') or hasAnyRole('RECRUITER', 'COMPANY_ADMIN')")
     public ResponseEntity<ApplicationNote> addApplicationNote(@PathVariable Long applicationId,
                                                               @AuthenticationPrincipal Jwt jwt,
+                                                              @RequestHeader("X-Company-ID") Long companyId,
                                                               @RequestBody CreateApplicationNoteRequest request) {
         Long authorUserId = Long.valueOf(jwt.getSubject());
+        service.assertRecruiterAccessToApplication(applicationId, companyId);
         ApplicationNote note = service.addNote(applicationId, authorUserId, request.content());
         return new ResponseEntity<>(note, HttpStatus.CREATED);
     }
