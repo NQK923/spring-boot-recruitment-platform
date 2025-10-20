@@ -380,7 +380,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             labelText: 'Verification code',
             prefixIcon: Icon(Icons.pin_outlined),
           ),
-          inputFormatters: const [
+          inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(6),
           ],

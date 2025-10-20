@@ -62,9 +62,31 @@ class _CandidateProfileScreenState extends State<CandidateProfileScreen> {
                       leading: const Icon(Icons.description),
                       title: Text(cv.versionName),
                       trailing: cv.isDefault ? const Chip(label: Text('Default')) : null,
-                      onTap: () {
-                        // TODO: Implement CV download/view
-                      },
+                      subtitle: (cv.fileId ?? '').isEmpty
+                          ? const Text('No file attached')
+                          : const Text('Tap to download'),
+                      enabled: (cv.fileId ?? '').isNotEmpty,
+                      onTap: (cv.fileId ?? '').isEmpty
+                          ? null
+                          : () async {
+                              final messenger = ScaffoldMessenger.of(context);
+                              try {
+                                final downloadPath = await recruiterProvider.downloadCandidateCv(cv);
+                                messenger.showSnackBar(
+                                  SnackBar(
+                                    content: Text('CV saved to $downloadPath'),
+                                  ),
+                                );
+                              } catch (e) {
+                                messenger.showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Failed to download CV: ${e.toString()}',
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
                     )),
               ],
             ),

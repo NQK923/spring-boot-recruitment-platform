@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import '../api/application_api_service.dart';
 import '../api/recruiter_api_service.dart';
+import '../api/profile_api_service.dart';
 import '../models/application.dart';
 import '../models/application_note.dart';
 import '../models/create_job_request.dart';
 import '../models/job.dart';
 import '../models/profile.dart';
+import '../models/cv.dart';
 import './auth_provider.dart';
+import '../utils/file_saver.dart';
 
 class RecruiterProvider with ChangeNotifier {
   AuthProvider _authProvider;
   final _recruiterApiService = RecruiterApiService();
   final _applicationApiService = ApplicationApiService();
+  final _profileApiService = ProfileApiService();
 
   List<Job> _companyJobs = [];
   List<Application> _applicationsForJob = [];
@@ -192,5 +196,24 @@ class RecruiterProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<String> downloadCandidateCv(Cv cv) async {
+    final token = _authProvider.token;
+    if (token == null) {
+      throw Exception('Authentication required to download CV.');
+    }
+
+    final fileId = cv.fileId;
+    if (fileId == null || fileId.isEmpty) {
+      throw Exception('This CV is not associated with a file.');
+    }
+
+    final download = await _profileApiService.downloadCvFile(token, fileId);
+    return saveFile(
+      fileName: download.fileName,
+      bytes: download.bytes,
+      contentType: download.contentType,
+    );
   }
 }

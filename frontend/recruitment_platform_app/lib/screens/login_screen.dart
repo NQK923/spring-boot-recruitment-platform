@@ -232,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen>
                           labelText: 'Reset code',
                         ),
                         keyboardType: TextInputType.number,
-                        inputFormatters: const [
+                        inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                           LengthLimitingTextInputFormatter(6),
                         ],

@@ -44,7 +44,7 @@ class JobPostingsScreen extends StatelessWidget {
               return ListTile(
                 title: Text(job.title),
                 subtitle: Text(job.description, maxLines: 1, overflow: TextOverflow.ellipsis),
-                // TODO: Add job status chip
+                trailing: JobStatusBadge(status: job.status),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (ctx) => CandidateListScreen(
@@ -59,5 +59,50 @@ class JobPostingsScreen extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class JobStatusBadge extends StatelessWidget {
+  const JobStatusBadge({super.key, required this.status});
+
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    final normalized = status.toUpperCase();
+    final color = _statusColor(normalized);
+    return Chip(
+      label: Text(
+        _formatStatus(normalized),
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.4,
+        ),
+      ),
+      backgroundColor: color.withOpacity(0.12),
+      side: BorderSide(color: color.withOpacity(0.4)),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+    );
+  }
+
+  static String _formatStatus(String raw) {
+    final lower = raw.toLowerCase();
+    return lower.isEmpty ? 'Unknown' : '${lower[0].toUpperCase()}${lower.substring(1)}';
+  }
+
+  static Color _statusColor(String normalized) {
+    switch (normalized) {
+      case 'OPEN':
+        return Colors.green.shade700;
+      case 'PAUSED':
+        return Colors.orange.shade700;
+      case 'CLOSED':
+        return Colors.red.shade700;
+      case 'DRAFT':
+        return Colors.blueGrey.shade600;
+      default:
+        return Colors.grey.shade600;
+    }
   }
 }
