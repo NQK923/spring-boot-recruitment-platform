@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/company.dart';
+import '../../models/company_user.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/super_admin_provider.dart';
+import '../../widgets/empty_state.dart';
+import '../../widgets/layout/dashboard_shell.dart';
+import '../../widgets/section_header.dart';
 
 class SuperAdminDashboard extends StatefulWidget {
   const SuperAdminDashboard({super.key});
@@ -11,398 +17,809 @@ class SuperAdminDashboard extends StatefulWidget {
 }
 
 class _SuperAdminDashboardState extends State<SuperAdminDashboard> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _websiteController = TextEditingController();
-  final _logoController = TextEditingController();
-  final Set<int> _expandedCompanyIds = {};
+  Future<void> _showCreateCompanyDialog(BuildContext context) async {
+    final provider = context.read<SuperAdminProvider>();
+    final formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final websiteController = TextEditingController();
+    final logoController = TextEditingController();
+    bool submitting = false;
+    String? localError;
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _websiteController.dispose();
-    _logoController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _createCompany(BuildContext context) async {
-    final provider = Provider.of<SuperAdminProvider>(context, listen: false);
-    _nameController.clear();
-    _descriptionController.clear();
-    _websiteController.clear();
-    _logoController.clear();
-
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 24,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Create Company', style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
-                  validator: (value) => value == null || value.trim().isEmpty ? 'Name is required' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _descriptionController,
-                  maxLines: 2,
-                  decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _websiteController,
-                  decoration: const InputDecoration(labelText: 'Website', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _logoController,
-                  decoration: const InputDecoration(labelText: 'Logo URL', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: provider.isSubmitting
-                        ? null
-                        : () async {
-                            if (!_formKey.currentState!.validate()) return;
-                            final success = await provider.createCompany(
-                              name: _nameController.text.trim(),
-                              description: _descriptionController.text.trim().isEmpty
-                                  ? null
-                                  : _descriptionController.text.trim(),
-                              website: _websiteController.text.trim().isEmpty
-                                  ? null
-                                  : _websiteController.text.trim(),
-                              logoUrl: _logoController.text.trim().isEmpty
-                                  ? null
-                                  : _logoController.text.trim(),
-                            );
-                            if (!mounted) return;
-                            if (success) {
-                              Navigator.of(ctx).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Company created successfully')),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(provider.error ?? 'Failed to create company')),
-                              );
+    try {
+      final result = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (dialogContext, setDialogState) {
+              return AlertDialog(
+                title: const Text('Create company'),
+                content: Form(
+                  key: formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          controller: nameController,
+                          textInputAction: TextInputAction.next,
+                          decoration: const InputDecoration(
+                            labelText: 'Company name',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Name is required';
                             }
+                            return null;
                           },
-                    icon: provider.isSubmitting
-                        ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.add_business_outlined),
-                    label: Text(provider.isSubmitting ? 'Creating...' : 'Create Company'),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: descriptionController,
+                          maxLines: 2,
+                          decoration: const InputDecoration(
+                            labelText: 'Description (optional)',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: websiteController,
+                          decoration: const InputDecoration(
+                            labelText: 'Website (optional)',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: logoController,
+                          decoration: const InputDecoration(
+                            labelText: 'Logo URL (optional)',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        if (localError != null) ...[
+                          const SizedBox(height: 16),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              localError!,
+                              style: const TextStyle(color: Colors.redAccent),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
+                actions: [
+                  TextButton(
+                    onPressed: submitting ? null : () => Navigator.of(dialogContext).pop(false),
+                    child: const Text('Cancel'),
+                  ),
+                  FilledButton(
+                    onPressed: submitting
+                        ? null
+                        : () async {
+                            if (!formKey.currentState!.validate()) return;
+                            setDialogState(() {
+                              submitting = true;
+                              localError = null;
+                            });
+                            final success = await provider.createCompany(
+                              name: nameController.text.trim(),
+                              description: descriptionController.text.trim().isEmpty
+                                  ? null
+                                  : descriptionController.text.trim(),
+                              website: websiteController.text.trim().isEmpty
+                                  ? null
+                                  : websiteController.text.trim(),
+                              logoUrl: logoController.text.trim().isEmpty
+                                  ? null
+                                  : logoController.text.trim(),
+                            );
+                            if (!mounted || !dialogContext.mounted) {
+                              return;
+                            }
+                            if (success) {
+                              Navigator.of(dialogContext).pop(true);
+                            } else {
+                              setDialogState(() {
+                                submitting = false;
+                                localError = provider.error ?? 'Failed to create company.';
+                              });
+                            }
+                          },
+                    child: submitting
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Create'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+
+      if (!context.mounted) return;
+      if (result == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Company created successfully')),
         );
-      },
-    );
+      }
+    } finally {
+      nameController.dispose();
+      descriptionController.dispose();
+      websiteController.dispose();
+      logoController.dispose();
+    }
   }
 
-  Future<void> _inviteForCompany(BuildContext context, int companyId) async {
-    final provider = Provider.of<SuperAdminProvider>(context, listen: false);
+  Future<void> _showInviteDialog(BuildContext context, Company company) async {
+    final provider = context.read<SuperAdminProvider>();
+    final formKey = GlobalKey<FormState>();
     final emailController = TextEditingController();
-    String role = 'COMPANY_ADMIN';
+    String selectedRole = 'COMPANY_ADMIN';
+    bool submitting = false;
+    String? localError;
 
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 24,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Invite to company #$companyId', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 12),
-              InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Role',
-                  border: OutlineInputBorder(),
-                ),
-                child: StatefulBuilder(
-                  builder: (context, setDialogState) {
-                    return DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: role,
-                        items: const [
-                          DropdownMenuItem(value: 'COMPANY_ADMIN', child: Text('Company Admin')),
-                          DropdownMenuItem(value: 'RECRUITER', child: Text('Recruiter')),
-                        ],
-                        onChanged: (value) {
-                          if (value != null) {
-                            setDialogState(() {
-                              role = value;
-                            });
+    try {
+      final result = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (dialogContext, setDialogState) {
+              return AlertDialog(
+                title: Text('Invite user to ${company.name}'),
+                content: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: emailController,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Email is required';
                           }
+                          if (!value.contains('@')) {
+                            return 'Enter a valid email address';
+                          }
+                          return null;
                         },
                       ),
-                    );
-                  },
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: selectedRole,
+                        decoration: const InputDecoration(
+                          labelText: 'Role to grant',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'COMPANY_ADMIN',
+                            child: Text('Company Admin'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'RECRUITER',
+                            child: Text('Recruiter'),
+                          ),
+                        ],
+                        onChanged: submitting
+                            ? null
+                            : (value) {
+                                if (value != null) {
+                                  setDialogState(() => selectedRole = value);
+                                }
+                              },
+                      ),
+                      if (localError != null) ...[
+                        const SizedBox(height: 16),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            localError!,
+                            style: const TextStyle(color: Colors.redAccent),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: provider.isSubmitting
-                      ? null
-                      : () async {
-                          final email = emailController.text.trim();
-                          if (email.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Please enter an email.')),
+                actions: [
+                  TextButton(
+                    onPressed: submitting ? null : () => Navigator.of(dialogContext).pop(false),
+                    child: const Text('Cancel'),
+                  ),
+                  FilledButton(
+                    onPressed: submitting
+                        ? null
+                        : () async {
+                            if (!formKey.currentState!.validate()) return;
+                            setDialogState(() {
+                              submitting = true;
+                              localError = null;
+                            });
+                            final success = await provider.inviteCompanyUser(
+                              companyId: company.id,
+                              email: emailController.text.trim(),
+                              role: selectedRole,
                             );
-                            return;
-                          }
-                          final success = await provider.inviteCompanyUser(
-                            companyId: companyId,
-                            email: email,
-                            role: role,
-                          );
-                          if (!mounted) return;
-                          if (success) {
-                            Navigator.of(ctx).pop();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Invitation sent.')),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(provider.error ?? 'Failed to send invitation')),
-                            );
-                          }
-                        },
-                  icon: provider.isSubmitting
-                      ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.send),
-                  label: Text(provider.isSubmitting ? 'Sending...' : 'Send Invite'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+                            if (!mounted || !dialogContext.mounted) {
+                              return;
+                            }
+                            if (success) {
+                              Navigator.of(dialogContext).pop(true);
+                            } else {
+                              setDialogState(() {
+                                submitting = false;
+                                localError = provider.error ?? 'Failed to send invitation.';
+                              });
+                            }
+                          },
+                    child: submitting
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Send invite'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
 
-    emailController.dispose();
+      if (!context.mounted) return;
+      if (result == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invitation email sent to ${emailController.text.trim()}')),
+        );
+      }
+    } finally {
+      emailController.dispose();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
     return Consumer<SuperAdminProvider>(
       builder: (context, provider, _) {
-        final isSuperAdmin = provider.authProvider.user?.hasRole('SUPER_ADMIN') ?? false;
-        if (!isSuperAdmin) {
-          return const Scaffold(
-            body: Center(child: Text('This area is restricted to Super Admins.')),
-          );
-        }
+        final totalCompanies = provider.companies.length;
+        final knownMembers = provider.companies.fold<int>(
+          0,
+          (sum, company) => sum + provider.membersForCompany(company.id).length,
+        );
+        final companiesWithoutMembers = provider.companies
+            .where((company) => provider.membersForCompany(company.id).isEmpty)
+            .length;
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Super Admin Dashboard'),
+        final tabs = [
+          DashboardTab(
+            id: 'companies',
+            icon: Icons.apartment_outlined,
+            label: 'Companies',
+            title: 'Multi-tenant control center',
+            subtitle: 'Create tenants, manage memberships, and keep invitations on track.',
+            badge: Chip(
+              avatar: const Icon(Icons.domain, size: 16),
+              label: Text('$totalCompanies tenants'),
+            ),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
+              OutlinedButton.icon(
                 onPressed: provider.isLoading ? null : provider.fetchCompanies,
+                icon: provider.isLoading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.refresh_rounded),
+                label: const Text('Refresh'),
+              ),
+              FilledButton.icon(
+                onPressed: () => _showCreateCompanyDialog(context),
+                icon: const Icon(Icons.add_business_outlined),
+                label: const Text('New company'),
               ),
             ],
+            child: _SuperAdminCompaniesView(
+              provider: provider,
+              totalCompanies: totalCompanies,
+              knownMembers: knownMembers,
+              companiesWithoutMembers: companiesWithoutMembers,
+              onInvite: (company) => _showInviteDialog(context, company),
+            ),
           ),
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: provider.isSubmitting ? null : () => _createCompany(context),
-            icon: const Icon(Icons.add),
-            label: const Text('New Company'),
-          ),
-          body: provider.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : provider.error != null && provider.companies.isEmpty
-                  ? Center(child: Text(provider.error!))
-                  : RefreshIndicator(
-                      onRefresh: provider.fetchCompanies,
-                      child: provider.companies.isEmpty
-                          ? ListView(
-                              children: const [
-                                SizedBox(height: 200),
-                                Center(child: Text('No companies found. Create one to get started.')),
-                              ],
-                            )
-                          : ListView.builder(
-                              padding: const EdgeInsets.all(16),
-                              itemCount: provider.companies.length + 1,
-                              itemBuilder: (context, index) {
-                                if (index == 0) {
-                                  final totalCompanies = provider.companies.length;
-                                  final totalMembers = provider.companies
-                                      .map((company) => provider.membersForCompany(company.id).length)
-                                      .fold<int>(0, (prev, element) => prev + element);
-                                  return Card(
-                                    color: Theme.of(context).colorScheme.surfaceVariant,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              _StatTile(label: 'Companies', value: '$totalCompanies'),
-                                              _StatTile(label: 'Known Members', value: '$totalMembers'),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 12),
-                                          Align(
-                                            alignment: Alignment.centerRight,
-                                            child: TextButton.icon(
-                                              onPressed: provider.isLoading
-                                                  ? null
-                                                  : () => provider.loadMembersForAllCompanies(),
-                                              icon: const Icon(Icons.group_outlined),
-                                              label: const Text('Load members'),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }
+        ];
 
-                                final company = provider.companies[index - 1];
-                                final isExpanded = _expandedCompanyIds.contains(company.id);
-                                final members = provider.membersForCompany(company.id);
-                                final membersError = provider.membersError(company.id);
-                                final isLoadingMembers = provider.isLoadingMembers(company.id);
-
-                                return Card(
-                                  elevation: 2,
-                                  child: ExpansionTile(
-                                    key: PageStorageKey('company_${company.id}'),
-                                    title: Text(company.name),
-                                    subtitle: company.website != null && company.website!.isNotEmpty
-                                        ? Text(company.website!, maxLines: 1, overflow: TextOverflow.ellipsis)
-                                        : null,
-                                    initiallyExpanded: isExpanded,
-                                    onExpansionChanged: (expanded) {
-                                      setState(() {
-                                        if (expanded) {
-                                          _expandedCompanyIds.add(company.id);
-                                          provider.loadCompanyMembers(company.id);
-                                        } else {
-                                          _expandedCompanyIds.remove(company.id);
-                                        }
-                                      });
-                                    },
-                                    children: [
-                                      if (company.description != null && company.description!.isNotEmpty)
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
-                                          child: Text(company.description!),
-                                        ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text('Members: ${members.length}',
-                                                style: Theme.of(context).textTheme.bodyMedium),
-                                            TextButton.icon(
-                                              onPressed: () => _inviteForCompany(context, company.id),
-                                              icon: const Icon(Icons.person_add_alt_1_outlined),
-                                              label: const Text('Invite'),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      if (isLoadingMembers)
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(vertical: 16),
-                                          child: Center(child: CircularProgressIndicator()),
-                                        )
-                                      else if (membersError != null)
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                                          child: Text(membersError, style: const TextStyle(color: Colors.redAccent)),
-                                        )
-                                      else if (members.isEmpty)
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                                          child: Text('No members yet.'),
-                                        )
-                                      else
-                                        Padding(
-                                          padding: const EdgeInsets.only(bottom: 12.0),
-                                          child: Column(
-                                            children: members.map((member) {
-                                              return ListTile(
-                                                leading: const Icon(Icons.person_outline),
-                                                title: Text(member.email ?? 'User #${member.userId}'),
-                                                subtitle: Text('Role: ${member.role}'),
-                                                dense: true,
-                                              );
-                                            }).toList(),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                    ),
+        return DashboardShell(
+          tabs: tabs,
+          onLogout: authProvider.logout,
         );
       },
     );
   }
 }
 
-class _StatTile extends StatelessWidget {
-  final String label;
-  final String value;
+class _SuperAdminCompaniesView extends StatelessWidget {
+  const _SuperAdminCompaniesView({
+    required this.provider,
+    required this.totalCompanies,
+    required this.knownMembers,
+    required this.companiesWithoutMembers,
+    required this.onInvite,
+  });
 
-  const _StatTile({required this.label, required this.value});
+  final SuperAdminProvider provider;
+  final int totalCompanies;
+  final int knownMembers;
+  final int companiesWithoutMembers;
+  final void Function(Company) onInvite;
+
+  @override
+  Widget build(BuildContext context) {
+    if (provider.isLoading && provider.companies.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (provider.error != null && provider.companies.isEmpty) {
+      return Center(
+        child: EmptyState(
+          icon: Icons.warning_amber_outlined,
+          title: 'Unable to load companies',
+          subtitle: provider.error!,
+          action: OutlinedButton.icon(
+            onPressed: provider.fetchCompanies,
+            icon: const Icon(Icons.refresh_rounded),
+            label: const Text('Retry'),
+          ),
+        ),
+      );
+    }
+
+    if (provider.companies.isEmpty) {
+      return const Center(
+        child: EmptyState(
+          icon: Icons.apartment_outlined,
+          title: 'No companies yet',
+          subtitle: 'Create your first tenant to start organising teams and permissions.',
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: provider.fetchCompanies,
+      displacement: 40,
+      child: Scrollbar(
+        interactive: true,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    SectionHeader(
+                      title: 'Tenant overview',
+                      subtitle: 'Monitor adoption and keep every organisation in sync.',
+                    ),
+                    const SizedBox(height: 16),
+                    _DashboardStats(
+                      totalCompanies: totalCompanies,
+                      knownMembers: knownMembers,
+                      teamsWithoutMembers: companiesWithoutMembers,
+                    ),
+                    const SizedBox(height: 24),
+                    SectionHeader(
+                      title: 'Company directory',
+                      subtitle: 'Expand a company to review teams, invite collaborators, or refresh members.',
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final company = provider.companies[index];
+                    final members = provider.membersForCompany(company.id);
+                    final isLoadingMembers = provider.isLoadingMembers(company.id);
+                    final membersError = provider.membersError(company.id);
+
+                    return _CompanyCard(
+                      company: company,
+                      members: members,
+                      isLoadingMembers: isLoadingMembers,
+                      membersError: membersError,
+                      onLoadMembers: () => provider.loadCompanyMembers(company.id),
+                      onInvite: () => onInvite(company),
+                    );
+                  },
+                  childCount: provider.companies.length,
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 48)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DashboardStats extends StatelessWidget {
+  const _DashboardStats({
+    required this.totalCompanies,
+    required this.knownMembers,
+    required this.teamsWithoutMembers,
+  });
+
+  final int totalCompanies;
+  final int knownMembers;
+  final int teamsWithoutMembers;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(value, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
-        Text(label, style: theme.textTheme.bodyMedium),
-      ],
+    final tiles = [
+      _StatCardData(
+        icon: Icons.apartment_outlined,
+        label: 'Total tenants',
+        value: '$totalCompanies',
+        color: theme.colorScheme.primary,
+      ),
+      _StatCardData(
+        icon: Icons.people_outline,
+        label: 'Recorded members',
+        value: '$knownMembers',
+        color: const Color(0xFF0EA5E9),
+      ),
+      _StatCardData(
+        icon: Icons.upcoming_outlined,
+        label: 'Teams needing setup',
+        value: '$teamsWithoutMembers',
+        color: const Color(0xFFF97316),
+      ),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 900;
+        final cardWidth = isWide ? (constraints.maxWidth - 32) / 3 : constraints.maxWidth;
+        return Wrap(
+          spacing: 16,
+          runSpacing: 12,
+          children: tiles
+              .map(
+                (tile) => SizedBox(
+                  width: cardWidth,
+                  child: _DashboardStatTile(data: tile),
+                ),
+              )
+              .toList(),
+        );
+      },
+    );
+  }
+}
+
+class _StatCardData {
+  const _StatCardData({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+}
+
+class _DashboardStatTile extends StatelessWidget {
+  const _DashboardStatTile({required this.data});
+
+  final _StatCardData data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+      decoration: BoxDecoration(
+        color: data.color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Icon(data.icon, color: data.color),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                data.value,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: data.color,
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                data.label,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CompanyCard extends StatefulWidget {
+  const _CompanyCard({
+    required this.company,
+    required this.members,
+    required this.isLoadingMembers,
+    required this.membersError,
+    required this.onLoadMembers,
+    required this.onInvite,
+  });
+
+  final Company company;
+  final List<CompanyUser> members;
+  final bool isLoadingMembers;
+  final String? membersError;
+  final Future<void> Function() onLoadMembers;
+  final VoidCallback onInvite;
+
+  @override
+  State<_CompanyCard> createState() => _CompanyCardState();
+}
+
+class _CompanyCardState extends State<_CompanyCard> {
+  bool _expanded = false;
+
+  void _toggleExpanded() {
+    setState(() => _expanded = !_expanded);
+    if (_expanded && widget.members.isEmpty && !widget.isLoadingMembers && widget.membersError == null) {
+      widget.onLoadMembers();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final membersCount = widget.members.length;
+    final initials = widget.company.name.trim().isEmpty
+        ? '??'
+        : widget.company.name
+            .trim()
+            .split(' ')
+            .take(2)
+            .map((part) => part.isNotEmpty ? part[0] : '')
+            .join()
+            .toUpperCase();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: _toggleExpanded,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 26,
+                      backgroundColor: theme.colorScheme.primary.withOpacity(0.14),
+                      child: Text(
+                        initials,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.company.name,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          if (widget.company.website != null && widget.company.website!.isNotEmpty)
+                            Text(
+                              widget.company.website!,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          if (widget.company.description != null && widget.company.description!.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              widget.company.description!,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Chip(
+                          avatar: const Icon(Icons.people_outline, size: 16),
+                          label: Text('$membersCount members'),
+                        ),
+                        const SizedBox(height: 12),
+                        AnimatedRotation(
+                          turns: _expanded ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 200),
+                          child: Icon(
+                            Icons.expand_more_rounded,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            AnimatedCrossFade(
+              crossFadeState: _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 200),
+              firstChild: const SizedBox.shrink(),
+              secondChild: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Divider(),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Team members',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 12),
+                    if (widget.isLoadingMembers)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else if (widget.membersError != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.membersError!.replaceFirst('Exception: ', ''),
+                              style: const TextStyle(color: Colors.redAccent),
+                            ),
+                            const SizedBox(height: 8),
+                            OutlinedButton.icon(
+                              onPressed: widget.onLoadMembers,
+                              icon: const Icon(Icons.refresh_rounded),
+                              label: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      )
+                    else if (widget.members.isEmpty)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.info_outline, color: theme.colorScheme.primary),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'No members have joined yet. Send an invitation to get this team started.',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Column(
+                        children: widget.members
+                            .map(
+                              (member) => ListTile(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                                leading: CircleAvatar(
+                                  backgroundColor: theme.colorScheme.primary.withOpacity(0.12),
+                                  child: Text(
+                                    (member.email ?? '#${member.userId}')
+                                        .trim()
+                                        .substring(0, 1)
+                                        .toUpperCase(),
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      color: theme.colorScheme.primary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                title: Text(member.email ?? 'User #${member.userId}'),
+                                subtitle: Text(member.role),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: widget.isLoadingMembers ? null : widget.onLoadMembers,
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('Refresh'),
+                        ),
+                        const SizedBox(width: 12),
+                        FilledButton.icon(
+                          onPressed: widget.onInvite,
+                          icon: const Icon(Icons.person_add_alt_1_rounded),
+                          label: const Text('Invite teammate'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -9,7 +9,7 @@ import '../../widgets/layout/dashboard_shell.dart';
 import './job_list_screen.dart';
 import './my_applications_screen.dart';
 import './my_interviews_screen.dart';
-import './profile_screen.dart';
+import 'profile_screen.dart';
 
 class CandidateDashboard extends StatelessWidget {
   const CandidateDashboard({super.key});
@@ -105,3 +105,4 @@ class CandidateDashboard extends StatelessWidget {
     );
   }
 }
+
