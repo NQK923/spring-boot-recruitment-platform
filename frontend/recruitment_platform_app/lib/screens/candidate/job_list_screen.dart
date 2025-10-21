@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../models/job.dart';
 import '../../providers/job_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/section_header.dart';
 import './job_detail_screen.dart';
+
+enum _JobQuickFilter { activeOnly, remoteFriendly, leadership }
 
 class JobListScreen extends StatefulWidget {
   const JobListScreen({super.key});
@@ -15,6 +18,7 @@ class JobListScreen extends StatefulWidget {
 
 class _JobListScreenState extends State<JobListScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final Set<_JobQuickFilter> _selectedFilters = <_JobQuickFilter>{};
   String _query = '';
 
   @override
@@ -41,18 +45,15 @@ class _JobListScreenState extends State<JobListScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Explore Opportunities'),
-      ),
-      body: Consumer<JobProvider>(
-        builder: (context, jobProvider, child) {
-          if (jobProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return Consumer<JobProvider>(
+      builder: (context, jobProvider, _) {
+        if (jobProvider.isLoading && jobProvider.jobs.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          if (jobProvider.error != null) {
-            return EmptyState(
+        if (jobProvider.error != null && jobProvider.jobs.isEmpty) {
+          return Center(
+            child: EmptyState(
               icon: Icons.error_outline,
               title: 'Unable to load jobs',
               subtitle: jobProvider.error!,
@@ -61,75 +62,303 @@ class _JobListScreenState extends State<JobListScreen> {
                 icon: const Icon(Icons.refresh),
                 label: const Text('Retry'),
               ),
-            );
-          }
-
-          final filteredJobs = _filterJobs(jobProvider.jobs);
-
-          if (filteredJobs.isEmpty) {
-            return EmptyState(
-              icon: Icons.search_off_rounded,
-              title: 'No matching roles',
-              subtitle: 'Try adjusting your search keywords to discover more positions.',
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: jobProvider.fetchPublicJobs,
-            displacement: 30,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-              children: [
-                _buildSearchField(theme),
-                const SizedBox(height: 20),
-                SectionHeader(
-                  title: 'Recommended roles',
-                  subtitle: _query.isEmpty
-                      ? 'Browse through the latest openings tailored for you.'
-                      : 'Showing ${filteredJobs.length} result${filteredJobs.length == 1 ? '' : 's'} for \"$_query\"',
-                ),
-                const SizedBox(height: 12),
-                ...filteredJobs.map(_buildJobCard),
-              ],
             ),
           );
-        },
-      ),
+        }
+
+        final filteredJobs = _filterJobs(jobProvider.jobs);
+
+        if (filteredJobs.isEmpty) {
+          return Center(
+            child: EmptyState(
+              icon: Icons.search_off_rounded,
+              title: 'No matching roles',
+              subtitle:
+                  'Adjust your keywords or filters to discover more opportunities that match your preferences.',
+              action: OutlinedButton(
+                onPressed: () {
+                  setState(() {
+                    _query = '';
+                    _searchController.clear();
+                    _selectedFilters.clear();
+                  });
+                },
+                child: const Text('Clear filters'),
+              ),
+            ),
+          );
+        }
+
+        final activeCount = jobProvider.jobs.where(_isActiveJob).length;
+        final remoteCount = jobProvider.jobs.where(_isRemoteFriendly).length;
+
+        return RefreshIndicator(
+          displacement: 40,
+          color: theme.colorScheme.primary,
+          onRefresh: jobProvider.fetchPublicJobs,
+          child: Scrollbar(
+            interactive: true,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 8),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate(
+                      [
+                        _buildSearchField(theme),
+                        const SizedBox(height: 18),
+                        _buildQuickFilters(theme),
+                        const SizedBox(height: 24),
+                        _buildSummaryStats(
+                          theme,
+                          totalCount: jobProvider.jobs.length,
+                          activeCount: activeCount,
+                          remoteCount: remoteCount,
+                        ),
+                        const SizedBox(height: 24),
+                        SectionHeader(
+                          title: _query.isEmpty ? 'Recommended roles' : 'Search results',
+                          subtitle: _query.isEmpty
+                              ? 'Browse through curated opportunities aligned with your interests.'
+                              : 'Showing ${filteredJobs.length} role${filteredJobs.length == 1 ? '' : 's'} for "$_query"',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final job = filteredJobs[index];
+                        return _JobCard(job: job);
+                      },
+                      childCount: filteredJobs.length,
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 48)),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
   List<Job> _filterJobs(List<Job> jobs) {
-    if (_query.isEmpty) {
-      return jobs;
+    Iterable<Job> filtered = jobs;
+
+    if (_query.isNotEmpty) {
+      filtered = filtered.where(
+        (job) =>
+            job.title.toLowerCase().contains(_query) ||
+            job.description.toLowerCase().contains(_query),
+      );
     }
-    return jobs
-        .where(
-          (job) =>
-              job.title.toLowerCase().contains(_query) ||
-              job.description.toLowerCase().contains(_query),
-        )
-        .toList();
+
+    if (_selectedFilters.contains(_JobQuickFilter.activeOnly)) {
+      filtered = filtered.where(_isActiveJob);
+    }
+    if (_selectedFilters.contains(_JobQuickFilter.remoteFriendly)) {
+      filtered = filtered.where(_isRemoteFriendly);
+    }
+    if (_selectedFilters.contains(_JobQuickFilter.leadership)) {
+      filtered = filtered.where(
+        (job) => job.title.toLowerCase().contains('lead') || job.title.toLowerCase().contains('manager'),
+      );
+    }
+
+    return filtered.toList();
+  }
+
+  bool _isActiveJob(Job job) {
+    final status = job.status.toLowerCase();
+    return status == 'active' || status == 'open' || status == 'published';
+  }
+
+  bool _isRemoteFriendly(Job job) {
+    final description = job.description.toLowerCase();
+    return description.contains('remote') ||
+        description.contains('hybrid') ||
+        description.contains('work from home');
   }
 
   Widget _buildSearchField(ThemeData theme) {
     return TextField(
       controller: _searchController,
       decoration: InputDecoration(
-        hintText: 'Search by title or keywords',
-        prefixIcon: Icon(Icons.search, color: theme.colorScheme.primary),
+        hintText: 'Search by title, keywords or description',
+        prefixIcon: Icon(Icons.search_rounded, color: theme.colorScheme.primary),
         suffixIcon: _query.isEmpty
             ? null
             : IconButton(
-                onPressed: () => _searchController.clear(),
-                icon: const Icon(Icons.close),
+                tooltip: 'Clear search',
+                onPressed: () {
+                  _searchController.clear();
+                  setState(() {
+                    _query = '';
+                  });
+                },
+                icon: const Icon(Icons.close_rounded),
               ),
       ),
+      textInputAction: TextInputAction.search,
     );
   }
 
-  Widget _buildJobCard(Job job) {
+  Widget _buildQuickFilters(ThemeData theme) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: [
+        _FilterChip(
+          label: 'Active only',
+          icon: Icons.flash_on_rounded,
+          selected: _selectedFilters.contains(_JobQuickFilter.activeOnly),
+          onSelected: (value) {
+            setState(() {
+              if (value) {
+                _selectedFilters.add(_JobQuickFilter.activeOnly);
+              } else {
+                _selectedFilters.remove(_JobQuickFilter.activeOnly);
+              }
+            });
+          },
+        ),
+        _FilterChip(
+          label: 'Remote friendly',
+          icon: Icons.public_rounded,
+          selected: _selectedFilters.contains(_JobQuickFilter.remoteFriendly),
+          onSelected: (value) {
+            setState(() {
+              if (value) {
+                _selectedFilters.add(_JobQuickFilter.remoteFriendly);
+              } else {
+                _selectedFilters.remove(_JobQuickFilter.remoteFriendly);
+              }
+            });
+          },
+        ),
+        _FilterChip(
+          label: 'Leadership roles',
+          icon: Icons.military_tech_rounded,
+          selected: _selectedFilters.contains(_JobQuickFilter.leadership),
+          onSelected: (value) {
+            setState(() {
+              if (value) {
+                _selectedFilters.add(_JobQuickFilter.leadership);
+              } else {
+                _selectedFilters.remove(_JobQuickFilter.leadership);
+              }
+            });
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSummaryStats(
+    ThemeData theme, {
+    required int totalCount,
+    required int activeCount,
+    required int remoteCount,
+  }) {
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    Widget buildTile({
+      required IconData icon,
+      required String label,
+      required String value,
+      Color? color,
+    }) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        decoration: BoxDecoration(
+          color: (color ?? colorScheme.primary).withOpacity(0.07),
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Icon(icon, color: color ?? colorScheme.primary),
+            const SizedBox(width: 14),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: color ?? colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 720;
+        return Wrap(
+          spacing: 16,
+          runSpacing: 12,
+          children: [
+            SizedBox(
+              width: isWide ? (constraints.maxWidth - 32) / 3 : constraints.maxWidth,
+              child: buildTile(
+                icon: Icons.business_center_outlined,
+                label: 'Total roles published',
+                value: '$totalCount',
+              ),
+            ),
+            SizedBox(
+              width: isWide ? (constraints.maxWidth - 32) / 3 : constraints.maxWidth,
+              child: buildTile(
+                icon: Icons.visibility_outlined,
+                label: 'Actively hiring',
+                value: '$activeCount',
+                color: const Color(0xFF3B82F6),
+              ),
+            ),
+            SizedBox(
+              width: isWide ? (constraints.maxWidth - 32) / 3 : constraints.maxWidth,
+              child: buildTile(
+                icon: Icons.cloud_outlined,
+                label: 'Remote friendly roles',
+                value: '$remoteCount',
+                color: const Color(0xFF10B981),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _JobCard extends StatelessWidget {
+  const _JobCard({required this.job});
+
+  final Job job;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final subtitleColor = theme.textTheme.bodySmall?.color ?? Colors.grey;
+    final subtitleColor = theme.textTheme.bodySmall?.color?.withOpacity(0.75) ?? Colors.grey;
+    final isActive = job.status.toUpperCase() == 'ACTIVE' || job.status.toUpperCase() == 'OPEN';
+    final isRemote = job.description.toLowerCase().contains('remote');
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -166,12 +395,7 @@ class _JobListScreenState extends State<JobListScreen> {
                       width: 48,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [
-                            theme.colorScheme.primary.withOpacity(0.15),
-                            theme.colorScheme.secondary.withOpacity(0.15),
-                          ],
-                        ),
+                        color: theme.colorScheme.primary.withOpacity(0.12),
                       ),
                       child: Icon(
                         Icons.work_outline_rounded,
@@ -196,11 +420,33 @@ class _JobListScreenState extends State<JobListScreen> {
                               color: subtitleColor,
                             ),
                           ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(
+                                isActive ? Icons.check_circle_rounded : Icons.timelapse_rounded,
+                                size: 16,
+                                color: isActive
+                                    ? const Color(0xFF16A34A)
+                                    : theme.colorScheme.primary.withOpacity(0.8),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                isActive ? 'Actively hiring' : 'Pipeline preview',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: isActive
+                                      ? const Color(0xFF16A34A)
+                                      : theme.colorScheme.primary.withOpacity(0.8),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
                     Icon(
-                      Icons.chevron_right_rounded,
+                      Icons.open_in_new_rounded,
                       color: theme.colorScheme.primary,
                     ),
                   ],
@@ -212,14 +458,14 @@ class _JobListScreenState extends State<JobListScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodyMedium,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
                 Wrap(
                   spacing: 10,
                   runSpacing: 6,
-                  children: const [
-                    _JobTag(label: 'Full-time'),
-                    _JobTag(label: 'Growth opportunities'),
-                    _JobTag(label: 'Inclusive team'),
+                  children: [
+                    _JobTag(label: job.status.toUpperCase()),
+                    if (isRemote) const _JobTag(label: 'Remote friendly'),
+                    const _JobTag(label: 'Inclusive team'),
                   ],
                 ),
               ],
@@ -227,6 +473,48 @@ class _JobListScreenState extends State<JobListScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  const _FilterChip({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final ValueChanged<bool> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return FilterChip(
+      label: Text(label),
+      avatar: Icon(
+        icon,
+        size: 18,
+        color: selected ? Colors.white : theme.colorScheme.primary,
+      ),
+      selected: selected,
+      onSelected: onSelected,
+      showCheckmark: false,
+      selectedColor: theme.colorScheme.primary,
+      labelStyle: TextStyle(
+        color: selected ? Colors.white : theme.colorScheme.primary,
+        fontWeight: FontWeight.w600,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      side: BorderSide(
+        color: selected
+            ? theme.colorScheme.primary
+            : theme.colorScheme.primary.withOpacity(0.16),
+      ),
+      backgroundColor: theme.colorScheme.primary.withOpacity(0.06),
     );
   }
 }

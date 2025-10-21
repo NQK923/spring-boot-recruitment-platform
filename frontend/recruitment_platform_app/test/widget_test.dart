@@ -15,7 +15,7 @@ void main() {
     expect(find.text('Open'), findsOneWidget);
 
     final chip = tester.widget<Chip>(find.byType(Chip));
-    expect(chip.backgroundColor, equals(Colors.green.shade700.withOpacity(0.12)));
+    expect(chip.backgroundColor, equals(const Color(0xFF16A34A).withOpacity(0.12)));
     expect(chip.label, isA<Text>().having((label) => label.style?.fontWeight, 'weight', FontWeight.w600));
   });
 }
