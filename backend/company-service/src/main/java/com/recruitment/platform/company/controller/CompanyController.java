@@ -90,6 +90,21 @@ public class CompanyController {
         }
     }
 
+    @PutMapping("/me")
+    @PreAuthorize("hasAuthority('SCOPE_COMPANY_ADMIN')")
+    public ResponseEntity<?> updateMyCompany(@RequestBody UpdateCompanyRequest request,
+                                             @RequestHeader(value = "X-Company-ID", required = false) Long requesterCompanyId) {
+        try {
+            Long companyId = requireCompanyId(requesterCompanyId);
+            Company updated = companyService.updateCompany(companyId, request);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Company context missing");
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Company not found");
+        }
+    }
+
     @GetMapping("/me/users")
     @PreAuthorize("hasAuthority('SCOPE_COMPANY_ADMIN')")
     public ResponseEntity<List<CompanyUserResponse>> getMyCompanyUsers(

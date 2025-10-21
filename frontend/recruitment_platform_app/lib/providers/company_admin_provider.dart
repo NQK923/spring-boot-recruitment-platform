@@ -12,12 +12,14 @@ class CompanyAdminProvider with ChangeNotifier {
   List<CompanyUser> _members = [];
   bool _isLoading = false;
   bool _isInviting = false;
+  bool _isUpdating = false;
   String? _error;
 
   Company? get company => _company;
   List<CompanyUser> get members => _members;
   bool get isLoading => _isLoading;
   bool get isInviting => _isInviting;
+  bool get isUpdating => _isUpdating;
   String? get error => _error;
   AuthProvider get authProvider => _authProvider;
 
@@ -40,6 +42,7 @@ class CompanyAdminProvider with ChangeNotifier {
       _error = null;
       _isLoading = false;
       _isInviting = false;
+      _isUpdating = false;
       notifyListeners();
       return;
     }
@@ -90,6 +93,40 @@ class CompanyAdminProvider with ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       _isInviting = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> updateCompany({
+    required String name,
+    String? description,
+    String? website,
+    String? logoUrl,
+  }) async {
+    if (!_hasCompanyAccess || _authProvider.token == null) {
+      return false;
+    }
+
+    _isUpdating = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final updated = await _apiService.updateMyCompany(
+        _authProvider.token!,
+        name: name,
+        description: description,
+        website: website,
+        logoUrl: logoUrl,
+      );
+      _company = updated;
+      _isUpdating = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      _isUpdating = false;
       notifyListeners();
       return false;
     }

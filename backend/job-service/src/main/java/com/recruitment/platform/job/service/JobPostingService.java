@@ -104,7 +104,7 @@ public class JobPostingService {
     }
 
     public List<JobPostingPublicDto> findAllPublicJobs() {
-        return jobPostingRepository.findByStatus(JobStatus.OPEN).stream()
+        return jobPostingRepository.findByStatus(JobStatus.PUBLISHED).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -115,7 +115,7 @@ public class JobPostingService {
 
     public Optional<JobPostingPublicDto> findPublicJobById(Long id) {
         return jobPostingRepository.findById(id)
-                .filter(job -> job.getStatus() == JobStatus.OPEN)
+                .filter(job -> job.getStatus() == JobStatus.PUBLISHED)
                 .map(this::convertToDto);
     }
 

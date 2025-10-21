@@ -5,14 +5,18 @@ import '../models/company_user.dart';
 import '../utils/constants.dart';
 
 class CompanyApiService {
+  Map<String, String> _headers(String token) => {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+  Uri _resolve(String path) => Uri.parse('$BASE_URL$path');
+
   Future<Company> getMyCompany(String token) async {
-    final url = Uri.parse('/companies/me');
+    final url = _resolve('/companies/me');
     final response = await http.get(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ',
-      },
+      headers: _headers(token),
     );
 
     if (response.statusCode != 200) {
@@ -23,13 +27,10 @@ class CompanyApiService {
   }
 
   Future<List<CompanyUser>> getMyCompanyUsers(String token) async {
-    final url = Uri.parse('/companies/me/users');
+    final url = _resolve('/companies/me/users');
     final response = await http.get(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ',
-      },
+      headers: _headers(token),
     );
 
     if (response.statusCode != 200) {
@@ -45,13 +46,10 @@ class CompanyApiService {
     required String email,
     required String role,
   }) async {
-    final url = Uri.parse('/companies/me/users/invite');
+    final url = _resolve('/companies/me/users/invite');
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ',
-      },
+      headers: _headers(token),
       body: json.encode({
         'email': email,
         'role': role,
@@ -63,14 +61,43 @@ class CompanyApiService {
     }
   }
 
+  Future<Company> updateMyCompany(
+    String token, {
+    required String name,
+    String? description,
+    String? website,
+    String? logoUrl,
+  }) async {
+    final url = _resolve('/companies/me');
+    final payload = <String, dynamic>{
+      'name': name,
+      'description': description,
+      'website': website,
+      'logoUrl': logoUrl,
+    }..removeWhere((_, value) => value == null);
+
+    if (payload.isEmpty) {
+      throw Exception('No company changes provided');
+    }
+
+    final response = await http.put(
+      url,
+      headers: _headers(token),
+      body: json.encode(payload),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update company profile');
+    }
+
+    return Company.fromJson(json.decode(response.body));
+  }
+
   Future<List<CompanyUser>> getCompanyUsersForCompany(String token, int companyId) async {
-    final url = Uri.parse('$BASE_URL/companies/$companyId/users');
+    final url = _resolve('/companies/$companyId/users');
     final response = await http.get(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _headers(token),
     );
 
     if (response.statusCode != 200) {
@@ -87,13 +114,10 @@ class CompanyApiService {
     required String email,
     required String role,
   }) async {
-    final url = Uri.parse('$BASE_URL/companies/$companyId/users/invite');
+    final url = _resolve('/companies/$companyId/users/invite');
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _headers(token),
       body: json.encode({
         'email': email,
         'role': role,
@@ -106,13 +130,10 @@ class CompanyApiService {
   }
 
   Future<List<Company>> getAllCompanies(String token) async {
-    final url = Uri.parse('$BASE_URL/companies');
+    final url = _resolve('/companies');
     final response = await http.get(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _headers(token),
     );
 
     if (response.statusCode != 200) {
@@ -123,19 +144,17 @@ class CompanyApiService {
     return body.map((e) => Company.fromJson(e)).toList();
   }
 
-  Future<Company> createCompany(String token, {
+  Future<Company> createCompany(
+    String token, {
     required String name,
     String? description,
     String? website,
     String? logoUrl,
   }) async {
-    final url = Uri.parse('$BASE_URL/companies');
+    final url = _resolve('/companies');
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _headers(token),
       body: json.encode({
         'name': name,
         'description': description,
