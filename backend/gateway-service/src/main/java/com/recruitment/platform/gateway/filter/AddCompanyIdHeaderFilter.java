@@ -66,12 +66,18 @@ public class AddCompanyIdHeaderFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
+        Optional<Long> companyIdFromToken = resolveCompanyIdClaim(claims);
+        if (companyIdFromToken.isPresent()) {
+            ServerWebExchange mutatedExchange = mutateExchange(exchange, claims, userId, companyIdFromToken.get());
+            return chain.filter(mutatedExchange);
+        }
+
         return Mono.fromCallable(() -> companyServiceClient.getCompanyForUser(userId))
                 .subscribeOn(Schedulers.boundedElastic())
-                .map(companyUser -> mutateExchange(exchange, claims, userId, companyUser))
+                .map(companyUser -> mutateExchange(exchange, claims, userId, extractCompanyId(companyUser)))
                 .onErrorResume(ex -> {
                     log.warn("Unable to resolve company for user {}: {}", userId, ex.getMessage());
-                    return Mono.just(mutateExchange(exchange, claims, userId, null));
+                    return Mono.just(mutateExchange(exchange, claims, userId, companyIdFromToken.orElse(null)));
                 })
                 .flatMap(chain::filter);
     }
@@ -84,19 +90,42 @@ public class AddCompanyIdHeaderFilter implements GlobalFilter, Ordered {
     private ServerWebExchange mutateExchange(ServerWebExchange exchange,
                                              Claims claims,
                                              Long userId,
-                                             CompanyUser companyUser) {
+                                             Long companyId) {
         var requestBuilder = exchange.getRequest().mutate()
                 .headers(headers -> {
                     headers.set(HEADER_USER_ID, String.valueOf(userId));
                     resolveRoles(claims).ifPresent(roles -> headers.set(HEADER_USER_ROLES, roles));
-                    if (companyUser != null && companyUser.getId() != null && companyUser.getId().getCompanyId() != null) {
-                        headers.set(HEADER_COMPANY_ID, companyUser.getId().getCompanyId().toString());
+                    if (companyId != null) {
+                        headers.set(HEADER_COMPANY_ID, companyId.toString());
                     }
                 });
 
         return exchange.mutate()
                 .request(requestBuilder.build())
                 .build();
+    }
+
+    private Optional<Long> resolveCompanyIdClaim(Claims claims) {
+        Object companyClaim = claims.get("companyId");
+        if (companyClaim == null) {
+            return Optional.empty();
+        }
+        if (companyClaim instanceof Number number) {
+            return Optional.of(number.longValue());
+        }
+        try {
+            return Optional.of(Long.parseLong(companyClaim.toString()));
+        } catch (NumberFormatException ex) {
+            log.warn("Unable to parse companyId claim value '{}': {}", companyClaim, ex.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    private Long extractCompanyId(CompanyUser companyUser) {
+        if (companyUser == null || companyUser.getId() == null) {
+            return null;
+        }
+        return companyUser.getId().getCompanyId();
     }
 
     private Optional<String> resolveRoles(Claims claims) {

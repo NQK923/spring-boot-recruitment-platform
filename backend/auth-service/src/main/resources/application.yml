@@ -66,6 +66,8 @@ app:
   jwt:
     secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"
     expiration-ms: 86400000 # 24 hours
+  clients:
+    gateway-base-url: ${GATEWAY_BASE_URL:http://localhost:8080}
   oauth:
     github:
       redirect-uri: ${GITHUB_REDIRECT_URI:recruitment-platform://auth/callback}
