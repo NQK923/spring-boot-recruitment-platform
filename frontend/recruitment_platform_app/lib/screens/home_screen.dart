@@ -1,27 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/auth_provider.dart';
+import './admin/super_admin_dashboard.dart';
 import './candidate/candidate_dashboard.dart';
 import './recruiter/recruiter_dashboard.dart';
-import './admin/super_admin_dashboard.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<AuthProvider>(context).user;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
 
-    // Default to a loading or empty screen if user data is not yet available
     if (user == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Loading...')),
-        body: const Center(child: CircularProgressIndicator()),
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    // A simple way to dispatch based on role.
-    // A more robust app might use a dedicated role management system.
     final bool isSuperAdmin = user.hasRole('SUPER_ADMIN');
     final bool isRecruiter = user.hasRole('RECRUITER') || user.hasRole('COMPANY_ADMIN');
     final bool isCandidate = user.hasRole('CANDIDATE');
@@ -34,25 +32,33 @@ class HomeScreen extends StatelessWidget {
     } else if (isCandidate) {
       dashboard = const CandidateDashboard();
     } else {
-      // Fallback for users with no specific role dashboard (e.g., SUPER_ADMIN)
       dashboard = Scaffold(
-        appBar: AppBar(title: const Text('Dashboard')),
-        body: const Center(child: Text('No dashboard available for your role.')), 
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.help_outline, size: 48, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(height: 16),
+              Text(
+                'No dashboard available for your role',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: authProvider.logout,
+                icon: const Icon(Icons.logout_rounded),
+                label: const Text('Log out'),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
-    return Scaffold(
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: dashboard,
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Provider.of<AuthProvider>(context, listen: false).logout();
-        },
-        label: const Text('Log out'),
-        icon: const Icon(Icons.logout),
-      ),
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: dashboard,
     );
   }
 }
