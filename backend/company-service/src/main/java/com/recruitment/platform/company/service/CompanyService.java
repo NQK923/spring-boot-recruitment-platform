@@ -72,7 +72,6 @@ public class CompanyService {
         company.setDescription(request.description());
         company.setWebsite(request.website());
         company.setLogoUrl(request.logoUrl());
-        company.setConfigJson(request.configJson());
         return companyRepository.save(company);
     }
 
@@ -96,9 +95,6 @@ public class CompanyService {
         }
         if (request.logoUrl() != null) {
             company.setLogoUrl(request.logoUrl());
-        }
-        if (request.configJson() != null) {
-            company.setConfigJson(request.configJson());
         }
         return companyRepository.save(company);
     }

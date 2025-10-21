@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="4-seed-companies-and-company-users" author="codex">
+        <insert tableName="companies">
+            <column name="name" value="Acme Corporation"/>
+            <column name="description" value="Enterprise HR platform provider with distributed teams across APAC."/>
+            <column name="website" value="https://www.acme-corp.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/acme.png"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="name" value="Globex Corporation"/>
+            <column name="description" value="Global manufacturing and R&amp;D firm expanding into Southeast Asia."/>
+            <column name="website" value="https://www.globex.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/globex.png"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueComputed="(SELECT id FROM companies WHERE name='Acme Corporation')"/>
+            <column name="user_id" valueNumeric="2"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueComputed="(SELECT id FROM companies WHERE name='Acme Corporation')"/>
+            <column name="user_id" valueNumeric="4"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueComputed="(SELECT id FROM companies WHERE name='Globex Corporation')"/>
+            <column name="user_id" valueNumeric="3"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueComputed="(SELECT id FROM companies WHERE name='Globex Corporation')"/>
+            <column name="user_id" valueNumeric="5"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <sql>
+            SELECT setval('companies_id_seq', (SELECT MAX(id) FROM companies));
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
+

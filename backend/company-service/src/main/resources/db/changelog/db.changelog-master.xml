@@ -7,6 +7,6 @@
 
     <include file="v1.0_init_schema.xml" relativeToChangelogFile="true"/>
     <include file="v1.1_add_company_users.xml" relativeToChangelogFile="true"/>
-    <include file="v1.2_add_company_config.xml" relativeToChangelogFile="true"/>
+    <include file="v1.2_seed_companies.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
