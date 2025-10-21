@@ -140,7 +140,6 @@ class SuperAdminProvider with ChangeNotifier {
     String? description,
     String? website,
     String? logoUrl,
-    String? configJson,
   }) async {
     if (!_hasSuperAdminAccess || _authProvider.token == null) {
       return false;
@@ -157,7 +156,6 @@ class SuperAdminProvider with ChangeNotifier {
         description: description,
         website: website,
         logoUrl: logoUrl,
-        configJson: configJson,
       );
       _isSubmitting = false;
       await fetchCompanies();

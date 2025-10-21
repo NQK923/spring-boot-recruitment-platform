@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2-seed-job-positions-and-postings" author="codex">
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="1"/>
+            <column name="title" value="Senior Backend Engineer"/>
+            <column name="department" value="Engineering"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="1"/>
+            <column name="title" value="Product Designer"/>
+            <column name="department" value="Design"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="2"/>
+            <column name="title" value="Manufacturing Supervisor"/>
+            <column name="department" value="Operations"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="2"/>
+            <column name="title" value="Regional Sales Manager"/>
+            <column name="department" value="Sales"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="1"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=1 AND title='Senior Backend Engineer')"/>
+            <column name="title" value="Senior Backend Engineer"/>
+            <column name="description" value="Own core microservices, guide architecture decisions, and mentor teammates."/>
+            <column name="requirements" value="6+ years building Java/Spring services; experience with cloud-native tooling."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="4"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="1"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=1 AND title='Product Designer')"/>
+            <column name="title" value="Product Designer"/>
+            <column name="description" value="Collaborate with cross-functional squads to design intuitive hiring flows."/>
+            <column name="requirements" value="3+ years in product design; strong Figma skills; portfolio demonstrating UX thinking."/>
+            <column name="location" value="Remote - APAC"/>
+            <column name="work_type" value="Remote"/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="4"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="2"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=2 AND title='Manufacturing Supervisor')"/>
+            <column name="title" value="Manufacturing Supervisor"/>
+            <column name="description" value="Lead shift operations for Globex&#39;s new assembly plant, ensuring safety and output KPIs."/>
+            <column name="requirements" value="5+ years supervising manufacturing lines; lean six sigma is a plus."/>
+            <column name="location" value="Da Nang, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="5"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="2"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=2 AND title='Regional Sales Manager')"/>
+            <column name="title" value="Regional Sales Manager"/>
+            <column name="description" value="Drive enterprise sales across ASEAN, building long-term relationships with key accounts."/>
+            <column name="requirements" value="7+ years enterprise sales; proven track record hitting quotas; willingness to travel."/>
+            <column name="location" value="Singapore"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="5"/>
+        </insert>
+
+        <sql>
+            SELECT setval('job_positions_id_seq', (SELECT MAX(id) FROM job_positions));
+        </sql>
+
+        <sql>
+            SELECT setval('job_postings_id_seq', (SELECT MAX(id) FROM job_postings));
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
+

@@ -4,7 +4,6 @@ class Company {
   final String? description;
   final String? website;
   final String? logoUrl;
-  final String? configJson;
 
   Company({
     required this.id,
@@ -12,7 +11,6 @@ class Company {
     this.description,
     this.website,
     this.logoUrl,
-    this.configJson,
   });
 
   factory Company.fromJson(Map<String, dynamic> json) {
@@ -22,7 +20,6 @@ class Company {
       description: json['description'],
       website: json['website'],
       logoUrl: json['logoUrl'],
-      configJson: json['configJson'],
     );
   }
 }

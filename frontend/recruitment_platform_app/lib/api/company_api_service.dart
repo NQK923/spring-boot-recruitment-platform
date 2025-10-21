@@ -128,7 +128,6 @@ class CompanyApiService {
     String? description,
     String? website,
     String? logoUrl,
-    String? configJson,
   }) async {
     final url = Uri.parse('$BASE_URL/companies');
     final response = await http.post(
@@ -142,7 +141,6 @@ class CompanyApiService {
         'description': description,
         'website': website,
         'logoUrl': logoUrl,
-        'configJson': configJson,
       }),
     );
 

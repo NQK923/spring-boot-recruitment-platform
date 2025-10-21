@@ -13,13 +13,13 @@
 
     <changeSet id="5-seed-super-admin-user" author="nqk923">
         <insert tableName="users">
-            <column name="email" value="superadmin@recruitment.local"/>
-            <column name="password_hash" value="$2b$12$3Kl7KntW8A8FEDANx9psGOqiln4BL.1VmjVjFPNW0jB1ZXpRRwtDW"/>
+            <column name="email" value="nqk1337@gmail.com"/>
+            <column name="password_hash" value="$2b$12$T5nX1Axw6Sed3XKHyP0miuKy5BU8rSqwztseU6Z/eA.DJlqP/xaI6"/>
             <column name="email_verified_at" valueComputed="CURRENT_TIMESTAMP"/>
         </insert>
 
         <insert tableName="user_roles">
-            <column name="user_id" valueComputed="(SELECT id FROM users WHERE email='superadmin@recruitment.local')"/>
+            <column name="user_id" valueComputed="(SELECT id FROM users WHERE email='nqk1337@gmail.com')"/>
             <column name="role_id" valueComputed="(SELECT id FROM roles WHERE name='SUPER_ADMIN')"/>
         </insert>
 
