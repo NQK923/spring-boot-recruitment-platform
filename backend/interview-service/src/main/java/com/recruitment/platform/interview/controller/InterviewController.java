@@ -7,6 +7,7 @@ import com.recruitment.platform.interview.dto.UpdateInterviewRequest;
 import com.recruitment.platform.interview.model.Interview;
 import com.recruitment.platform.interview.model.InterviewFeedback;
 import com.recruitment.platform.interview.service.InterviewService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,5 +60,26 @@ public class InterviewController {
         Long interviewerId = Long.valueOf(jwt.getSubject());
         InterviewFeedback feedback = service.recordFeedback(interviewId, interviewerId, request);
         return new ResponseEntity<>(feedback, HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/{interviewId}/calendar.ics", produces = "text/calendar")
+    @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN', 'SCOPE_CANDIDATE') or hasAnyRole('RECRUITER', 'COMPANY_ADMIN', 'CANDIDATE')")
+    public ResponseEntity<String> downloadInterviewCalendar(@PathVariable Long interviewId,
+                                                            @AuthenticationPrincipal Jwt jwt) {
+        Long userId = Long.valueOf(jwt.getSubject());
+        String calendar = service.generateInterviewCalendar(interviewId, userId);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"interview-" + interviewId + ".ics\"")
+                .body(calendar);
+    }
+
+    @GetMapping(value = "/my/calendar.ics", produces = "text/calendar")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> downloadMyCalendar(@AuthenticationPrincipal Jwt jwt) {
+        Long userId = Long.valueOf(jwt.getSubject());
+        String calendar = service.generateCalendarForUser(userId);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"interviews-" + userId + ".ics\"")
+                .body(calendar);
     }
 }

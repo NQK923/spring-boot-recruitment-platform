@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface CompanyUserRepository extends JpaRepository<CompanyUser, CompanyUserPK> {
     Optional<CompanyUser> findById_UserId(Long userId);
     List<CompanyUser> findById_CompanyId(Long companyId);
+    long countById_CompanyId(Long companyId);
+    long countById_CompanyIdAndRole(Long companyId, String role);
 }
