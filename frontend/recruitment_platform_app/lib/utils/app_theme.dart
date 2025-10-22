@@ -182,17 +182,17 @@ class AppTheme {
         indicatorColor: _primary.withOpacity(0.14),
         elevation: 8,
         height: 68,
-        labelTextStyle: MaterialStateProperty.resolveWith(
+        labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(
             fontSize: 13,
-            fontWeight: states.contains(MaterialState.selected) ? FontWeight.w700 : FontWeight.w500,
-            color: states.contains(MaterialState.selected) ? _primary : _textBody,
+            fontWeight: states.contains(WidgetState.selected) ? FontWeight.w700 : FontWeight.w500,
+            color: states.contains(WidgetState.selected) ? _primary : _textBody,
           ),
         ),
-        iconTheme: MaterialStateProperty.resolveWith(
+        iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
             size: 24,
-            color: states.contains(MaterialState.selected) ? _primary : _textBody.withOpacity(0.7),
+            color: states.contains(WidgetState.selected) ? _primary : _textBody.withOpacity(0.7),
           ),
         ),
       ),

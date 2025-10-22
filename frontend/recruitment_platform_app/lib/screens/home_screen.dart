@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
       dashboard = const CandidateDashboard();
     } else {
       dashboard = Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,

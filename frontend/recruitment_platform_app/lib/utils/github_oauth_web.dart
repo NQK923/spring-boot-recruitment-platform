@@ -15,12 +15,6 @@ Future<String?> startGitHubWebOAuth(
     'width=600,height=800,menubar=no,toolbar=no,status=no',
   );
 
-  if (popup == null) {
-    return Future.error(
-      Exception('The browser blocked the GitHub login popup. Please allow pop-ups and try again.'),
-    );
-  }
-
   final completer = Completer<String?>();
   StreamSubscription<html.MessageEvent>? subscription;
   Timer? timer;
@@ -45,7 +39,7 @@ Future<String?> startGitHubWebOAuth(
         // Ignore JSON parsing errors and keep waiting.
       }
     } else if (data is Map) {
-      payload = Map<String, dynamic>.from(data as Map);
+      payload = Map<String, dynamic>.from(data);
     }
 
     if (payload == null) {

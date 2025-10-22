@@ -159,7 +159,7 @@ class _DashboardShellState extends State<DashboardShell> {
         );
 
         return Scaffold(
-          backgroundColor: theme.colorScheme.background,
+          backgroundColor: theme.colorScheme.surface,
           floatingActionButton: selectedTab.floatingActionButton,
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           bottomNavigationBar: isWide
