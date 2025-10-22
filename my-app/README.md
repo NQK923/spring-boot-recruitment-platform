@@ -32,13 +32,14 @@ npm run start    # Serve the production build
 
 ### Project structure
 
-- `app/page.tsx` – landing page with entry points for recruiters/admins and candidates.
-- `app/(auth)/auth/*` – server actions + forms for login and registration.
-- `app/dashboard`, `app/candidate` – secured segments guarded by cookie-aware layouts.
-- `components/layout/*` – global navigation, navigation actions, account menu.
-- `components/ui/*` – reusable UI primitives aligned with the design system.
-- `lib/api.ts`, `lib/session.ts`, `lib/routes.ts` – gateway-aware fetch wrapper, cookie helpers, and route constants.
-- `app/api/**` – proxy routes that forward to the gateway (e.g. `/api/jobs/public`, `/api/applications/my`).
+- `app/page.tsx` - landing page with entry points for recruiters/admins and candidates.
+- `app/jobs/**` - public job listing and details powered by the Job Service.
+- `app/(auth)/auth/*` - server actions + forms for login and registration.
+- `app/dashboard`, `app/candidate` - secured segments guarded by cookie-aware layouts.
+- `components/layout/*` - global navigation, account menu, and navigation actions.
+- `components/ui/*` - reusable UI primitives aligned with the design system.
+- `lib/api.ts`, `lib/session.ts`, `lib/routes.ts` - gateway-aware fetcher, cookie helpers, and route constants.
+- `app/api/**` - proxy routes that forward to the gateway (for example `/api/jobs/public`, `/api/applications/my`).
 
 ### Server data fetching example
 
@@ -51,8 +52,8 @@ export async function getPublicJobs() {
 }
 ```
 
-> `apiFetch` is designed for server components, server actions, and route handlers. For client-side
-> needs, use the provided `/api/**` proxies so HTTP-only cookies remain secure.
+> `apiFetch` is designed for server components, server actions, and route handlers. For client-side needs,
+> use the provided `/api/**` proxies so HTTP-only cookies remain secure.
 
 ### Styling
 

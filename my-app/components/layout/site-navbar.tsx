@@ -4,12 +4,13 @@
  import { usePathname } from "next/navigation";
  import { ROUTES } from "@/lib/routes";
  
- const navigation = [
-   { href: ROUTES.home, label: "Home" },
-   { href: ROUTES.candidatePortal, label: "Candidate" },
-   { href: ROUTES.recruiterDashboard, label: "Recruiter" },
-   { href: ROUTES.docs, label: "Docs" },
- ];
+const navigation = [
+  { href: ROUTES.home, label: "Home" },
+  { href: ROUTES.jobs, label: "Jobs" },
+  { href: ROUTES.candidatePortal, label: "Candidate" },
+  { href: ROUTES.recruiterDashboard, label: "Recruiter" },
+  { href: ROUTES.docs, label: "Docs" },
+];
  
  export function SiteNavbar() {
    const pathname = usePathname();

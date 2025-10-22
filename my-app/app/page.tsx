@@ -26,6 +26,11 @@ export default function Home() {
               Create candidate account
             </Button>
           </Link>
+          <Link href={ROUTES.jobs}>
+            <Button size="lg" variant="ghost">
+              Explore open roles
+            </Button>
+          </Link>
         </div>
       </section>
 
