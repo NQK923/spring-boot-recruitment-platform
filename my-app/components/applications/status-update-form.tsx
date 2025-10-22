@@ -1,0 +1,63 @@
+"use client";
+
+import { useActionState, useEffect } from "react";
+import { updateStatusAction, type ActionState } from "@/app/dashboard/applications/[applicationId]/actions";
+import { Button } from "@/components/ui/button";
+
+const STATUSES = ["APPLIED", "SCREENING", "INTERVIEWING", "OFFERED", "HIRED", "REJECTED"];
+
+type Props = {
+  applicationId: number;
+  currentStatus: string;
+};
+
+const initialState: ActionState = {};
+
+export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
+  const [state, formAction, pending] = useActionState(
+    updateStatusAction.bind(null, applicationId),
+    initialState
+  );
+
+  useEffect(() => {
+    if (state?.success) {
+      setTimeout(() => {
+        const banner = document.getElementById("status-success-banner");
+        banner?.remove();
+      }, 3000);
+    }
+  }, [state?.success]);
+
+  return (
+    <form className="flex flex-col gap-3" action={formAction}>
+      <select
+        name="status"
+        defaultValue={currentStatus.toUpperCase()}
+        className="h-11 rounded-xl border border-foreground/20 bg-background px-4 text-sm"
+        disabled={pending}
+      >
+        {STATUSES.map((status) => (
+          <option key={status} value={status}>
+            {status.charAt(0) + status.slice(1).toLowerCase()}
+          </option>
+        ))}
+      </select>
+      <Button type="submit" size="sm" disabled={pending}>
+        {pending ? "Updating..." : "Update status"}
+      </Button>
+      {state?.error ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+          {state.error}
+        </p>
+      ) : null}
+      {state?.success ? (
+        <p
+          id="status-success-banner"
+          className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700"
+        >
+          {state.success}
+        </p>
+      ) : null}
+    </form>
+  );
+}
