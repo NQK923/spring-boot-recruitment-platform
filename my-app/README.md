@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Recruitment Platform Frontend
 
-## Getting Started
+Next.js 16.0.0 + React 19.2.0 client for the recruitment platform. All HTTP calls go through the Spring Cloud Gateway so authentication, rate limiting, and routing rules stay centralized.
 
-First, run the development server:
+### Prerequisites
+
+- Node.js ≥ 20.x
+- Backend stack running with the gateway exposed (default `http://localhost:8080`)
+
+### Environment variables
+
+Create a `.env.local` file using the provided example:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.local.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Key                        | Description                           |
+| -------------------------- | ------------------------------------- |
+| `NEXT_PUBLIC_API_BASE_URL` | Gateway base URL (e.g. http://localhost:8080). |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The helper in `lib/api.ts` throws if the variable is missing so misconfiguration is caught during development.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Scripts
 
-## Learn More
+```bash
+npm run dev      # Start dev server on http://localhost:3000
+npm run lint     # Run ESLint with the Next 16 config
+npm run build    # Create production build
+npm run start    # Serve the production build
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Project structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `app/page.tsx` – landing page with entry points for recruiters/admins and candidates.
+- `components/ui/button.tsx`, `components/ui/input.tsx` – reusable UI primitives aligned with the design system.
+- `lib/api.ts` – gateway-aware fetch wrapper (`credentials: "include"`) for both server and client calls.
+- `app/(routes)` – add feature-specific layouts and pages (auth, dashboard, candidate portal, etc.).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Data fetching example
 
-## Deploy on Vercel
+```ts
+import { apiFetch } from "@/lib/api";
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+export async function getPublicJobs() {
+  const response = await apiFetch("/api/jobs/public");
+  return response.json();
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Styling
+
+Tailwind CSS v4 is configured in `app/globals.css`. Extend the inline theme or add component-level classes as new screens roll out.
