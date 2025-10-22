@@ -2,21 +2,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
+import { dateFormatter, dateTimeFormatter } from "@/lib/dates";
 
 type ApplicationDetails = {
   id: number;
   jobPostingId: number;
   status: string;
   appliedAt?: string;
-  source?: string;
   cvId?: number;
 };
 
 type JobSummary = {
   id: number;
   title?: string;
-  location?: string;
-  workType?: string;
   description?: string;
 };
 
@@ -36,7 +34,7 @@ async function getApplication(applicationId: string): Promise<ApplicationDetails
       return null;
     }
     const data = await response.json();
-    return (data && typeof data === "object") ? (data as ApplicationDetails) : null;
+    return data && typeof data === "object" ? (data as ApplicationDetails) : null;
   } catch {
     return null;
   }
@@ -52,7 +50,7 @@ async function getJobSummary(jobId: number): Promise<JobSummary | null> {
       return null;
     }
     const data = await response.json();
-    return (data && typeof data === "object") ? (data as JobSummary) : null;
+    return data && typeof data === "object" ? (data as JobSummary) : null;
   } catch {
     return null;
   }
@@ -65,9 +63,7 @@ async function getInterviewsForApplication(applicationId: number): Promise<Inter
     if (!Array.isArray(data)) {
       return [];
     }
-    return (data as Interview[]).filter(
-      (interview) => interview.applicationId === applicationId
-    );
+    return (data as Interview[]).filter((interview) => interview.applicationId === applicationId);
   } catch {
     return [];
   }
@@ -81,13 +77,13 @@ function formatStatus(status: string) {
     .join(" ");
 }
 
-function formatDate(value?: string, withTime = false) {
+function formatDate(value?: string, includeTime = false) {
   if (!value) {
     return "Unknown";
   }
   try {
     const date = new Date(value);
-    return withTime ? date.toLocaleString() : date.toLocaleDateString();
+    return includeTime ? dateTimeFormatter.format(date) : dateFormatter.format(date);
   } catch {
     return value;
   }
@@ -139,11 +135,6 @@ export default async function CandidateApplicationDetailsPage({
 
       <section className="space-y-4 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
         <h2 className="text-lg font-semibold text-foreground">Job overview</h2>
-        <p className="text-sm text-foreground/70">
-          {job
-            ? `${job.location ?? "Location flexible"} - ${job.workType ?? "Work type flexible"}`
-            : "Job details are not available. The listing may have been archived."}
-        </p>
         <p className="whitespace-pre-wrap text-sm text-foreground/70">
           {job?.description ??
             "Detailed description will appear here once the Job Service provides it. This includes responsibilities, qualifications, and benefits."}
@@ -158,18 +149,12 @@ export default async function CandidateApplicationDetailsPage({
             <dd className="font-semibold text-foreground">{formatStatus(application.status)}</dd>
           </div>
           <div>
-            <dt className="text-foreground/60">Source</dt>
-            <dd className="font-semibold text-foreground">{application.source ?? "Not provided"}</dd>
+            <dt className="text-foreground/60">Applied on</dt>
+            <dd className="font-semibold text-foreground">{formatDate(application.appliedAt, true)}</dd>
           </div>
           <div>
             <dt className="text-foreground/60">CV reference</dt>
             <dd className="font-semibold text-foreground">{application.cvId ?? "N/A"}</dd>
-          </div>
-          <div>
-            <dt className="text-foreground/60">Last updated</dt>
-            <dd className="font-semibold text-foreground">
-              {formatDate(application.updatedAt ?? application.appliedAt, true)}
-            </dd>
           </div>
         </dl>
       </section>
@@ -186,7 +171,7 @@ export default async function CandidateApplicationDetailsPage({
               <div key={interview.id} className="rounded-xl border border-foreground/10 px-4 py-3">
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-foreground">
-                    {formatDateTime(interview.scheduleTime, interview.timezone)}
+                    {formatDate(interview.scheduleTime, true)}
                   </span>
                   <span className="text-xs text-foreground/60">{interview.format ?? "Format TBD"}</span>
                 </div>

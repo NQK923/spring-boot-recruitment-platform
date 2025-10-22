@@ -4,6 +4,7 @@ import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import { StatusUpdateForm } from "@/components/applications/status-update-form";
 import { AddNoteForm } from "@/components/applications/add-note-form";
+import { dateFormatter, dateTimeFormatter } from "@/lib/dates";
 
 type ApplicationDetails = {
   id: number;
@@ -13,7 +14,6 @@ type ApplicationDetails = {
   status: string;
   cvId?: number;
   appliedAt?: string;
-  source?: string;
   ownerUserId?: number;
 };
 
@@ -27,8 +27,7 @@ type ApplicationNote = {
 type JobSummary = {
   id: number;
   title?: string;
-  location?: string;
-  workType?: string;
+  description?: string;
 };
 
 async function getApplication(applicationId: string): Promise<ApplicationDetails | null> {
@@ -38,26 +37,20 @@ async function getApplication(applicationId: string): Promise<ApplicationDetails
       return null;
     }
     const data = await response.json();
-    if (data && typeof data === "object") {
-      return data as ApplicationDetails;
-    }
+    return data && typeof data === "object" ? (data as ApplicationDetails) : null;
   } catch {
-    /* swallow */
+    return null;
   }
-  return null;
 }
 
 async function getApplicationNotes(applicationId: string): Promise<ApplicationNote[]> {
   try {
     const response = await apiFetch(`/api/applications/${applicationId}/notes`, { method: "GET" });
     const data = await response.json();
-    if (Array.isArray(data)) {
-      return data as ApplicationNote[];
-    }
+    return Array.isArray(data) ? (data as ApplicationNote[]) : [];
   } catch {
-    /* swallow */
+    return [];
   }
-  return [];
 }
 
 async function getJobSummary(jobId: number): Promise<JobSummary | null> {
@@ -70,23 +63,9 @@ async function getJobSummary(jobId: number): Promise<JobSummary | null> {
       return null;
     }
     const data = await response.json();
-    if (data && typeof data === "object") {
-      return data as JobSummary;
-    }
+    return data && typeof data === "object" ? (data as JobSummary) : null;
   } catch {
-    /* swallow */
-  }
-  return null;
-}
-
-function formatDate(value?: string) {
-  if (!value) {
-    return "Unknown";
-  }
-  try {
-    return new Date(value).toLocaleString();
-  } catch {
-    return value;
+    return null;
   }
 }
 
@@ -96,6 +75,17 @@ function formatStatus(status: string) {
     .split("_")
     .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
     .join(" ");
+}
+
+function formatDate(value?: string) {
+  if (!value) {
+    return "Unknown";
+  }
+  try {
+    return dateTimeFormatter.format(new Date(value));
+  } catch {
+    return value;
+  }
 }
 
 export default async function ApplicationDetailsPage({
@@ -134,7 +124,7 @@ export default async function ApplicationDetailsPage({
           {application.jobPostingId}
         </p>
         <p className="text-xs text-foreground/50">
-          Applied {formatDate(application.appliedAt)} · Source {application.source ?? "Not provided"}
+          Applied {formatDate(application.appliedAt)}
         </p>
       </header>
 
@@ -142,10 +132,9 @@ export default async function ApplicationDetailsPage({
         <article className="lg:col-span-2 space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
           <div className="space-y-2">
             <h2 className="text-lg font-semibold text-foreground">Job information</h2>
-            <p className="text-sm text-foreground/70">
-              {job
-                ? `${job.location ?? "Location flexible"} · ${job.workType ?? "Work type flexible"}`
-                : "Job details unavailable. The job may have been archived or deleted."}
+            <p className="whitespace-pre-wrap text-sm text-foreground/70">
+              {job?.description ??
+                "Job details are not available. The listing may have been archived or removed from the Job Service."}
             </p>
           </div>
 
@@ -183,7 +172,8 @@ export default async function ApplicationDetailsPage({
                       >
                         <p className="text-foreground/80">{note.content}</p>
                         <p className="mt-2 text-xs text-foreground/50">
-                          Author #{note.authorUserId} · {formatDate(note.createdAt)}
+                          Author #{note.authorUserId} ·{" "}
+                          {note.createdAt ? dateTimeFormatter.format(new Date(note.createdAt)) : "Unknown"}
                         </p>
                       </div>
                     ))
@@ -207,7 +197,9 @@ export default async function ApplicationDetailsPage({
             </div>
             <div className="flex justify-between">
               <dt className="text-foreground/60">Owner</dt>
-              <dd className="font-semibold text-foreground">{application.ownerUserId ?? "Unassigned"}</dd>
+              <dd className="font-semibold text-foreground">
+                {application.ownerUserId ?? "Unassigned"}
+              </dd>
             </div>
           </dl>
         </article>

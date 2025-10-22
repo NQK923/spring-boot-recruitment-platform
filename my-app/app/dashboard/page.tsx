@@ -2,6 +2,8 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 
+const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
+
 type CompanyJob = {
   id: number;
   title: string;
@@ -68,7 +70,7 @@ function formatDate(value?: string) {
     return "Unknown";
   }
   try {
-    return new Date(value).toLocaleDateString();
+    return dateFormatter.format(new Date(value));
   } catch {
     return value;
   }
@@ -115,9 +117,11 @@ export default async function DashboardPage() {
   }, {});
 
   const upcomingInterviews = interviews
-    .filter((interview) => {
-      if (!interview.scheduleTime) return true;
-      return new Date(interview.scheduleTime).getTime() >= Date.now();
+    .slice()
+    .sort((a, b) => {
+      const aTime = a.scheduleTime ? new Date(a.scheduleTime).getTime() : Infinity;
+      const bTime = b.scheduleTime ? new Date(b.scheduleTime).getTime() : Infinity;
+      return aTime - bTime;
     })
     .slice(0, 5);
 
@@ -144,7 +148,7 @@ export default async function DashboardPage() {
     },
   ];
 
-  return (
+    return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-16">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold text-foreground">Recruiter workspace</h1>
@@ -260,7 +264,11 @@ export default async function DashboardPage() {
       <section className="rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
         <h2 className="text-lg font-semibold text-foreground">Job health</h2>
         <p className="text-sm text-foreground/60">
-          Track application volume per job. Calls `/api/jobs/{jobId}/applications` for each posting.
+          Track application volume per job. Calls{" "}
+          <code className="rounded bg-foreground/10 px-1 py-0.5 text-xs text-foreground">
+            /api/jobs/{"{jobId}"}/applications
+          </code>{" "}
+          for each posting.
         </p>
 
         {jobs.length === 0 ? (

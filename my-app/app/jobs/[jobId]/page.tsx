@@ -9,11 +9,6 @@ type JobPosting = {
   id: number;
   title: string;
   description?: string;
-  requirements?: string;
-  location?: string;
-  workType?: string;
-  status?: string;
-  department?: string;
 };
 
 type CurrentUser = {
@@ -69,14 +64,7 @@ export default async function JobDetailsPage({
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-16">
       <header className="space-y-2">
-        <span className="inline-flex items-center rounded-full bg-foreground/10 px-3 py-1 text-xs font-semibold text-foreground">
-          {(job.status ?? "").toLowerCase() === "open" ? "Open" : job.status ?? "Active"}
-        </span>
         <h1 className="text-3xl font-semibold text-foreground">{job.title}</h1>
-        <p className="text-sm text-foreground/60">
-          {job.location ?? "Location flexible"} - {job.workType ?? "Flexible"}{" "}
-          {job.department ? `- ${job.department}` : ""}
-        </p>
       </header>
 
       <section className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
@@ -91,8 +79,7 @@ export default async function JobDetailsPage({
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground">Requirements</h2>
           <p className="whitespace-pre-wrap text-sm text-foreground/70">
-            {job.requirements ??
-              "Specific requirements will display here after integrating with the Job Service response."}
+            "Specific requirements will display here after integrating with the Job Service response."
           </p>
         </div>
       </section>

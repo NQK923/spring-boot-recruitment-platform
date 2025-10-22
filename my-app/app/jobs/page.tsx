@@ -6,9 +6,6 @@ type JobPosting = {
   id: number;
   title: string;
   description?: string;
-  location?: string;
-  workType?: string;
-  status?: string;
 };
 
 async function getPublicJobs(): Promise<JobPosting[]> {
@@ -48,16 +45,8 @@ export default async function JobsPage() {
               key={job.id}
               className="flex h-full flex-col gap-4 rounded-2xl border border-foreground/10 bg-background/70 p-6 shadow-sm"
             >
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                  <h2 className="text-lg font-semibold text-foreground">{job.title}</h2>
-                  <p className="text-xs uppercase tracking-wide text-foreground/50">
-                    {job.location ?? "Location flexible"} · {job.workType ?? "Flexible"}
-                  </p>
-                </div>
-                <span className="rounded-full bg-foreground/10 px-3 py-1 text-xs font-semibold text-foreground">
-                  {(job.status ?? "").toLowerCase() === "open" ? "Open" : job.status ?? "Active"}
-                </span>
+              <div className="space-y-1">
+                <h2 className="text-lg font-semibold text-foreground">{job.title}</h2>
               </div>
               <p className="line-clamp-3 text-sm text-foreground/70">
                 {job.description ?? "This role description will appear once the Job Service returns details."}
@@ -77,3 +66,4 @@ export default async function JobsPage() {
     </div>
   );
 }
+

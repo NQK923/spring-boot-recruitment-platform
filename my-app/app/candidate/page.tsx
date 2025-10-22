@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
+import { dateFormatter, dateTimeFormatter } from "@/lib/dates";
 
 type Application = {
   id: number;
   jobPostingId: number;
   status: string;
   appliedAt?: string;
-  updatedAt?: string;
 };
 
 type Interview = {
@@ -22,14 +22,12 @@ type Interview = {
 type JobSummary = {
   id: number;
   title?: string;
-  location?: string;
-  workType?: string;
+  description?: string;
 };
 
 type EnrichedApplication = Application & {
   jobTitle: string;
-  jobLocation?: string;
-  jobWorkType?: string;
+  jobDescription?: string;
 };
 
 async function getApplications(): Promise<Application[]> {
@@ -76,8 +74,7 @@ async function enrichApplications(applications: Application[]): Promise<Enriched
     return {
       ...app,
       jobTitle: job?.title ?? `Job #${app.jobPostingId}`,
-      jobLocation: job?.location,
-      jobWorkType: job?.workType,
+      jobDescription: job?.description,
     };
   });
 }
@@ -105,7 +102,7 @@ function formatDate(value?: string) {
     return "recently";
   }
   try {
-    return new Date(value).toLocaleDateString();
+    return dateFormatter.format(new Date(value));
   } catch {
     return value;
   }
@@ -117,12 +114,14 @@ function formatDateTime(value?: string, timezone?: string) {
   }
   try {
     const date = new Date(value);
-    const formatter = new Intl.DateTimeFormat(undefined, {
-      dateStyle: "medium",
-      timeStyle: "short",
-      ...(timezone ? { timeZone: timezone } : {}),
-    });
-    return formatter.format(date);
+    if (timezone) {
+      return new Intl.DateTimeFormat(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: timezone,
+      }).format(date);
+    }
+    return dateTimeFormatter.format(date);
   } catch {
     return value;
   }
@@ -180,9 +179,8 @@ export default async function CandidatePortalPage() {
               >
                 <div className="space-y-1">
                   <p className="font-medium text-foreground">{application.jobTitle}</p>
-                  <p className="text-xs text-foreground/50">
-                    {application.jobLocation ?? "Location flexible"} -{" "}
-                    {application.jobWorkType ?? "Work type flexible"}
+                  <p className="text-xs text-foreground/50 line-clamp-2">
+                    {application.jobDescription ?? "Job description will appear once provided by the company."}
                   </p>
                   <p className="text-xs text-foreground/50">
                     Applied {formatDate(application.appliedAt)}
