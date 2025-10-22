@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
-import type { ApplicationDetails, Interview, JobPosting } from "@/lib/types";
+import type {
+  ApplicationDetails,
+  Interview,
+  JobPosting,
+  JobPosition,
+} from "@/lib/types";
+import { CreateJobForm } from "@/components/jobs/create-job-form";
+import { UpdateJobForm } from "@/components/jobs/update-job-form";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 
@@ -30,6 +37,16 @@ async function getRecruiterInterviews(): Promise<Interview[]> {
     const response = await apiFetch("/api/interviews/my", { method: "GET" });
     const data = await response.json();
     return Array.isArray(data) ? (data as Interview[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+async function getJobPositions(): Promise<JobPosition[]> {
+  try {
+    const response = await apiFetch("/api/jobs/positions", { method: "GET" });
+    const data = await response.json();
+    return Array.isArray(data) ? (data as JobPosition[]) : [];
   } catch {
     return [];
   }
@@ -75,15 +92,22 @@ export default async function DashboardPage() {
   const jobs = await getCompanyJobs();
   const applicationsByJob = new Map<number, ApplicationDetails[]>();
 
-  await Promise.all(
-    jobs.map(async (job) => {
-      const applications = await getApplicationsForJob(job.id);
-      applicationsByJob.set(job.id, applications);
-    })
-  );
+  const [jobApplications, interviews, positions] = await Promise.all([
+    Promise.all(
+      jobs.map(async (job) => ({
+        jobId: job.id,
+        applications: await getApplicationsForJob(job.id),
+      }))
+    ),
+    getRecruiterInterviews(),
+    getJobPositions(),
+  ]);
 
-  const allApplications = Array.from(applicationsByJob.values()).flat();
-  const interviews = await getRecruiterInterviews();
+  for (const entry of jobApplications) {
+    applicationsByJob.set(entry.jobId, entry.applications);
+  }
+
+  const allApplications = jobApplications.flatMap((entry) => entry.applications);
 
   const openJobs = jobs.filter((job) => job.status === "PUBLISHED");
   const activeCandidateIds = new Set(allApplications.map((app) => app.candidateId));
@@ -125,8 +149,8 @@ export default async function DashboardPage() {
       helper: `${interviews.length} scheduled`,
     },
   ];
-  
-    return (
+
+  return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-16">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold text-foreground">Recruiter workspace</h1>
@@ -144,6 +168,30 @@ export default async function DashboardPage() {
             <span className="text-xs text-foreground/50">{metric.helper}</span>
           </div>
         ))}
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <CreateJobForm positions={positions} />
+        <article className="flex flex-col gap-4 rounded-2xl border border-foreground/10 bg-background/70 p-6 shadow-sm">
+          <header>
+            <h2 className="text-lg font-semibold text-foreground">Manage existing jobs</h2>
+            <p className="text-sm text-foreground/60">
+              Update status, work patterns, or position assignments. Requests flow through the gateway to
+              the Job Service.
+            </p>
+          </header>
+          {jobs.length === 0 ? (
+            <p className="rounded-xl border border-foreground/10 bg-background/60 px-4 py-4 text-sm text-foreground/60">
+              No postings yet. Create your first job to start building the pipeline.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {jobs.map((job) => (
+                <UpdateJobForm key={job.id} job={job} positions={positions} />
+              ))}
+            </div>
+          )}
+        </article>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2">

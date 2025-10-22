@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import { dateFormatter, dateTimeFormatter } from "@/lib/dates";
