@@ -20,6 +20,7 @@ public class Application {
     private String source;
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
+    private Long ownerUserId;
     private Instant appliedAt = Instant.now();
 
 }

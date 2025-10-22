@@ -8,4 +8,6 @@
     <include file="v1.0_init_schema.xml" relativeToChangelogFile="true"/>
     <include file="v1.1_add_application_source.xml" relativeToChangelogFile="true"/>
     <include file="v1.2_create_application_notes.xml" relativeToChangelogFile="true"/>
+    <include file="v1.3_add_application_owner.xml" relativeToChangelogFile="true"/>
+    <include file="v1.4_create_application_tasks.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

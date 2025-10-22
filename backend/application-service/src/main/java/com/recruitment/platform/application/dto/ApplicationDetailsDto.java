@@ -15,6 +15,7 @@ public class ApplicationDetailsDto {
     private Long jobPostingId;
     private Long candidateId;
     private String candidateName;
+    private Long ownerUserId;
     private Long cvId;
     private String status;
     private Instant appliedAt;
@@ -25,6 +26,7 @@ public class ApplicationDetailsDto {
                 app.getJobPostingId(),
                 app.getCandidateId(),
                 null, // Will be enriched later
+                app.getOwnerUserId(),
                 app.getCvId(),
                 app.getStatus().name(),
                 app.getAppliedAt()

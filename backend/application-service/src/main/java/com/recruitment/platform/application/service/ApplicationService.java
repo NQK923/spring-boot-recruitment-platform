@@ -113,6 +113,22 @@ public class ApplicationService {
         return savedApplication;
     }
 
+    @Transactional
+    public Application assignOwner(Long applicationId,
+                                   Long ownerUserId,
+                                   Long requestedByUserId,
+                                   Long companyId) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+
+        assertRecruiterAccessToJob(application.getJobPostingId(), companyId);
+
+        application.setOwnerUserId(ownerUserId);
+        Application updated = applicationRepository.save(application);
+        log.info("User {} updated owner of application {} to {}", requestedByUserId, applicationId, ownerUserId);
+        return updated;
+    }
+
     public List<Application> findApplicationsByCandidateId(Long candidateId) {
         return applicationRepository.findByCandidateId(candidateId);
     }
