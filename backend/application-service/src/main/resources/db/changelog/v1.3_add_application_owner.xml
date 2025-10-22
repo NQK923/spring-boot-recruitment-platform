@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v1.3-1-add-owner-column" author="codex">
+        <addColumn tableName="applications">
+            <column name="owner_user_id" type="BIGINT">
+                <remarks>User id of the recruiter currently owning the application</remarks>
+            </column>
+        </addColumn>
+        <createIndex indexName="idx_applications_owner_user_id" tableName="applications">
+            <column name="owner_user_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v1.4-1-create-application-tasks" author="codex">
+        <createTable tableName="application_tasks">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_application_tasks"/>
+            </column>
+            <column name="application_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="due_date" type="TIMESTAMP"/>
+            <column name="status" type="VARCHAR(32)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assigned_to_user_id" type="BIGINT"/>
+            <column name="created_by_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="completed_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="application_tasks"
+                                 baseColumnNames="application_id"
+                                 constraintName="fk_application_tasks_application"
+                                 referencedTableName="applications"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <createIndex tableName="application_tasks" indexName="idx_application_tasks_application_id">
+            <column name="application_id"/>
+        </createIndex>
+
+        <createIndex tableName="application_tasks" indexName="idx_application_tasks_assigned_to">
+            <column name="assigned_to_user_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
