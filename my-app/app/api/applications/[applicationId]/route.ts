@@ -1,0 +1,42 @@
+import { NextResponse } from "next/server";
+import { apiFetch } from "@/lib/api";
+
+type Params = {
+  applicationId: string;
+};
+
+export async function GET(
+  _request: Request,
+  { params }: { params: Params }
+) {
+  try {
+    const response = await apiFetch(`/api/applications/${params.applicationId}`, {
+      method: "GET",
+    });
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unable to fetch application.";
+    return NextResponse.json({ message }, { status: 502 });
+  }
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Params }
+) {
+  try {
+    const payload = await request.json();
+    const response = await apiFetch(`/api/applications/${params.applicationId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unable to update application status.";
+    return NextResponse.json({ message }, { status: 502 });
+  }
+}

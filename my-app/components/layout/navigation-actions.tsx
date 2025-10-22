@@ -39,7 +39,7 @@ export async function NavigationActions() {
     );
   }
 
-  let currentUser: CurrentUser | null = null;
+  let currentUser: CurrentUser | null;
   try {
     const response = await apiFetch("/api/auth/me", { method: "GET" });
     const data = await response.json();

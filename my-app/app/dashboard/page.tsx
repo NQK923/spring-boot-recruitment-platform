@@ -15,19 +15,19 @@ const upcomingInterviews = [
   {
     candidate: "Tran Thi B",
     role: "Frontend Engineer",
-    time: "Today · 14:00",
+    time: "Today - 14:00",
     participants: ["Recruiter #12", "Hiring Manager"],
   },
   {
     candidate: "Nguyen Van C",
     role: "Product Designer",
-    time: "Tomorrow · 09:30",
+    time: "Tomorrow - 09:30",
     participants: ["Recruiter #08", "Design Lead"],
   },
   {
     candidate: "Pham Minh D",
     role: "Backend Engineer",
-    time: "Tomorrow · 16:00",
+    time: "Tomorrow - 16:00",
     participants: ["Recruiter #03", "CTO"],
   },
 ];
