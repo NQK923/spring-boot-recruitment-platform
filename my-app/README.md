@@ -4,7 +4,7 @@ Next.js 16.0.0 + React 19.2.0 client for the recruitment platform. All HTTP call
 
 ### Prerequisites
 
-- Node.js ≥ 20.x
+- Node.js >= 20.x
 - Backend stack running with the gateway exposed (default `http://localhost:8080`)
 
 ### Environment variables
@@ -15,9 +15,9 @@ Create a `.env.local` file using the provided example:
 cp .env.local.example .env.local
 ```
 
-| Key                        | Description                           |
-| -------------------------- | ------------------------------------- |
-| `NEXT_PUBLIC_API_BASE_URL` | Gateway base URL (e.g. http://localhost:8080). |
+| Key                        | Description                                      |
+| -------------------------- | ------------------------------------------------ |
+| `NEXT_PUBLIC_API_BASE_URL` | Gateway base URL (e.g. `http://localhost:8080`). |
 
 The helper in `lib/api.ts` throws if the variable is missing so misconfiguration is caught during development.
 
@@ -33,9 +33,12 @@ npm run start    # Serve the production build
 ### Project structure
 
 - `app/page.tsx` – landing page with entry points for recruiters/admins and candidates.
-- `components/ui/button.tsx`, `components/ui/input.tsx` – reusable UI primitives aligned with the design system.
-- `lib/api.ts` – gateway-aware fetch wrapper (`credentials: "include"`) for both server and client calls.
-- `app/(routes)` – add feature-specific layouts and pages (auth, dashboard, candidate portal, etc.).
+- `app/(auth)/auth/*` – server actions + forms for login and registration.
+- `app/dashboard`, `app/candidate` – secured segments guarded by cookie-aware layouts.
+- `components/layout/*` – global navigation, navigation actions, account menu.
+- `components/ui/*` – reusable UI primitives aligned with the design system.
+- `lib/api.ts`, `lib/session.ts`, `lib/routes.ts` – gateway-aware fetch wrapper, cookie helpers, and route constants.
+- `app/api/**` – proxy routes that forward to the gateway (e.g. `/api/jobs/public`, `/api/applications/my`).
 
 ### Server data fetching example
 
@@ -49,7 +52,7 @@ export async function getPublicJobs() {
 ```
 
 > `apiFetch` is designed for server components, server actions, and route handlers. For client-side
-> needs, expose API routes that forward requests through the gateway so HTTP-only cookies remain secure.
+> needs, use the provided `/api/**` proxies so HTTP-only cookies remain secure.
 
 ### Styling
 
