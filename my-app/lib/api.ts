@@ -19,7 +19,22 @@ export async function apiFetch(path: string, options: ApiFetchOptions = {}) {
   const { skipAuthHeaders, headers, ...rest } = options;
   const requestHeaders = new Headers(headers);
 
-  if (!skipAuthHeaders && !requestHeaders.has("Content-Type")) {
+  const body = rest.body;
+  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+  const isBlob = typeof Blob !== "undefined" && body instanceof Blob;
+  const isArrayBuffer = typeof ArrayBuffer !== "undefined" && body instanceof ArrayBuffer;
+  const isUrlEncoded =
+    typeof URLSearchParams !== "undefined" && body instanceof URLSearchParams;
+  const shouldSetJsonContentType =
+    !skipAuthHeaders &&
+    !requestHeaders.has("Content-Type") &&
+    body !== undefined &&
+    !isFormData &&
+    !isBlob &&
+    !isArrayBuffer &&
+    !isUrlEncoded;
+
+  if (shouldSetJsonContentType) {
     requestHeaders.set("Content-Type", "application/json");
   }
 

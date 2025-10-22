@@ -1,37 +1,15 @@
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
+import type { ApplicationDetails, Interview, JobPosting } from "@/lib/types";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 
-type CompanyJob = {
-  id: number;
-  title: string;
-  status?: string;
-};
-
-type ApplicationDetails = {
-  id: number;
-  jobPostingId: number;
-  candidateId: number;
-  status: string;
-  appliedAt?: string;
-};
-
-type Interview = {
-  id: number;
-  applicationId: number;
-  scheduleTime?: string;
-  timezone?: string;
-  format?: string;
-  locationOrLink?: string;
-};
-
-async function getCompanyJobs(): Promise<CompanyJob[]> {
+async function getCompanyJobs(): Promise<JobPosting[]> {
   try {
     const response = await apiFetch("/api/jobs", { method: "GET" });
     const data = await response.json();
-    return Array.isArray(data) ? (data as CompanyJob[]) : [];
+    return Array.isArray(data) ? (data as JobPosting[]) : [];
   } catch {
     return [];
   }
@@ -65,7 +43,7 @@ function formatStatus(status: string) {
     .join(" ");
 }
 
-function formatDate(value?: string) {
+function formatDate(value?: string | null) {
   if (!value) {
     return "Unknown";
   }
@@ -76,7 +54,7 @@ function formatDate(value?: string) {
   }
 }
 
-function formatDateTime(value?: string, timezone?: string) {
+function formatDateTime(value?: string | null, timezone?: string | null) {
   if (!value) {
     return "Scheduled soon";
   }
@@ -107,11 +85,11 @@ export default async function DashboardPage() {
   const allApplications = Array.from(applicationsByJob.values()).flat();
   const interviews = await getRecruiterInterviews();
 
-  const openJobs = jobs.filter((job) => (job.status ?? "").toUpperCase() === "OPEN");
+  const openJobs = jobs.filter((job) => job.status === "PUBLISHED");
   const activeCandidateIds = new Set(allApplications.map((app) => app.candidateId));
 
   const pipelineCounts = allApplications.reduce<Record<string, number>>((acc, app) => {
-    const key = app.status ?? "UNKNOWN";
+    const key = app.status;
     acc[key] = (acc[key] ?? 0) + 1;
     return acc;
   }, {});
@@ -147,7 +125,7 @@ export default async function DashboardPage() {
       helper: `${interviews.length} scheduled`,
     },
   ];
-
+  
     return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-16">
       <header className="flex flex-col gap-2">
@@ -249,7 +227,10 @@ export default async function DashboardPage() {
                 <div>
                   <p className="font-semibold text-foreground">Application #{application.id}</p>
                   <p className="text-xs text-foreground/50">
-                    Job #{application.jobPostingId} · Applied {formatDate(application.appliedAt)}
+                    Job #{application.jobPostingId} - Applied {formatDate(application.appliedAt)}
+                  </p>
+                  <p className="text-xs text-foreground/50">
+                    Candidate {application.candidateName ?? `#${application.candidateId}`}
                   </p>
                 </div>
                 <span className="rounded-full bg-foreground/10 px-3 py-1 text-xs font-semibold text-foreground">
@@ -292,7 +273,7 @@ export default async function DashboardPage() {
                     <tr key={job.id}>
                       <td className="px-4 py-3 text-sm text-foreground">{job.title}</td>
                       <td className="px-4 py-3 text-sm text-foreground/70">
-                        {formatStatus(job.status ?? "UNKNOWN")}
+                        {formatStatus(job.status)}
                       </td>
                       <td className="px-4 py-3 text-right text-sm font-semibold text-foreground">
                         {applications.length}

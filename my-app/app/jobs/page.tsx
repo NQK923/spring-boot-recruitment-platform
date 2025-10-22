@@ -1,19 +1,14 @@
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
+import type { JobPostingPublic } from "@/lib/types";
 
-type JobPosting = {
-  id: number;
-  title: string;
-  description?: string;
-};
-
-async function getPublicJobs(): Promise<JobPosting[]> {
+async function getPublicJobs(): Promise<JobPostingPublic[]> {
   try {
     const response = await apiFetch("/api/jobs/public", { method: "GET", skipAuthHeaders: true });
     const data = await response.json();
     if (Array.isArray(data)) {
-      return data as JobPosting[];
+      return data as JobPostingPublic[];
     }
     return [];
   } catch {

@@ -3,29 +3,7 @@ import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import { dateFormatter, dateTimeFormatter } from "@/lib/dates";
-
-type ApplicationDetails = {
-  id: number;
-  jobPostingId: number;
-  status: string;
-  appliedAt?: string;
-  cvId?: number;
-};
-
-type JobSummary = {
-  id: number;
-  title?: string;
-  description?: string;
-};
-
-type Interview = {
-  id: number;
-  applicationId: number;
-  scheduleTime?: string;
-  timezone?: string;
-  format?: string;
-  locationOrLink?: string;
-};
+import type { ApplicationDetails, Interview, JobPostingPublic } from "@/lib/types";
 
 async function getApplication(applicationId: string): Promise<ApplicationDetails | null> {
   try {
@@ -40,7 +18,7 @@ async function getApplication(applicationId: string): Promise<ApplicationDetails
   }
 }
 
-async function getJobSummary(jobId: number): Promise<JobSummary | null> {
+async function getJobSummary(jobId: number): Promise<JobPostingPublic | null> {
   try {
     const response = await apiFetch(`/api/jobs/public/${jobId}`, {
       method: "GET",
@@ -50,7 +28,7 @@ async function getJobSummary(jobId: number): Promise<JobSummary | null> {
       return null;
     }
     const data = await response.json();
-    return data && typeof data === "object" ? (data as JobSummary) : null;
+    return data && typeof data === "object" ? (data as JobPostingPublic) : null;
   } catch {
     return null;
   }
@@ -77,7 +55,7 @@ function formatStatus(status: string) {
     .join(" ");
 }
 
-function formatDate(value?: string, includeTime = false) {
+function formatDate(value: string | null | undefined, includeTime = false) {
   if (!value) {
     return "Unknown";
   }
@@ -112,13 +90,15 @@ export default async function CandidateApplicationDetailsPage({
       return aTime - bTime;
     })[0];
 
+  const calendarHref = nextInterview ? `/api/interviews/${nextInterview.id}/calendar` : null;
+
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-16">
       <Link
         href={ROUTES.candidatePortal}
         className="text-sm font-semibold text-foreground/70 hover:text-foreground"
       >
-        ← Back to applications
+        Back to applications
       </Link>
 
       <header className="space-y-2">
@@ -129,7 +109,7 @@ export default async function CandidateApplicationDetailsPage({
           {job?.title ?? `Application #${application.id}`}
         </h1>
         <p className="text-sm text-foreground/60">
-          Job #{application.jobPostingId} · Applied {formatDate(application.appliedAt, true)}
+          Job #{application.jobPostingId} - Applied {formatDate(application.appliedAt, true)}
         </p>
       </header>
 
@@ -156,6 +136,20 @@ export default async function CandidateApplicationDetailsPage({
             <dt className="text-foreground/60">CV reference</dt>
             <dd className="font-semibold text-foreground">{application.cvId ?? "N/A"}</dd>
           </div>
+          <div>
+            <dt className="text-foreground/60">Source</dt>
+            <dd className="font-semibold text-foreground">{application.source ?? "N/A"}</dd>
+          </div>
+          <div>
+            <dt className="text-foreground/60">Owner</dt>
+            <dd className="font-semibold text-foreground">{application.ownerUserId ?? "Unassigned"}</dd>
+          </div>
+          <div>
+            <dt className="text-foreground/60">Candidate name</dt>
+            <dd className="font-semibold text-foreground">
+              {application.candidateName ?? `Candidate #${application.candidateId}`}
+            </dd>
+          </div>
         </dl>
       </section>
 
@@ -178,16 +172,16 @@ export default async function CandidateApplicationDetailsPage({
                 <p className="text-xs text-foreground/50">
                   {interview.locationOrLink ? interview.locationOrLink : "Location or link will be shared"}
                 </p>
+                {interview.outcome ? (
+                  <p className="mt-1 text-xs text-foreground/50">Outcome: {interview.outcome}</p>
+                ) : null}
               </div>
             ))}
           </div>
         )}
-        {nextInterview ? (
-          <Link
-            href={`/api/interviews/${nextInterview.id}/calendar.ics`}
-            className="text-sm font-semibold text-foreground hover:underline"
-          >
-            Download iCal for next interview
+        {calendarHref ? (
+          <Link href={calendarHref} className="text-sm font-semibold text-foreground hover:underline">
+            Download interview calendar (.ics)
           </Link>
         ) : null}
       </section>

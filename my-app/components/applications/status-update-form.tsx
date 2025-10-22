@@ -3,12 +3,13 @@
 import { useActionState, useEffect } from "react";
 import { updateStatusAction, type ActionState } from "@/app/dashboard/applications/[applicationId]/actions";
 import { Button } from "@/components/ui/button";
+import type { ApplicationStatus } from "@/lib/types";
 
-const STATUSES = ["APPLIED", "SCREENING", "INTERVIEWING", "OFFERED", "HIRED", "REJECTED"];
+const STATUSES: ApplicationStatus[] = ["APPLIED", "SCREENING", "INTERVIEWING", "OFFERED", "HIRED", "REJECTED"];
 
 type Props = {
   applicationId: number;
-  currentStatus: string;
+  currentStatus: ApplicationStatus;
 };
 
 const initialState: ActionState = {};
@@ -32,7 +33,7 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
     <form className="flex flex-col gap-3" action={formAction}>
       <select
         name="status"
-        defaultValue={currentStatus.toUpperCase()}
+        defaultValue={currentStatus}
         className="h-11 rounded-xl border border-foreground/20 bg-background px-4 text-sm"
         disabled={pending}
       >

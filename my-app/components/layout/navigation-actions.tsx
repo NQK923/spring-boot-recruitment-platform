@@ -4,12 +4,7 @@ import { AccountMenu } from "@/components/layout/account-menu";
 import { ROUTES } from "@/lib/routes";
 import { apiFetch } from "@/lib/api";
 import { getAccessTokenFromCookies } from "@/lib/session";
-
-type CurrentUser = {
-  id: number;
-  email: string;
-  roles: string[];
-};
+import type { MeResponse } from "@/lib/types";
 
 function describePrimaryRole(roles: string[] | undefined) {
   if (!roles || roles.length === 0) {
@@ -39,13 +34,13 @@ export async function NavigationActions() {
     );
   }
 
-  let currentUser: CurrentUser | null;
+  let currentUser: MeResponse | null;
   try {
     const response = await apiFetch("/api/auth/me", { method: "GET" });
     const data = await response.json();
     currentUser = {
       id: Number(data.id),
-      email: data.email ?? "",
+      email: String(data.email ?? ""),
       roles: Array.isArray(data.roles) ? data.roles : [],
     };
   } catch {

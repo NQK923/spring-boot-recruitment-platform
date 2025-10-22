@@ -14,7 +14,6 @@ export function SignInForm() {
 
   useEffect(() => {
     if (state?.error) {
-      // Simple scroll to top for accessibility
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [state?.error]);
@@ -42,7 +41,7 @@ export function SignInForm() {
           id="password"
           name="password"
           type="password"
-          placeholder="••••••••"
+          placeholder="********"
           autoComplete="current-password"
           required
         />

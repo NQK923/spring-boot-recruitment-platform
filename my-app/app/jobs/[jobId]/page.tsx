@@ -4,18 +4,9 @@ import { apiFetch } from "@/lib/api";
 import { getAccessTokenFromCookies } from "@/lib/session";
 import { ROUTES } from "@/lib/routes";
 import { ApplyForm } from "@/components/jobs/apply-form";
+import type { JobPostingPublic, MeResponse } from "@/lib/types";
 
-type JobPosting = {
-  id: number;
-  title: string;
-  description?: string;
-};
-
-type CurrentUser = {
-  roles?: string[];
-};
-
-async function getJob(jobId: string): Promise<JobPosting | null> {
+async function getJob(jobId: string): Promise<JobPostingPublic | null> {
   try {
     const response = await apiFetch(`/api/jobs/public/${jobId}`, {
       method: "GET",
@@ -25,20 +16,20 @@ async function getJob(jobId: string): Promise<JobPosting | null> {
       return null;
     }
     const data = await response.json();
-    return (data && typeof data === "object") ? (data as JobPosting) : null;
+    return (data && typeof data === "object") ? (data as JobPostingPublic) : null;
   } catch {
     return null;
   }
 }
 
-async function getCurrentUser(): Promise<CurrentUser | null> {
+async function getCurrentUser(): Promise<MeResponse | null> {
   try {
     const response = await apiFetch("/api/auth/me", { method: "GET" });
     if (!response.ok) {
       return null;
     }
     const data = await response.json();
-    return data as CurrentUser;
+    return data as MeResponse;
   } catch {
     return null;
   }
@@ -79,7 +70,7 @@ export default async function JobDetailsPage({
         <div className="space-y-2">
           <h2 className="text-lg font-semibold text-foreground">Requirements</h2>
           <p className="whitespace-pre-wrap text-sm text-foreground/70">
-            "Specific requirements will display here after integrating with the Job Service response."
+            &#34;Specific requirements will display here after integrating with the Job Service response.&#34;
           </p>
         </div>
       </section>

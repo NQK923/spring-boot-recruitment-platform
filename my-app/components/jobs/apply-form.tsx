@@ -18,7 +18,7 @@ export function ApplyForm({ jobPostingId }: Props) {
   );
 
   return (
-    <form className="flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-background/70 p-6 shadow-sm">
+    <form action={formAction} className="flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-background/70 p-6 shadow-sm">
       <div>
         <h2 className="text-lg font-semibold text-foreground">Apply for this role</h2>
         <p className="text-sm text-foreground/60">
