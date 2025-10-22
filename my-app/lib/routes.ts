@@ -3,6 +3,7 @@ export const ROUTES = {
   jobs: "/jobs",
   candidatePortal: "/candidate",
   candidateApplications: "/candidate/applications",
+  candidateProfile: "/candidate/profile",
   recruiterDashboard: "/dashboard",
   docs: "/docs",
   signIn: "/auth/sign-in",

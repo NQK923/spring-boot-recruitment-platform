@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import { dateFormatter, dateTimeFormatter } from "@/lib/dates";
 import type { Application, Interview, JobPostingPublic, Profile } from "@/lib/types";
+import { Button } from "@/components/ui/button";
 
 type EnrichedApplication = Application & {
   jobTitle: string;
@@ -199,6 +201,11 @@ export default async function CandidatePortalPage() {
               Pulled from `/api/profiles/me`. Keep this data current so recruiters have the latest context.
             </p>
           </div>
+          <Link href={ROUTES.candidateProfile} className="shrink-0">
+            <Button variant="secondary" size="sm">
+              Manage profile
+            </Button>
+          </Link>
         </div>
 
         {profile ? (
