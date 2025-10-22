@@ -37,7 +37,7 @@ npm run start    # Serve the production build
 - `lib/api.ts` – gateway-aware fetch wrapper (`credentials: "include"`) for both server and client calls.
 - `app/(routes)` – add feature-specific layouts and pages (auth, dashboard, candidate portal, etc.).
 
-### Data fetching example
+### Server data fetching example
 
 ```ts
 import { apiFetch } from "@/lib/api";
@@ -47,6 +47,9 @@ export async function getPublicJobs() {
   return response.json();
 }
 ```
+
+> `apiFetch` is designed for server components, server actions, and route handlers. For client-side
+> needs, expose API routes that forward requests through the gateway so HTTP-only cookies remain secure.
 
 ### Styling
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/lib/routes";
 
 export default function Home() {
   return (
@@ -17,10 +18,10 @@ export default function Home() {
           platform.
         </p>
         <div className="flex flex-wrap items-center gap-4">
-          <Link href="/auth/sign-in">
+          <Link href={ROUTES.signIn}>
             <Button size="lg">Sign in to dashboard</Button>
           </Link>
-          <Link href="/auth/register">
+          <Link href={ROUTES.register}>
             <Button size="lg" variant="secondary">
               Create candidate account
             </Button>
@@ -36,7 +37,7 @@ export default function Home() {
             Tie interview schedules and feedback to every application so nothing slips through the cracks.
           </p>
           <div className="mt-auto flex flex-wrap gap-3">
-            <Link href="/dashboard">
+            <Link href={ROUTES.recruiterDashboard}>
               <Button>Go to recruiter workspace</Button>
             </Link>
             <Link href="/docs/admin">
@@ -53,7 +54,7 @@ export default function Home() {
             schedules and application stages in real time.
           </p>
           <div className="mt-auto flex flex-col gap-3">
-            <Link href="/candidate">
+            <Link href={ROUTES.candidatePortal}>
               <Button>Candidate portal</Button>
             </Link>
             <Link href="/docs/candidate">
