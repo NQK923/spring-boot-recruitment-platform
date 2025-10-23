@@ -1,10 +1,14 @@
 package com.recruitment.platform.userprofile.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 
-// Using a record for the update DTO. Add any other fields that can be updated.
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record UpdateProfileRequest(
     String fullName,
     String phoneNumber,
-    String summary
+    String summary,
+    List<ExperienceRequest> experiences,
+    List<EducationRequest> education,
+    List<SkillRequest> skills
 ) {}

@@ -3,6 +3,9 @@ import type { Profile } from "@/lib/types";
 import { UpdateProfileForm } from "@/components/profile/update-profile-form";
 import { UploadCvForm } from "@/components/profile/upload-cv-form";
 import { GenerateCvForm } from "@/components/profile/generate-cv-form";
+import { ExperiencesForm } from "@/components/profile/experience-form";
+import { EducationForm } from "@/components/profile/education-form";
+import { SkillsForm } from "@/components/profile/skills-form";
 
 async function getProfile(): Promise<Profile | null> {
   try {
@@ -156,77 +159,31 @@ export default async function CandidateProfilePage() {
         <div>
           <h2 className="text-lg font-semibold text-foreground">Experience</h2>
           <p className="text-sm text-foreground/60">
-            Experiences currently sync from records shared with your recruiter. Editing will be available in a
-            future release.
+            Chronicle the roles that shaped your journey. Add new entries or update existing ones whenever your
+            story evolves.
           </p>
         </div>
-        {experiences.length === 0 ? (
-          <p className="rounded-xl border border-foreground/10 bg-background/60 px-4 py-4 text-sm text-foreground/60">
-            No experiences stored yet. Share updates with your recruiter to keep records aligned.
-          </p>
-        ) : (
-          <div className="space-y-3 text-sm">
-            {experiences.map((experience) => (
-              <div key={experience.id} className="rounded-xl border border-foreground/10 px-4 py-3">
-                <p className="font-semibold text-foreground">{experience.title || "Role title"}</p>
-                <p className="text-xs text-foreground/50">
-                  {experience.companyName || "Company"} (
-                  {formatDate(experience.startDate, "Unknown")} -{" "}
-                  {formatDate(experience.endDate, "Present")})
-                </p>
-                {experience.description ? (
-                  <p className="mt-2 text-foreground/70">{experience.description}</p>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        )}
+        <ExperiencesForm experiences={experiences} />
       </section>
 
       <section className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
         <div>
           <h2 className="text-lg font-semibold text-foreground">Education</h2>
           <p className="text-sm text-foreground/60">
-            Education history mirrors details provided to your recruiter. Editing support is on the roadmap.
+            Keep your academic background current so recruiters understand your foundation and specialties.
           </p>
         </div>
-        {education.length === 0 ? (
-          <p className="rounded-xl border border-foreground/10 bg-background/60 px-4 py-4 text-sm text-foreground/60">
-            No education history yet. Add details via your recruiter to populate this section.
-          </p>
-        ) : (
-          <div className="space-y-3 text-sm">
-            {education.map((item) => (
-              <div key={item.id} className="rounded-xl border border-foreground/10 px-4 py-3">
-                <p className="font-semibold text-foreground">{item.school || "Institution"}</p>
-                <p className="text-xs text-foreground/50">
-                  {item.degree || "Degree"} (
-                  {formatDate(item.startDate, "Unknown")} - {formatDate(item.endDate, "Present")})
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
+        <EducationForm education={education} />
       </section>
 
       <section className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
-        <h2 className="text-lg font-semibold text-foreground">Skills</h2>
-        {skills.length === 0 ? (
-          <p className="rounded-xl border border-foreground/10 bg-background/60 px-4 py-4 text-sm text-foreground/60">
-            No skills saved yet. Share an updated list with your recruiter to reflect them here.
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Skills</h2>
+          <p className="text-sm text-foreground/60">
+            Spotlight the skills you rely on most. Add hard and soft skills to help recruiters match you quickly.
           </p>
-        ) : (
-          <div className="flex flex-wrap gap-2 text-sm">
-            {skills.map((skill) => (
-              <span
-                key={skill.id}
-                className="rounded-full border border-foreground/10 px-3 py-1 text-xs font-semibold text-foreground/70"
-              >
-                {skill.skillName || "Skill"}
-              </span>
-            ))}
-          </div>
-        )}
+        </div>
+        <SkillsForm skills={skills} />
       </section>
     </div>
   );

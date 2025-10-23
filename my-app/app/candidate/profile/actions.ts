@@ -9,11 +9,41 @@ export type ProfileFormState = {
   success?: string;
 };
 
+export type ExperienceInput = {
+  title: string;
+  companyName: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+};
+
+export type EducationInput = {
+  school: string;
+  degree: string;
+  startDate: string;
+  endDate: string;
+};
+
+export type SkillInput = {
+  skillName: string;
+};
+
 const SUCCESS_REVALIDATE_PATHS = [ROUTES.candidateProfile, ROUTES.candidatePortal];
 
 function revalidateCandidateViews() {
   for (const path of SUCCESS_REVALIDATE_PATHS) {
     revalidatePath(path);
+  }
+}
+
+function parseJsonArray<T>(value: FormDataEntryValue | null): T[] {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return [];
+  }
+  try {
+    return JSON.parse(value) as T[];
+  } catch {
+    return [];
   }
 }
 
@@ -24,10 +54,6 @@ export async function updateProfileAction(
   const fullName = String(formData.get("fullName") ?? "").trim();
   const phoneNumber = String(formData.get("phoneNumber") ?? "").trim();
   const summary = String(formData.get("summary") ?? "").trim();
-
-  if (!fullName && !phoneNumber && !summary) {
-    return { error: "Please provide at least one field to update." };
-  }
 
   try {
     await apiFetch("/api/profiles/me", {
@@ -105,4 +131,106 @@ export async function generateCvAction(
 
   revalidateCandidateViews();
   return { success: "CV generated successfully." };
+}
+
+function sanitizeExperience(input: ExperienceInput) {
+  return {
+    title: input.title.trim() || null,
+    companyName: input.companyName.trim() || null,
+    description: input.description.trim() || null,
+    startDate: input.startDate ? input.startDate : null,
+    endDate: input.endDate ? input.endDate : null,
+  };
+}
+
+function sanitizeEducation(input: EducationInput) {
+  return {
+    school: input.school.trim() || null,
+    degree: input.degree.trim() || null,
+    startDate: input.startDate ? input.startDate : null,
+    endDate: input.endDate ? input.endDate : null,
+  };
+}
+
+function sanitizeSkill(input: SkillInput) {
+  return {
+    skillName: input.skillName.trim() || null,
+  };
+}
+
+export async function updateExperiencesAction(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const experiences = parseJsonArray<ExperienceInput>(formData.get("experiences"))
+    .map(sanitizeExperience)
+    .filter((experience) =>
+      ["title", "companyName", "description", "startDate", "endDate"].some(
+        (key) => experience[key as keyof ReturnType<typeof sanitizeExperience>]
+      )
+    );
+
+  try {
+    await apiFetch("/api/profiles/me", {
+      method: "PUT",
+      body: JSON.stringify({ experiences }),
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unable to update experiences right now.";
+    return { error: message };
+  }
+
+  revalidateCandidateViews();
+  return { success: "Experiences updated." };
+}
+
+export async function updateEducationAction(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const education = parseJsonArray<EducationInput>(formData.get("education"))
+    .map(sanitizeEducation)
+    .filter((entry) =>
+      ["school", "degree", "startDate", "endDate"].some(
+        (key) => entry[key as keyof ReturnType<typeof sanitizeEducation>]
+      )
+    );
+
+  try {
+    await apiFetch("/api/profiles/me", {
+      method: "PUT",
+      body: JSON.stringify({ education }),
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unable to update education right now.";
+    return { error: message };
+  }
+
+  revalidateCandidateViews();
+  return { success: "Education updated." };
+}
+
+export async function updateSkillsAction(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const skills = parseJsonArray<SkillInput>(formData.get("skills"))
+    .map(sanitizeSkill)
+    .filter((skill) => skill.skillName);
+
+  try {
+    await apiFetch("/api/profiles/me", {
+      method: "PUT",
+      body: JSON.stringify({ skills }),
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unable to update skills right now.";
+    return { error: message };
+  }
+
+  revalidateCandidateViews();
+  return { success: "Skills updated." };
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { updateProfileAction, type ProfileFormState } from "@/app/candidate/profile/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,16 +16,18 @@ const initialState: ProfileFormState = {};
 
 export function UpdateProfileForm({ fullName, phoneNumber, summary }: Props) {
   const [state, formAction, pending] = useActionState(updateProfileAction, initialState);
+  const router = useRouter();
 
   useEffect(() => {
     if (state?.success) {
+      router.refresh();
       const timer = setTimeout(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }, 200);
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [state?.success]);
+  }, [router, state?.success]);
 
   return (
     <form action={formAction} className="space-y-4">

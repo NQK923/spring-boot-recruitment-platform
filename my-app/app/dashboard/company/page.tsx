@@ -63,16 +63,20 @@ async function getCompanyProfile(): Promise<CompanyProfile | null> {
     if (!data || typeof data !== "object") {
       return null;
     }
+    const company = data as Partial<CompanyProfile> & {
+      created_at?: string | null;
+      logo_url?: string | null;
+    };
     return {
-      id: Number((data as any).id ?? 0),
-      name: String((data as any).name ?? "Unnamed company"),
-      industry: (data as any).industry ?? null,
-      website: (data as any).website ?? null,
-      city: (data as any).city ?? null,
-      country: (data as any).country ?? null,
-      createdAt: (data as any).createdAt ?? (data as any).created_at ?? null,
-      description: (data as any).description ?? null,
-      logoUrl: (data as any).logoUrl ?? (data as any).logo_url ?? null,
+      id: Number(company.id ?? 0),
+      name: String(company.name ?? "Unnamed company"),
+      industry: company.industry ?? null,
+      website: company.website ?? null,
+      city: company.city ?? null,
+      country: company.country ?? null,
+      createdAt: company.createdAt ?? company.created_at ?? null,
+      description: company.description ?? null,
+      logoUrl: company.logoUrl ?? company.logo_url ?? null,
     };
   } catch {
     return null;
@@ -86,11 +90,17 @@ async function getCompanyUsers(): Promise<CompanyUser[]> {
     if (!Array.isArray(data)) {
       return [];
     }
-    return data.map((user: any, index: number) => ({
+    type CompanyUserApi = Partial<CompanyUser> & {
+      roleName?: string | null;
+      joinedAt?: string | null;
+      createdAt?: string | null;
+      created_at?: string | null;
+    };
+    return (data as CompanyUserApi[]).map((user, index) => ({
       id: Number(user.id ?? index),
       email: String(user.email ?? "unknown@talentflow.app"),
       role: String(user.role ?? user.roleName ?? "Unknown"),
-      joinedAt: user.createdAt ?? user.joinedAt ?? null,
+      joinedAt: user.joinedAt ?? user.createdAt ?? user.created_at ?? null,
     }));
   } catch {
     return [];
@@ -104,7 +114,7 @@ async function getCompanyJobs(): Promise<JobPosting[]> {
     if (!Array.isArray(data)) {
       return [];
     }
-    return data.map((job: any, index: number) => ({
+    return (data as Array<Partial<JobPosting> & { created_at?: string | null }>).map((job, index) => ({
       id: Number(job.id ?? index),
       title: String(job.title ?? "Untitled role"),
       status: job.status ?? null,

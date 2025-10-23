@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { uploadCvAction, type ProfileFormState } from "@/app/candidate/profile/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,12 +11,14 @@ const initialState: ProfileFormState = {};
 export function UploadCvForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState(uploadCvAction, initialState);
+  const router = useRouter();
 
   useEffect(() => {
     if (state?.success) {
       formRef.current?.reset();
+      router.refresh();
     }
-  }, [state?.success]);
+  }, [router, state?.success]);
 
   return (
     <form

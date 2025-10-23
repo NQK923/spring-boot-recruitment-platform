@@ -27,15 +27,6 @@ type SuperAdminDashboard = {
   }>;
 };
 
-type CompanySummary = {
-  id: number;
-  name: string;
-  status?: string | null;
-  createdAt?: string | null;
-  industry?: string | null;
-  adminCount?: number | null;
-};
-
 const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 
 async function getSuperAdminDashboard(): Promise<SuperAdminDashboard | null> {
@@ -48,6 +39,21 @@ async function getSuperAdminDashboard(): Promise<SuperAdminDashboard | null> {
   }
 }
 
+type CompanySummary = {
+  id: number;
+  name: string;
+  status?: string | null;
+  createdAt?: string | null;
+  industry?: string | null;
+  adminCount?: number | null;
+};
+
+type CompanyApiResponse = Partial<CompanySummary> & {
+  created_at?: string | null;
+  sector?: string | null;
+  admin_count?: number | null;
+};
+
 async function getCompanies(): Promise<CompanySummary[]> {
   try {
     const response = await apiFetch("/api/companies", { method: "GET" });
@@ -55,7 +61,8 @@ async function getCompanies(): Promise<CompanySummary[]> {
     if (!Array.isArray(data)) {
       return [];
     }
-    return data.map((company: any, index: number) => ({
+    const rawCompanies = data as CompanyApiResponse[];
+    return rawCompanies.map((company, index) => ({
       id: Number(company.id ?? index),
       name: String(company.name ?? "Unnamed company"),
       status: company.status ?? null,
