@@ -101,19 +101,22 @@ function formatProfileDate(value: string | null | undefined, fallback: string) {
   }
 }
 
+type ApplicationDetailsPageProps = {
+  params: Promise<{ applicationId: string }> | { applicationId: string };
+};
+
 export default async function ApplicationDetailsPage({
   params,
-}: {
-  params: { applicationId: string };
-}) {
-  const application = await getApplication(params.applicationId);
+}: ApplicationDetailsPageProps) {
+  const { applicationId } = await Promise.resolve(params);
+  const application = await getApplication(applicationId);
   if (!application) {
     notFound();
   }
 
   const [job, notes, profile] = await Promise.all([
     getJobSummary(application.jobPostingId),
-    getApplicationNotes(params.applicationId),
+    getApplicationNotes(applicationId),
     getCandidateProfile(application.candidateId),
   ]);
 

@@ -67,12 +67,15 @@ function formatDate(value: string | null | undefined, includeTime = false) {
   }
 }
 
+type CandidateApplicationDetailsPageProps = {
+  params: Promise<{ applicationId: string }> | { applicationId: string };
+};
+
 export default async function CandidateApplicationDetailsPage({
   params,
-}: {
-  params: { applicationId: string };
-}) {
-  const application = await getApplication(params.applicationId);
+}: CandidateApplicationDetailsPageProps) {
+  const { applicationId } = await Promise.resolve(params);
+  const application = await getApplication(applicationId);
   if (!application) {
     notFound();
   }

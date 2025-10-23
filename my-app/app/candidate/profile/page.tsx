@@ -131,7 +131,7 @@ export default async function CandidateProfilePage() {
                     <p className="font-semibold text-foreground">{cv.versionName}</p>
                     <p className="text-xs text-foreground/50">
                       Added {formatDate(cv.createdAt, "Unknown date")}{" "}
-                      {cv.isDefault ? "• default" : ""}
+                      {cv.isDefault ? "(default)" : ""}
                     </p>
                   </div>
                   {cv.fileId ? (
@@ -143,7 +143,7 @@ export default async function CandidateProfilePage() {
                     </a>
                   ) : (
                     <span className="text-xs text-foreground/50">
-                      Generated placeholder – upload an updated version when ready.
+                      Generated placeholder - upload an updated version when ready.
                     </span>
                   )}
                 </div>

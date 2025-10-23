@@ -1,21 +1,18 @@
 import type { ButtonHTMLAttributes } from "react";
+import { cx } from "@/lib/cx";
 
 type Variant = "primary" | "secondary" | "ghost";
 type Size = "sm" | "md" | "lg";
 
-function cx(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
-
 function variantClasses(variant: Variant) {
   switch (variant) {
     case "secondary":
-      return "border border-foreground/20 bg-background text-foreground shadow-sm hover:border-foreground/40 hover:text-foreground";
+      return "border border-foreground/15 bg-surface text-foreground shadow-sm hover:border-foreground/25 hover:text-foreground";
     case "ghost":
-      return "text-foreground/80 hover:text-foreground";
+      return "text-foreground/70 hover:text-foreground";
     case "primary":
     default:
-      return "bg-foreground text-background shadow-sm hover:bg-foreground/90";
+      return "brand-gradient text-white shadow-sm hover:opacity-90";
   }
 }
 
