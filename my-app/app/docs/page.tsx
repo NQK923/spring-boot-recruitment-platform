@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
+import { getCurrentUser, resolveDefaultRoute } from "@/lib/current-user";
 
 const guides = [
   {
@@ -40,7 +41,10 @@ const links = [
   },
 ];
 
-export default function DocsPage() {
+export default async function DocsPage() {
+  const viewer = await getCurrentUser();
+  const defaultRoute = resolveDefaultRoute(viewer?.roles);
+
   return (
     <Container className="max-w-5xl space-y-10">
       <Panel variant="glass" padding="lg" className="space-y-5">
@@ -57,14 +61,29 @@ export default function DocsPage() {
           </p>
         </header>
         <div className="flex flex-wrap gap-3">
-          <Link href={ROUTES.recruiterDashboard}>
-            <Button size="sm" variant="secondary">
-              Return to workspace
-            </Button>
-          </Link>
-          <Link href="/docs/ops/rollout">
-            <Button size="sm">Implementation checklist</Button>
-          </Link>
+          {viewer ? (
+            <>
+              <Link href={defaultRoute}>
+                <Button size="sm" variant="secondary">
+                  Return to workspace
+                </Button>
+              </Link>
+              <Link href="/docs/ops/rollout">
+                <Button size="sm">Implementation checklist</Button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href={ROUTES.signIn}>
+                <Button size="sm" variant="secondary">
+                  Sign in
+                </Button>
+              </Link>
+              <Link href={ROUTES.register}>
+                <Button size="sm">Create candidate account</Button>
+              </Link>
+            </>
+          )}
         </div>
       </Panel>
 

@@ -3,6 +3,8 @@ import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
+import { getCurrentUser } from "@/lib/current-user";
+import type { MeResponse } from "@/lib/types";
 
 const stats = [
   { label: "Companies onboarded", value: "48", detail: "Multi-tenant ready" },
@@ -36,7 +38,54 @@ const candidateFeatures = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const viewer = await getCurrentUser();
+
+  const renderPrimaryCtas = (user: MeResponse | null) => {
+    if (!user) {
+      return (
+        <>
+          <Link href={ROUTES.signIn}>
+            <Button size="lg">Launch recruiter workspace</Button>
+          </Link>
+          <Link href={ROUTES.register}>
+            <Button size="lg" variant="secondary">
+              Create candidate account
+            </Button>
+          </Link>
+        </>
+      );
+    }
+
+    const hasCandidateRole = user.roles.includes("CANDIDATE");
+    const hasRecruiterRole = user.roles.some((role) =>
+      ["SUPER_ADMIN", "COMPANY_ADMIN", "RECRUITER"].includes(role)
+    );
+
+    if (hasCandidateRole && !hasRecruiterRole) {
+      return (
+        <Link href={ROUTES.candidatePortal}>
+          <Button size="lg">Open candidate portal</Button>
+        </Link>
+      );
+    }
+
+    return (
+      <>
+        <Link href={hasCandidateRole ? ROUTES.candidatePortal : ROUTES.recruiterDashboard}>
+          <Button size="lg">
+            {hasCandidateRole ? "Open candidate portal" : "Open recruiter workspace"}
+          </Button>
+        </Link>
+        <Link href={hasCandidateRole ? ROUTES.recruiterDashboard : ROUTES.candidatePortal}>
+          <Button size="lg" variant="secondary">
+            {hasCandidateRole ? "Switch to recruiter area" : "View candidate experience"}
+          </Button>
+        </Link>
+      </>
+    );
+  };
+
   return (
     <Container as="main" className="flex flex-col gap-20">
       <section className="grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
@@ -54,14 +103,7 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-wrap gap-4">
-            <Link href={ROUTES.signIn}>
-              <Button size="lg">Launch recruiter workspace</Button>
-            </Link>
-            <Link href={ROUTES.register}>
-              <Button size="lg" variant="secondary">
-                Create candidate account
-              </Button>
-            </Link>
+            {renderPrimaryCtas(viewer)}
             <Link href={ROUTES.jobs}>
               <Button size="lg" variant="ghost">
                 Explore live roles
@@ -154,14 +196,29 @@ export default function Home() {
             ))}
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href={ROUTES.recruiterDashboard}>
-              <Button size="md">Enter recruiter workspace</Button>
-            </Link>
-            <Link href="/docs/admin">
-              <Button size="md" variant="secondary">
-                View rollout guide
-              </Button>
-            </Link>
+            {viewer ? (
+              <>
+                <Link href={ROUTES.recruiterDashboard}>
+                  <Button size="md">Enter recruiter workspace</Button>
+                </Link>
+                <Link href="/docs/admin">
+                  <Button size="md" variant="secondary">
+                    View rollout guide
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href={ROUTES.signIn}>
+                  <Button size="md">Sign in to recruiter workspace</Button>
+                </Link>
+                <Link href="/docs/admin">
+                  <Button size="md" variant="secondary">
+                    View rollout guide
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </Panel>
 
@@ -187,14 +244,29 @@ export default function Home() {
             ))}
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href={ROUTES.candidatePortal}>
-              <Button size="md">Open candidate portal</Button>
-            </Link>
-            <Link href="/docs/candidate">
-              <Button size="md" variant="secondary">
-                Candidate handbook
-              </Button>
-            </Link>
+            {viewer ? (
+              <>
+                <Link href={ROUTES.candidatePortal}>
+                  <Button size="md">Open candidate portal</Button>
+                </Link>
+                <Link href="/docs/candidate">
+                  <Button size="md" variant="secondary">
+                    Candidate handbook
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href={ROUTES.register}>
+                  <Button size="md">Create candidate account</Button>
+                </Link>
+                <Link href="/docs/candidate">
+                  <Button size="md" variant="secondary">
+                    Candidate handbook
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </Panel>
       </section>

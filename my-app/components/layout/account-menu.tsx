@@ -20,7 +20,7 @@ export function AccountMenu() {
     <button
       type="button"
       onClick={handleLogout}
-      className="text-sm font-medium text-foreground/80 transition hover:text-foreground disabled:opacity-50"
+      className="inline-flex h-9 items-center justify-center rounded-full border border-foreground/30 bg-surface px-4 text-sm font-medium text-foreground/80 transition hover:border-foreground/45 hover:text-foreground hover:shadow-md disabled:pointer-events-none disabled:opacity-50"
       disabled={pending}
     >
       {pending ? "Signing out..." : "Sign out"}

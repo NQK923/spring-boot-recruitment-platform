@@ -1,6 +1,8 @@
+import { redirect } from "next/navigation";
 import { SignInForm } from "@/components/auth/sign-in-form";
 import { SocialSignIn } from "@/components/auth/social-sign-in";
 import { ROUTES } from "@/lib/routes";
+import { getCurrentUser, resolveDefaultRoute } from "@/lib/current-user";
 
 type SignInSearchParams = {
   registered?: string;
@@ -21,7 +23,15 @@ function sanitizeNext(nextValue: string | undefined) {
 export default async function SignInPage({ searchParams }: SignInPageProps) {
   const resolvedSearchParams = await Promise.resolve(searchParams);
   const justRegistered = resolvedSearchParams?.registered === "1";
-  const safeNext = sanitizeNext(resolvedSearchParams?.next) ?? ROUTES.recruiterDashboard;
+  const requestedNext = sanitizeNext(resolvedSearchParams?.next);
+  const viewer = await getCurrentUser();
+
+  if (viewer) {
+    const defaultRoute = resolveDefaultRoute(viewer.roles);
+    redirect(requestedNext ?? defaultRoute);
+  }
+
+  const safeNext = requestedNext ?? ROUTES.recruiterDashboard;
 
   return (
     <div className="flex flex-col gap-6">

@@ -1,6 +1,13 @@
+import { redirect } from "next/navigation";
 import { RegisterForm } from "@/components/auth/register-form";
+import { getCurrentUser, resolveDefaultRoute } from "@/lib/current-user";
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const viewer = await getCurrentUser();
+  if (viewer) {
+    redirect(resolveDefaultRoute(viewer.roles));
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="space-y-2 text-center">
