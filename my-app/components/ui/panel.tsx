@@ -25,8 +25,8 @@ export function Panel({
   return (
     <Component
       className={cx(
-        "rounded-3xl border border-foreground/10 shadow-sm transition-shadow hover:shadow-lg/40",
-        variant === "glass" ? "glass-panel" : "bg-surface",
+        "relative rounded-3xl border border-border/70 shadow-[0_16px_40px_rgba(var(--shadow-soft),0.28)]",
+        variant === "glass" ? "glass-panel" : "bg-surface/96",
         paddingMap[padding],
         className
       )}

@@ -88,16 +88,16 @@ export default async function Home() {
 
   return (
     <Container as="main" className="flex flex-col gap-20">
-      <section className="grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
+      <section className="grid gap-12 rounded-[32px] border border-border/80 bg-surface/98 p-6 sm:p-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
         <div className="space-y-8">
-          <span className="inline-flex items-center gap-2 rounded-full border border-foreground/15 bg-surface px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-muted">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/90 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.32em] text-accent shadow-[0_8px_20px_rgba(var(--shadow-soft),0.25)]">
             Modern recruitment OS
           </span>
           <div className="space-y-5">
             <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
               Build remarkable hiring journeys for teams and candidates.
             </h1>
-            <p className="max-w-xl text-lg text-foreground/70">
+            <p className="max-w-xl text-lg text-foreground/65">
               Talentflow unifies jobs, applications, interviews, and notifications behind one secure gateway so
               your teams move faster while candidates stay informed every step of the way.
             </p>
@@ -112,7 +112,10 @@ export default async function Home() {
           </div>
           <dl className="grid gap-6 sm:grid-cols-3">
             {stats.map((stat) => (
-              <div key={stat.label} className="rounded-2xl border border-foreground/10 bg-surface/80 p-5">
+              <div
+                key={stat.label}
+                className="rounded-2xl border border-border/70 bg-surface/96 p-5 shadow-[0_14px_32px_rgba(var(--shadow-soft),0.24)]"
+              >
                 <dt className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">{stat.label}</dt>
                 <dd className="mt-2 text-2xl font-semibold text-foreground">{stat.value}</dd>
                 <p className="mt-1 text-xs text-foreground/60">{stat.detail}</p>
@@ -122,7 +125,7 @@ export default async function Home() {
         </div>
 
         <Panel variant="glass" padding="lg" className="relative overflow-hidden">
-          <div className="absolute -right-24 top-8 hidden h-48 w-48 rounded-full bg-accent/10 blur-3xl sm:block" />
+          <div className="absolute -right-20 top-6 hidden h-48 w-48 rounded-full bg-accent/14 blur-3xl sm:block" />
           <div className="relative space-y-6">
             <div className="flex items-center justify-between">
               <div>
@@ -134,7 +137,7 @@ export default async function Home() {
               </span>
             </div>
             <div className="space-y-4">
-              <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-4 shadow-sm">
+              <div className="rounded-2xl border border-border/60 bg-surface/92 p-4 shadow-[0_12px_32px_rgba(var(--shadow-soft),0.22)] backdrop-blur-sm">
                 <p className="text-sm font-semibold text-foreground">Applications moving forward</p>
                 <p className="mt-1 text-sm text-foreground/60">
                   86 candidates scheduled for interviews this week across 12 companies.
@@ -154,7 +157,7 @@ export default async function Home() {
                   </div>
                 </div>
               </div>
-              <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-4 shadow-sm">
+              <div className="rounded-2xl border border-border/60 bg-surface/92 p-4 shadow-[0_12px_32px_rgba(var(--shadow-soft),0.22)] backdrop-blur-sm">
                 <p className="text-sm font-semibold text-foreground">Candidate experience</p>
                 <ul className="mt-3 space-y-2 text-sm text-foreground/70">
                   <li>- Personalized dashboards with interview timelines.</li>
@@ -163,7 +166,7 @@ export default async function Home() {
                 </ul>
               </div>
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-accent/20 bg-accent/10 px-4 py-3 text-sm text-accent">
+            <div className="flex items-center justify-between rounded-2xl border border-accent/25 bg-accent/12 px-4 py-3 text-sm text-accent">
               <span>Connected services: Auth, Companies, Jobs, Applications, Interviews</span>
               <span className="hidden text-xs font-semibold uppercase tracking-[0.28em] lg:inline">
                 Eureka synced
@@ -173,10 +176,10 @@ export default async function Home() {
         </Panel>
       </section>
 
-      <section className="grid gap-8 lg:grid-cols-2">
+      <section className="grid gap-8 rounded-[32px] border border-border/80 bg-surface-muted/80 p-6 sm:p-10 lg:grid-cols-2">
         <Panel variant="surface" padding="lg" className="space-y-6">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
               For recruiters & admins
             </span>
             <h2 className="mt-3 text-2xl font-semibold text-foreground">
@@ -189,7 +192,10 @@ export default async function Home() {
           </div>
           <div className="space-y-4">
             {recruiterFeatures.map((feature) => (
-              <div key={feature.title} className="rounded-2xl border border-foreground/10 bg-surface/90 p-4 shadow-sm">
+              <div
+                key={feature.title}
+                className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_26px_rgba(var(--shadow-soft),0.22)]"
+              >
                 <p className="text-sm font-semibold text-foreground">{feature.title}</p>
                 <p className="mt-1 text-sm text-foreground/70">{feature.description}</p>
               </div>
@@ -224,7 +230,7 @@ export default async function Home() {
 
         <Panel variant="surface" padding="lg" className="space-y-6">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
               For candidates
             </span>
             <h2 className="mt-3 text-2xl font-semibold text-foreground">
@@ -237,7 +243,10 @@ export default async function Home() {
           </div>
           <div className="space-y-4">
             {candidateFeatures.map((feature) => (
-              <div key={feature.title} className="rounded-2xl border border-foreground/10 bg-surface/90 p-4 shadow-sm">
+              <div
+                key={feature.title}
+                className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_26px_rgba(var(--shadow-soft),0.22)]"
+              >
                 <p className="text-sm font-semibold text-foreground">{feature.title}</p>
                 <p className="mt-1 text-sm text-foreground/70">{feature.description}</p>
               </div>
@@ -271,52 +280,83 @@ export default async function Home() {
         </Panel>
       </section>
 
-      <Panel variant="glass" padding="lg" className="space-y-6">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-              Secure by design
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold text-foreground">Gateway first architecture.</h2>
-            <p className="mt-2 max-w-2xl text-sm text-foreground/70">
-              Every front-end call routes through the gateway for JWT validation, role propagation, rate
-              limiting, and service discovery. The result is a stable, observable platform ready for production
-              environments.
+      <section className="rounded-[32px] border border-border/80 bg-surface/98 p-6 sm:p-10">
+        <Panel variant="glass" padding="lg" className="space-y-6">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
+                Secure by design
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold text-foreground">Gateway first architecture.</h2>
+              <p className="mt-2 max-w-2xl text-sm text-foreground/70">
+                Every front-end call routes through the gateway for JWT validation, role propagation, rate
+                limiting, and service discovery. The result is a stable, observable platform ready for production
+                environments.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <span className="rounded-full border border-border/60 bg-surface/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
+                Eureka
+              </span>
+              <span className="rounded-full border border-border/60 bg-surface/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
+                RabbitMQ
+              </span>
+              <span className="rounded-full border border-border/60 bg-surface/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
+                PostgreSQL
+              </span>
+            </div>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-3">
+            <div className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_24px_rgba(var(--shadow-soft),0.22)]">
+              <p className="text-sm font-semibold text-foreground">Service -&gt; Gateway -&gt; Service</p>
+              <p className="mt-2 text-sm text-foreground/70">
+                Feign clients always traverse the gateway, ensuring consistent auth and observability policies.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_24px_rgba(var(--shadow-soft),0.22)]">
+              <p className="text-sm font-semibold text-foreground">Event-driven updates</p>
+              <p className="mt-2 text-sm text-foreground/70">
+                Notifications stay in sync via RabbitMQ topics for invites, applications, and interviews.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_24px_rgba(var(--shadow-soft),0.22)]">
+              <p className="text-sm font-semibold text-foreground">Tenant aware storage</p>
+              <p className="mt-2 text-sm text-foreground/70">
+                Each service owns its schema with Liquibase migrations and company scoped access controls.
+              </p>
+            </div>
+          </div>
+        </Panel>
+      </section>
+
+      <section className="rounded-[32px] border border-border/80 bg-surface-muted/80 p-6 sm:p-10">
+        <Panel
+          variant="surface"
+          padding="lg"
+          className="flex flex-col items-center gap-6 text-center shadow-[0_18px_44px_rgba(var(--shadow-soft),0.28)]"
+        >
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
+            Next steps
+          </span>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Experience the unified hiring workspace today.
+            </h2>
+            <p className="max-w-2xl text-sm text-foreground/70">
+              Join recruiters, admins, and candidates collaborating through the gateway-first platform. Spin up
+              a tenant, invite teammates, and keep every applicant informed with event-driven updates.
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <span className="rounded-full border border-foreground/10 bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-              Eureka
-            </span>
-            <span className="rounded-full border border-foreground/10 bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-              RabbitMQ
-            </span>
-            <span className="rounded-full border border-foreground/10 bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-              PostgreSQL
-            </span>
+          <div className="flex flex-wrap justify-center gap-3">
+            {renderPrimaryCtas(viewer)}
+            <Link href={ROUTES.docs}>
+              <Button size="md" variant="ghost">
+                Explore documentation
+              </Button>
+            </Link>
           </div>
-        </div>
-        <div className="grid gap-6 sm:grid-cols-3">
-          <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-4">
-            <p className="text-sm font-semibold text-foreground">Service -&gt; Gateway -&gt; Service</p>
-            <p className="mt-2 text-sm text-foreground/70">
-              Feign clients always traverse the gateway, ensuring consistent auth and observability policies.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-4">
-            <p className="text-sm font-semibold text-foreground">Event-driven updates</p>
-            <p className="mt-2 text-sm text-foreground/70">
-              Notifications stay in sync via RabbitMQ topics for invites, applications, and interviews.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-4">
-            <p className="text-sm font-semibold text-foreground">Tenant aware storage</p>
-            <p className="mt-2 text-sm text-foreground/70">
-              Each service owns its schema with Liquibase migrations and company scoped access controls.
-            </p>
-          </div>
-        </div>
-      </Panel>
+        </Panel>
+      </section>
     </Container>
   );
 }

@@ -7,12 +7,12 @@ type Size = "sm" | "md" | "lg";
 function variantClasses(variant: Variant) {
   switch (variant) {
     case "secondary":
-      return "border border-foreground/25 bg-surface text-foreground shadow-md hover:shadow-lg hover:border-foreground/35 hover:text-foreground";
+      return "border border-border/70 bg-surface/95 text-foreground shadow-[0_12px_26px_rgba(var(--shadow-soft),0.32)]";
     case "ghost":
-      return "border border-foreground/35 text-foreground/80 hover:text-foreground hover:border-foreground/45 hover:shadow-md";
+      return "border border-border/50 bg-transparent text-foreground/75";
     case "primary":
     default:
-      return "brand-gradient text-white shadow-lg hover:shadow-xl hover:opacity-95";
+      return "brand-gradient text-white shadow-[0_16px_32px_rgba(var(--shadow-strong),0.32)]";
   }
 }
 
@@ -42,7 +42,7 @@ export function Button({
   return (
     <button
       className={cx(
-        "inline-flex cursor-pointer items-center justify-center rounded-full font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground/60 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex cursor-pointer items-center justify-center rounded-full font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground/60 disabled:pointer-events-none disabled:opacity-50",
         variantClasses(variant),
         sizeClasses(size),
         className

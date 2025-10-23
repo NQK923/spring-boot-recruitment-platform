@@ -29,7 +29,7 @@ const footerLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-foreground/10 bg-surface/70">
+    <footer className="border-t border-border/60 bg-surface/95 shadow-[0_-12px_32px_rgba(var(--shadow-soft),0.25)]">
       <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div className="space-y-4">
@@ -54,7 +54,7 @@ export function SiteFooter() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="transition hover:text-foreground"
+                      className="transition hover:text-foreground hover:underline hover:underline-offset-4"
                     >
                       {item.label}
                     </Link>
