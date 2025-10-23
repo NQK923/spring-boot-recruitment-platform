@@ -32,8 +32,8 @@ export default async function JobsPage() {
             </span>
             <h1 className="mt-2 text-3xl font-semibold text-foreground sm:text-4xl">Open roles</h1>
             <p className="mt-2 max-w-2xl text-sm text-foreground/70">
-              Browse public job postings aggregated from the Job Service. Each posting is kept in sync with
-              recruiter updates so candidates always view the latest requirements.
+              Browse open opportunities from hiring teams using Talentflow. Listings refresh as recruiters update
+              requirements, locations, or salary ranges so you always see the latest details.
             </p>
           </div>
           <Link href={ROUTES.register}>
@@ -44,13 +44,13 @@ export default async function JobsPage() {
         </div>
         <div className="flex flex-wrap gap-3 text-xs text-foreground/60">
           <span className="rounded-full border border-foreground/10 px-3 py-1">
-            Updated through gateway routing
+            New roles added every week
           </span>
           <span className="rounded-full border border-foreground/10 px-3 py-1">
-            Powered by Job Service metrics
+            Recruiter notes shared transparently
           </span>
           <span className="rounded-full border border-foreground/10 px-3 py-1">
-            Application history preserved
+            Track your application with status alerts
           </span>
         </div>
       </header>
@@ -71,7 +71,7 @@ export default async function JobsPage() {
               </div>
               <p className="line-clamp-4 text-sm text-foreground/70">
                 {job.description ??
-                  "This role description will appear once the Job Service returns detailed context and requirements."}
+                  "The hiring team is preparing a detailed description. Check back soon for responsibilities and requirements."}
               </p>
               <div className="mt-auto flex items-center justify-between pt-4 text-sm">
                 <Link

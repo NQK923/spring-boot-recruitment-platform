@@ -161,7 +161,7 @@ export default async function ApplicationDetailsPage({
             <h2 className="text-lg font-semibold text-foreground">Job information</h2>
             <p className="whitespace-pre-wrap text-sm text-foreground/70">
               {job?.description ??
-                "Job details are not available. The listing may have been archived or removed from the Job Service."}
+                "Job details are not available. The listing may have been archived or the hiring team has not published the latest description."}
             </p>
           </div>
 

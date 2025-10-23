@@ -206,8 +206,8 @@ export default async function CandidatePortalPage() {
               Keep your applications and interviews on track.
             </h1>
             <p className="max-w-2xl text-sm text-foreground/70">
-              Track your applications, manage CV versions, and stay informed about interviews. Data loads
-              directly from the Application, Job, and Interview services through the gateway.
+              Track your applications, manage CV versions, and stay informed about interviews—all from one
+              streamlined workspace.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -266,7 +266,7 @@ export default async function CandidatePortalPage() {
         <div>
           <h2 className="text-lg font-semibold text-foreground">Profile snapshot</h2>
           <p className="text-sm text-foreground/60">
-            Pulled from `/api/profiles/me`. Keep this data current so recruiters have the latest context.
+            Keep this information current so recruiters have the latest context when reviewing your application.
           </p>
         </div>
 
@@ -391,7 +391,7 @@ export default async function CandidatePortalPage() {
           <div>
             <h2 className="text-lg font-semibold text-foreground">Recent applications</h2>
             <p className="text-sm text-foreground/60">
-              Applications returned from `/api/applications/my`, enriched with public job data.
+              A snapshot of your latest submissions with quick links to view details and next steps.
             </p>
           </div>
           <Link href={ROUTES.jobs} className="text-sm font-semibold text-foreground hover:underline">
@@ -478,8 +478,7 @@ export default async function CandidatePortalPage() {
         <div>
           <h2 className="text-lg font-semibold text-foreground">Upcoming interviews</h2>
           <p className="text-sm text-foreground/60">
-            Pulled from `/api/interviews/my`. Once connected to Notification Service, this section reflects
-            scheduling changes automatically.
+            This list updates automatically when recruiters confirm, reschedule, or cancel an interview slot.
           </p>
         </div>
 

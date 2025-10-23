@@ -26,17 +26,17 @@ const links = [
   {
     section: "Reference",
     items: [
-      { label: "Gateway routes", href: "/docs/reference/gateway" },
-      { label: "Service contracts", href: "/docs/reference/services" },
-      { label: "Event catalogue", href: "/docs/reference/events" },
+      { label: "Roles & permissions", href: "/docs/reference/roles" },
+      { label: "Automation rules", href: "/docs/reference/automations" },
+      { label: "Analytics & reporting", href: "/docs/reference/analytics" },
     ],
   },
   {
     section: "Operations",
     items: [
       { label: "Rollout checklist", href: "/docs/ops/rollout" },
-      { label: "Incident response", href: "/docs/ops/incidents" },
-      { label: "Monitoring & metrics", href: "/docs/ops/observability" },
+      { label: "Candidate comms templates", href: "/docs/ops/templates" },
+      { label: "Support & escalation", href: "/docs/ops/support" },
     ],
   },
 ];

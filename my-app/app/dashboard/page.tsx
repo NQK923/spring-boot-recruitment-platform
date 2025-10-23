@@ -168,8 +168,8 @@ export default async function DashboardPage() {
               Coordinate jobs, candidates, and interviews in one place.
             </h1>
             <p className="max-w-2xl text-sm text-foreground/70">
-              Publish roles, manage applications, and keep interview schedules aligned with gateway-powered
-              routing across the platform.
+              Publish roles, manage applications, and keep interview schedules aligned with timely updates across
+              the workspace.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -206,8 +206,8 @@ export default async function DashboardPage() {
             <header className="space-y-2">
               <p className="text-sm font-semibold text-foreground">Existing postings</p>
               <p className="text-sm text-foreground/60">
-                Update status, work patterns, or position assignments. Requests flow through the gateway to
-                the Job Service.
+                Update status, work patterns, or position assignments and publish changes to your live postings
+                instantly.
               </p>
             </header>
             {jobs.length === 0 ? (
@@ -230,8 +230,8 @@ export default async function DashboardPage() {
           <header>
             <h2 className="text-lg font-semibold text-foreground">Pipeline snapshot</h2>
             <p className="text-sm text-foreground/60">
-              Aggregated from company applications. Update statuses in the Application Service and they will
-              reflect here automatically.
+              Aggregated from company applications. Adjust statuses from any candidate profile and the totals
+              update automatically.
             </p>
           </header>
           {allApplications.length === 0 ? (
@@ -254,7 +254,8 @@ export default async function DashboardPage() {
           <header>
             <h2 className="text-lg font-semibold text-foreground">Upcoming interviews</h2>
             <p className="text-sm text-foreground/60">
-              Data returned from `/api/interviews/my`. Reschedule or add feedback from the Interview Service.
+              View the next five conversations on your calendar. Reschedule or log feedback directly from the
+              interviews area.
             </p>
           </header>
 
@@ -331,17 +332,13 @@ export default async function DashboardPage() {
         <header>
           <h2 className="text-lg font-semibold text-foreground">Job health</h2>
           <p className="text-sm text-foreground/60">
-            Track application volume per job. Calls{" "}
-            <code className="rounded bg-foreground/10 px-1 py-0.5 text-xs text-foreground">
-              /api/jobs/{"{jobId}"}/applications
-            </code>{" "}
-            for each posting.
+            Track application volume per job and spot roles that need more sourcing or faster follow-up.
           </p>
         </header>
 
         {jobs.length === 0 ? (
           <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-4 py-6 text-sm text-foreground/60">
-            No jobs found for your company. Create a job posting in the Job Service to populate this table.
+            No jobs found for your company. Create a job posting to populate this table.
           </div>
         ) : (
           <div className="overflow-x-auto rounded-2xl border border-foreground/10 bg-surface">

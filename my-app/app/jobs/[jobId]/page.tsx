@@ -66,7 +66,7 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
         </div>
         <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">{job.title}</h1>
         <p className="max-w-3xl text-sm text-foreground/70">
-          Role details below sync directly from the Job Service. Apply to join the pipeline, or sign in to your
+          Role details come straight from the hiring team. Apply to join the pipeline, or sign in to your
           candidate workspace to keep track of interviews and feedback afterwards.
         </p>
       </header>
@@ -76,18 +76,18 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
           <h2 className="text-lg font-semibold text-foreground">Role overview</h2>
           <p className="whitespace-pre-wrap text-sm text-foreground/70">
             {job.description ??
-              "Detailed job description will appear here once the Job Service returns the full payload."}
+              "The hiring team is finalising this description. Check back soon or follow the role to stay updated."}
           </p>
         </div>
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground">Requirements</h2>
           <p className="whitespace-pre-wrap text-sm text-foreground/70">
-            Specific requirements will display here after integrating with the Job Service response.
+            Recruiters will list required skills, experience, and tools here as soon as they are confirmed.
           </p>
         </div>
         <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-5 text-sm text-foreground/70">
-          Applications travel through the gateway for authentication, role propagation, and enrichment before
-          landing in the Application Service. Expect timely updates as you move forward.
+          Applications are routed directly to the recruiter assigned to this role. Expect timely updates and
+          interview invites as you move forward.
         </div>
       </Panel>
 

@@ -98,8 +98,8 @@ export default async function Home() {
               Build remarkable hiring journeys for teams and candidates.
             </h1>
             <p className="max-w-xl text-lg text-foreground/65">
-              Talentflow unifies jobs, applications, interviews, and notifications behind one secure gateway so
-              your teams move faster while candidates stay informed every step of the way.
+              Talentflow centralises job marketing, application review, and interview scheduling so hiring teams
+              move faster while candidates stay informed every step of the way.
             </p>
           </div>
           <div className="flex flex-wrap gap-4">
@@ -133,7 +133,7 @@ export default async function Home() {
                 <p className="text-sm text-foreground/70">Today&apos;s snapshot</p>
               </div>
               <span className="rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
-                Syncing via gateway
+                Live updates enabled
               </span>
             </div>
             <div className="space-y-4">
@@ -160,16 +160,16 @@ export default async function Home() {
               <div className="rounded-2xl border border-border/60 bg-surface/92 p-4 shadow-[0_12px_32px_rgba(var(--shadow-soft),0.22)] backdrop-blur-sm">
                 <p className="text-sm font-semibold text-foreground">Candidate experience</p>
                 <ul className="mt-3 space-y-2 text-sm text-foreground/70">
-                  <li>- Personalized dashboards with interview timelines.</li>
+                  <li>- Personalised dashboards with interview timelines.</li>
                   <li>- Secure CV storage with versioning support.</li>
-                  <li>- Real-time notifications streaming from the gateway.</li>
+                  <li>- Real-time notifications across email and in-app alerts.</li>
                 </ul>
               </div>
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-accent/25 bg-accent/12 px-4 py-3 text-sm text-accent">
-              <span>Connected services: Auth, Companies, Jobs, Applications, Interviews</span>
+              <span>Active collaborators: Recruiters, Hiring Managers, Interviewers, Candidates</span>
               <span className="hidden text-xs font-semibold uppercase tracking-[0.28em] lg:inline">
-                Eureka synced
+                Refreshed every 15 minutes
               </span>
             </div>
           </div>
@@ -285,44 +285,45 @@ export default async function Home() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-                Secure by design
+                Why teams choose Talentflow
               </p>
-              <h2 className="mt-2 text-2xl font-semibold text-foreground">Gateway first architecture.</h2>
+              <h2 className="mt-2 text-2xl font-semibold text-foreground">Designed for modern hiring teams.</h2>
               <p className="mt-2 max-w-2xl text-sm text-foreground/70">
-                Every front-end call routes through the gateway for JWT validation, role propagation, rate
-                limiting, and service discovery. The result is a stable, observable platform ready for production
-                environments.
+                Built-in permissions, reminders, and analytics keep every stakeholder aligned without chasing
+                spreadsheets or patching together point solutions.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
               <span className="rounded-full border border-border/60 bg-surface/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-                Eureka
+                Role-aware access
               </span>
               <span className="rounded-full border border-border/60 bg-surface/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-                RabbitMQ
+                Automated nudges
               </span>
               <span className="rounded-full border border-border/60 bg-surface/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-                PostgreSQL
+                Audit-ready logs
               </span>
             </div>
           </div>
           <div className="grid gap-6 sm:grid-cols-3">
             <div className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_24px_rgba(var(--shadow-soft),0.22)]">
-              <p className="text-sm font-semibold text-foreground">Service -&gt; Gateway -&gt; Service</p>
+              <p className="text-sm font-semibold text-foreground">Role-based guardrails</p>
               <p className="mt-2 text-sm text-foreground/70">
-                Feign clients always traverse the gateway, ensuring consistent auth and observability policies.
+                Granular roles keep sensitive salary bands, feedback, and offers limited to the right reviewers.
               </p>
             </div>
             <div className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_24px_rgba(var(--shadow-soft),0.22)]">
-              <p className="text-sm font-semibold text-foreground">Event-driven updates</p>
+              <p className="text-sm font-semibold text-foreground">Automated communications</p>
               <p className="mt-2 text-sm text-foreground/70">
-                Notifications stay in sync via RabbitMQ topics for invites, applications, and interviews.
+                Interview reminders, application status updates, and invite emails send instantly with your
+                branding.
               </p>
             </div>
             <div className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_24px_rgba(var(--shadow-soft),0.22)]">
-              <p className="text-sm font-semibold text-foreground">Tenant aware storage</p>
+              <p className="text-sm font-semibold text-foreground">Data insights & exports</p>
               <p className="mt-2 text-sm text-foreground/70">
-                Each service owns its schema with Liquibase migrations and company scoped access controls.
+                Track conversion rates, hiring velocity, and source performance with dashboards you can export or
+                share live.
               </p>
             </div>
           </div>
@@ -343,8 +344,8 @@ export default async function Home() {
               Experience the unified hiring workspace today.
             </h2>
             <p className="max-w-2xl text-sm text-foreground/70">
-              Join recruiters, admins, and candidates collaborating through the gateway-first platform. Spin up
-              a tenant, invite teammates, and keep every applicant informed with event-driven updates.
+              Join recruiters, admins, and candidates collaborating in one place. Spin up a workspace, invite
+              teammates, and keep every applicant informed with timely updates.
             </p>
           </div>
           <div className="flex flex-wrap justify-center gap-3">

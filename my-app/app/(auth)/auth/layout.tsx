@@ -18,9 +18,9 @@ export default function AuthLayout({
                 </h1>
               </div>
               <ul className="space-y-3 text-sm text-white/85">
-                <li>- Secure gateway verifies every request across services.</li>
-                <li>- Candidate profiles sync automatically after registration.</li>
-                <li>- Password resets use time-boxed codes for safety.</li>
+                <li>- Guided onboarding walks new teammates through the right workspace.</li>
+                <li>- Candidate profiles stay synced the moment an account is created.</li>
+                <li>- Password resets are quick, secure, and easy to complete on any device.</li>
               </ul>
             </div>
             <p className="text-xs text-white/70">

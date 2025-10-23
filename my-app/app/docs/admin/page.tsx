@@ -8,25 +8,25 @@ const checklist = [
   {
     title: "Workspace preparation",
     items: [
-      "Confirm company details and tenant configuration via Company Service.",
-      "Create initial job positions and templates to accelerate recruiter setup.",
-      "Set app.jwt.secret across gateway and resource services before launch.",
+      "Confirm company branding, locations, and default hiring stages.",
+      "Create starter job templates and interview scorecards for recruiters.",
+      "Document hiring policies (offer approvals, compensation ranges) before launch.",
     ],
   },
   {
     title: "User provisioning",
     items: [
       "Invite COMPANY_ADMIN and RECRUITER accounts from the company dashboard.",
-      "Verify invitation emails are delivered through Notification Service (check RabbitMQ bindings).",
-      "Audit role assignments in Auth Service to ensure least-privilege access.",
+      "Send a welcome packet covering workflows, SLAs, and communication channels.",
+      "Review role assignments weekly to ensure access aligns with responsibilities.",
     ],
   },
   {
     title: "Environment hygiene",
     items: [
-      "Monitor gateway logs for denied requests and missing headers.",
-      "Schedule database migrations via Liquibase change sets for each microservice.",
-      "Ensure discovery-service and gateway are healthy before allowing recruiters in.",
+      "Review security settings (password policy, SSO, MFA) every quarter.",
+      "Archive inactive jobs and anonymise candidate data according to policy.",
+      "Track platform announcements and roll out new features to your team.",
     ],
   },
 ];
@@ -39,7 +39,7 @@ const escalations = [
   },
   {
     label: "Security & infra",
-    description: "Gateway policies, JWT issues, rate limiting or suspicious activity.",
+    description: "Access policies, suspicious login activity, or compliance questions.",
     contact: "platform-security@company.com",
   },
   {
@@ -112,21 +112,22 @@ export default function AdminDocsPage() {
           <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
             <h3 className="text-sm font-semibold text-foreground">Role hygiene (weekly)</h3>
             <p className="text-sm text-foreground/70">
-              Export Auth Service role assignments. Confirm recruiters associated with inactive tenants are removed.
+              Export the user list from admin settings. Remove access for teammates who have left or changed
+              responsibilities.
             </p>
           </div>
           <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
             <h3 className="text-sm font-semibold text-foreground">Audit trail (monthly)</h3>
             <p className="text-sm text-foreground/70">
-              Review application status changes via Application Service and ensure notes/history reflect decisions.
+              Review recent application status changes and ensure notes capture decisions and approvals.
             </p>
           </div>
         </div>
         <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
           <h3 className="text-sm font-semibold text-foreground">Data retention</h3>
           <p className="text-sm text-foreground/70">
-            Configure automated clean-up for expired invitations, password reset tokens, and archived applications
-            according to your company policy.
+            Configure automated clean-up for expired invitations, reset codes, and archived applications in line
+            with your company policy.
           </p>
         </div>
       </Panel>
@@ -168,16 +169,16 @@ export default function AdminDocsPage() {
         </div>
         <ul className="space-y-3 text-sm text-foreground/70">
           <li>
-            - <strong className="text-foreground">Gateway 401</strong>: confirm the request includes the JWT from the
-            Auth Service and that the shared secret matches environment configs.
+            - <strong className="text-foreground">Sign-in issues</strong>: confirm the teammate accepted their invite or
+            reset their password from the sign-in page.
           </li>
           <li>
-            - <strong className="text-foreground">Missing company headers</strong>: verify `AddCompanyIdHeaderFilter`
-            reaches Company Service and that the user is mapped in `company_users`.
+            - <strong className="text-foreground">Missing company context</strong>: make sure the teammate is assigned to
+            the correct company and role in the admin area.
           </li>
           <li>
-            - <strong className="text-foreground">Delayed notifications</strong>: inspect RabbitMQ queues for
-            `user.invited`, `application.status.changed`, or `interview.scheduled` bindings.
+            - <strong className="text-foreground">Delayed notifications</strong>: confirm sender addresses are verified
+            and ask teammates to check spam folders before escalating.
           </li>
         </ul>
       </Panel>

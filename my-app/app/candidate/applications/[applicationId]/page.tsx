@@ -120,7 +120,7 @@ export default async function CandidateApplicationDetailsPage({
         <h2 className="text-lg font-semibold text-foreground">Job overview</h2>
         <p className="whitespace-pre-wrap text-sm text-foreground/70">
           {job?.description ??
-            "Detailed description will appear here once the Job Service provides it. This includes responsibilities, qualifications, and benefits."}
+            "The hiring team is preparing a detailed description, including responsibilities, qualifications, and benefits."}
         </p>
       </section>
 

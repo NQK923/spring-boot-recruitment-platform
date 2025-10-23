@@ -84,8 +84,7 @@ export default async function CandidateProfilePage() {
         <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">Candidate</p>
         <h1 className="text-3xl font-semibold text-foreground">Profile settings</h1>
         <p className="text-sm text-foreground/60">
-          Information saved here syncs with the User Profile Service and feeds recruiter dashboards,
-          application cards, and interview briefs.
+          Information saved here powers recruiter dashboards, application cards, and interview briefs.
         </p>
       </header>
 
@@ -107,7 +106,7 @@ export default async function CandidateProfilePage() {
         <div className="flex flex-col gap-2">
           <h2 className="text-lg font-semibold text-foreground">CV management</h2>
           <p className="text-sm text-foreground/60">
-            Upload polished CVs or generate lightweight placeholders directly through the User Profile Service.
+            Upload polished CVs or generate lightweight placeholders to tailor submissions for each role.
           </p>
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
@@ -157,7 +156,8 @@ export default async function CandidateProfilePage() {
         <div>
           <h2 className="text-lg font-semibold text-foreground">Experience</h2>
           <p className="text-sm text-foreground/60">
-            Experiences currently sync from the Profile Service. Editing will be available in a future release.
+            Experiences currently sync from records shared with your recruiter. Editing will be available in a
+            future release.
           </p>
         </div>
         {experiences.length === 0 ? (
@@ -187,7 +187,7 @@ export default async function CandidateProfilePage() {
         <div>
           <h2 className="text-lg font-semibold text-foreground">Education</h2>
           <p className="text-sm text-foreground/60">
-            Education history mirrors the data in the Profile Service. Editing support is on the roadmap.
+            Education history mirrors details provided to your recruiter. Editing support is on the roadmap.
           </p>
         </div>
         {education.length === 0 ? (
