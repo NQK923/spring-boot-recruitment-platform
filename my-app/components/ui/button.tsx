@@ -7,12 +7,12 @@ type Size = "sm" | "md" | "lg";
 function variantClasses(variant: Variant) {
   switch (variant) {
     case "secondary":
-      return "border border-border/70 bg-surface/95 text-foreground shadow-[0_12px_26px_rgba(var(--shadow-soft),0.32)]";
+      return "border border-accent/35 bg-[rgb(var(--accent-soft))] text-[rgb(var(--accent))] shadow-[0_12px_26px_rgba(var(--shadow-soft),0.32)] hover:bg-[rgb(var(--accent))] hover:text-white";
     case "ghost":
-      return "border border-border/50 bg-transparent text-foreground/75";
+      return "border border-border/60 bg-transparent text-foreground/75 hover:border-border/70 hover:text-foreground";
     case "primary":
     default:
-      return "brand-gradient text-white shadow-[0_16px_32px_rgba(var(--shadow-strong),0.32)]";
+      return "bg-[rgb(var(--accent))] text-white shadow-[0_20px_40px_rgba(var(--shadow-strong),0.32)] hover:brightness-110";
   }
 }
 

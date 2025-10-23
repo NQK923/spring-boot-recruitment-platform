@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type SVGProps } from "react";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
 import type { OAuthConfig } from "@/lib/types";
@@ -41,6 +41,42 @@ declare global {
 }
 
 const GOOGLE_SCRIPT_URL = "https://accounts.google.com/gsi/client";
+
+type IconProps = SVGProps<SVGSVGElement>;
+
+function GoogleIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...props}>
+      <path
+        fill="#EA4335"
+        d="M12 4.75c1.97 0 3.74.68 5.14 2.02l3.84-3.84C18.56 1.08 15.52 0 12 0 7.3 0 3.26 2.47 1.3 6.57l4.1 3.2C6.23 6.83 8.85 4.75 12 4.75z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 24c3.24 0 5.96-1.07 7.94-2.9l-3.8-2.91c-1.07.74-2.45 1.17-4.14 1.17-3.15 0-5.82-2.07-6.77-4.94H1.19v3.12C3.17 21.53 7.2 24 12 24z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.23 14.42a7.15 7.15 0 010-4.84V6.46H1.19C.43 8.01 0 9.65 0 11.58c0 1.9.42 3.72 1.19 5.3l4.04-3z"
+      />
+      <path
+        fill="#4285F4"
+        d="M23.5 12.27c0-.78-.07-1.36-.21-1.95H12v3.59h6.51c-.13 1.05-.79 2.63-2.27 3.62l3.52 2.68c2.05-1.9 3.24-4.7 3.24-7.94z"
+      />
+    </svg>
+  );
+}
+
+function GitHubIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...props}>
+      <path
+        fill="currentColor"
+        d="M12 .5C5.65.5.5 5.66.5 12.04c0 5.1 3.29 9.43 7.86 10.96.58.11.8-.25.8-.56 0-.28-.01-1.03-.02-2.03-3.2.7-3.87-1.55-3.87-1.55-.53-1.36-1.29-1.72-1.29-1.72-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.22 1.78 1.22 1.03 1.77 2.7 1.26 3.36.96.1-.77.4-1.27.73-1.56-2.55-.29-5.24-1.3-5.24-5.81 0-1.28.45-2.33 1.19-3.15-.12-.29-.52-1.46.11-3.04 0 0 .98-.31 3.2 1.2a11.08 11.08 0 015.83 0c2.22-1.51 3.2-1.2 3.2-1.2.63 1.58.23 2.75.11 3.04.74.82 1.19 1.87 1.19 3.15 0 4.53-2.7 5.52-5.27 5.8.41.35.77 1.04.77 2.1 0 1.52-.02 2.74-.02 3.11 0 .31.21.68.81.56A10.55 10.55 0 0023.5 12c0-6.38-5.16-11.5-11.5-11.5z"
+      />
+    </svg>
+  );
+}
 
 function isSafeRelativePath(path: string | null | undefined) {
   return typeof path === "string" && path.startsWith("/") && !path.startsWith("//");
@@ -446,7 +482,7 @@ export function SocialSignIn({ nextPath }: SocialSignInProps) {
         <Button
           variant="secondary"
           size="lg"
-          className="w-full justify-center gap-2"
+          className="w-full justify-center gap-2 text-foreground"
           onClick={handleGoogleLogin}
           disabled={googleDisabled}
         >
@@ -454,9 +490,7 @@ export function SocialSignIn({ nextPath }: SocialSignInProps) {
             "Connecting to Google..."
           ) : (
             <>
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-semibold text-black shadow">
-                G
-              </span>
+              <GoogleIcon className="h-5 w-5" />
               Continue with Google
             </>
           )}
@@ -464,7 +498,7 @@ export function SocialSignIn({ nextPath }: SocialSignInProps) {
         <Button
           variant="secondary"
           size="lg"
-          className="w-full justify-center gap-2"
+          className="w-full justify-center gap-2 text-foreground"
           onClick={handleGitHubLogin}
           disabled={githubDisabled}
         >
@@ -472,9 +506,7 @@ export function SocialSignIn({ nextPath }: SocialSignInProps) {
             "Connecting to GitHub..."
           ) : (
             <>
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-xs font-semibold text-background">
-                GH
-              </span>
+              <GitHubIcon className="h-5 w-5" />
               Continue with GitHub
             </>
           )}

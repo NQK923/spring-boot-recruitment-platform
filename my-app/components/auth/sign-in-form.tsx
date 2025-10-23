@@ -40,11 +40,11 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
   }, [state?.error]);
 
   return (
-    <form className="space-y-4" action={formAction}>
+    <form className="space-y-5" action={formAction}>
       <input type="hidden" name="next" value={resolvedNext} />
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground" htmlFor="email">
-          Email
+        <label className="text-sm font-semibold text-foreground" htmlFor="email">
+          Email address
         </label>
         <Input
           id="email"
@@ -56,9 +56,17 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground" htmlFor="password">
-          Password
-        </label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-semibold text-foreground" htmlFor="password">
+            Password
+          </label>
+          <Link
+            className="text-xs font-medium text-accent hover:underline"
+            href={ROUTES.forgotPassword}
+          >
+            Forgot password?
+          </Link>
+        </div>
         <Input
           id="password"
           name="password"
@@ -74,7 +82,7 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
         </p>
       ) : null}
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
-        {pending ? "Signing in..." : "Continue"}
+        {pending ? "Signing in..." : "Sign in"}
       </Button>
       <div className="text-center text-sm text-foreground/60">
         Don&apos;t have an account?{" "}

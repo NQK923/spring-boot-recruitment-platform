@@ -13,10 +13,10 @@ export function RegisterForm() {
   const [state, formAction, pending] = useActionState(registerAction, initialState);
 
   return (
-    <form className="space-y-4" action={formAction}>
+    <form className="space-y-5" action={formAction}>
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground" htmlFor="email">
-          Email
+        <label className="text-sm font-semibold text-foreground" htmlFor="email">
+          Email address
         </label>
         <Input
           id="email"
@@ -28,7 +28,7 @@ export function RegisterForm() {
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground" htmlFor="password">
+        <label className="text-sm font-semibold text-foreground" htmlFor="password">
           Password
         </label>
         <Input
@@ -46,7 +46,7 @@ export function RegisterForm() {
         </p>
       ) : null}
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
-        {pending ? "Creating account..." : "Sign up"}
+        {pending ? "Creating account..." : "Create account"}
       </Button>
       <div className="text-center text-sm text-foreground/60">
         Already have an account?{" "}
