@@ -122,3 +122,10 @@ export type MeResponse = {
 export type AuthTokenResponse = {
   accessToken: string;
 };
+
+export type OAuthConfig = {
+  googleClientId: string | null;
+  githubClientId: string | null;
+  githubRedirectUri: string | null;
+  githubAuthorizeRedirectUri: string | null;
+};

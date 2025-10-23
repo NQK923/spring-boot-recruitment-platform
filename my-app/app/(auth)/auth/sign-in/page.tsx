@@ -1,11 +1,27 @@
 import { SignInForm } from "@/components/auth/sign-in-form";
+import { SocialSignIn } from "@/components/auth/social-sign-in";
+import { ROUTES } from "@/lib/routes";
 
-export default function SignInPage({
-  searchParams,
-}: {
-  searchParams: { registered?: string };
-}) {
-  const justRegistered = searchParams?.registered === "1";
+type SignInSearchParams = {
+  registered?: string;
+  next?: string;
+};
+
+type SignInPageProps = {
+  searchParams: Promise<SignInSearchParams> | SignInSearchParams;
+};
+
+function sanitizeNext(nextValue: string | undefined) {
+  if (typeof nextValue !== "string") {
+    return null;
+  }
+  return nextValue.startsWith("/") && !nextValue.startsWith("//") ? nextValue : null;
+}
+
+export default async function SignInPage({ searchParams }: SignInPageProps) {
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const justRegistered = resolvedSearchParams?.registered === "1";
+  const safeNext = sanitizeNext(resolvedSearchParams?.next) ?? ROUTES.recruiterDashboard;
 
   return (
     <div className="flex flex-col gap-6">
@@ -20,7 +36,13 @@ export default function SignInPage({
           Account created successfully. Sign in with your new credentials.
         </p>
       ) : null}
-      <SignInForm />
+      <SocialSignIn nextPath={safeNext} />
+      <div className="flex items-center gap-3 text-xs text-foreground/50">
+        <span className="h-px flex-1 bg-foreground/10" />
+        <span>Or continue with email</span>
+        <span className="h-px flex-1 bg-foreground/10" />
+      </div>
+      <SignInForm defaultNext={safeNext} />
     </div>
   );
 }

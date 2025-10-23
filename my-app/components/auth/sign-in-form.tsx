@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { signInAction, type AuthFormState } from "@/app/(auth)/auth/sign-in/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +10,28 @@ import { ROUTES } from "@/lib/routes";
 
 const initialState: AuthFormState = {};
 
-export function SignInForm() {
+type SignInFormProps = {
+  defaultNext?: string;
+};
+
+function isSafePath(path: string | undefined) {
+  return typeof path === "string" && path.startsWith("/") && !path.startsWith("//");
+}
+
+export function SignInForm({ defaultNext }: SignInFormProps) {
+  const searchParams = useSearchParams();
   const [state, formAction, pending] = useActionState(signInAction, initialState);
+
+  const resolvedNext = useMemo(() => {
+    const fromQuery = searchParams?.get("next") ?? undefined;
+    if (isSafePath(fromQuery)) {
+      return fromQuery!;
+    }
+    if (isSafePath(defaultNext)) {
+      return defaultNext!;
+    }
+    return ROUTES.recruiterDashboard;
+  }, [defaultNext, searchParams]);
 
   useEffect(() => {
     if (state?.error) {
@@ -20,6 +41,7 @@ export function SignInForm() {
 
   return (
     <form className="space-y-4" action={formAction}>
+      <input type="hidden" name="next" value={resolvedNext} />
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground" htmlFor="email">
           Email

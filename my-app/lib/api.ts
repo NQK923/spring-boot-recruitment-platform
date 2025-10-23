@@ -39,7 +39,7 @@ export async function apiFetch(path: string, options: ApiFetchOptions = {}) {
   }
 
   if (!skipAuthHeaders && !requestHeaders.has("Authorization")) {
-    const token = getAccessTokenFromCookies();
+    const token = await getAccessTokenFromCookies();
     if (token) {
       requestHeaders.set("Authorization", `Bearer ${token}`);
     }

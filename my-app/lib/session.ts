@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_COOKIE, AUTH_COOKIE_MAX_AGE_SECONDS } from "@/lib/constants";
 
-export function setAccessToken(token: string) {
-  const cookieStore = cookies();
+export async function setAccessToken(token: string) {
+  const cookieStore = await cookies();
   cookieStore.set(ACCESS_TOKEN_COOKIE, token, {
     httpOnly: true,
     secure: true,
@@ -12,13 +12,15 @@ export function setAccessToken(token: string) {
   });
 }
 
-export function clearAccessToken() {
-  cookies().delete(ACCESS_TOKEN_COOKIE);
+export async function clearAccessToken() {
+  const cookieStore = await cookies();
+  cookieStore.delete(ACCESS_TOKEN_COOKIE);
 }
 
-export function getAccessTokenFromCookies(): string | null {
+export async function getAccessTokenFromCookies(): Promise<string | null> {
   try {
-    return cookies().get(ACCESS_TOKEN_COOKIE)?.value ?? null;
+    const cookieStore = await cookies();
+    return cookieStore.get(ACCESS_TOKEN_COOKIE)?.value ?? null;
   } catch {
     return null;
   }

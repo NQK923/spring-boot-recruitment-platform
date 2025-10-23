@@ -3,11 +3,19 @@
 import { redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { setAccessToken } from "@/lib/session";
+import { ROUTES } from "@/lib/routes";
 import type { AuthTokenResponse } from "@/lib/types";
 
 export type AuthFormState = {
   error?: string;
 };
+
+function resolveRedirectPath(value: string | null | undefined) {
+  if (!value) {
+    return ROUTES.recruiterDashboard;
+  }
+  return value.startsWith("/") && !value.startsWith("//") ? value : ROUTES.recruiterDashboard;
+}
 
 export async function signInAction(
   _prevState: AuthFormState,
@@ -15,6 +23,7 @@ export async function signInAction(
 ): Promise<AuthFormState> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const nextValue = formData.get("next");
 
   if (!email || !password) {
     return { error: "Email and password are required." };
@@ -31,11 +40,14 @@ export async function signInAction(
       return { error: "Received an invalid response from the authentication service." };
     }
 
-    setAccessToken(data.accessToken);
+    await setAccessToken(data.accessToken);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to sign in.";
     return { error: message };
   }
 
-  redirect("/dashboard");
+  const redirectTarget = resolveRedirectPath(
+    typeof nextValue === "string" ? nextValue : null
+  );
+  redirect(redirectTarget);
 }

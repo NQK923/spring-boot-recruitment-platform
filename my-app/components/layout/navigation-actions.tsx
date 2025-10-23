@@ -18,7 +18,7 @@ function describePrimaryRole(roles: string[] | undefined) {
 }
 
 export async function NavigationActions() {
-  const token = getAccessTokenFromCookies();
+  const token = await getAccessTokenFromCookies();
   if (!token) {
     return (
       <div className="flex items-center gap-3">
