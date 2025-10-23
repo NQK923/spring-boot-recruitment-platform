@@ -19,12 +19,12 @@ function variantClasses(variant: Variant) {
 function sizeClasses(size: Size) {
   switch (size) {
     case "sm":
-      return "h-9 px-4 text-sm";
+      return "h-8 px-3 text-xs sm:text-sm";
     case "lg":
-      return "h-12 px-6 text-base";
+      return "h-10 px-5 text-sm sm:text-base";
     case "md":
     default:
-      return "h-10 px-5 text-sm";
+      return "h-9 px-4 text-sm";
   }
 }
 

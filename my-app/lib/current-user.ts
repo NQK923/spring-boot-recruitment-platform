@@ -26,5 +26,17 @@ export function resolveDefaultRoute(roles: Role[] | undefined): string {
   if (!roles || roles.length === 0) {
     return ROUTES.recruiterDashboard;
   }
-  return roles.includes("CANDIDATE") ? ROUTES.candidatePortal : ROUTES.recruiterDashboard;
+  if (roles.includes("SUPER_ADMIN")) {
+    return ROUTES.superAdminDashboard;
+  }
+  if (roles.includes("COMPANY_ADMIN")) {
+    return ROUTES.companyAdminDashboard;
+  }
+  if (roles.includes("RECRUITER")) {
+    return ROUTES.recruiterDashboard;
+  }
+  if (roles.includes("CANDIDATE")) {
+    return ROUTES.candidatePortal;
+  }
+  return ROUTES.recruiterDashboard;
 }

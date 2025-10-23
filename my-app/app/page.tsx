@@ -57,12 +57,42 @@ export default async function Home() {
       );
     }
 
-    const hasCandidateRole = user.roles.includes("CANDIDATE");
-    const hasRecruiterRole = user.roles.some((role) =>
-      ["SUPER_ADMIN", "COMPANY_ADMIN", "RECRUITER"].includes(role)
-    );
+    const isSuperAdmin = user.roles.includes("SUPER_ADMIN");
+    const isCompanyAdmin = user.roles.includes("COMPANY_ADMIN");
+    const isRecruiter = user.roles.includes("RECRUITER");
+    const isCandidate = user.roles.includes("CANDIDATE");
 
-    if (hasCandidateRole && !hasRecruiterRole) {
+    if (isSuperAdmin) {
+      return (
+        <>
+          <Link href={ROUTES.superAdminDashboard}>
+            <Button size="lg">Open admin console</Button>
+          </Link>
+          <Link href={isRecruiter ? ROUTES.recruiterDashboard : ROUTES.docs}>
+            <Button size="lg" variant="secondary">
+              {isRecruiter ? "Switch to recruiter tools" : "View rollout guide"}
+            </Button>
+          </Link>
+        </>
+      );
+    }
+
+    if (isCompanyAdmin) {
+      return (
+        <>
+          <Link href={ROUTES.companyAdminDashboard}>
+            <Button size="lg">Open company console</Button>
+          </Link>
+          <Link href={isRecruiter ? ROUTES.recruiterDashboard : ROUTES.docs}>
+            <Button size="lg" variant="secondary">
+              {isRecruiter ? "Switch to recruiter view" : "Invite teammates"}
+            </Button>
+          </Link>
+        </>
+      );
+    }
+
+    if (isCandidate && !isRecruiter) {
       return (
         <Link href={ROUTES.candidatePortal}>
           <Button size="lg">Open candidate portal</Button>
@@ -72,14 +102,14 @@ export default async function Home() {
 
     return (
       <>
-        <Link href={hasCandidateRole ? ROUTES.candidatePortal : ROUTES.recruiterDashboard}>
+        <Link href={isCandidate ? ROUTES.candidatePortal : ROUTES.recruiterDashboard}>
           <Button size="lg">
-            {hasCandidateRole ? "Open candidate portal" : "Open recruiter workspace"}
+            {isCandidate ? "Open candidate portal" : "Open recruiter workspace"}
           </Button>
         </Link>
-        <Link href={hasCandidateRole ? ROUTES.recruiterDashboard : ROUTES.candidatePortal}>
+        <Link href={isCandidate ? ROUTES.recruiterDashboard : ROUTES.candidatePortal}>
           <Button size="lg" variant="secondary">
-            {hasCandidateRole ? "Switch to recruiter area" : "View candidate experience"}
+            {isCandidate ? "Switch to recruiter area" : "View candidate experience"}
           </Button>
         </Link>
       </>

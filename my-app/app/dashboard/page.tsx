@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
+import { getCurrentUser } from "@/lib/current-user";
 import type {
   ApplicationDetails,
   Interview,
@@ -92,6 +94,14 @@ function formatDateTime(value?: string | null, timezone?: string | null) {
 }
 
 export default async function DashboardPage() {
+  const viewer = await getCurrentUser();
+  if (viewer?.roles.includes("SUPER_ADMIN")) {
+    redirect(ROUTES.superAdminDashboard);
+  }
+  if (viewer?.roles.includes("COMPANY_ADMIN") && !viewer.roles.includes("RECRUITER")) {
+    redirect(ROUTES.companyAdminDashboard);
+  }
+
   const jobs = await getCompanyJobs();
   const applicationsByJob = new Map<number, ApplicationDetails[]>();
 

@@ -5,6 +5,8 @@ export const ROUTES = {
   candidateApplications: "/candidate/applications",
   candidateProfile: "/candidate/profile",
   recruiterDashboard: "/dashboard",
+  superAdminDashboard: "/dashboard/super-admin",
+  companyAdminDashboard: "/dashboard/company",
   docs: "/docs",
   signIn: "/auth/sign-in",
   register: "/auth/register",
