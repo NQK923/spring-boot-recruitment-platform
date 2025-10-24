@@ -10,10 +10,10 @@ spring:
     username: guest
     password: guest
   cloud:
+    function:
+      definition: userInvitedEventConsumer;userRegisteredEventConsumer;passwordResetRequestedEventConsumer;applicationStatusChangedEventConsumer;interviewScheduledEventConsumer;interviewRescheduledEventConsumer
     stream:
       defaultBinder: rabbit
-      function:
-        definition: userInvitedEventConsumer;userRegisteredEventConsumer;passwordResetRequestedEventConsumer;applicationStatusChangedEventConsumer;interviewScheduledEventConsumer;interviewRescheduledEventConsumer
       binders:
         rabbit:
           type: rabbit
@@ -45,6 +45,7 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
+      mail.debug: true
 
 eureka:
   client:

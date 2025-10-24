@@ -11,9 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -22,7 +23,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-@Service
+@Configuration
 public class NotificationEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationEventListener.class);
@@ -155,6 +156,18 @@ public class NotificationEventListener {
     }
 
     private void sendEmail(String to, String subject, String text) {
+        String host = null;
+        Integer port = null;
+        String username = fromEmail;
+        if (mailSender instanceof JavaMailSenderImpl senderImpl) {
+            host = senderImpl.getHost();
+            port = senderImpl.getPort();
+            if (senderImpl.getUsername() != null) {
+                username = senderImpl.getUsername();
+            }
+        }
+
+        log.debug("Attempting to send email [subject='{}'] from {} to {} via {}:{}", subject, username, to, host, port);
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
@@ -162,9 +175,17 @@ public class NotificationEventListener {
             message.setSubject(subject);
             message.setText(text);
             mailSender.send(message);
-            log.info("Successfully sent email to {}", to);
+            log.info("Successfully sent email to {} (subject='{}') via {}:{}", to, subject, host, port);
         } catch (Exception e) {
-            log.error("Error sending email to {}: {}", to, e.getMessage());
+            log.error(
+                    "Error sending email to {} via {}:{} (username: {}). {}",
+                    to,
+                    host,
+                    port,
+                    username,
+                    e.getMessage(),
+                    e
+            );
         }
     }
 }
