@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
+import { Container } from "@/components/ui/container";
 
 const footerLinks = [
   {
@@ -28,21 +29,24 @@ const footerLinks = [
 ];
 
 export function SiteFooter() {
+  const currentYear = new Date().getFullYear();
   return (
-    <footer className="border-t border-border/60 bg-surface/95 shadow-[0_-12px_32px_rgba(var(--shadow-soft),0.25)]">
-      <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-[1.5fr_1fr_1fr_1fr]">
+    <footer className="border-t border-border/70 bg-surface">
+      <Container className="flex flex-col gap-12 py-12">
+        <div className="grid gap-10 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
           <div className="space-y-4">
-            <Link
-              href={ROUTES.home}
-              className="inline-flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground"
-            >
-              talentflow
+            <Link href={ROUTES.home} className="inline-flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
+              Talentflow
             </Link>
-            <p className="max-w-xs text-sm text-muted">
-              A unified recruitment platform for modern hiring teams. Organise jobs, applications, and
-              interviews with connected workflows and delightful candidate experiences.
+            <p className="max-w-sm text-sm text-muted">
+              Talentflow connects companies, recruiters, and candidates in one workspace. Manage job openings,
+              profiles, and interviews with real-time visibility across the recruiting journey.
             </p>
+            <div className="space-y-1 text-sm text-muted">
+              <p>Email: <a href="mailto:support@talentflow.app" className="hover:text-foreground">support@talentflow.app</a></p>
+              <p>Hotline: +84 234 567 899</p>
+              <p>Support 08:00 - 18:00 (Mon - Fri)</p>
+            </div>
           </div>
           {footerLinks.map((group) => (
             <div key={group.label} className="space-y-3">
@@ -54,7 +58,7 @@ export function SiteFooter() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="transition hover:text-foreground hover:underline hover:underline-offset-4"
+                      className="transition-colors hover:text-foreground"
                     >
                       {item.label}
                     </Link>
@@ -64,14 +68,13 @@ export function SiteFooter() {
             </div>
           ))}
         </div>
-        <div className="mt-10 flex flex-col gap-3 border-t border-foreground/10 pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {new Date().getFullYear()} Talentflow. All rights reserved.</p>
-          <div className="flex items-center gap-3">
-            <span className="h-1 w-1 rounded-full bg-muted/60" />
+        <div className="border-t border-border/60 pt-6 text-xs text-muted sm:flex sm:items-center sm:justify-between">
+          <p>&copy; {currentYear} Talentflow. All rights reserved.</p>
+          <div className="mt-3 flex items-center gap-4 sm:mt-0">
             <span>Crafted for multi-tenant hiring teams.</span>
           </div>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

@@ -7,12 +7,12 @@ type Size = "sm" | "md" | "lg";
 function variantClasses(variant: Variant) {
   switch (variant) {
     case "secondary":
-      return "border border-accent/35 bg-[rgb(var(--accent-soft))] text-[rgb(var(--accent))] shadow-[0_12px_26px_rgba(var(--shadow-soft),0.32)] hover:bg-[rgb(var(--accent))] hover:text-white";
+      return "border border-border bg-surface-muted text-foreground hover:bg-surface hover:text-foreground hover:shadow-[0_10px_20px_rgba(15,23,42,0.1)]";
     case "ghost":
       return "border border-border/60 bg-transparent text-foreground/75 hover:border-border/70 hover:text-foreground";
     case "primary":
     default:
-      return "bg-[rgb(var(--accent))] text-white shadow-[0_20px_40px_rgba(var(--shadow-strong),0.32)] hover:brightness-110";
+      return "bg-[rgb(var(--accent))] text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)] hover:bg-[rgba(var(--accent),0.9)]";
   }
 }
 
@@ -42,7 +42,7 @@ export function Button({
   return (
     <button
       className={cx(
-        "inline-flex cursor-pointer items-center justify-center rounded-full font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground/60 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
         variantClasses(variant),
         sizeClasses(size),
         className

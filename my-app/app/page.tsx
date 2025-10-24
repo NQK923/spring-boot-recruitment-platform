@@ -6,35 +6,67 @@ import { ROUTES } from "@/lib/routes";
 import { getCurrentUser } from "@/lib/current-user";
 import type { MeResponse } from "@/lib/types";
 
-const stats = [
-  { label: "Companies onboarded", value: "48", detail: "Multi-tenant ready" },
-  { label: "Candidates engaged", value: "12k+", detail: "Profiles & CVs" },
-  { label: "Interviews scheduled", value: "3.4k", detail: "Automated feeds" },
+const metrics = [
+  { label: "Active companies", value: "48", detail: "Multi-tenant teams" },
+  { label: "Candidates supported", value: "12k+", detail: "Profiles and CVs" },
+  { label: "Interviews automated", value: "3.4k", detail: "Calendar and reminders" },
 ];
 
-const recruiterFeatures = [
+const platformHighlights = [
   {
-    title: "Collaborative workflows",
+    title: "Unified pipelines",
     description:
-      "Assign owners, capture notes, and keep hiring teams aligned with live application history.",
+      "Track every job and application with live statuses, owners, and SLA alerts in one workspace.",
   },
   {
-    title: "Insightful dashboards",
+    title: "Collaboration ready",
     description:
-      "Monitor pipeline health, job performance, and interview velocity without leaving the workspace.",
+      "Mention teammates, share notes, and review structured feedback without juggling spreadsheets.",
+  },
+  {
+    title: "Insights that matter",
+    description:
+      "Monitor conversion rates, time to hire, and source performance with dashboards you can export.",
+  },
+  {
+    title: "Secure file vault",
+    description:
+      "Version CVs, offers, and compliance documents with granular access control by role.",
   },
 ];
 
-const candidateFeatures = [
+const recruiterHighlights = [
+  "Automated stage changes trigger candidate updates and dashboards instantly.",
+  "Role-aware permissions keep sensitive details visible to the right reviewers.",
+  "Templates, tasks, and reminders eliminate repetitive busywork for recruiters.",
+];
+
+const candidateHighlights = [
+  "Guided profile builder keeps skills, education, and experience in sync across applications.",
+  "Instant interview updates with calendar files ensure every candidate is prepared.",
+  "Transparent status tracking reduces follow-up emails and increases offer acceptance.",
+];
+
+const workflowSteps = [
   {
-    title: "Guided profile builder",
-    description:
-      "Highlight skills, experience, and education once and sync updates with every application automatically.",
+    phase: "Day 0",
+    title: "Connect your teams",
+    description: "Invite super admins, company admins, and recruiters with roles that match your org chart.",
   },
   {
-    title: "Smart interview timeline",
-    description:
-      "Receive instant updates, download calendar files, and stay ready for each conversation.",
+    phase: "Day 1",
+    title: "Sync existing data",
+    description: "Import jobs and candidate history or start with ready-to-use templates for each department.",
+  },
+  {
+    phase: "Day 7",
+    title: "Automate outreach",
+    description: "Activate notifications, interview reminders, and application nudges through RabbitMQ.",
+  },
+  {
+    phase: "Day 14",
+    title: "Measure and iterate",
+    description: "Review dashboards, share insights, and refine each stage of the funnel with real metrics.",
   },
 ];
 
@@ -46,7 +78,7 @@ export default async function Home() {
       return (
         <>
           <Link href={ROUTES.signIn}>
-            <Button size="lg">Launch recruiter workspace</Button>
+            <Button size="lg">Start as recruiter</Button>
           </Link>
           <Link href={ROUTES.register}>
             <Button size="lg" variant="secondary">
@@ -57,10 +89,11 @@ export default async function Home() {
       );
     }
 
-    const isSuperAdmin = user.roles.includes("SUPER_ADMIN");
-    const isCompanyAdmin = user.roles.includes("COMPANY_ADMIN");
-    const isRecruiter = user.roles.includes("RECRUITER");
-    const isCandidate = user.roles.includes("CANDIDATE");
+    const roles = user.roles ?? [];
+    const isSuperAdmin = roles.includes("SUPER_ADMIN");
+    const isCompanyAdmin = roles.includes("COMPANY_ADMIN");
+    const isRecruiter = roles.includes("RECRUITER");
+    const isCandidate = roles.includes("CANDIDATE");
 
     if (isSuperAdmin) {
       return (
@@ -70,7 +103,7 @@ export default async function Home() {
           </Link>
           <Link href={isRecruiter ? ROUTES.recruiterDashboard : ROUTES.docs}>
             <Button size="lg" variant="secondary">
-              {isRecruiter ? "Switch to recruiter tools" : "View rollout guide"}
+              {isRecruiter ? "Switch to recruiter tools" : "Rollout checklist"}
             </Button>
           </Link>
         </>
@@ -81,11 +114,11 @@ export default async function Home() {
       return (
         <>
           <Link href={ROUTES.companyAdminDashboard}>
-            <Button size="lg">Open company console</Button>
+            <Button size="lg">Open company workspace</Button>
           </Link>
           <Link href={isRecruiter ? ROUTES.recruiterDashboard : ROUTES.docs}>
             <Button size="lg" variant="secondary">
-              {isRecruiter ? "Switch to recruiter view" : "Invite teammates"}
+              {isRecruiter ? "Go to recruiter view" : "Invite teammates"}
             </Button>
           </Link>
         </>
@@ -95,7 +128,7 @@ export default async function Home() {
     if (isCandidate && !isRecruiter) {
       return (
         <Link href={ROUTES.candidatePortal}>
-          <Button size="lg">Open candidate portal</Button>
+          <Button size="lg">Enter candidate portal</Button>
         </Link>
       );
     }
@@ -104,284 +137,225 @@ export default async function Home() {
       <>
         <Link href={isCandidate ? ROUTES.candidatePortal : ROUTES.recruiterDashboard}>
           <Button size="lg">
-            {isCandidate ? "Open candidate portal" : "Open recruiter workspace"}
+            {isCandidate ? "Enter candidate portal" : "Enter recruiter workspace"}
           </Button>
         </Link>
         <Link href={isCandidate ? ROUTES.recruiterDashboard : ROUTES.candidatePortal}>
           <Button size="lg" variant="secondary">
-            {isCandidate ? "Switch to recruiter area" : "View candidate experience"}
+            {isCandidate ? "Switch to recruiter tools" : "Preview candidate view"}
           </Button>
         </Link>
       </>
     );
   };
 
+  const viewerRoles = viewer?.roles ?? [];
+  const viewerIsRecruiter = viewerRoles.includes("RECRUITER");
+  const viewerIsCandidate = viewerRoles.includes("CANDIDATE");
+
   return (
-    <Container as="main" className="flex flex-col gap-20">
-      <section className="grid gap-12 rounded-[32px] border border-border/80 bg-surface/98 p-6 sm:p-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
+    <Container as="main" className="flex flex-col gap-24 pb-24">
+      <section className="grid gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
         <div className="space-y-8">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/90 px-5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.32em] text-accent shadow-[0_8px_20px_rgba(var(--shadow-soft),0.25)]">
-            Modern recruitment OS
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-accent">
+            Recruiting without busywork
           </span>
-          <div className="space-y-5">
+          <div className="space-y-4">
             <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              Build remarkable hiring journeys for teams and candidates.
+              Design hiring experiences candidates remember.
             </h1>
-            <p className="max-w-xl text-lg text-foreground/65">
-              Talentflow centralises job marketing, application review, and interview scheduling so hiring teams
-              move faster while candidates stay informed every step of the way.
+            <p className="max-w-xl text-base text-muted">
+              Coordinate teams, keep candidates informed, and surface insights automatically. Talentflow brings
+              your recruitment services, data, and communication into one secure workspace.
             </p>
           </div>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-3">
             {renderPrimaryCtas(viewer)}
-            <Link href={ROUTES.jobs}>
+            <Link href={ROUTES.docs}>
               <Button size="lg" variant="ghost">
-                Explore live roles
+                View documentation
               </Button>
             </Link>
           </div>
-          <dl className="grid gap-6 sm:grid-cols-3">
-            {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-2xl border border-border/70 bg-surface/96 p-5 shadow-[0_14px_32px_rgba(var(--shadow-soft),0.24)]"
-              >
-                <dt className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">{stat.label}</dt>
-                <dd className="mt-2 text-2xl font-semibold text-foreground">{stat.value}</dd>
-                <p className="mt-1 text-xs text-foreground/60">{stat.detail}</p>
-              </div>
-            ))}
-          </dl>
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-2 w-2 rounded-full bg-accent" />
+              <span>Average response time under 4 hours</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-2 w-2 rounded-full bg-accent" />
+              <span>ISO-ready audit trails included</span>
+            </div>
+          </div>
         </div>
-
-        <Panel variant="glass" padding="lg" className="relative overflow-hidden">
-          <div className="absolute -right-20 top-6 hidden h-48 w-48 rounded-full bg-accent/14 blur-3xl sm:block" />
-          <div className="relative space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">Live pipeline</p>
-                <p className="text-sm text-foreground/70">Today&apos;s snapshot</p>
-              </div>
-              <span className="rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
-                Live updates enabled
-              </span>
-            </div>
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-border/60 bg-surface/92 p-4 shadow-[0_12px_32px_rgba(var(--shadow-soft),0.22)] backdrop-blur-sm">
-                <p className="text-sm font-semibold text-foreground">Applications moving forward</p>
-                <p className="mt-1 text-sm text-foreground/60">
-                  86 candidates scheduled for interviews this week across 12 companies.
-                </p>
-                <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                  <div>
-                    <p className="text-2xl font-semibold text-foreground">34</p>
-                    <p className="text-xs text-foreground/60">First-round</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-semibold text-foreground">27</p>
-                    <p className="text-xs text-foreground/60">Panel ready</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-semibold text-foreground">9</p>
-                    <p className="text-xs text-foreground/60">Offers pending</p>
-                  </div>
+        <Panel padding="lg" className="space-y-6">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+              By the numbers
+            </p>
+            <div className="mt-6 grid gap-6 sm:grid-cols-3">
+              {metrics.map((stat, index) => (
+                <div
+                  key={stat.label}
+                  className={[
+                    "space-y-2",
+                    index > 0 ? "sm:border-l sm:border-border sm:pl-6" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  <p className="text-3xl font-semibold text-foreground sm:text-4xl">{stat.value}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+                    {stat.label}
+                  </p>
+                  <p className="text-sm text-muted">{stat.detail}</p>
                 </div>
-              </div>
-              <div className="rounded-2xl border border-border/60 bg-surface/92 p-4 shadow-[0_12px_32px_rgba(var(--shadow-soft),0.22)] backdrop-blur-sm">
-                <p className="text-sm font-semibold text-foreground">Candidate experience</p>
-                <ul className="mt-3 space-y-2 text-sm text-foreground/70">
-                  <li>- Personalised dashboards with interview timelines.</li>
-                  <li>- Secure CV storage with versioning support.</li>
-                  <li>- Real-time notifications across email and in-app alerts.</li>
-                </ul>
-              </div>
+              ))}
             </div>
-            <div className="flex items-center justify-between rounded-2xl border border-accent/25 bg-accent/12 px-4 py-3 text-sm text-accent">
-              <span>Active collaborators: Recruiters, Hiring Managers, Interviewers, Candidates</span>
-              <span className="hidden text-xs font-semibold uppercase tracking-[0.28em] lg:inline">
-                Refreshed every 15 minutes
-              </span>
-            </div>
+          </div>
+          <div className="rounded-2xl border border-border bg-surface-muted p-5 text-sm text-muted">
+            Teams route all service-to-service traffic through the gateway, keeping JWT validation, company
+            context, and rate limits consistent across microservices.
           </div>
         </Panel>
       </section>
 
-      <section className="grid gap-8 rounded-[32px] border border-border/80 bg-surface-muted/80 p-6 sm:p-10 lg:grid-cols-2">
-        <Panel variant="surface" padding="lg" className="space-y-6">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
-              For recruiters & admins
-            </span>
-            <h2 className="mt-3 text-2xl font-semibold text-foreground">
-              Operate your entire hiring pipeline in one organised workspace.
+      <section className="space-y-10">
+        <div className="space-y-4">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
+            Platform capabilities
+          </span>
+          <div className="space-y-3">
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              Everything your team needs to run hiring in one place.
             </h2>
-            <p className="mt-2 text-sm text-foreground/70">
-              Publish jobs, triage applications, capture interview feedback, and keep stakeholders aligned with
-              multi-tenant controls built for scaling companies.
+            <p className="max-w-2xl text-base text-muted">
+              From identity to interviews, Talentflow ships with opinionated building blocks so you can focus on
+              delivering great candidate journeys instead of wiring infrastructure.
             </p>
           </div>
-          <div className="space-y-4">
-            {recruiterFeatures.map((feature) => (
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {platformHighlights.map((item) => (
+            <Panel key={item.title} padding="sm" className="h-full space-y-3">
+              <p className="text-sm font-semibold text-foreground">{item.title}</p>
+              <p className="text-sm text-muted">{item.description}</p>
+            </Panel>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-8 lg:grid-cols-2">
+        <Panel padding="lg" className="space-y-5">
+          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+            For recruiting teams
+          </span>
+          <h3 className="text-2xl font-semibold text-foreground">
+            Keep every stakeholder aligned from sourcing to offer.
+          </h3>
+          <ul className="space-y-3 text-sm text-muted">
+            {recruiterHighlights.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span className="mt-1 inline-flex h-2 w-2 flex-shrink-0 rounded-full bg-accent" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-wrap gap-3">
+            <Link href={viewerIsRecruiter ? ROUTES.recruiterDashboard : ROUTES.signIn}>
+              <Button size="md">{viewerIsRecruiter ? "Open recruiter workspace" : "Sign in as recruiter"}</Button>
+            </Link>
+            <Link href="/docs/recruiter">
+              <Button size="md" variant="secondary">
+                Recruiter playbook
+              </Button>
+            </Link>
+          </div>
+        </Panel>
+        <Panel padding="lg" className="space-y-5">
+          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+            For candidates
+          </span>
+          <h3 className="text-2xl font-semibold text-foreground">
+            Deliver a transparent journey from resume upload to offer.
+          </h3>
+          <ul className="space-y-3 text-sm text-muted">
+            {candidateHighlights.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span className="mt-1 inline-flex h-2 w-2 flex-shrink-0 rounded-full bg-accent" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-wrap gap-3">
+            <Link href={viewerIsCandidate ? ROUTES.candidatePortal : ROUTES.register}>
+              <Button size="md">
+                {viewerIsCandidate ? "Open candidate portal" : "Create candidate account"}
+              </Button>
+            </Link>
+            <Link href="/docs/candidate">
+              <Button size="md" variant="secondary">
+                Candidate guide
+              </Button>
+            </Link>
+          </div>
+        </Panel>
+      </section>
+
+      <section>
+        <Panel variant="glass" padding="lg" className="space-y-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="space-y-3">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
+                Implementation
+              </span>
+              <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                Launch your workspace in weeks, not quarters.
+              </h2>
+              <p className="max-w-2xl text-base text-muted">
+                Discovery Service, Gateway, and service-to-service contracts arrive preconfigured. JWT
+                verification, company context headers, and rate limits stay consistent from day one.
+              </p>
+            </div>
+            <Link href={ROUTES.docs}>
+              <Button size="md" variant="ghost">
+                Download rollout checklist
+              </Button>
+            </Link>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {workflowSteps.map((step) => (
               <div
-                key={feature.title}
-                className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_26px_rgba(var(--shadow-soft),0.22)]"
+                key={step.phase}
+                className="rounded-xl border border-border bg-surface/95 p-5 shadow-[0_6px_16px_rgba(15,23,42,0.08)]"
               >
-                <p className="text-sm font-semibold text-foreground">{feature.title}</p>
-                <p className="mt-1 text-sm text-foreground/70">{feature.description}</p>
+                <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+                  {step.phase}
+                </span>
+                <p className="mt-2 text-base font-semibold text-foreground">{step.title}</p>
+                <p className="mt-2 text-sm text-muted">{step.description}</p>
               </div>
             ))}
           </div>
-          <div className="flex flex-wrap gap-3">
-            {viewer ? (
-              <>
-                <Link href={ROUTES.recruiterDashboard}>
-                  <Button size="md">Enter recruiter workspace</Button>
-                </Link>
-                <Link href="/docs/admin">
-                  <Button size="md" variant="secondary">
-                    View rollout guide
-                  </Button>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href={ROUTES.signIn}>
-                  <Button size="md">Sign in to recruiter workspace</Button>
-                </Link>
-                <Link href="/docs/admin">
-                  <Button size="md" variant="secondary">
-                    View rollout guide
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
-        </Panel>
-
-        <Panel variant="surface" padding="lg" className="space-y-6">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
-              For candidates
-            </span>
-            <h2 className="mt-3 text-2xl font-semibold text-foreground">
-              Stay informed, prepared, and confident through every interview step.
-            </h2>
-            <p className="mt-2 text-sm text-foreground/70">
-              From CV versioning to interview reminders, Talentflow ensures candidates have clarity and control
-              while collaborating with hiring teams.
-            </p>
-          </div>
-          <div className="space-y-4">
-            {candidateFeatures.map((feature) => (
-              <div
-                key={feature.title}
-                className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_26px_rgba(var(--shadow-soft),0.22)]"
-              >
-                <p className="text-sm font-semibold text-foreground">{feature.title}</p>
-                <p className="mt-1 text-sm text-foreground/70">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {viewer ? (
-              <>
-                <Link href={ROUTES.candidatePortal}>
-                  <Button size="md">Open candidate portal</Button>
-                </Link>
-                <Link href="/docs/candidate">
-                  <Button size="md" variant="secondary">
-                    Candidate handbook
-                  </Button>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href={ROUTES.register}>
-                  <Button size="md">Create candidate account</Button>
-                </Link>
-                <Link href="/docs/candidate">
-                  <Button size="md" variant="secondary">
-                    Candidate handbook
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
         </Panel>
       </section>
 
-      <section className="rounded-[32px] border border-border/80 bg-surface/98 p-6 sm:p-10">
-        <Panel variant="glass" padding="lg" className="space-y-6">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-                Why teams choose Talentflow
-              </p>
-              <h2 className="mt-2 text-2xl font-semibold text-foreground">Designed for modern hiring teams.</h2>
-              <p className="mt-2 max-w-2xl text-sm text-foreground/70">
-                Built-in permissions, reminders, and analytics keep every stakeholder aligned without chasing
-                spreadsheets or patching together point solutions.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <span className="rounded-full border border-border/60 bg-surface/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-                Role-aware access
-              </span>
-              <span className="rounded-full border border-border/60 bg-surface/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-                Automated nudges
-              </span>
-              <span className="rounded-full border border-border/60 bg-surface/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-                Audit-ready logs
-              </span>
-            </div>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-3">
-            <div className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_24px_rgba(var(--shadow-soft),0.22)]">
-              <p className="text-sm font-semibold text-foreground">Role-based guardrails</p>
-              <p className="mt-2 text-sm text-foreground/70">
-                Granular roles keep sensitive salary bands, feedback, and offers limited to the right reviewers.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_24px_rgba(var(--shadow-soft),0.22)]">
-              <p className="text-sm font-semibold text-foreground">Automated communications</p>
-              <p className="mt-2 text-sm text-foreground/70">
-                Interview reminders, application status updates, and invite emails send instantly with your
-                branding.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-surface/96 p-4 shadow-[0_12px_24px_rgba(var(--shadow-soft),0.22)]">
-              <p className="text-sm font-semibold text-foreground">Data insights & exports</p>
-              <p className="mt-2 text-sm text-foreground/70">
-                Track conversion rates, hiring velocity, and source performance with dashboards you can export or
-                share live.
-              </p>
-            </div>
-          </div>
-        </Panel>
-      </section>
-
-      <section className="rounded-[32px] border border-border/80 bg-surface-muted/80 p-6 sm:p-10">
-        <Panel
-          variant="surface"
-          padding="lg"
-          className="flex flex-col items-center gap-6 text-center shadow-[0_18px_44px_rgba(var(--shadow-soft),0.28)]"
-        >
-          <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
+      <section>
+        <Panel padding="lg" className="flex flex-col items-center gap-6 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
             Next steps
           </span>
-          <div className="space-y-4">
-            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              Experience the unified hiring workspace today.
-            </h2>
-            <p className="max-w-2xl text-sm text-foreground/70">
-              Join recruiters, admins, and candidates collaborating in one place. Spin up a workspace, invite
-              teammates, and keep every applicant informed with timely updates.
-            </p>
-          </div>
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            Experience the unified hiring workspace today.
+          </h2>
+          <p className="max-w-2xl text-base text-muted">
+            Spin up your environment, connect every service through the API gateway, and give teams a single
+            source of truth for recruitment. Start with seeded users and sample data or bring your own.
+          </p>
           <div className="flex flex-wrap justify-center gap-3">
             {renderPrimaryCtas(viewer)}
             <Link href={ROUTES.docs}>
-              <Button size="md" variant="ghost">
+              <Button size="lg" variant="ghost">
                 Explore documentation
               </Button>
             </Link>

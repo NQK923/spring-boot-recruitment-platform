@@ -35,8 +35,8 @@ export function SiteNavbar({
   return (
     <nav
       className={[
-        isVertical ? "flex flex-col gap-4" : "hidden items-center gap-8 sm:flex",
-        "text-sm font-medium text-foreground/70",
+        isVertical ? "flex flex-col gap-4" : "hidden items-center gap-6 md:gap-8 sm:flex",
+        "text-sm font-medium text-muted",
         className,
       ]
         .filter(Boolean)
@@ -51,8 +51,10 @@ export function SiteNavbar({
             href={item.href}
             onClick={onNavigate}
             className={[
-              "group relative inline-flex items-center gap-2 transition",
-              active ? "text-foreground" : "hover:text-foreground",
+              "group relative inline-flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-150",
+              active
+                ? "bg-surface-muted text-foreground shadow-[0_8px_16px_rgba(15,23,42,0.08)]"
+                : "hover:bg-surface-muted hover:text-foreground",
             ]
               .filter(Boolean)
               .join(" ")}

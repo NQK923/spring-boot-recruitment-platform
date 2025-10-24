@@ -26,7 +26,7 @@ export function MobileNav() {
     <button
       type="button"
       aria-label="Toggle navigation"
-      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-foreground/25 bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-foreground shadow-md transition hover:border-foreground/40 hover:shadow-lg sm:hidden"
+      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-foreground shadow-sm transition hover:border-border/80 hover:shadow-md sm:hidden"
       onClick={() => setOpen((prev) => !prev)}
     >
       {open ? "Close" : "Menu"}
@@ -51,7 +51,7 @@ export function MobileNav() {
                   <button
                     type="button"
                     aria-label="Close navigation"
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-foreground/25 bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-foreground transition hover:border-foreground/40 hover:shadow-md"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-foreground transition hover:border-border/80 hover:shadow-md"
                     onClick={() => setOpen(false)}
                   >
                     Close
