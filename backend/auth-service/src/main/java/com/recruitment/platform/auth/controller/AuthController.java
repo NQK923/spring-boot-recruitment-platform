@@ -170,15 +170,14 @@ public class AuthController {
         return ResponseEntity.ok("Password updated successfully.");
     }
 
-    @PostMapping("/invites/verify")
-    public ResponseEntity<?> verifyInvitation(@RequestBody AcceptInviteRequest request) {
-        authService.acceptInvitation(request);
-        return ResponseEntity.ok("Invitation accepted successfully. You can now log in.");
+    @GetMapping("/invites/{token}")
+    public ResponseEntity<InvitationDetailsResponse> verifyInvitation(@PathVariable("token") String token) {
+        return ResponseEntity.ok(authService.getInvitationDetails(token));
     }
 
     @PostMapping("/invites/accept")
-    public ResponseEntity<?> acceptInvitation(@RequestBody AcceptInviteRequest acceptInviteRequest) {
+    public ResponseEntity<Map<String, String>> acceptInvitation(@Valid @RequestBody AcceptInviteRequest acceptInviteRequest) {
         authService.acceptInvitation(acceptInviteRequest);
-        return ResponseEntity.ok("Invitation accepted successfully. You can now log in.");
+        return ResponseEntity.ok(Map.of("message", "Invitation accepted successfully. You can now log in."));
     }
 }

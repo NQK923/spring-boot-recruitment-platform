@@ -119,6 +119,13 @@ export type MeResponse = {
   roles: Role[];
 };
 
+export type InvitationDetails = {
+  email: string;
+  roleToGrant: Role;
+  companyId: number | null;
+  expiresAt: string;
+};
+
 export type AuthTokenResponse = {
   accessToken: string;
 };

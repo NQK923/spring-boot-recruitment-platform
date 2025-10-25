@@ -25,6 +25,7 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,6 +34,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -90,12 +93,40 @@ public class AuthService {
         invitation.setCreatedByUserId(request.createdByUserId());
         invitation.setToken(UUID.randomUUID().toString());
         invitation.setExpiresAt(Instant.now().plus(48, ChronoUnit.HOURS));
+        invitation.setUsed(false);
         invitationRepository.save(invitation);
 
         // Send event to RabbitMQ
         UserInvitedEvent event = new UserInvitedEvent(invitation.getEmail(), invitation.getToken(), invitation.getRoleToGrant());
         boolean sent = streamBridge.send("userInvited-out-0", event);
         log.info("Sending UserInvitedEvent for email {}: {}", event.email(), sent ? "SUCCESS" : "FAILED");
+    }
+
+    @Transactional(readOnly = true)
+    public InvitationDetailsResponse getInvitationDetails(String token) {
+        if (!StringUtils.hasText(token)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invitation token is required.");
+        }
+
+        String sanitizedToken = token.trim();
+
+        Invitation invitation = invitationRepository.findByToken(sanitizedToken)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invitation token is invalid or has already been used."));
+
+        if (invitation.isUsed()) {
+            throw new ResponseStatusException(HttpStatus.GONE, "Invitation has already been accepted.");
+        }
+
+        if (invitation.getExpiresAt().isBefore(Instant.now())) {
+            throw new ResponseStatusException(HttpStatus.GONE, "Invitation has expired.");
+        }
+
+        return new InvitationDetailsResponse(
+                invitation.getEmail(),
+                invitation.getRoleToGrant(),
+                invitation.getCompanyId(),
+                invitation.getExpiresAt()
+        );
     }
 
     @Transactional
@@ -127,33 +158,65 @@ public class AuthService {
 
     @Transactional
     public void acceptInvitation(AcceptInviteRequest request) {
-        Invitation invitation = invitationRepository.findByToken(request.token())
-                .orElseThrow(() -> new IllegalStateException("Invalid invitation token."));
-
-        if (invitation.getExpiresAt().isBefore(Instant.now())) {
-            throw new IllegalStateException("Invitation has expired.");
+        if (request == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invitation payload is required.");
         }
 
-        userRepository.findByEmail(invitation.getEmail()).ifPresent(u -> {
-            throw new IllegalStateException("A user with this email already exists.");
+        String token = request.token() != null ? request.token().trim() : "";
+        if (!StringUtils.hasText(token)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invitation token is required.");
+        }
+
+        String password = request.password();
+        if (!StringUtils.hasText(password)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is required.");
+        }
+
+        if (password.length() < 8) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password must be at least 8 characters long.");
+        }
+
+        Invitation invitation = invitationRepository.findByToken(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invitation token is invalid or has already been used."));
+
+        if (invitation.isUsed()) {
+            throw new ResponseStatusException(HttpStatus.GONE, "Invitation has already been accepted.");
+        }
+
+        if (invitation.getExpiresAt().isBefore(Instant.now())) {
+            throw new ResponseStatusException(HttpStatus.GONE, "Invitation has expired.");
+        }
+
+        userRepository.findByEmail(invitation.getEmail()).ifPresent(existing -> {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "An account with this email already exists. Try resetting the password instead.");
         });
 
         Role role = roleRepository.findByName(invitation.getRoleToGrant())
-                .orElseThrow(() -> new IllegalStateException("Role " + invitation.getRoleToGrant() + " not found."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Role " + invitation.getRoleToGrant() + " is not configured."));
 
         User user = new User();
         user.setEmail(invitation.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(request.password()));
+        user.setPasswordHash(passwordEncoder.encode(password));
         user.setRoles(Set.of(role));
         user.setEmailVerifiedAt(Instant.now());
 
         User savedUser = userRepository.save(user);
 
-        // Add user to the company via Company Service
-        companyServiceClient.addUserToCompany(new AddUserToCompanyRequest(savedUser.getId(), invitation.getCompanyId(), role.getName()));
+        if (invitation.getCompanyId() != null) {
+            try {
+                companyServiceClient.addUserToCompany(new AddUserToCompanyRequest(savedUser.getId(), invitation.getCompanyId(), role.getName()));
+            } catch (Exception ex) {
+                log.error("Failed to attach invited user {} to company {}", savedUser.getEmail(), invitation.getCompanyId(), ex);
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Unable to attach the new user to the company. Please try again later.");
+            }
+        }
 
-        invitationRepository.delete(invitation);
-        log.info("User {} created from invitation and added to company {}", savedUser.getEmail(), invitation.getCompanyId());
+        invitation.setUsed(true);
+        invitationRepository.save(invitation);
+
+        UserRegisteredEvent event = new UserRegisteredEvent(savedUser.getId(), savedUser.getEmail(), null, null);
+        boolean sent = streamBridge.send("userRegistered-out-0", event);
+        log.info("New user {} accepted invitation. Company={}, eventDispatched={}", savedUser.getEmail(), invitation.getCompanyId(), sent ? "YES" : "NO");
     }
 
     @Transactional

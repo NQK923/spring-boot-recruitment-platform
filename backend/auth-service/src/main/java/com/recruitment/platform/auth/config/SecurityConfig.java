@@ -44,7 +44,7 @@ public class SecurityConfig {
             "/api/auth/verify-email",
             "/api/auth/password/forgot",
             "/api/auth/password/reset",
-            "/api/auth/invites/verify"
+            "/api/auth/invites/**"
     };
 
     @Value("${app.jwt.secret}")

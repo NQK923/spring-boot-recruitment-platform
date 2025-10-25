@@ -12,4 +12,5 @@ export const ROUTES = {
   register: "/auth/register",
   forgotPassword: "/auth/forgot-password",
   resetPassword: "/auth/reset-password",
+  acceptInvite: "/auth/accept-invite",
 };
