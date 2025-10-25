@@ -120,10 +120,20 @@ public class JobPostingService {
     }
 
     private JobPostingPublicDto convertToDto(JobPosting jobPosting) {
+        JobPosition jobPosition = jobPosting.getJobPosition();
+        String department = jobPosition != null ? jobPosition.getDepartment() : null;
+        String level = jobPosition != null ? jobPosition.getLevel() : null;
+
         return new JobPostingPublicDto(
                 jobPosting.getId(),
+                jobPosting.getCompanyId(),
                 jobPosting.getTitle(),
-                jobPosting.getDescription()
+                jobPosting.getDescription(),
+                jobPosting.getLocation(),
+                jobPosting.getWorkType(),
+                department,
+                level,
+                jobPosting.getStatus() != null ? jobPosting.getStatus().name() : null
         );
     }
 
