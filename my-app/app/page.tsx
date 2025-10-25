@@ -102,7 +102,7 @@ export default async function Home() {
     if (isCompanyAdmin) {
       return (
         <>
-          <Link href={ROUTES.companyDashboard}>
+          <Link href={ROUTES.companyAdminDashboard}>
             <Button size="lg">View company workspace</Button>
           </Link>
           <Link href={ROUTES.recruiterDashboard}>
@@ -120,9 +120,9 @@ export default async function Home() {
           <Link href={ROUTES.recruiterDashboard}>
             <Button size="lg">Go to pipeline</Button>
           </Link>
-          <Link href={ROUTES.recruiterTasks}>
+          <Link href={ROUTES.jobs}>
             <Button size="lg" variant="secondary">
-              Open task board
+              Browse live roles
             </Button>
           </Link>
         </>
@@ -159,50 +159,54 @@ export default async function Home() {
   };
 
   return (
-    <main className="space-y-16 pb-24">
+    <main className="bg-slate-950 text-white">
       <HeroSection overview={overview} viewer={viewer} renderPrimaryCtas={renderPrimaryCtas} />
 
-      <section>
-        <Container className="space-y-8">
+      <section className="bg-slate-950">
+        <Container className="space-y-8 py-12">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-primary">
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-300">
                 Live platform snapshot
               </p>
-              <h2 className="mt-2 text-3xl font-semibold text-foreground">
+              <h2 className="mt-2 text-3xl font-semibold text-white">
                 Real activity powering recruiting teams
               </h2>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-slate-300">
               Data refreshes continuously from the gateway-service and downstream microservices.
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {statsCards.map((metric) => (
-              <Panel key={metric.label} padding="lg" className="space-y-2">
-                <p className="text-sm uppercase tracking-widest text-muted-foreground">{metric.label}</p>
-                <p className="text-4xl font-semibold text-foreground">{formatMetric(metric.value)}</p>
-                <p className="text-sm text-muted-foreground">{metric.detail}</p>
+              <Panel
+                key={metric.label}
+                padding="lg"
+                className="space-y-2 border-white/10 bg-white/5 text-white shadow-[0_20px_45px_rgba(15,23,42,0.35)]"
+              >
+                <p className="text-sm uppercase tracking-widest text-indigo-200">{metric.label}</p>
+                <p className="text-4xl font-semibold">{formatMetric(metric.value)}</p>
+                <p className="text-sm text-slate-300">{metric.detail}</p>
               </Panel>
             ))}
           </div>
         </Container>
       </section>
 
-      <section>
-        <Container className="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
-          <Panel className="space-y-6">
+      <section className="bg-slate-950">
+        <Container className="grid gap-6 py-12 lg:grid-cols-[1.2fr,0.8fr]">
+          <Panel className="space-y-6 border-white/10 bg-white/5 text-white">
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-primary">Pipeline health</p>
-              <h3 className="text-2xl font-semibold text-foreground">Applications in motion</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-300">Pipeline health</p>
+              <h3 className="text-2xl font-semibold text-white">Applications in motion</h3>
+              <p className="text-sm text-slate-300">
                 Totals originate from Application Service metrics and respect the canonical status order.
               </p>
             </div>
             <div className="space-y-4">
               {pipelineStages.length === 0 && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-slate-300">
                   We haven’t detected any applications yet. As soon as candidates apply, real data will appear here.
                 </p>
               )}
@@ -211,17 +215,17 @@ export default async function Home() {
                 const fillPercentage = stage.count > 0 ? Math.max((stage.count / stageMax) * 100, 8) : 4;
 
                 return (
-                  <div key={stage.stage} className="space-y-2 rounded-2xl border border-border p-4">
+                  <div key={stage.stage} className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
                     <div className="flex items-center justify-between text-sm">
                       <div>
-                        <p className="text-base font-semibold text-foreground">{displayName}</p>
-                        <p className="text-muted-foreground">
+                        <p className="text-base font-semibold text-white">{displayName}</p>
+                        <p className="text-slate-300">
                           {stage.count === 1 ? "1 candidate" : `${formatNumber(stage.count)} candidates`}
                         </p>
                       </div>
-                      <p className="text-2xl font-semibold text-foreground">{formatNumber(stage.count)}</p>
+                      <p className="text-2xl font-semibold text-white">{formatNumber(stage.count)}</p>
                     </div>
-                    <div className="h-2 rounded-full bg-muted">
+                    <div className="h-2 rounded-full bg-white/10">
                       <div
                         className="h-full rounded-full bg-gradient-to-r from-sky-500 to-blue-600"
                         style={{ width: `${fillPercentage}%` }}
@@ -233,46 +237,46 @@ export default async function Home() {
             </div>
           </Panel>
 
-          <Panel className="space-y-6">
+          <Panel className="space-y-6 border-white/10 bg-white/5 text-white">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-primary">Job board</p>
-              <h3 className="text-2xl font-semibold text-foreground">Publishing velocity</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-300">Job board</p>
+              <h3 className="text-2xl font-semibold text-white">Publishing velocity</h3>
             </div>
 
             <div className="space-y-3">
               {jobStatuses.length === 0 && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-slate-300">
                   Job Service hasn’t reported any postings yet. Publish your first role to unlock this view.
                 </p>
               )}
               {jobStatuses.map((status) => (
                 <div
                   key={status.status}
-                  className="flex items-center justify-between rounded-2xl border border-border px-4 py-3"
+                  className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
                 >
                   <div>
-                    <p className="text-sm font-medium text-foreground">{status.status}</p>
-                    <p className="text-xs text-muted-foreground">via Job Service metrics</p>
+                    <p className="text-sm font-medium text-white">{status.status}</p>
+                    <p className="text-xs text-slate-300">via Job Service metrics</p>
                   </div>
-                  <p className="text-2xl font-semibold text-foreground">{formatNumber(status.count)}</p>
+                  <p className="text-2xl font-semibold text-white">{formatNumber(status.count)}</p>
                 </div>
               ))}
             </div>
 
-            <div className="rounded-2xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">{formatNumber(metrics?.upcomingInterviews)}</span> interviews
+            <div className="rounded-2xl border border-dashed border-white/20 px-4 py-3 text-sm text-slate-200">
+              <span className="font-semibold text-white">{formatNumber(metrics?.upcomingInterviews)}</span> interviews
               scheduled for the next week, streamed from Interview Service.
             </div>
           </Panel>
         </Container>
       </section>
 
-      <section>
-        <Container className="space-y-6">
+      <section className="bg-slate-950">
+        <Container className="space-y-6 py-12">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-primary">Job spotlight</p>
-              <h3 className="text-3xl font-semibold text-foreground">Latest public roles across tenants</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-300">Job spotlight</p>
+              <h3 className="text-3xl font-semibold text-white">Latest public roles across tenants</h3>
             </div>
             <Link href={ROUTES.jobs}>
               <Button variant="secondary">Browse all published jobs</Button>
@@ -281,26 +285,30 @@ export default async function Home() {
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {spotlightJobs.length === 0 && (
-              <Panel className="col-span-full text-center text-sm text-muted-foreground">
+              <Panel className="col-span-full border-white/10 bg-white/5 text-center text-sm text-slate-300">
                 No public postings yet. Recruiters can publish roles directly from the job workspace.
               </Panel>
             )}
             {spotlightJobs.map((job) => (
-              <Panel key={job.id} padding="lg" className="flex h-full flex-col justify-between space-y-4">
+              <Panel
+                key={job.id}
+                padding="lg"
+                className="flex h-full flex-col justify-between space-y-4 border-white/10 bg-white/5 text-white"
+              >
                 <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.5em] text-muted-foreground">#{job.id}</p>
-                  <h4 className="text-2xl font-semibold text-foreground">{job.title}</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs font-semibold uppercase tracking-[0.5em] text-indigo-200">#{job.id}</p>
+                  <h4 className="text-2xl font-semibold text-white">{job.title}</h4>
+                  <p className="text-sm text-slate-300">
                     {job.description ?? "Full description available on the job detail page."}
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-2 text-xs font-medium text-muted-foreground">
-                  {job.location && <span className="rounded-full bg-muted px-3 py-1 text-foreground">{job.location}</span>}
-                  {job.workType && <span className="rounded-full bg-muted px-3 py-1 text-foreground">{job.workType}</span>}
+                <div className="flex flex-wrap gap-2 text-xs font-medium text-slate-200">
+                  {job.location && <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.location}</span>}
+                  {job.workType && <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.workType}</span>}
                   {job.department && (
-                    <span className="rounded-full bg-muted px-3 py-1 text-foreground">{job.department}</span>
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.department}</span>
                   )}
-                  {job.level && <span className="rounded-full bg-muted px-3 py-1 text-foreground">{job.level}</span>}
+                  {job.level && <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.level}</span>}
                 </div>
               </Panel>
             ))}
@@ -308,8 +316,8 @@ export default async function Home() {
         </Container>
       </section>
 
-      <section>
-        <Container>
+      <section className="bg-slate-950">
+        <Container className="py-12">
           <Panel className="flex flex-col gap-6 bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 text-white md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-[0.5em] text-indigo-200">
