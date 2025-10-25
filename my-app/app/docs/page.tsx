@@ -22,25 +22,6 @@ const guides = [
   },
 ];
 
-const links = [
-  {
-    section: "Reference",
-    items: [
-      { label: "Roles & permissions", href: "/docs/reference/roles" },
-      { label: "Automation rules", href: "/docs/reference/automations" },
-      { label: "Analytics & reporting", href: "/docs/reference/analytics" },
-    ],
-  },
-  {
-    section: "Operations",
-    items: [
-      { label: "Rollout checklist", href: "/docs/ops/rollout" },
-      { label: "Candidate comms templates", href: "/docs/ops/templates" },
-      { label: "Support & escalation", href: "/docs/ops/support" },
-    ],
-  },
-];
-
 export default async function DocsPage() {
   const viewer = await getCurrentUser();
   const defaultRoute = resolveDefaultRoute(viewer?.roles);
@@ -68,7 +49,7 @@ export default async function DocsPage() {
                   Return to workspace
                 </Button>
               </Link>
-              <Link href="/docs/ops/rollout">
+              <Link href="/docs/admin">
                 <Button size="sm">Implementation checklist</Button>
               </Link>
             </>
@@ -89,9 +70,14 @@ export default async function DocsPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {guides.map((guide) => (
-          <Panel key={guide.title} padding="lg" className="space-y-4">
-            <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-foreground">{guide.title}</h2>
+          <Panel
+            key={guide.title}
+            padding="lg"
+            className="flex flex-col justify-between space-y-4 border border-border/60 bg-gradient-to-br from-surface to-slate-900/30"
+          >
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted/80">Featured guide</p>
+              <h2 className="text-2xl font-semibold text-foreground">{guide.title}</h2>
               <p className="text-sm text-foreground/70">{guide.description}</p>
             </div>
             <Link href={guide.href}>
@@ -100,33 +86,6 @@ export default async function DocsPage() {
           </Panel>
         ))}
       </div>
-
-      <Panel padding="lg" className="space-y-6">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Quick links</h2>
-          <p className="text-sm text-foreground/60">
-            Shortcuts to the most common documents referenced during rollout and daily operations.
-          </p>
-        </div>
-        <div className="grid gap-6 sm:grid-cols-2">
-          {links.map((group) => (
-            <div key={group.section} className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                {group.section}
-              </p>
-              <ul className="space-y-2 text-sm text-foreground/70">
-                {group.items.map((item) => (
-                  <li key={item.href}>
-                    <Link href={item.href} className="transition hover:text-foreground">
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </Panel>
     </Container>
   );
 }

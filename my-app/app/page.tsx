@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+﻿import type { JSX } from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,7 @@ export default async function Home() {
     {
       label: "Active companies",
       value: metrics?.companies ?? 0,
-      detail: "Operating via the shared gateway",
+      detail: "Hiring teams live this month",
     },
     {
       label: "Candidate profiles",
@@ -173,9 +173,7 @@ export default async function Home() {
                 Real activity powering recruiting teams
               </h2>
             </div>
-            <p className="text-sm text-slate-300">
-              Data refreshes continuously from the gateway-service and downstream microservices.
-            </p>
+            <p className="text-sm text-slate-300">Data refreshes throughout the day from live recruiting workspaces.</p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -200,14 +198,12 @@ export default async function Home() {
             <div className="flex flex-col gap-1">
               <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-300">Pipeline health</p>
               <h3 className="text-2xl font-semibold text-white">Applications in motion</h3>
-              <p className="text-sm text-slate-300">
-                Totals originate from Application Service metrics and respect the canonical status order.
-              </p>
+              <p className="text-sm text-slate-300">Totals follow the standard pipeline order recruiters see in dashboards.</p>
             </div>
             <div className="space-y-4">
               {pipelineStages.length === 0 && (
                 <p className="text-sm text-slate-300">
-                  We haven’t detected any applications yet. As soon as candidates apply, real data will appear here.
+                  We haven&#39;t detected any applications yet. As soon as candidates apply, real data will appear here.
                 </p>
               )}
               {pipelineStages.map((stage) => {
@@ -246,7 +242,7 @@ export default async function Home() {
             <div className="space-y-3">
               {jobStatuses.length === 0 && (
                 <p className="text-sm text-slate-300">
-                  Job Service hasn’t reported any postings yet. Publish your first role to unlock this view.
+                  Job Service hasn&#39;t reported any postings yet. Publish your first role to unlock this view.
                 </p>
               )}
               {jobStatuses.map((status) => (
@@ -323,13 +319,8 @@ export default async function Home() {
               <p className="text-xs font-semibold uppercase tracking-[0.5em] text-indigo-200">
                 Bring your data with you
               </p>
-              <h3 className="text-2xl font-semibold">
-                Every event runs through the gateway for audit-ready governance.
-              </h3>
-              <p className="text-sm text-indigo-200">
-                RabbitMQ topics, multi-tenant PostgreSQL schemas, and JWT-normalized headers keep each team safe while
-                sharing infrastructure.
-              </p>
+              <h3 className="text-2xl font-semibold">Every event is audited so teams can move with confidence.</h3>
+              <p className="text-sm text-indigo-200">Managed messaging, retention rules, and policy guardrails keep each team safe.</p>
             </div>
             <div className="flex flex-wrap gap-3">{renderPrimaryCtas(viewer)}</div>
           </Panel>
@@ -368,12 +359,11 @@ function HeroSection({ overview, viewer, renderPrimaryCtas }: HeroSectionProps) 
                 Recruitment control plane
               </p>
               <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
-                Operate every candidate touchpoint from one governance-ready gateway.
+                Operate every candidate touchpoint from one governance-ready workspace.
               </h1>
-              <p className="text-lg text-slate-200">
-                The recruitment platform aligns Spring Boot microservices, RabbitMQ events, and the Next.js experience so
-                talent teams can launch faster without compromising compliance.
-              </p>
+              <p className="text-lg text-slate-200"/>
+                The recruitment platform unifies sourcing, collaboration, and interviews so talent teams launch faster without
+                compromising compliance.
             </div>
             <div className="flex flex-wrap gap-4">{renderPrimaryCtas(viewer)}</div>
             <div className="flex flex-wrap gap-5 text-sm text-indigo-100">
@@ -390,26 +380,24 @@ function HeroSection({ overview, viewer, renderPrimaryCtas }: HeroSectionProps) 
             <div className="space-y-6">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">Data lineage</p>
-                <h2 className="mt-2 text-2xl font-semibold">Gateway-governed snapshot</h2>
-                <p className="text-sm text-indigo-100">
-                  Figures refresh continuously from Company, Job, Application, Profile, and Interview services.
-                </p>
+                <h2 className="mt-2 text-2xl font-semibold">Live performance snapshot</h2>
+                <p className="text-sm text-indigo-100">Figures update automatically as recruiters work their queues.</p>
               </div>
               <dl className="space-y-4">
                 <div className="rounded-2xl border border-white/10 p-4">
                   <dt className="text-sm uppercase tracking-[0.3em] text-indigo-200">Companies</dt>
                   <dd className="text-3xl font-semibold">{formatMetric(metrics?.companies ?? 0)}</dd>
-                  <p className="text-xs text-indigo-100">Multi-tenant orgs connected to discovery-service</p>
+                  <p className="text-xs text-indigo-100">Organizations coordinating hiring on Talentflow</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 p-4">
                   <dt className="text-sm uppercase tracking-[0.3em] text-indigo-200">Applications</dt>
                   <dd className="text-3xl font-semibold">{formatMetric(metrics?.applications ?? 0)}</dd>
-                  <p className="text-xs text-indigo-100">Events streaming via application.status.changed</p>
+                  <p className="text-xs text-indigo-100">Application progress recorded across every stage</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 p-4">
                   <dt className="text-sm uppercase tracking-[0.3em] text-indigo-200">Interviews</dt>
                   <dd className="text-3xl font-semibold">{formatMetric(metrics?.interviews ?? 0)}</dd>
-                  <p className="text-xs text-indigo-100">ICS-ready schedules synced to Notification Service</p>
+                  <p className="text-xs text-indigo-100">Upcoming interviews that keep teams aligned</p>
                 </div>
               </dl>
             </div>

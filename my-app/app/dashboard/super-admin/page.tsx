@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
@@ -151,7 +151,7 @@ export default async function SuperAdminDashboardPage() {
                 View admin handbook
               </Button>
             </Link>
-            <Link href="/docs/ops/support">
+            <Link href="/docs/admin#support">
               <Button size="sm">Escalation matrix</Button>
             </Link>
           </div>
@@ -186,7 +186,7 @@ export default async function SuperAdminDashboardPage() {
                 Workspace checklist
               </Button>
             </Link>
-            <Link href="/docs/ops/templates">
+            <Link href="/docs/admin#templates">
               <Button size="sm">Communication templates</Button>
             </Link>
           </div>
@@ -221,7 +221,7 @@ export default async function SuperAdminDashboardPage() {
               Snapshot of recently active tenants. Drill in to review admins, job activity, and onboarding status.
             </p>
           </div>
-          <Link href={ROUTES.docs} className="text-sm font-semibold text-foreground hover:underline">
+          <Link href="/docs/admin" className="text-sm font-semibold text-foreground hover:underline">
             Manage documentation
           </Link>
         </div>
@@ -243,7 +243,7 @@ export default async function SuperAdminDashboardPage() {
                   </span>
                 </div>
                 <p className="mt-2 text-xs">
-                  Created {formatDate(company.createdAt)} - Admins {company.adminCount ?? "—"}
+                  Created {formatDate(company.createdAt)} - Admins {company.adminCount ?? "--"}
                 </p>
               </div>
             ))}
@@ -256,10 +256,10 @@ export default async function SuperAdminDashboardPage() {
           <div>
             <h2 className="text-lg font-semibold text-foreground">Invitations awaiting acceptance</h2>
             <p className="text-sm text-foreground/60">
-              Follow up with company owners or recruiters who haven’t activated their accounts yet.
+              Follow up with company owners or recruiters who haven't activated their accounts yet.
             </p>
           </div>
-          <Link href="/docs/ops/templates" className="text-sm font-semibold text-foreground hover:underline">
+          <Link href="/docs/admin#templates" className="text-sm font-semibold text-foreground hover:underline">
             Reminder templates
           </Link>
         </div>
@@ -291,3 +291,8 @@ export default async function SuperAdminDashboardPage() {
     </Container>
   );
 }
+
+
+
+
+

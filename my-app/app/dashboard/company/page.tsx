@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
@@ -193,7 +193,7 @@ export default async function CompanyAdminDashboardPage() {
                 View playbook
               </Button>
             </Link>
-            <Link href="/docs/ops/templates">
+            <Link href="/docs/admin#templates">
               <Button size="sm">Candidate templates</Button>
             </Link>
           </div>
@@ -273,7 +273,7 @@ export default async function CompanyAdminDashboardPage() {
               Company admins oversee permissions, while recruiters manage individual jobs and pipelines.
             </p>
           </div>
-          <Link href="/docs/ops/templates#invites" className="text-sm font-semibold text-foreground hover:underline">
+          <Link href="/docs/admin#invites" className="text-sm font-semibold text-foreground hover:underline">
             Invite email templates
           </Link>
         </div>
@@ -352,10 +352,10 @@ export default async function CompanyAdminDashboardPage() {
           <div>
             <h2 className="text-lg font-semibold text-foreground">Invitations in progress</h2>
             <p className="text-sm text-foreground/60">
-              Keep an eye on pending invitations so teammates don’t miss their welcome email.
+              Keep an eye on pending invitations so teammates do not miss their welcome email.
             </p>
           </div>
-          <Link href="/docs/ops/templates#reminders" className="text-sm font-semibold text-foreground hover:underline">
+          <Link href="/docs/admin#reminders" className="text-sm font-semibold text-foreground hover:underline">
             Reminder templates
           </Link>
         </div>
@@ -385,3 +385,5 @@ export default async function CompanyAdminDashboardPage() {
     </Container>
   );
 }
+
+

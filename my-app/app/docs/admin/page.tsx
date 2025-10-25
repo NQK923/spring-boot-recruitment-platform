@@ -71,117 +71,156 @@ export default function AdminDocsPage() {
               Back to workspace
             </Button>
           </Link>
-          <Link href="/docs/ops/rollout">
-            <Button size="sm">Launch checklist</Button>
+          <Link href="/docs/candidate">
+            <Button size="sm">Share candidate guide</Button>
           </Link>
         </div>
       </Panel>
 
-      <Panel padding="lg" className="space-y-6">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Onboarding checklist</h2>
-          <p className="text-sm text-foreground/60">
-            Complete these steps before inviting recruiters or candidates into the platform.
-          </p>
-        </div>
-        <div className="space-y-6">
-          {checklist.map((section) => (
-            <div
-              key={section.title}
-              className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5"
-            >
-              <h3 className="text-sm font-semibold text-foreground">{section.title}</h3>
+      <section id="workspace-preparation">
+        <Panel padding="lg" className="space-y-6">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Onboarding checklist</h2>
+            <p className="text-sm text-foreground/60">
+              Complete these steps before inviting recruiters or candidates into the platform.
+            </p>
+          </div>
+          <div className="space-y-6">
+            {checklist.map((section) => (
+              <div
+                key={section.title}
+                className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5"
+              >
+                <h3 className="text-sm font-semibold text-foreground">{section.title}</h3>
+                <ul className="space-y-2 text-sm text-foreground/70">
+                  {section.items.map((item) => (
+                    <li key={item}>- {item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </section>
+
+      <section id="access">
+        <Panel padding="lg" className="space-y-5">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Access & compliance</h2>
+            <p className="text-sm text-foreground/60">
+              Regular reviews ensure every person retains the right access and that audit logs stay clean.
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
+              <h3 className="text-sm font-semibold text-foreground">Role hygiene (weekly)</h3>
+              <p className="text-sm text-foreground/70">
+                Export the user list from admin settings. Remove access for teammates who have left or changed
+                responsibilities.
+              </p>
+            </div>
+            <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
+              <h3 className="text-sm font-semibold text-foreground">Audit trail (monthly)</h3>
+              <p className="text-sm text-foreground/70">
+                Review recent application status changes and ensure notes capture decisions and approvals.
+              </p>
+            </div>
+          </div>
+          <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
+            <h3 className="text-sm font-semibold text-foreground">Data retention</h3>
+            <p className="text-sm text-foreground/70">
+              Configure automated clean-up for expired invitations, reset codes, and archived applications in line with
+              your company policy.
+            </p>
+          </div>
+        </Panel>
+      </section>
+
+      <section id="support">
+        <Panel padding="lg" className="space-y-5">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Escalation matrix</h2>
+            <p className="text-sm text-foreground/60">
+              Use the matrix below when you encounter platform issues or need cross-team support.
+            </p>
+          </div>
+          <div className="space-y-4">
+            {escalations.map((entry) => (
+              <div
+                key={entry.label}
+                className="flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{entry.label}</p>
+                  <p className="text-xs text-foreground/60">{entry.description}</p>
+                </div>
+                <a
+                  href={`mailto:${entry.contact}`}
+                  className="text-xs font-semibold text-accent transition hover:text-foreground"
+                >
+                  {entry.contact}
+                </a>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </section>
+
+      <section id="templates">
+        <Panel padding="lg" className="space-y-6">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Communication templates</h2>
+            <p className="text-sm text-foreground/60">
+              Ready-to-send snippets for your most common invitation and reminder workflows.
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div id="invites" className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
+              <h3 className="text-sm font-semibold text-foreground">Invite email</h3>
               <ul className="space-y-2 text-sm text-foreground/70">
-                {section.items.map((item) => (
-                  <li key={item}>- {item}</li>
-                ))}
+                <li>- Subject: "You're invited to Talentflow"</li>
+                <li>- Mention who invited them and why.</li>
+                <li>- One sentence on what happens after acceptance.</li>
+                <li>- Button linking to the invitation URL plus expiry date.</li>
               </ul>
             </div>
-          ))}
-        </div>
-      </Panel>
-
-      <Panel padding="lg" className="space-y-5">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Access & compliance</h2>
-          <p className="text-sm text-foreground/60">
-            Regular reviews ensure every person retains the right access and that audit logs stay clean.
-          </p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-            <h3 className="text-sm font-semibold text-foreground">Role hygiene (weekly)</h3>
-            <p className="text-sm text-foreground/70">
-              Export the user list from admin settings. Remove access for teammates who have left or changed
-              responsibilities.
-            </p>
-          </div>
-          <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-            <h3 className="text-sm font-semibold text-foreground">Audit trail (monthly)</h3>
-            <p className="text-sm text-foreground/70">
-              Review recent application status changes and ensure notes capture decisions and approvals.
-            </p>
-          </div>
-        </div>
-        <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-          <h3 className="text-sm font-semibold text-foreground">Data retention</h3>
-          <p className="text-sm text-foreground/70">
-            Configure automated clean-up for expired invitations, reset codes, and archived applications in line
-            with your company policy.
-          </p>
-        </div>
-      </Panel>
-
-      <Panel padding="lg" className="space-y-5">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Escalation matrix</h2>
-          <p className="text-sm text-foreground/60">
-            Use the matrix below when you encounter platform issues or need cross-team support.
-          </p>
-        </div>
-        <div className="space-y-4">
-          {escalations.map((entry) => (
-            <div
-              key={entry.label}
-              className="flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div>
-                <p className="text-sm font-semibold text-foreground">{entry.label}</p>
-                <p className="text-xs text-foreground/60">{entry.description}</p>
-              </div>
-              <a
-                href={`mailto:${entry.contact}`}
-                className="text-xs font-semibold text-accent transition hover:text-foreground"
-              >
-                {entry.contact}
-              </a>
+            <div id="reminders" className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
+              <h3 className="text-sm font-semibold text-foreground">Reminder nudges</h3>
+              <ul className="space-y-2 text-sm text-foreground/70">
+                <li>- Send a friendly reminder 48 hours before expiry.</li>
+                <li>- Include contact info if they need help logging in.</li>
+                <li>- Offer to resend the invite if the link has expired.</li>
+                <li>- Reiterate the benefits of activating now.</li>
+              </ul>
             </div>
-          ))}
-        </div>
-      </Panel>
+          </div>
+        </Panel>
+      </section>
 
-      <Panel padding="lg" className="space-y-5">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Troubleshooting quick tips</h2>
-          <p className="text-sm text-foreground/60">
-            Start with these diagnostics before escalating to engineering.
-          </p>
-        </div>
-        <ul className="space-y-3 text-sm text-foreground/70">
-          <li>
-            - <strong className="text-foreground">Sign-in issues</strong>: confirm the teammate accepted their invite or
-            reset their password from the sign-in page.
-          </li>
-          <li>
-            - <strong className="text-foreground">Missing company context</strong>: make sure the teammate is assigned to
-            the correct company and role in the admin area.
-          </li>
-          <li>
-            - <strong className="text-foreground">Delayed notifications</strong>: confirm sender addresses are verified
-            and ask teammates to check spam folders before escalating.
-          </li>
-        </ul>
-      </Panel>
+      <section id="troubleshooting">
+        <Panel padding="lg" className="space-y-5">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Troubleshooting quick tips</h2>
+            <p className="text-sm text-foreground/60">
+              Start with these diagnostics before escalating to engineering.
+            </p>
+          </div>
+          <ul className="space-y-3 text-sm text-foreground/70">
+            <li>
+              - <strong className="text-foreground">Sign-in issues</strong>: confirm the teammate accepted their invite or
+              reset their password from the sign-in page.
+            </li>
+            <li>
+              - <strong className="text-foreground">Missing company context</strong>: make sure the teammate is assigned to
+              the correct company and role in the admin area.
+            </li>
+            <li>
+              - <strong className="text-foreground">Delayed notifications</strong>: confirm sender addresses are verified
+              and ask teammates to check spam folders before escalating.
+            </li>
+          </ul>
+        </Panel>
+      </section>
     </Container>
   );
 }

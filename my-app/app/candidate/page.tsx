@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
@@ -206,7 +206,7 @@ export default async function CandidatePortalPage() {
               Keep your applications and interviews on track.
             </h1>
             <p className="max-w-2xl text-sm text-foreground/70">
-              Track your applications, manage CV versions, and stay informed about interviews—all from one
+              Track your applications, manage CV versions, and stay informed about interviews--all from one
               streamlined workspace.
             </p>
           </div>
@@ -514,3 +514,5 @@ export default async function CandidatePortalPage() {
     </Container>
   );
 }
+
+

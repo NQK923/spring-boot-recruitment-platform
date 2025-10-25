@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useActionState } from "react";
 import { updateJobAction, type JobFormState } from "@/app/dashboard/jobs/actions";
@@ -90,7 +90,7 @@ export function UpdateJobForm({ job, positions }: Props) {
           {positions.map((position) => (
             <option key={position.id} value={position.id}>
               {position.title}
-              {position.level ? ` • ${position.level}` : ""}{" "}
+              {position.level ? ` - ${position.level}` : ""}{" "}
               {position.department ? ` (${position.department})` : ""}
             </option>
           ))}
@@ -114,3 +114,5 @@ export function UpdateJobForm({ job, positions }: Props) {
     </form>
   );
 }
+
+

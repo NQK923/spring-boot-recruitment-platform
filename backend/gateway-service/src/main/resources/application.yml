@@ -40,6 +40,10 @@ spring:
           uri: lb://USER-PROFILE-SERVICE
           predicates:
             - Path=/api/internal/profiles/batch
+        - id: user-profile-internal-metrics
+          uri: lb://USER-PROFILE-SERVICE
+          predicates:
+            - Path=/api/internal/profiles/metrics/**
         - id: auth-internal-invites
           uri: lb://AUTH-SERVICE
           predicates:
@@ -64,6 +68,10 @@ spring:
           uri: lb://JOB-SERVICE
           predicates:
             - Path=/api/internal/jobs/**
+        - id: interview-internal
+          uri: lb://INTERVIEW-SERVICE
+          predicates:
+            - Path=/api/internal/interviews/**
         - id: files-upload # Route for file uploads
           uri: lb://FILE-STORAGE-SERVICE
           predicates:
