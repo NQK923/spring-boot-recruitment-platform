@@ -61,13 +61,66 @@ const workflowSteps = [
   {
     phase: "Day 7",
     title: "Automate outreach",
-    description: "Activate notifications, interview reminders, and application nudges through RabbitMQ.",
+    description: "Activate notifications, interview reminders, and nurturing nudges without manual follow-ups.",
   },
   {
     phase: "Day 14",
     title: "Measure and iterate",
     description: "Review dashboards, share insights, and refine each stage of the funnel with real metrics.",
   },
+];
+
+const pipelineStages = [
+  { stage: "Applied", count: 42, detail: "8 new this morning", fill: 68, owner: "Talent Ops", sla: "Reply in 1 day" },
+  { stage: "Screening", count: 18, detail: "6 reviews due today", fill: 54, owner: "Recruiters", sla: "Decision in 2 days" },
+  { stage: "Interview", count: 12, detail: "4 on-site this week", fill: 72, owner: "Hiring managers", sla: "Feedback in 24h" },
+  { stage: "Offer", count: 4, detail: "2 approvals pending", fill: 32, owner: "People team", sla: "Package in 48h" },
+];
+
+const pipelineStats = [
+  { label: "Open roles", value: "28", meta: "+3 vs last week" },
+  { label: "Avg. SLA", value: "96%", meta: "On target" },
+  { label: "At risk", value: "3 stages", meta: "Needs follow-up" },
+];
+
+const pipelineFocus = [
+  { title: "Backend Platform Engineer", detail: "Awaiting hiring manager feedback", owner: "Nora Patel" },
+  { title: "Senior Product Designer", detail: "Offer review scheduled tomorrow", owner: "Alex Trinh" },
+  { title: "Campus recruiter cohort", detail: "Bulk interviews next Tuesday", owner: "Ops pod" },
+];
+
+const candidateTimeline = [
+  {
+    time: "09:10",
+    title: "Portfolio reviewed",
+    description: "Recruiter Linh confirmed skills fit and left structured feedback.",
+    status: "Completed",
+  },
+  {
+    time: "10:30",
+    title: "Panel interview scheduled",
+    description: "Calendar holds sent to hiring manager and interviewer trio.",
+    status: "Scheduled",
+  },
+  {
+    time: "14:00",
+    title: "Candidate update",
+    description: "Automated email confirms agenda plus prep materials.",
+    status: "Sent",
+  },
+  {
+    time: "Tomorrow",
+    title: "Comp review",
+    description: "Finance reminder to pre-build offer package if panel passes.",
+    status: "Upcoming",
+  },
+];
+
+const insightSnapshots = [
+  { label: "Time to hire", value: "21 days", delta: "-3 days vs Q2", trend: "positive" as const },
+  { label: "Offer acceptance", value: "82%", delta: "+5 pts vs avg", trend: "positive" as const },
+  { label: "Candidate NPS", value: "67", delta: "+12 vs last month", trend: "positive" as const },
+  { label: "Diversity slate", value: "54%", delta: "+7 pts this quarter", trend: "positive" as const },
 ];
 
 export default async function Home() {
@@ -214,8 +267,8 @@ export default async function Home() {
             </div>
           </div>
           <div className="rounded-2xl border border-border bg-surface-muted p-5 text-sm text-muted">
-            Teams route all service-to-service traffic through the gateway, keeping JWT validation, company
-            context, and rate limits consistent across microservices.
+            Built-in guardrails keep authentication, company context, and pacing consistent so every team ships
+            securely without exposing internal architecture.
           </div>
         </Panel>
       </section>
@@ -302,6 +355,130 @@ export default async function Home() {
         </Panel>
       </section>
 
+      <section className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+        <Panel padding="lg" className="space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-1">
+              <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+                Product preview
+              </span>
+              <h3 className="text-2xl font-semibold text-foreground">Live pipeline snapshot</h3>
+              <p className="text-sm text-muted">Monitor every stage with automatic SLAs and reminders.</p>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
+              Realtime
+            </span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {pipelineStats.map((stat) => (
+              <div key={stat.label} className="rounded-2xl border border-border bg-surface-muted/60 p-4 text-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">{stat.label}</p>
+                <p className="mt-2 text-2xl font-semibold text-foreground">{stat.value}</p>
+                <p className="text-muted">{stat.meta}</p>
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {pipelineStages.map((stage) => (
+              <div key={stage.stage} className="rounded-2xl border border-border bg-surface-muted/60 p-4 shadow-inner">
+                <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+                  <span>{stage.stage}</span>
+                  <span>SLA</span>
+                </div>
+                <p className="mt-3 text-3xl font-semibold text-foreground">{stage.count}</p>
+                <p className="text-sm text-muted">{stage.detail}</p>
+                <div className="mt-3 flex items-center justify-between text-xs text-muted">
+                  <span>Owner: <span className="font-semibold text-foreground/80">{stage.owner}</span></span>
+                  <span>{stage.sla}</span>
+                </div>
+                <div className="mt-4 h-1.5 rounded-full bg-border/60">
+                  <span
+                    className="flex h-full rounded-full bg-accent transition-all"
+                    style={{ width: `${stage.fill}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="rounded-2xl border border-border bg-surface-muted/80 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Focus queue</p>
+                <p className="text-sm text-muted">Top items the team plans to unblock today.</p>
+              </div>
+              <Button size="sm" variant="ghost">
+                Assign owner
+              </Button>
+            </div>
+            <ul className="mt-4 space-y-3">
+              {pipelineFocus.map((item) => (
+                <li key={item.title} className="rounded-xl border border-border bg-surface px-4 py-3">
+                  <div className="flex items-center justify-between text-sm font-semibold text-foreground">
+                    <span>{item.title}</span>
+                    <span className="text-xs uppercase tracking-[0.28em] text-muted">Owner</span>
+                  </div>
+                  <p className="mt-1 text-sm text-muted">{item.detail}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">{item.owner}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Panel>
+        <div className="grid gap-6">
+          <Panel padding="lg" className="space-y-5">
+            <div className="space-y-1">
+              <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+                Candidate journey
+              </span>
+              <h3 className="text-xl font-semibold text-foreground">Timeline view</h3>
+              <p className="text-sm text-muted">One place to follow every touchpoint and owner handoff.</p>
+            </div>
+            <ul className="space-y-4">
+              {candidateTimeline.map((event) => (
+                <li key={`${event.time}-${event.title}`} className="flex gap-3">
+                  <div className="w-20 shrink-0 text-[11px] font-semibold uppercase tracking-[0.28em] text-muted">
+                    {event.time}
+                  </div>
+                  <div className="flex-1 rounded-2xl border border-border bg-surface-muted/50 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm font-semibold text-foreground">{event.title}</p>
+                      <span className="rounded-full bg-accent/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-accent">
+                        {event.status}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm text-muted">{event.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+          <Panel padding="lg" className="space-y-5">
+            <div className="space-y-1">
+              <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+                Insight tiles
+              </span>
+              <h3 className="text-xl font-semibold text-foreground">Real results</h3>
+              <p className="text-sm text-muted">Share live KPIs with leadership and hiring managers.</p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {insightSnapshots.map((insight) => (
+                <div key={insight.label} className="rounded-2xl border border-border bg-surface-muted/50 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">{insight.label}</p>
+                  <p className="mt-2 text-2xl font-semibold text-foreground">{insight.value}</p>
+                  <p
+                    className={`text-xs font-semibold ${
+                      insight.trend === "positive" ? "text-emerald-500" : "text-rose-500"
+                    }`}
+                  >
+                    {insight.delta}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
+      </section>
+
       <section>
         <Panel variant="glass" padding="lg" className="space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -313,8 +490,8 @@ export default async function Home() {
                 Launch your workspace in weeks, not quarters.
               </h2>
               <p className="max-w-2xl text-base text-muted">
-                Discovery Service, Gateway, and service-to-service contracts arrive preconfigured. JWT
-                verification, company context headers, and rate limits stay consistent from day one.
+                Guided onboarding, prebuilt automations, and unified permissions land out of the box. Security,
+                compliance, and collaboration stay consistent from day one—no diagrams required.
               </p>
             </div>
             <Link href={ROUTES.docs}>
@@ -349,8 +526,8 @@ export default async function Home() {
             Experience the unified hiring workspace today.
           </h2>
           <p className="max-w-2xl text-base text-muted">
-            Spin up your environment, connect every service through the API gateway, and give teams a single
-            source of truth for recruitment. Start with seeded users and sample data or bring your own.
+            Spin up your environment, plug in the hiring tools you already trust, and give teams a single source
+            of truth for recruitment. Start with seeded users and sample data or bring your own.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {renderPrimaryCtas(viewer)}
