@@ -12,8 +12,14 @@ export type ApplicationStatus =
 
 export type JobPostingPublic = {
   id: number;
+  companyId: number | null;
   title: string;
   description: string | null;
+  location: string | null;
+  workType: string | null;
+  department: string | null;
+  level: string | null;
+  status: string | null;
 };
 
 export type JobPosition = {
@@ -135,4 +141,42 @@ export type OAuthConfig = {
   githubClientId: string | null;
   githubRedirectUri: string | null;
   githubAuthorizeRedirectUri: string | null;
+};
+
+export type PublicOverviewResponse = {
+  metrics: {
+    companies: number;
+    candidates: number;
+    jobs: number;
+    applications: number;
+    interviews: number;
+    upcomingInterviews: number;
+  };
+  pipeline: {
+    applicationStages: PipelineStage[];
+    jobStatuses: JobStatusBreakdown[];
+  };
+  spotlightJobs: JobSpotlight[];
+};
+
+export type PipelineStage = {
+  stage: string;
+  count: number;
+};
+
+export type JobStatusBreakdown = {
+  status: string;
+  count: number;
+};
+
+export type JobSpotlight = {
+  id: number;
+  companyId: number | null;
+  title: string;
+  description: string | null;
+  location: string | null;
+  workType: string | null;
+  department: string | null;
+  level: string | null;
+  status: string | null;
 };

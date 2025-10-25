@@ -1,132 +1,68 @@
+import type { JSX } from "react";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
-import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/lib/routes";
 import { getCurrentUser } from "@/lib/current-user";
-import type { MeResponse } from "@/lib/types";
+import { getPublicOverview } from "@/lib/overview";
+import { ROUTES } from "@/lib/routes";
+import type { MeResponse, PublicOverviewResponse } from "@/lib/types";
 
-const metrics = [
-  { label: "Active companies", value: "48", detail: "Multi-tenant teams" },
-  { label: "Candidates supported", value: "12k+", detail: "Profiles and CVs" },
-  { label: "Interviews automated", value: "3.4k", detail: "Calendar and reminders" },
-];
+const numberFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+const compactFormatter = new Intl.NumberFormat("en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
 
-const platformHighlights = [
-  {
-    title: "Unified pipelines",
-    description:
-      "Track every job and application with live statuses, owners, and SLA alerts in one workspace.",
-  },
-  {
-    title: "Collaboration ready",
-    description:
-      "Mention teammates, share notes, and review structured feedback without juggling spreadsheets.",
-  },
-  {
-    title: "Insights that matter",
-    description:
-      "Monitor conversion rates, time to hire, and source performance with dashboards you can export.",
-  },
-  {
-    title: "Secure file vault",
-    description:
-      "Version CVs, offers, and compliance documents with granular access control by role.",
-  },
-];
-
-const recruiterHighlights = [
-  "Automated stage changes trigger candidate updates and dashboards instantly.",
-  "Role-aware permissions keep sensitive details visible to the right reviewers.",
-  "Templates, tasks, and reminders eliminate repetitive busywork for recruiters.",
-];
-
-const candidateHighlights = [
-  "Guided profile builder keeps skills, education, and experience in sync across applications.",
-  "Instant interview updates with calendar files ensure every candidate is prepared.",
-  "Transparent status tracking reduces follow-up emails and increases offer acceptance.",
-];
-
-const workflowSteps = [
-  {
-    phase: "Day 0",
-    title: "Connect your teams",
-    description: "Invite super admins, company admins, and recruiters with roles that match your org chart.",
-  },
-  {
-    phase: "Day 1",
-    title: "Sync existing data",
-    description: "Import jobs and candidate history or start with ready-to-use templates for each department.",
-  },
-  {
-    phase: "Day 7",
-    title: "Automate outreach",
-    description: "Activate notifications, interview reminders, and nurturing nudges without manual follow-ups.",
-  },
-  {
-    phase: "Day 14",
-    title: "Measure and iterate",
-    description: "Review dashboards, share insights, and refine each stage of the funnel with real metrics.",
-  },
-];
-
-const pipelineStages = [
-  { stage: "Applied", count: 42, detail: "8 new this morning", fill: 68, owner: "Talent Ops", sla: "Reply in 1 day" },
-  { stage: "Screening", count: 18, detail: "6 reviews due today", fill: 54, owner: "Recruiters", sla: "Decision in 2 days" },
-  { stage: "Interview", count: 12, detail: "4 on-site this week", fill: 72, owner: "Hiring managers", sla: "Feedback in 24h" },
-  { stage: "Offer", count: 4, detail: "2 approvals pending", fill: 32, owner: "People team", sla: "Package in 48h" },
-];
-
-const pipelineStats = [
-  { label: "Open roles", value: "28", meta: "+3 vs last week" },
-  { label: "Avg. SLA", value: "96%", meta: "On target" },
-  { label: "At risk", value: "3 stages", meta: "Needs follow-up" },
-];
-
-const pipelineFocus = [
-  { title: "Backend Platform Engineer", detail: "Awaiting hiring manager feedback", owner: "Nora Patel" },
-  { title: "Senior Product Designer", detail: "Offer review scheduled tomorrow", owner: "Alex Trinh" },
-  { title: "Campus recruiter cohort", detail: "Bulk interviews next Tuesday", owner: "Ops pod" },
-];
-
-const candidateTimeline = [
-  {
-    time: "09:10",
-    title: "Portfolio reviewed",
-    description: "Recruiter Linh confirmed skills fit and left structured feedback.",
-    status: "Completed",
-  },
-  {
-    time: "10:30",
-    title: "Panel interview scheduled",
-    description: "Calendar holds sent to hiring manager and interviewer trio.",
-    status: "Scheduled",
-  },
-  {
-    time: "14:00",
-    title: "Candidate update",
-    description: "Automated email confirms agenda plus prep materials.",
-    status: "Sent",
-  },
-  {
-    time: "Tomorrow",
-    title: "Comp review",
-    description: "Finance reminder to pre-build offer package if panel passes.",
-    status: "Upcoming",
-  },
-];
-
-const insightSnapshots = [
-  { label: "Time to hire", value: "21 days", delta: "-3 days vs Q2", trend: "positive" as const },
-  { label: "Offer acceptance", value: "82%", delta: "+5 pts vs avg", trend: "positive" as const },
-  { label: "Candidate NPS", value: "67", delta: "+12 vs last month", trend: "positive" as const },
-  { label: "Diversity slate", value: "54%", delta: "+7 pts this quarter", trend: "positive" as const },
-];
+const PIPELINE_LABELS: Record<string, string> = {
+  APPLIED: "Applied",
+  SCREENING: "Screening",
+  INTERVIEWING: "Interviews",
+  OFFERED: "Offers",
+  HIRED: "Hired",
+  REJECTED: "Closed",
+};
 
 export default async function Home() {
-  const viewer = await getCurrentUser();
+  const [viewer, overview] = await Promise.all([
+    getCurrentUser(),
+    getPublicOverview().catch(() => null),
+  ]);
 
-  const renderPrimaryCtas = (user: MeResponse | null) => {
+  const metrics = overview?.metrics;
+  const pipelineStages = overview?.pipeline.applicationStages ?? [];
+  const jobStatuses = overview?.pipeline.jobStatuses ?? [];
+  const spotlightJobs = overview?.spotlightJobs ?? [];
+  const publishedJobs = jobStatuses.find((status) => status.status === "PUBLISHED")?.count ?? 0;
+
+  const statsCards = [
+    {
+      label: "Active companies",
+      value: metrics?.companies ?? 0,
+      detail: "Operating via the shared gateway",
+    },
+    {
+      label: "Candidate profiles",
+      value: metrics?.candidates ?? 0,
+      detail: "Profiles keeping CVs current",
+    },
+    {
+      label: "Open roles",
+      value: publishedJobs,
+      detail: `${formatNumber(metrics?.jobs)} tracked overall`,
+    },
+    {
+      label: "Interviews coordinated",
+      value: metrics?.interviews ?? 0,
+      detail: `${formatNumber(metrics?.upcomingInterviews)} upcoming this week`,
+    },
+  ];
+
+  const stageCounts = pipelineStages.map((stage) => stage.count);
+  const stageMax = stageCounts.length > 0 ? Math.max(...stageCounts) : 1;
+
+  const renderPrimaryCtas = (user: MeResponse | null): JSX.Element => {
     if (!user) {
       return (
         <>
@@ -166,379 +102,323 @@ export default async function Home() {
     if (isCompanyAdmin) {
       return (
         <>
-          <Link href={ROUTES.companyAdminDashboard}>
-            <Button size="lg">Open company workspace</Button>
+          <Link href={ROUTES.companyDashboard}>
+            <Button size="lg">View company workspace</Button>
           </Link>
-          <Link href={isRecruiter ? ROUTES.recruiterDashboard : ROUTES.docs}>
+          <Link href={ROUTES.recruiterDashboard}>
             <Button size="lg" variant="secondary">
-              {isRecruiter ? "Go to recruiter view" : "Invite teammates"}
+              Manage hiring pipeline
             </Button>
           </Link>
         </>
       );
     }
 
-    if (isCandidate && !isRecruiter) {
+    if (isRecruiter) {
       return (
-        <Link href={ROUTES.candidatePortal}>
-          <Button size="lg">Enter candidate portal</Button>
-        </Link>
+        <>
+          <Link href={ROUTES.recruiterDashboard}>
+            <Button size="lg">Go to pipeline</Button>
+          </Link>
+          <Link href={ROUTES.recruiterTasks}>
+            <Button size="lg" variant="secondary">
+              Open task board
+            </Button>
+          </Link>
+        </>
+      );
+    }
+
+    if (isCandidate) {
+      return (
+        <>
+          <Link href={ROUTES.candidateProfile}>
+            <Button size="lg">Update my profile</Button>
+          </Link>
+          <Link href={ROUTES.jobs}>
+            <Button size="lg" variant="secondary">
+              Browse open roles
+            </Button>
+          </Link>
+        </>
       );
     }
 
     return (
       <>
-        <Link href={isCandidate ? ROUTES.candidatePortal : ROUTES.recruiterDashboard}>
-          <Button size="lg">
-            {isCandidate ? "Enter candidate portal" : "Enter recruiter workspace"}
-          </Button>
+        <Link href={ROUTES.signIn}>
+          <Button size="lg">Sign in</Button>
         </Link>
-        <Link href={isCandidate ? ROUTES.recruiterDashboard : ROUTES.candidatePortal}>
+        <Link href={ROUTES.register}>
           <Button size="lg" variant="secondary">
-            {isCandidate ? "Switch to recruiter tools" : "Preview candidate view"}
+            Create account
           </Button>
         </Link>
       </>
     );
   };
 
-  const viewerRoles = viewer?.roles ?? [];
-  const viewerIsRecruiter = viewerRoles.includes("RECRUITER");
-  const viewerIsCandidate = viewerRoles.includes("CANDIDATE");
-
   return (
-    <Container as="main" className="flex flex-col gap-24 pb-24">
-      <section className="grid gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
-        <div className="space-y-8">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.32em] text-accent">
-            Recruiting without busywork
-          </span>
-          <div className="space-y-4">
-            <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              Design hiring experiences candidates remember.
-            </h1>
-            <p className="max-w-xl text-base text-muted">
-              Coordinate teams, keep candidates informed, and surface insights automatically. Talentflow brings
-              your recruitment services, data, and communication into one secure workspace.
+    <main className="space-y-16 pb-24">
+      <HeroSection overview={overview} viewer={viewer} renderPrimaryCtas={renderPrimaryCtas} />
+
+      <section>
+        <Container className="space-y-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-primary">
+                Live platform snapshot
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold text-foreground">
+                Real activity powering recruiting teams
+              </h2>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Data refreshes continuously from the gateway-service and downstream microservices.
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
-            {renderPrimaryCtas(viewer)}
-            <Link href={ROUTES.docs}>
-              <Button size="lg" variant="ghost">
-                View documentation
-              </Button>
-            </Link>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-2 w-2 rounded-full bg-accent" />
-              <span>Average response time under 4 hours</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-2 w-2 rounded-full bg-accent" />
-              <span>ISO-ready audit trails included</span>
-            </div>
-          </div>
-        </div>
-        <Panel padding="lg" className="space-y-6">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-              By the numbers
-            </p>
-            <div className="mt-6 grid gap-6 sm:grid-cols-3">
-              {metrics.map((stat, index) => (
-                <div
-                  key={stat.label}
-                  className={[
-                    "space-y-2",
-                    index > 0 ? "sm:border-l sm:border-border sm:pl-6" : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                >
-                  <p className="text-3xl font-semibold text-foreground sm:text-4xl">{stat.value}</p>
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                    {stat.label}
-                  </p>
-                  <p className="text-sm text-muted">{stat.detail}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-2xl border border-border bg-surface-muted p-5 text-sm text-muted">
-            Built-in guardrails keep authentication, company context, and pacing consistent so every team ships
-            securely without exposing internal architecture.
-          </div>
-        </Panel>
-      </section>
 
-      <section className="space-y-10">
-        <div className="space-y-4">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
-            Platform capabilities
-          </span>
-          <div className="space-y-3">
-            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              Everything your team needs to run hiring in one place.
-            </h2>
-            <p className="max-w-2xl text-base text-muted">
-              From identity to interviews, Talentflow ships with opinionated building blocks so you can focus on
-              delivering great candidate journeys instead of wiring infrastructure.
-            </p>
-          </div>
-        </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {platformHighlights.map((item) => (
-            <Panel key={item.title} padding="sm" className="h-full space-y-3">
-              <p className="text-sm font-semibold text-foreground">{item.title}</p>
-              <p className="text-sm text-muted">{item.description}</p>
-            </Panel>
-          ))}
-        </div>
-      </section>
-
-      <section className="grid gap-8 lg:grid-cols-2">
-        <Panel padding="lg" className="space-y-5">
-          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-            For recruiting teams
-          </span>
-          <h3 className="text-2xl font-semibold text-foreground">
-            Keep every stakeholder aligned from sourcing to offer.
-          </h3>
-          <ul className="space-y-3 text-sm text-muted">
-            {recruiterHighlights.map((item) => (
-              <li key={item} className="flex items-start gap-3">
-                <span className="mt-1 inline-flex h-2 w-2 flex-shrink-0 rounded-full bg-accent" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="flex flex-wrap gap-3">
-            <Link href={viewerIsRecruiter ? ROUTES.recruiterDashboard : ROUTES.signIn}>
-              <Button size="md">{viewerIsRecruiter ? "Open recruiter workspace" : "Sign in as recruiter"}</Button>
-            </Link>
-            <Link href="/docs/recruiter">
-              <Button size="md" variant="secondary">
-                Recruiter playbook
-              </Button>
-            </Link>
-          </div>
-        </Panel>
-        <Panel padding="lg" className="space-y-5">
-          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-            For candidates
-          </span>
-          <h3 className="text-2xl font-semibold text-foreground">
-            Deliver a transparent journey from resume upload to offer.
-          </h3>
-          <ul className="space-y-3 text-sm text-muted">
-            {candidateHighlights.map((item) => (
-              <li key={item} className="flex items-start gap-3">
-                <span className="mt-1 inline-flex h-2 w-2 flex-shrink-0 rounded-full bg-accent" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="flex flex-wrap gap-3">
-            <Link href={viewerIsCandidate ? ROUTES.candidatePortal : ROUTES.register}>
-              <Button size="md">
-                {viewerIsCandidate ? "Open candidate portal" : "Create candidate account"}
-              </Button>
-            </Link>
-            <Link href="/docs/candidate">
-              <Button size="md" variant="secondary">
-                Candidate guide
-              </Button>
-            </Link>
-          </div>
-        </Panel>
-      </section>
-
-      <section className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-        <Panel padding="lg" className="space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="space-y-1">
-              <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                Product preview
-              </span>
-              <h3 className="text-2xl font-semibold text-foreground">Live pipeline snapshot</h3>
-              <p className="text-sm text-muted">Monitor every stage with automatic SLAs and reminders.</p>
-            </div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
-              Realtime
-            </span>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {pipelineStats.map((stat) => (
-              <div key={stat.label} className="rounded-2xl border border-border bg-surface-muted/60 p-4 text-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">{stat.label}</p>
-                <p className="mt-2 text-2xl font-semibold text-foreground">{stat.value}</p>
-                <p className="text-muted">{stat.meta}</p>
-              </div>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {statsCards.map((metric) => (
+              <Panel key={metric.label} padding="lg" className="space-y-2">
+                <p className="text-sm uppercase tracking-widest text-muted-foreground">{metric.label}</p>
+                <p className="text-4xl font-semibold text-foreground">{formatMetric(metric.value)}</p>
+                <p className="text-sm text-muted-foreground">{metric.detail}</p>
+              </Panel>
             ))}
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {pipelineStages.map((stage) => (
-              <div key={stage.stage} className="rounded-2xl border border-border bg-surface-muted/60 p-4 shadow-inner">
-                <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                  <span>{stage.stage}</span>
-                  <span>SLA</span>
-                </div>
-                <p className="mt-3 text-3xl font-semibold text-foreground">{stage.count}</p>
-                <p className="text-sm text-muted">{stage.detail}</p>
-                <div className="mt-3 flex items-center justify-between text-xs text-muted">
-                  <span>Owner: <span className="font-semibold text-foreground/80">{stage.owner}</span></span>
-                  <span>{stage.sla}</span>
-                </div>
-                <div className="mt-4 h-1.5 rounded-full bg-border/60">
-                  <span
-                    className="flex h-full rounded-full bg-accent transition-all"
-                    style={{ width: `${stage.fill}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="rounded-2xl border border-border bg-surface-muted/80 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Focus queue</p>
-                <p className="text-sm text-muted">Top items the team plans to unblock today.</p>
-              </div>
-              <Button size="sm" variant="ghost">
-                Assign owner
-              </Button>
-            </div>
-            <ul className="mt-4 space-y-3">
-              {pipelineFocus.map((item) => (
-                <li key={item.title} className="rounded-xl border border-border bg-surface px-4 py-3">
-                  <div className="flex items-center justify-between text-sm font-semibold text-foreground">
-                    <span>{item.title}</span>
-                    <span className="text-xs uppercase tracking-[0.28em] text-muted">Owner</span>
-                  </div>
-                  <p className="mt-1 text-sm text-muted">{item.detail}</p>
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">{item.owner}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Panel>
-        <div className="grid gap-6">
-          <Panel padding="lg" className="space-y-5">
-            <div className="space-y-1">
-              <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                Candidate journey
-              </span>
-              <h3 className="text-xl font-semibold text-foreground">Timeline view</h3>
-              <p className="text-sm text-muted">One place to follow every touchpoint and owner handoff.</p>
-            </div>
-            <ul className="space-y-4">
-              {candidateTimeline.map((event) => (
-                <li key={`${event.time}-${event.title}`} className="flex gap-3">
-                  <div className="w-20 shrink-0 text-[11px] font-semibold uppercase tracking-[0.28em] text-muted">
-                    {event.time}
-                  </div>
-                  <div className="flex-1 rounded-2xl border border-border bg-surface-muted/50 p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-sm font-semibold text-foreground">{event.title}</p>
-                      <span className="rounded-full bg-accent/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-accent">
-                        {event.status}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm text-muted">{event.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </Panel>
-          <Panel padding="lg" className="space-y-5">
-            <div className="space-y-1">
-              <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                Insight tiles
-              </span>
-              <h3 className="text-xl font-semibold text-foreground">Real results</h3>
-              <p className="text-sm text-muted">Share live KPIs with leadership and hiring managers.</p>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {insightSnapshots.map((insight) => (
-                <div key={insight.label} className="rounded-2xl border border-border bg-surface-muted/50 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">{insight.label}</p>
-                  <p className="mt-2 text-2xl font-semibold text-foreground">{insight.value}</p>
-                  <p
-                    className={`text-xs font-semibold ${
-                      insight.trend === "positive" ? "text-emerald-500" : "text-rose-500"
-                    }`}
-                  >
-                    {insight.delta}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Panel>
-        </div>
+        </Container>
       </section>
 
       <section>
-        <Panel variant="glass" padding="lg" className="space-y-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="space-y-3">
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
-                Implementation
-              </span>
-              <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-                Launch your workspace in weeks, not quarters.
-              </h2>
-              <p className="max-w-2xl text-base text-muted">
-                Guided onboarding, prebuilt automations, and unified permissions land out of the box. Security,
-                compliance, and collaboration stay consistent from day one—no diagrams required.
+        <Container className="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
+          <Panel className="space-y-6">
+            <div className="flex flex-col gap-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-primary">Pipeline health</p>
+              <h3 className="text-2xl font-semibold text-foreground">Applications in motion</h3>
+              <p className="text-sm text-muted-foreground">
+                Totals originate from Application Service metrics and respect the canonical status order.
               </p>
             </div>
-            <Link href={ROUTES.docs}>
-              <Button size="md" variant="ghost">
-                Download rollout checklist
-              </Button>
-            </Link>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {workflowSteps.map((step) => (
-              <div
-                key={step.phase}
-                className="rounded-xl border border-border bg-surface/95 p-5 shadow-[0_6px_16px_rgba(15,23,42,0.08)]"
-              >
-                <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                  {step.phase}
-                </span>
-                <p className="mt-2 text-base font-semibold text-foreground">{step.title}</p>
-                <p className="mt-2 text-sm text-muted">{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </Panel>
+            <div className="space-y-4">
+              {pipelineStages.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  We haven’t detected any applications yet. As soon as candidates apply, real data will appear here.
+                </p>
+              )}
+              {pipelineStages.map((stage) => {
+                const displayName = PIPELINE_LABELS[stage.stage] ?? stage.stage;
+                const fillPercentage = stage.count > 0 ? Math.max((stage.count / stageMax) * 100, 8) : 4;
+
+                return (
+                  <div key={stage.stage} className="space-y-2 rounded-2xl border border-border p-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <div>
+                        <p className="text-base font-semibold text-foreground">{displayName}</p>
+                        <p className="text-muted-foreground">
+                          {stage.count === 1 ? "1 candidate" : `${formatNumber(stage.count)} candidates`}
+                        </p>
+                      </div>
+                      <p className="text-2xl font-semibold text-foreground">{formatNumber(stage.count)}</p>
+                    </div>
+                    <div className="h-2 rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-sky-500 to-blue-600"
+                        style={{ width: `${fillPercentage}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Panel>
+
+          <Panel className="space-y-6">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-primary">Job board</p>
+              <h3 className="text-2xl font-semibold text-foreground">Publishing velocity</h3>
+            </div>
+
+            <div className="space-y-3">
+              {jobStatuses.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  Job Service hasn’t reported any postings yet. Publish your first role to unlock this view.
+                </p>
+              )}
+              {jobStatuses.map((status) => (
+                <div
+                  key={status.status}
+                  className="flex items-center justify-between rounded-2xl border border-border px-4 py-3"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{status.status}</p>
+                    <p className="text-xs text-muted-foreground">via Job Service metrics</p>
+                  </div>
+                  <p className="text-2xl font-semibold text-foreground">{formatNumber(status.count)}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-2xl border border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">{formatNumber(metrics?.upcomingInterviews)}</span> interviews
+              scheduled for the next week, streamed from Interview Service.
+            </div>
+          </Panel>
+        </Container>
       </section>
 
       <section>
-        <Panel padding="lg" className="flex flex-col items-center gap-6 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent">
-            Next steps
-          </span>
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Experience the unified hiring workspace today.
-          </h2>
-          <p className="max-w-2xl text-base text-muted">
-            Spin up your environment, plug in the hiring tools you already trust, and give teams a single source
-            of truth for recruitment. Start with seeded users and sample data or bring your own.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            {renderPrimaryCtas(viewer)}
-            <Link href={ROUTES.docs}>
-              <Button size="lg" variant="ghost">
-                Explore documentation
-              </Button>
+        <Container className="space-y-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-primary">Job spotlight</p>
+              <h3 className="text-3xl font-semibold text-foreground">Latest public roles across tenants</h3>
+            </div>
+            <Link href={ROUTES.jobs}>
+              <Button variant="secondary">Browse all published jobs</Button>
             </Link>
           </div>
-        </Panel>
+
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {spotlightJobs.length === 0 && (
+              <Panel className="col-span-full text-center text-sm text-muted-foreground">
+                No public postings yet. Recruiters can publish roles directly from the job workspace.
+              </Panel>
+            )}
+            {spotlightJobs.map((job) => (
+              <Panel key={job.id} padding="lg" className="flex h-full flex-col justify-between space-y-4">
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.5em] text-muted-foreground">#{job.id}</p>
+                  <h4 className="text-2xl font-semibold text-foreground">{job.title}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    {job.description ?? "Full description available on the job detail page."}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs font-medium text-muted-foreground">
+                  {job.location && <span className="rounded-full bg-muted px-3 py-1 text-foreground">{job.location}</span>}
+                  {job.workType && <span className="rounded-full bg-muted px-3 py-1 text-foreground">{job.workType}</span>}
+                  {job.department && (
+                    <span className="rounded-full bg-muted px-3 py-1 text-foreground">{job.department}</span>
+                  )}
+                  {job.level && <span className="rounded-full bg-muted px-3 py-1 text-foreground">{job.level}</span>}
+                </div>
+              </Panel>
+            ))}
+          </div>
+        </Container>
       </section>
-    </Container>
+
+      <section>
+        <Container>
+          <Panel className="flex flex-col gap-6 bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 text-white md:flex-row md:items-center md:justify-between">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.5em] text-indigo-200">
+                Bring your data with you
+              </p>
+              <h3 className="text-2xl font-semibold">
+                Every event runs through the gateway for audit-ready governance.
+              </h3>
+              <p className="text-sm text-indigo-200">
+                RabbitMQ topics, multi-tenant PostgreSQL schemas, and JWT-normalized headers keep each team safe while
+                sharing infrastructure.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">{renderPrimaryCtas(viewer)}</div>
+          </Panel>
+        </Container>
+      </section>
+    </main>
   );
+}
+
+type HeroSectionProps = {
+  overview: PublicOverviewResponse | null;
+  viewer: MeResponse | null;
+  renderPrimaryCtas: (user: MeResponse | null) => JSX.Element;
+};
+
+function HeroSection({ overview, viewer, renderPrimaryCtas }: HeroSectionProps) {
+  const metrics = overview?.metrics;
+
+  const trustSignals = [
+    `${formatNumber(metrics?.applications)} applications monitored`,
+    `${formatNumber(metrics?.interviews)} interviews orchestrated`,
+    `${formatNumber(metrics?.companies)} multi-tenant companies live`,
+  ];
+
+  return (
+    <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
+      <div className="pointer-events-none absolute inset-0 opacity-70">
+        <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-indigo-500/30 blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-sky-500/30 blur-3xl" />
+      </div>
+      <Container className="relative py-16">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr,0.9fr]">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.6em] text-indigo-200">
+                Recruitment control plane
+              </p>
+              <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
+                Operate every candidate touchpoint from one governance-ready gateway.
+              </h1>
+              <p className="text-lg text-slate-200">
+                The recruitment platform aligns Spring Boot microservices, RabbitMQ events, and the Next.js experience so
+                talent teams can launch faster without compromising compliance.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-4">{renderPrimaryCtas(viewer)}</div>
+            <div className="flex flex-wrap gap-5 text-sm text-indigo-100">
+              {trustSignals.map((signal) => (
+                <div key={signal} className="flex items-center gap-2">
+                  <span className="inline-flex h-2 w-2 rounded-full bg-gradient-to-r from-sky-400 to-indigo-400" />
+                  <span>{signal}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Panel variant="glass" className="bg-white/5 text-white backdrop-blur">
+            <div className="space-y-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">Data lineage</p>
+                <h2 className="mt-2 text-2xl font-semibold">Gateway-governed snapshot</h2>
+                <p className="text-sm text-indigo-100">
+                  Figures refresh continuously from Company, Job, Application, Profile, and Interview services.
+                </p>
+              </div>
+              <dl className="space-y-4">
+                <div className="rounded-2xl border border-white/10 p-4">
+                  <dt className="text-sm uppercase tracking-[0.3em] text-indigo-200">Companies</dt>
+                  <dd className="text-3xl font-semibold">{formatMetric(metrics?.companies ?? 0)}</dd>
+                  <p className="text-xs text-indigo-100">Multi-tenant orgs connected to discovery-service</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 p-4">
+                  <dt className="text-sm uppercase tracking-[0.3em] text-indigo-200">Applications</dt>
+                  <dd className="text-3xl font-semibold">{formatMetric(metrics?.applications ?? 0)}</dd>
+                  <p className="text-xs text-indigo-100">Events streaming via application.status.changed</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 p-4">
+                  <dt className="text-sm uppercase tracking-[0.3em] text-indigo-200">Interviews</dt>
+                  <dd className="text-3xl font-semibold">{formatMetric(metrics?.interviews ?? 0)}</dd>
+                  <p className="text-xs text-indigo-100">ICS-ready schedules synced to Notification Service</p>
+                </div>
+              </dl>
+            </div>
+          </Panel>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+function formatMetric(value: number) {
+  if (value >= 1000) {
+    return compactFormatter.format(value);
+  }
+  return numberFormatter.format(value);
+}
+
+function formatNumber(value: number | undefined | null) {
+  return numberFormatter.format(value ?? 0);
 }
