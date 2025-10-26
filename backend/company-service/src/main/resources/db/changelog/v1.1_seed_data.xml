@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    
+    <changeSet id="4-seed-companies-and-company-users" author="codex">
+        <insert tableName="companies">
+            <column name="name" value="Acme Corporation"/>
+            <column name="description" value="Enterprise HR platform provider with distributed teams across APAC."/>
+            <column name="website" value="https://www.acme-corp.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/acme.png"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="name" value="Globex Corporation"/>
+            <column name="description" value="Global manufacturing and R&amp;D firm expanding into Southeast Asia."/>
+            <column name="website" value="https://www.globex.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/globex.png"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueComputed="(SELECT id FROM companies WHERE name='Acme Corporation')"/>
+            <column name="user_id" valueNumeric="2"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueComputed="(SELECT id FROM companies WHERE name='Acme Corporation')"/>
+            <column name="user_id" valueNumeric="4"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueComputed="(SELECT id FROM companies WHERE name='Globex Corporation')"/>
+            <column name="user_id" valueNumeric="3"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueComputed="(SELECT id FROM companies WHERE name='Globex Corporation')"/>
+            <column name="user_id" valueNumeric="5"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <sql>
+            SELECT setval('companies_id_seq', (SELECT MAX(id) FROM companies));
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="5-backfill-company-metadata" author="codex">
+        <update tableName="companies">
+            <column name="company_size" value="500 - 1000 employees"/>
+            <column name="company_address" value="Saigon Innovation Hub, District 3, Ho Chi Minh City"/>
+            <where>name = 'Acme Corporation'</where>
+        </update>
+
+        <update tableName="companies">
+            <column name="company_size" value="800 - 1200 employees"/>
+            <column name="company_address" value="Hoa Khanh Industrial Park, Da Nang City"/>
+            <where>name = 'Globex Corporation'</where>
+        </update>
+    </changeSet>
+
+
+
+    <changeSet id="6-seed-enterprise-companies" author="codex">
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="3"/>
+            <column name="name" value="Lumos Tech Labs"/>
+            <column name="description" value="Builds AI copilots and workflow automation for enterprise back offices."/>
+            <column name="website" value="https://lumostech.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/lumos.png"/>
+            <column name="company_size" value="350 - 500 employees"/>
+            <column name="company_address" value="Saigon Hi-Tech Park, Thu Duc, Ho Chi Minh City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="4"/>
+            <column name="name" value="Harbor Logistics Group"/>
+            <column name="description" value="End-to-end freight forwarding and smart port technology provider."/>
+            <column name="website" value="https://harborlogistics.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/harbor.png"/>
+            <column name="company_size" value="200 - 350 employees"/>
+            <column name="company_address" value="Cat Lai Port Campus, Ho Chi Minh City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="5"/>
+            <column name="name" value="Zenith Health Systems"/>
+            <column name="description" value="Operates regional clinics with cloud-first patient management software."/>
+            <column name="website" value="https://zenithhealth.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/zenith.png"/>
+            <column name="company_size" value="600 - 800 employees"/>
+            <column name="company_address" value="Hoa Lam Tower, District 6, Ho Chi Minh City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="6"/>
+            <column name="name" value="BluePeak Retail"/>
+            <column name="description" value="Omnichannel fashion retailer with a network of boutique stores."/>
+            <column name="website" value="https://bluepeakretail.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/bluepeak.png"/>
+            <column name="company_size" value="400 - 600 employees"/>
+            <column name="company_address" value="Vincom Center, District 1, Ho Chi Minh City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="7"/>
+            <column name="name" value="SolarGrid Energy"/>
+            <column name="description" value="Develops distributed solar farms and grid optimization software."/>
+            <column name="website" value="https://solargrid.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/solargrid.png"/>
+            <column name="company_size" value="250 - 400 employees"/>
+            <column name="company_address" value="Da Nang Software Park, Da Nang City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="8"/>
+            <column name="name" value="Atlas Financial Partners"/>
+            <column name="description" value="Corporate advisory boutique specializing in venture debt and capital markets."/>
+            <column name="website" value="https://atlasfinancial.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/atlas.png"/>
+            <column name="company_size" value="300 - 450 employees"/>
+            <column name="company_address" value="Bitexco Financial Tower, Ho Chi Minh City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="9"/>
+            <column name="name" value="Aurora Creative Studio"/>
+            <column name="description" value="Designs brand systems, experiential campaigns, and immersive content."/>
+            <column name="website" value="https://auroracreative.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/aurora.png"/>
+            <column name="company_size" value="150 - 250 employees"/>
+            <column name="company_address" value="Lim Tower II, Ho Chi Minh City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="10"/>
+            <column name="name" value="TerraBuild Construction"/>
+            <column name="description" value="Civil engineering firm delivering smart city and infrastructure projects."/>
+            <column name="website" value="https://terrabuild.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/terrabuild.png"/>
+            <column name="company_size" value="500 - 700 employees"/>
+            <column name="company_address" value="Phu My Hung Campus, District 7, Ho Chi Minh City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="11"/>
+            <column name="name" value="Skyline Aerospace"/>
+            <column name="description" value="Manufactures UAV components and avionics for commercial fleets."/>
+            <column name="website" value="https://skylineaero.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/skyline.png"/>
+            <column name="company_size" value="800 - 1000 employees"/>
+            <column name="company_address" value="Noi Bai Logistics Hub, Hanoi"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="12"/>
+            <column name="name" value="GreenLeaf Agritech"/>
+            <column name="description" value="Precision agriculture platform combining IoT sensors and analytics."/>
+            <column name="website" value="https://greenleafagri.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/greenleaf.png"/>
+            <column name="company_size" value="350 - 450 employees"/>
+            <column name="company_address" value="Vietnam-Singapore Industrial Park, Binh Duong"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="13"/>
+            <column name="name" value="Beacon Cybersecurity"/>
+            <column name="description" value="Managed detection and response team protecting regulated enterprises."/>
+            <column name="website" value="https://beaconcyber.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/beacon.png"/>
+            <column name="company_size" value="200 - 300 employees"/>
+            <column name="company_address" value="Etown 5, Tan Binh District, Ho Chi Minh City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="14"/>
+            <column name="name" value="MetroRide Mobility"/>
+            <column name="description" value="Micromobility and EV subscription platform for dense urban cores."/>
+            <column name="website" value="https://metroride.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/metroride.png"/>
+            <column name="company_size" value="250 - 350 employees"/>
+            <column name="company_address" value="Thu Thiem New Urban Area, Ho Chi Minh City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="15"/>
+            <column name="name" value="Nova Learning Hub"/>
+            <column name="description" value="Blended learning network delivering STEM bootcamps and certifications."/>
+            <column name="website" value="https://novalearning.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/nova.png"/>
+            <column name="company_size" value="180 - 260 employees"/>
+            <column name="company_address" value="Duy Tan Campus, Da Nang City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="16"/>
+            <column name="name" value="Silverline Hospitality"/>
+            <column name="description" value="Boutique hotel group modernizing guest experience with mobile tech."/>
+            <column name="website" value="https://silverlinehospitality.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/silverline.png"/>
+            <column name="company_size" value="600 - 900 employees"/>
+            <column name="company_address" value="West Lake Business Center, Hanoi"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="17"/>
+            <column name="name" value="Pulse Media Network"/>
+            <column name="description" value="Streaming and podcast collective focused on Gen-Z storytelling."/>
+            <column name="website" value="https://pulsemedia.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/pulse.png"/>
+            <column name="company_size" value="220 - 320 employees"/>
+            <column name="company_address" value="Cau Giay Innovation Hub, Hanoi"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="18"/>
+            <column name="name" value="Quantum Analytics"/>
+            <column name="description" value="Data consultancy delivering lakehouse, BI, and MLops programs."/>
+            <column name="website" value="https://quantumanalytics.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/quantum.png"/>
+            <column name="company_size" value="270 - 380 employees"/>
+            <column name="company_address" value="Quang Trung Software City, Ho Chi Minh City"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="19"/>
+            <column name="name" value="Everflow Waterworks"/>
+            <column name="description" value="Designs sustainable water treatment and smart metering solutions."/>
+            <column name="website" value="https://everflowwater.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/everflow.png"/>
+            <column name="company_size" value="300 - 420 employees"/>
+            <column name="company_address" value="VSIP 2 Industrial Park, Binh Duong"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="20"/>
+            <column name="name" value="Summit Sportswear"/>
+            <column name="description" value="Athletic apparel maker blending recycled textiles with digital commerce."/>
+            <column name="website" value="https://summitsportswear.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/summit.png"/>
+            <column name="company_size" value="350 - 500 employees"/>
+            <column name="company_address" value="Trang Due Industrial Park, Hai Phong"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="21"/>
+            <column name="name" value="Northwind Insurance"/>
+            <column name="description" value="Regional insurer underwriting climate-resilient commercial policies."/>
+            <column name="website" value="https://northwindinsure.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/northwind.png"/>
+            <column name="company_size" value="500 - 650 employees"/>
+            <column name="company_address" value="Keangnam Landmark, Hanoi"/>
+        </insert>
+
+        <insert tableName="companies">
+            <column name="id" valueNumeric="22"/>
+            <column name="name" value="Radiant BioLabs"/>
+            <column name="description" value="Biotech startup engineering cell therapies for chronic illnesses."/>
+            <column name="website" value="https://radiantbiolabs.example"/>
+            <column name="logo_url" value="https://cdn.example.com/logos/radiant.png"/>
+            <column name="company_size" value="260 - 360 employees"/>
+            <column name="company_address" value="Saigon Innovation Center, Ho Chi Minh City"/>
+        </insert>
+
+        <!-- Map company admins and recruiters -->
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="3"/>
+            <column name="user_id" valueNumeric="6"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="3"/>
+            <column name="user_id" valueNumeric="7"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="4"/>
+            <column name="user_id" valueNumeric="8"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="4"/>
+            <column name="user_id" valueNumeric="9"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="5"/>
+            <column name="user_id" valueNumeric="10"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="5"/>
+            <column name="user_id" valueNumeric="11"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="6"/>
+            <column name="user_id" valueNumeric="12"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="6"/>
+            <column name="user_id" valueNumeric="13"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="7"/>
+            <column name="user_id" valueNumeric="14"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="7"/>
+            <column name="user_id" valueNumeric="15"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="8"/>
+            <column name="user_id" valueNumeric="16"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="8"/>
+            <column name="user_id" valueNumeric="17"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="9"/>
+            <column name="user_id" valueNumeric="18"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="9"/>
+            <column name="user_id" valueNumeric="19"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="10"/>
+            <column name="user_id" valueNumeric="20"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="10"/>
+            <column name="user_id" valueNumeric="21"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="11"/>
+            <column name="user_id" valueNumeric="22"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="11"/>
+            <column name="user_id" valueNumeric="23"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="12"/>
+            <column name="user_id" valueNumeric="24"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="12"/>
+            <column name="user_id" valueNumeric="25"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="13"/>
+            <column name="user_id" valueNumeric="26"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="13"/>
+            <column name="user_id" valueNumeric="27"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="14"/>
+            <column name="user_id" valueNumeric="28"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="14"/>
+            <column name="user_id" valueNumeric="29"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="15"/>
+            <column name="user_id" valueNumeric="30"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="15"/>
+            <column name="user_id" valueNumeric="31"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="16"/>
+            <column name="user_id" valueNumeric="32"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="16"/>
+            <column name="user_id" valueNumeric="33"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="17"/>
+            <column name="user_id" valueNumeric="34"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="17"/>
+            <column name="user_id" valueNumeric="35"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="18"/>
+            <column name="user_id" valueNumeric="36"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="18"/>
+            <column name="user_id" valueNumeric="37"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="19"/>
+            <column name="user_id" valueNumeric="38"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="19"/>
+            <column name="user_id" valueNumeric="39"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="20"/>
+            <column name="user_id" valueNumeric="40"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="20"/>
+            <column name="user_id" valueNumeric="41"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="21"/>
+            <column name="user_id" valueNumeric="42"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="21"/>
+            <column name="user_id" valueNumeric="43"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="22"/>
+            <column name="user_id" valueNumeric="44"/>
+            <column name="role" value="COMPANY_ADMIN"/>
+        </insert>
+
+        <insert tableName="company_users">
+            <column name="company_id" valueNumeric="22"/>
+            <column name="user_id" valueNumeric="45"/>
+            <column name="role" value="RECRUITER"/>
+        </insert>
+
+        <sql>
+            SELECT setval('companies_id_seq', (SELECT MAX(id) FROM companies));
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
