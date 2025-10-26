@@ -1,11 +1,9 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import type { JobPostingPublic } from "@/lib/types";
-import { JobsSearchForm } from "./search-form";
 import { JobsResults } from "./results";
 
 export const dynamic = "force-dynamic";
@@ -43,9 +41,6 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   const normalizedSearch = rawSearch.trim();
   const jobs = await getPublicJobs(normalizedSearch);
   const hasQuery = normalizedSearch.length > 0;
-  const resultsCopy = hasQuery
-    ? `Showing ${jobs.length} result${jobs.length === 1 ? "" : "s"} for "${normalizedSearch}".`
-    : `Showing ${jobs.length} open role${jobs.length === 1 ? "" : "s"}.`;
 
   return (
     <Container className="flex flex-col gap-10">
@@ -80,15 +75,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         </div>
       </header>
 
-      <Panel padding="lg" className="space-y-4">
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-foreground">Search open roles</p>
-          <p className="text-xs text-foreground/60">{resultsCopy}</p>
-        </div>
-        <JobsSearchForm initialQuery={rawSearch} />
-      </Panel>
-
-      <JobsResults jobs={jobs} hasQuery={hasQuery} />
+      <JobsResults jobs={jobs} hasQuery={hasQuery} initialQuery={rawSearch} />
     </Container>
   );
 }

@@ -17,6 +17,7 @@ export type JobPostingPublic = {
   description: string | null;
   requirements: string | null;
   benefits: string | null;
+  salaryRange: string | null;
   location: string | null;
   workType: string | null;
   department: string | null;
@@ -40,6 +41,7 @@ export type JobPosting = {
   description: string | null;
   requirements: string | null;
   benefits: string | null;
+  salaryRange: string | null;
   location: string | null;
   workType: string | null;
   status: JobStatus;
@@ -179,9 +181,20 @@ export type JobSpotlight = {
   description: string | null;
   requirements: string | null;
   benefits: string | null;
+  salaryRange: string | null;
   location: string | null;
   workType: string | null;
   department: string | null;
   level: string | null;
   status: string | null;
+};
+
+export type CompanyPublicProfile = {
+  id: number;
+  name: string;
+  description: string | null;
+  website: string | null;
+  logoUrl: string | null;
+  companySize: string | null;
+  companyAddress: string | null;
 };

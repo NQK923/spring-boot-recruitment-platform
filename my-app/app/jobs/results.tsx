@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
 import type { JobPostingPublic } from "@/lib/types";
 import { cx } from "@/lib/cx";
+import { JobsSearchForm } from "./search-form";
 
 type JobsResultsProps = {
   jobs: JobPostingPublic[];
   hasQuery: boolean;
+  initialQuery: string;
 };
 
 type FilterOption = {
@@ -18,9 +20,11 @@ type FilterOption = {
   value: string;
 };
 
-export function JobsResults({ jobs, hasQuery }: JobsResultsProps) {
+export function JobsResults({ jobs, hasQuery, initialQuery }: JobsResultsProps) {
   const [workTypeFilter, setWorkTypeFilter] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<string | null>(null);
+  const normalizedQuery = initialQuery.trim();
+  const searchLabel = normalizedQuery.length > 0 ? normalizedQuery : initialQuery;
 
   const workTypeOptions = useMemo(() => getTopOptions(jobs.map((job) => job.workType)), [jobs]);
   const locationOptions = useMemo(() => getTopOptions(jobs.map((job) => job.location), 5), [jobs]);
@@ -39,6 +43,9 @@ export function JobsResults({ jobs, hasQuery }: JobsResultsProps) {
   const hasClientFilters = Boolean(workTypeFilter || locationFilter);
   const hasQuickFilters = workTypeOptions.length > 0 || locationOptions.length > 0;
   const showFiltersPanel = hasQuickFilters || hasClientFilters;
+  const searchSummary = hasQuery
+    ? `Showing ${jobs.length} result${jobs.length === 1 ? "" : "s"} for "${searchLabel}".`
+    : `Showing ${jobs.length} open role${jobs.length === 1 ? "" : "s"}.`;
   const resultsLabel = hasClientFilters
     ? `Showing ${filteredJobs.length} role${filteredJobs.length === 1 ? "" : "s"} after filters.`
     : `Showing ${filteredJobs.length} role${filteredJobs.length === 1 ? "" : "s"} from this search.`;
@@ -50,40 +57,49 @@ export function JobsResults({ jobs, hasQuery }: JobsResultsProps) {
 
   return (
     <div className="space-y-6">
-      <Panel padding="lg" className="space-y-4">
-        {showFiltersPanel ? (
-          <div className="space-y-4">
-            {workTypeOptions.length > 0 && (
-              <FilterRow
-                title="Work style"
-                options={workTypeOptions}
-                activeValue={workTypeFilter}
-                onToggle={(value) => setWorkTypeFilter((prev) => (prev === value ? null : value))}
-              />
-            )}
+      <Panel padding="lg" className="space-y-6">
+        <div className="space-y-1">
+          <p className="text-sm font-semibold text-foreground">Search open roles</p>
+          <p className="text-xs text-foreground/60">{searchSummary}</p>
+        </div>
 
-            {locationOptions.length > 0 && (
-              <FilterRow
-                title="Location"
-                options={locationOptions}
-                activeValue={locationFilter}
-                onToggle={(value) => setLocationFilter((prev) => (prev === value ? null : value))}
-              />
-            )}
+        <JobsSearchForm key={initialQuery} initialQuery={initialQuery} />
 
-            {hasClientFilters && (
-              <Button variant="ghost" size="sm" className="whitespace-nowrap" onClick={clearFilters}>
-                Clear quick filters
-              </Button>
-            )}
-          </div>
-        ) : (
-          <p className="text-xs text-foreground/60">
-            Quick filters will surface once recruiters add work style or location metadata to their postings.
-          </p>
-        )}
+        <div className="space-y-4 border-t border-border/60 pt-4">
+          {showFiltersPanel ? (
+            <div className="space-y-4">
+              {workTypeOptions.length > 0 && (
+                <FilterRow
+                  title="Work style"
+                  options={workTypeOptions}
+                  activeValue={workTypeFilter}
+                  onToggle={(value) => setWorkTypeFilter((prev) => (prev === value ? null : value))}
+                />
+              )}
 
-        <p className="text-xs text-foreground/60">{resultsLabel}</p>
+              {locationOptions.length > 0 && (
+                <FilterRow
+                  title="Location"
+                  options={locationOptions}
+                  activeValue={locationFilter}
+                  onToggle={(value) => setLocationFilter((prev) => (prev === value ? null : value))}
+                />
+              )}
+
+              {hasClientFilters && (
+                <Button variant="ghost" size="sm" className="whitespace-nowrap" onClick={clearFilters}>
+                  Clear quick filters
+                </Button>
+              )}
+            </div>
+          ) : (
+            <p className="text-xs text-foreground/60">
+              Quick filters will surface once recruiters add work style or location metadata to their postings.
+            </p>
+          )}
+
+          <p className="text-xs text-foreground/60">{resultsLabel}</p>
+        </div>
       </Panel>
 
       {filteredJobs.length === 0 ? (
@@ -118,6 +134,12 @@ export function JobsResults({ jobs, hasQuery }: JobsResultsProps) {
                 )}
                 {!job.department && job.level && <JobMetaChip label={job.level} />}
               </div>
+
+              {job.salaryRange && (
+                <p className="text-xs font-medium text-foreground">
+                  <span className="text-foreground/70">Compensation:</span> {job.salaryRange}
+                </p>
+              )}
 
               <div className="mt-auto flex flex-col gap-3 pt-4 text-sm sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs text-foreground/60">

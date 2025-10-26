@@ -8,6 +8,7 @@ public record JobPostingPublicDto(
         String description,
         String requirements,
         String benefits,
+        String salaryRange,
         String location,
         String workType,
         String department,

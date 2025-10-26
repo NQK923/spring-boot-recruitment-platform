@@ -83,6 +83,7 @@ public class PublicOverviewService {
                         truncate(job.description()),
                         truncate(job.requirements()),
                         truncate(job.benefits()),
+                        truncate(job.salaryRange()),
                         job.location(),
                         job.workType(),
                         job.department(),

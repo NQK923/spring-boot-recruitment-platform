@@ -23,6 +23,7 @@ public class JobPosting {
     private String title;
     private String description;
     private String requirements;
+    private String salaryRange;
     private String location;
     private String workType;
     private String benefits;

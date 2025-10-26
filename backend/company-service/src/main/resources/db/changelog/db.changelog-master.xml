@@ -9,5 +9,6 @@
     <include file="v1.1_add_company_users.xml" relativeToChangelogFile="true"/>
     <include file="v1.2_seed_companies.xml" relativeToChangelogFile="true"/>
     <include file="v1.3_create_communication_templates.xml" relativeToChangelogFile="true"/>
+    <include file="v1.4_add_company_metadata.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

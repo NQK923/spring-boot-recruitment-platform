@@ -1,6 +1,6 @@
-﻿"use client"
+"use client";
 
-import { FormEvent, useEffect, useState, useTransition } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,33 +15,58 @@ export function JobsSearchForm({ initialQuery = "", className }: JobsSearchFormP
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const searchParamsString = searchParams.toString();
   const [query, setQuery] = useState(initialQuery);
   const [isPending, startTransition] = useTransition();
+  const skipNextDebounceRef = useRef(true);
+  const debounceHandleRef = useRef<NodeJS.Timeout | null>(null);
+  const DEBOUNCE_MS = 450;
+
+  const updateRoute = useCallback(
+    (nextQuery: string) => {
+      const nextSearchParams = new URLSearchParams(searchParamsString);
+      if (nextQuery.trim().length > 0) {
+        nextSearchParams.set("search", nextQuery.trim());
+      } else {
+        nextSearchParams.delete("search");
+      }
+
+      const queryString = nextSearchParams.toString();
+      const target = queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
+      startTransition(() => router.push(target));
+    },
+    [pathname, router, searchParamsString]
+  );
 
   useEffect(() => {
-    setQuery(initialQuery);
-  }, [initialQuery]);
-
-  function updateRoute(nextQuery: string) {
-    const nextSearchParams = new URLSearchParams(searchParams.toString());
-    if (nextQuery.trim().length > 0) {
-      nextSearchParams.set("search", nextQuery.trim());
-    } else {
-      nextSearchParams.delete("search");
+    if (skipNextDebounceRef.current) {
+      skipNextDebounceRef.current = false;
+      return;
     }
 
-    const queryString = nextSearchParams.toString();
-    const target = queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
-    startTransition(() => router.push(target));
-  }
+    if (debounceHandleRef.current) {
+      clearTimeout(debounceHandleRef.current);
+    }
+    debounceHandleRef.current = setTimeout(() => {
+      updateRoute(query);
+    }, DEBOUNCE_MS);
+
+    return () => {
+      if (debounceHandleRef.current) {
+        clearTimeout(debounceHandleRef.current);
+      }
+    };
+  }, [query, updateRoute]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    skipNextDebounceRef.current = true;
     updateRoute(query);
   }
 
   function handleClear() {
     setQuery("");
+    skipNextDebounceRef.current = true;
     updateRoute("");
   }
 
@@ -50,7 +75,7 @@ export function JobsSearchForm({ initialQuery = "", className }: JobsSearchFormP
       <Input
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search by title, location, or keywords"
+        placeholder="Search by title or location"
         aria-label="Search open roles"
         autoComplete="off"
       />

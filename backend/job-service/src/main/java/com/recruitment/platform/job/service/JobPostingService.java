@@ -36,6 +36,7 @@ public class JobPostingService {
         newJob.setTitle(request.title());
         newJob.setDescription(request.description());
         newJob.setRequirements(request.requirements());
+        newJob.setSalaryRange(request.salaryRange());
         newJob.setBenefits(request.benefits());
         newJob.setLocation(request.location());
         newJob.setWorkType(request.workType());
@@ -68,6 +69,9 @@ public class JobPostingService {
         }
         if (request.requirements() != null) {
             job.setRequirements(request.requirements());
+        }
+        if (request.salaryRange() != null) {
+            job.setSalaryRange(request.salaryRange());
         }
         if (request.benefits() != null) {
             job.setBenefits(request.benefits());
@@ -120,8 +124,7 @@ public class JobPostingService {
         }
 
         String normalizedPattern = "%" + searchTerm.trim().toLowerCase(Locale.ROOT) + "%";
-        return jobPostingRepository.searchPublishedJobs(JobStatus.PUBLISHED, normalizedPattern)
-                .stream()
+        return jobPostingRepository.searchPublishedJobsByTitleOrLocation(JobStatus.PUBLISHED, normalizedPattern).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -148,6 +151,7 @@ public class JobPostingService {
                 jobPosting.getDescription(),
                 jobPosting.getRequirements(),
                 jobPosting.getBenefits(),
+                jobPosting.getSalaryRange(),
                 jobPosting.getLocation(),
                 jobPosting.getWorkType(),
                 department,

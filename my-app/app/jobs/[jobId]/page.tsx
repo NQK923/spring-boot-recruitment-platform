@@ -7,7 +7,7 @@ import { apiFetch } from "@/lib/api";
 import { getAccessTokenFromCookies } from "@/lib/session";
 import { ROUTES } from "@/lib/routes";
 import { ApplyForm } from "@/components/jobs/apply-form";
-import type { JobPostingPublic, MeResponse } from "@/lib/types";
+import type { CompanyPublicProfile, JobPostingPublic, MeResponse } from "@/lib/types";
 
 async function getJob(jobId: string): Promise<JobPostingPublic | null> {
   try {
@@ -39,6 +39,23 @@ async function getCurrentUser(): Promise<MeResponse | null> {
   }
 }
 
+async function getCompanyProfile(companyId: number): Promise<CompanyPublicProfile | null> {
+  try {
+    const response = await apiFetch(`/api/companies/public/${companyId}`, {
+      method: "GET",
+      skipAuthHeaders: true,
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      return null;
+    }
+    const data = await response.json();
+    return data as CompanyPublicProfile;
+  } catch {
+    return null;
+  }
+}
+
 type JobDetailsPageProps = {
   params: Promise<{ jobId: string }> | { jobId: string };
 };
@@ -49,6 +66,7 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
   if (!job) {
     notFound();
   }
+  const companyProfile = job.companyId ? await getCompanyProfile(job.companyId) : null;
 
   let canApply = false;
   const token = await getAccessTokenFromCookies();
@@ -93,6 +111,29 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
             {job.benefits ??
               "Compensation and benefits will be provided once this role is fully published by the hiring team."}
           </p>
+        </div>
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground">Compensation range</h2>
+          <p className="whitespace-pre-wrap text-sm text-foreground/70">
+            {job.salaryRange ??
+              "Salary details will appear here after the hiring team finalizes the range for this opening."}
+          </p>
+        </div>
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground">Company snapshot</h2>
+          <div className="space-y-1 text-sm text-foreground/70">
+            {companyProfile?.name && (
+              <p className="text-base font-semibold text-foreground">{companyProfile.name}</p>
+            )}
+            <p>
+              <span className="font-semibold text-foreground">Company size:</span>{" "}
+              {companyProfile?.companySize ?? "Will be shared once the recruiter confirms headcount."}
+            </p>
+            <p>
+              <span className="font-semibold text-foreground">Primary office:</span>{" "}
+              {companyProfile?.companyAddress ?? "The hiring team will provide the office location soon."}
+            </p>
+          </div>
         </div>
         <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-5 text-sm text-foreground/70">
           Applications are routed directly to the recruiter assigned to this role. Expect timely updates and

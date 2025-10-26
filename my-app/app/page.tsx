@@ -531,6 +531,9 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 text-xs font-medium text-slate-200">
+                  {job.salaryRange && (
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.salaryRange}</span>
+                  )}
                   {job.location && <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.location}</span>}
                   {job.workType && <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.workType}</span>}
                   {job.department && (

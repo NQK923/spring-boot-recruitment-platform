@@ -32,6 +32,7 @@ public record PublicOverviewResponse(
             String description,
             String requirements,
             String benefits,
+            String salaryRange,
             String location,
             String workType,
             String department,

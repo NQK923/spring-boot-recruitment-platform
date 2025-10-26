@@ -4,6 +4,8 @@ public record CreateCompanyRequest(
         String name,
         String description,
         String website,
-        String logoUrl
+        String logoUrl,
+        String companySize,
+        String companyAddress
 ) {
 }

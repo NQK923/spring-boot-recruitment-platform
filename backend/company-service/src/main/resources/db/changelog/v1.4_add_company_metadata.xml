@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="5-add-company-metadata" author="codex">
+        <addColumn tableName="companies">
+            <column name="company_size" type="VARCHAR(255)"/>
+            <column name="company_address" type="VARCHAR(500)"/>
+        </addColumn>
+
+        <update tableName="companies">
+            <column name="company_size" value="500 - 1000 employees"/>
+            <column name="company_address" value="Saigon Innovation Hub, District 3, Ho Chi Minh City"/>
+            <where>name = 'Acme Corporation'</where>
+        </update>
+
+        <update tableName="companies">
+            <column name="company_size" value="800 - 1200 employees"/>
+            <column name="company_address" value="Hoa Khanh Industrial Park, Da Nang City"/>
+            <where>name = 'Globex Corporation'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

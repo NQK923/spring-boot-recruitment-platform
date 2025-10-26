@@ -22,6 +22,8 @@ public class Company {
     private String description;
     private String website;
     private String logoUrl;
+    private String companySize;
+    private String companyAddress;
     private Instant createdAt = Instant.now();
 
 }

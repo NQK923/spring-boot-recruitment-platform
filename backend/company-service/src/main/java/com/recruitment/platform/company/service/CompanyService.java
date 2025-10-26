@@ -72,6 +72,8 @@ public class CompanyService {
         company.setDescription(request.description());
         company.setWebsite(request.website());
         company.setLogoUrl(request.logoUrl());
+        company.setCompanySize(request.companySize());
+        company.setCompanyAddress(request.companyAddress());
         return companyRepository.save(company);
     }
 
@@ -96,11 +98,24 @@ public class CompanyService {
         if (request.logoUrl() != null) {
             company.setLogoUrl(request.logoUrl());
         }
+        if (request.companySize() != null) {
+            company.setCompanySize(request.companySize());
+        }
+        if (request.companyAddress() != null) {
+            company.setCompanyAddress(request.companyAddress());
+        }
         return companyRepository.save(company);
     }
 
     public List<Company> findAllCompanies() {
         return companyRepository.findAll();
+    }
+
+    public List<Company> searchCompanies(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return List.of();
+        }
+        return companyRepository.findByNameContainingIgnoreCase(query.trim());
     }
 
     public List<CompanyUserResponse> getCompanyUsers(Long companyId) {
