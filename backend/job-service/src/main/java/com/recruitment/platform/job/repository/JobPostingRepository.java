@@ -15,6 +15,21 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     List<JobPosting> findByCompanyId(Long companyId);
 
     @Query("""
+            SELECT jp FROM JobPosting jp
+            LEFT JOIN jp.jobPosition pos
+            WHERE jp.status = :status
+              AND (
+                    LOWER(jp.title) LIKE :search OR
+                    LOWER(COALESCE(jp.description, '')) LIKE :search OR
+                    LOWER(COALESCE(jp.location, '')) LIKE :search OR
+                    LOWER(COALESCE(jp.workType, '')) LIKE :search OR
+                    LOWER(COALESCE(pos.department, '')) LIKE :search OR
+                    LOWER(COALESCE(pos.level, '')) LIKE :search
+                  )
+            """)
+    List<JobPosting> searchPublishedJobs(@Param("status") JobStatus status, @Param("search") String search);
+
+    @Query("""
             SELECT new com.recruitment.platform.job.dto.JobStatusAggregation(jp.status, COUNT(jp))
             FROM JobPosting jp
             GROUP BY jp.status

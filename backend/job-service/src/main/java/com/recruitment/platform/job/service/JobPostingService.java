@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -109,6 +110,18 @@ public class JobPostingService {
                 .collect(Collectors.toList());
     }
 
+    public List<JobPostingPublicDto> searchPublicJobs(String searchTerm) {
+        if (!hasText(searchTerm)) {
+            return findAllPublicJobs();
+        }
+
+        String normalizedPattern = "%" + searchTerm.trim().toLowerCase(Locale.ROOT) + "%";
+        return jobPostingRepository.searchPublishedJobs(JobStatus.PUBLISHED, normalizedPattern)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
     public Optional<JobPosting> findJobById(Long id) {
         return jobPostingRepository.findById(id);
     }
@@ -144,5 +157,9 @@ public class JobPostingService {
             throw new IllegalStateException("Job position does not belong to this company.");
         }
         return position;
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.trim().isEmpty();
     }
 }

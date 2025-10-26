@@ -29,8 +29,8 @@ public class JobController {
     }
 
     @GetMapping("/public")
-    public List<JobPostingPublicDto> getOpenJobs() {
-        return service.findAllPublicJobs();
+    public List<JobPostingPublicDto> getOpenJobs(@RequestParam(value = "search", required = false) String search) {
+        return service.searchPublicJobs(search);
     }
 
     @GetMapping("/public/{id}")

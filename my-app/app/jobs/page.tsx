@@ -5,10 +5,19 @@ import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import type { JobPostingPublic } from "@/lib/types";
+import { JobsSearchForm } from "./search-form";
 
-async function getPublicJobs(): Promise<JobPostingPublic[]> {
+async function getPublicJobs(search?: string): Promise<JobPostingPublic[]> {
   try {
-    const response = await apiFetch("/api/jobs/public", { method: "GET", skipAuthHeaders: true });
+    const params = new URLSearchParams();
+    if (search && search.trim().length > 0) {
+      params.set("search", search.trim());
+    }
+    const query = params.toString();
+    const response = await apiFetch(`/api/jobs/public${query ? `?${query}` : ""}`, {
+      method: "GET",
+      skipAuthHeaders: true,
+    });
     const data = await response.json();
     if (Array.isArray(data)) {
       return data as JobPostingPublic[];
@@ -19,8 +28,20 @@ async function getPublicJobs(): Promise<JobPostingPublic[]> {
   }
 }
 
-export default async function JobsPage() {
-  const jobs = await getPublicJobs();
+type JobsPageProps = {
+  searchParams?: {
+    search?: string;
+  };
+};
+
+export default async function JobsPage({ searchParams }: JobsPageProps) {
+  const rawSearch = typeof searchParams?.search === "string" ? searchParams.search : "";
+  const normalizedSearch = rawSearch.trim();
+  const jobs = await getPublicJobs(normalizedSearch);
+  const hasQuery = normalizedSearch.length > 0;
+  const resultsCopy = hasQuery
+    ? `Showing ${jobs.length} result${jobs.length === 1 ? "" : "s"} for "${normalizedSearch}".`
+    : `Showing ${jobs.length} open role${jobs.length === 1 ? "" : "s"}.`;
 
   return (
     <Container className="flex flex-col gap-10">
@@ -55,9 +76,19 @@ export default async function JobsPage() {
         </div>
       </header>
 
+      <Panel padding="lg" className="space-y-4">
+        <div className="space-y-1">
+          <p className="text-sm font-semibold text-foreground">Search open roles</p>
+          <p className="text-xs text-foreground/60">{resultsCopy}</p>
+        </div>
+        <JobsSearchForm initialQuery={rawSearch} />
+      </Panel>
+
       {jobs.length === 0 ? (
         <Panel padding="lg" className="text-sm text-foreground/60">
-          No jobs are available right now. Check back soon or sign in to receive tailored recommendations.
+          {hasQuery
+            ? "No roles match that search. Try broader keywords or clear the filter to see every opening."
+            : "No jobs are available right now. Check back soon or sign in to receive tailored recommendations."}
         </Panel>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
