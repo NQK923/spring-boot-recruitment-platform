@@ -4,7 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-
     <changeSet id="1-create-application-tables" author="nqk923">
         <createTable  tableName="applications">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -38,5 +37,79 @@
             <column name="note" type="TEXT"/>
             <column name="timestamp" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
         </createTable>
+    </changeSet>
+
+    <changeSet id="2-add-application-source" author="nqk923">
+        <addColumn tableName="applications">
+            <column name="source" type="VARCHAR(100)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="3-create-application-notes" author="nqk923">
+        <createTable tableName="application_notes">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="application_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_notes_application" references="applications(id)"/>
+            </column>
+            <column name="author_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="TEXT"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="v1.3-1-add-owner-column" author="codex">
+        <addColumn tableName="applications">
+            <column name="owner_user_id" type="BIGINT">
+            </column>
+        </addColumn>
+        <createIndex indexName="idx_applications_owner_user_id" tableName="applications">
+            <column name="owner_user_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="v1.4-1-create-application-tasks" author="codex">
+        <createTable tableName="application_tasks">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_application_tasks"/>
+            </column>
+            <column name="application_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="due_date" type="TIMESTAMP"/>
+            <column name="status" type="VARCHAR(32)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assigned_to_user_id" type="BIGINT"/>
+            <column name="created_by_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="completed_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="application_tasks"
+                                 baseColumnNames="application_id"
+                                 constraintName="fk_application_tasks_application"
+                                 referencedTableName="applications"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <createIndex tableName="application_tasks" indexName="idx_application_tasks_application_id">
+            <column name="application_id"/>
+        </createIndex>
+
+        <createIndex tableName="application_tasks" indexName="idx_application_tasks_assigned_to">
+            <column name="assigned_to_user_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

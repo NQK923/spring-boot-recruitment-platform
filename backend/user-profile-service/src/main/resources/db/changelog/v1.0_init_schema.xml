@@ -4,7 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-
     <changeSet id="1-create-profile-tables" author="nqk923">
         <createTable tableName="profiles">
             <column name="user_id" type="BIGINT">
@@ -41,4 +40,33 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="2-extend-profile-schema" author="nqk923">
+        <addColumn tableName="experiences">
+            <column name="start_date" type="DATE"/>
+            <column name="end_date" type="DATE"/>
+        </addColumn>
+
+        <createTable tableName="education">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="profile_user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_education_profile" references="profiles(user_id)"/>
+            </column>
+            <column name="school" type="VARCHAR(255)"/>
+            <column name="degree" type="VARCHAR(255)"/>
+            <column name="start_date" type="DATE"/>
+            <column name="end_date" type="DATE"/>
+        </createTable>
+
+        <createTable tableName="skills">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="profile_user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_skill_profile" references="profiles(user_id)"/>
+            </column>
+            <column name="skill_name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

@@ -4,7 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-
     <changeSet id="1-create-job-tables" author="nqk923">
         <createTable tableName="job_positions">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -40,4 +39,959 @@
         <addForeignKeyConstraint baseTableName="job_postings" baseColumnNames="job_position_id" constraintName="fk_posting_position" referencedTableName="job_positions" referencedColumnNames="id"/>
     </changeSet>
 
+    <changeSet id="2-seed-job-positions-and-postings" author="codex">
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="1"/>
+            <column name="title" value="Senior Backend Engineer"/>
+            <column name="department" value="Engineering"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="1"/>
+            <column name="title" value="Product Designer"/>
+            <column name="department" value="Design"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="2"/>
+            <column name="title" value="Manufacturing Supervisor"/>
+            <column name="department" value="Operations"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="2"/>
+            <column name="title" value="Regional Sales Manager"/>
+            <column name="department" value="Sales"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="1"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=1 AND title='Senior Backend Engineer')"/>
+            <column name="title" value="Senior Backend Engineer"/>
+            <column name="description" value="Own core microservices, guide architecture decisions, and mentor teammates."/>
+            <column name="requirements" value="6+ years building Java/Spring services; experience with cloud-native tooling."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="4"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="1"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=1 AND title='Product Designer')"/>
+            <column name="title" value="Product Designer"/>
+            <column name="description" value="Collaborate with cross-functional squads to design intuitive hiring flows."/>
+            <column name="requirements" value="3+ years in product design; strong Figma skills; portfolio demonstrating UX thinking."/>
+            <column name="location" value="Remote - APAC"/>
+            <column name="work_type" value="Remote"/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="4"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="2"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=2 AND title='Manufacturing Supervisor')"/>
+            <column name="title" value="Manufacturing Supervisor"/>
+            <column name="description" value="Lead shift operations for Globex&#39;s new assembly plant, ensuring safety and output KPIs."/>
+            <column name="requirements" value="5+ years supervising manufacturing lines; lean six sigma is a plus."/>
+            <column name="location" value="Da Nang, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="5"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="2"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=2 AND title='Regional Sales Manager')"/>
+            <column name="title" value="Regional Sales Manager"/>
+            <column name="description" value="Drive enterprise sales across ASEAN, building long-term relationships with key accounts."/>
+            <column name="requirements" value="7+ years enterprise sales; proven track record hitting quotas; willingness to travel."/>
+            <column name="location" value="Singapore"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="5"/>
+        </insert>
+
+        <sql>
+            SELECT setval('job_positions_id_seq', (SELECT MAX(id) FROM job_positions));
+        </sql>
+
+        <sql>
+            SELECT setval('job_postings_id_seq', (SELECT MAX(id) FROM job_postings));
+        </sql>
+    </changeSet>
+
+    <changeSet id="3-add-job-benefits" author="codex">
+        <addColumn tableName="job_postings">
+            <column name="benefits" type="TEXT"/>
+        </addColumn>
+
+        <update tableName="job_postings">
+            <column name="benefits" value="Employee stock refreshers, 15 days PTO, remote stipend, and annual conference budget."/>
+            <where>title = 'Senior Backend Engineer' AND company_id = 1</where>
+        </update>
+
+        <update tableName="job_postings">
+            <column name="benefits" value="Annual learning grant, flexible hours, design system summit travel, and wellness days."/>
+            <where>title = 'Product Designer' AND company_id = 1</where>
+        </update>
+
+        <update tableName="job_postings">
+            <column name="benefits" value="Shift allowance, safety bonus, private healthcare, and leadership development track."/>
+            <where>title = 'Manufacturing Supervisor' AND company_id = 2</where>
+        </update>
+
+        <update tableName="job_postings">
+            <column name="benefits" value="Quarterly commission accelerators, regional travel budget, and private healthcare coverage."/>
+            <where>title = 'Regional Sales Manager' AND company_id = 2</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="4-seed-enterprise-job-positions" author="codex">
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="3"/>
+            <column name="title" value="Senior AI Engineer"/>
+            <column name="department" value="Engineering"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="3"/>
+            <column name="title" value="Implementation Lead"/>
+            <column name="department" value="Customer Success"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="4"/>
+            <column name="title" value="Fleet Operations Manager"/>
+            <column name="department" value="Operations"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="4"/>
+            <column name="title" value="Customs Compliance Analyst"/>
+            <column name="department" value="Compliance"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="5"/>
+            <column name="title" value="Clinical Product Manager"/>
+            <column name="department" value="Product"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="5"/>
+            <column name="title" value="Nursing Operations Lead"/>
+            <column name="department" value="Care Delivery"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="6"/>
+            <column name="title" value="Ecommerce Merchandiser"/>
+            <column name="department" value="Merchandising"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="6"/>
+            <column name="title" value="Store Experience Manager"/>
+            <column name="department" value="Retail"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="7"/>
+            <column name="title" value="Grid Integration Engineer"/>
+            <column name="department" value="Engineering"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="7"/>
+            <column name="title" value="Sustainability Analyst"/>
+            <column name="department" value="Strategy"/>
+            <column name="level" value="Associate"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="8"/>
+            <column name="title" value="Venture Debt Associate"/>
+            <column name="department" value="Advisory"/>
+            <column name="level" value="Associate"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="8"/>
+            <column name="title" value="Capital Markets Director"/>
+            <column name="department" value="Advisory"/>
+            <column name="level" value="Director"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="9"/>
+            <column name="title" value="Art Director"/>
+            <column name="department" value="Creative"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="9"/>
+            <column name="title" value="Motion Designer"/>
+            <column name="department" value="Creative"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="10"/>
+            <column name="title" value="Project Controls Lead"/>
+            <column name="department" value="Project Management"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="10"/>
+            <column name="title" value="BIM Coordinator"/>
+            <column name="department" value="Engineering"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="11"/>
+            <column name="title" value="Avionics Test Engineer"/>
+            <column name="department" value="Engineering"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="11"/>
+            <column name="title" value="Supply Chain Planner"/>
+            <column name="department" value="Operations"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="12"/>
+            <column name="title" value="IoT Field Specialist"/>
+            <column name="department" value="Operations"/>
+            <column name="level" value="Associate"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="12"/>
+            <column name="title" value="Data Agronomist"/>
+            <column name="department" value="Product"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="13"/>
+            <column name="title" value="Threat Detection Engineer"/>
+            <column name="department" value="Security Operations"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="13"/>
+            <column name="title" value="Security Account Manager"/>
+            <column name="department" value="Customer Success"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="14"/>
+            <column name="title" value="City Launcher"/>
+            <column name="department" value="Operations"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="14"/>
+            <column name="title" value="Embedded Systems Engineer"/>
+            <column name="department" value="Hardware"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="15"/>
+            <column name="title" value="Curriculum Designer"/>
+            <column name="department" value="Academics"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="15"/>
+            <column name="title" value="Career Success Coach"/>
+            <column name="department" value="Student Success"/>
+            <column name="level" value="Associate"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="16"/>
+            <column name="title" value="Hotel Revenue Manager"/>
+            <column name="department" value="Revenue"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="16"/>
+            <column name="title" value="Guest Experience Lead"/>
+            <column name="department" value="Operations"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="17"/>
+            <column name="title" value="Podcast Producer"/>
+            <column name="department" value="Content"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="17"/>
+            <column name="title" value="Growth Marketing Strategist"/>
+            <column name="department" value="Marketing"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="18"/>
+            <column name="title" value="Data Platform Engineer"/>
+            <column name="department" value="Engineering"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="18"/>
+            <column name="title" value="Analytics Consultant"/>
+            <column name="department" value="Consulting"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="19"/>
+            <column name="title" value="Process Engineer"/>
+            <column name="department" value="Engineering"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="19"/>
+            <column name="title" value="Smart Meter Product Owner"/>
+            <column name="department" value="Product"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="20"/>
+            <column name="title" value="Technical Apparel Designer"/>
+            <column name="department" value="Product"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="20"/>
+            <column name="title" value="Digital Commerce Lead"/>
+            <column name="department" value="Ecommerce"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="21"/>
+            <column name="title" value="Risk Modeling Specialist"/>
+            <column name="department" value="Actuarial"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="21"/>
+            <column name="title" value="Partnerships Manager"/>
+            <column name="department" value="Business Development"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="22"/>
+            <column name="title" value="Cell Therapy Scientist"/>
+            <column name="department" value="R&amp;D"/>
+            <column name="level" value="Senior"/>
+        </insert>
+
+        <insert tableName="job_positions">
+            <column name="company_id" valueNumeric="22"/>
+            <column name="title" value="Clinical Trial Coordinator"/>
+            <column name="department" value="Clinical"/>
+            <column name="level" value="Mid"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="3"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=3 AND title='Senior AI Engineer' LIMIT 1)"/>
+            <column name="title" value="Senior AI Engineer"/>
+            <column name="description" value="Own model training and deployment for finance automation copilots."/>
+            <column name="requirements" value="6+ years with Python, transformers, vector databases, and MLOps pipelines."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="65 - 80 million VND"/>
+            <column name="benefits" value="Hybrid stipend, on-site chef lunches, annual AI research grant."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="7"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="3"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=3 AND title='Implementation Lead' LIMIT 1)"/>
+            <column name="title" value="AI Implementation Lead"/>
+            <column name="description" value="Guide enterprise rollouts of Lumos workflows and ensure measurable adoption."/>
+            <column name="requirements" value="Background in consulting plus strong SQL and stakeholder facilitation skills."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="45 - 55 million VND"/>
+            <column name="benefits" value="Wellness budget, parking allowance, quarterly bonus tied to NPS."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="7"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="4"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=4 AND title='Fleet Operations Manager' LIMIT 1)"/>
+            <column name="title" value="Fleet Operations Manager"/>
+            <column name="description" value="Coordinate inbound and outbound container flows across regional depots."/>
+            <column name="requirements" value="5+ years in logistics ops, strong command of WMS/TMS platforms, excellent leadership."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="35 - 42 million VND"/>
+            <column name="benefits" value="Performance bonus, private health insurance, language stipend."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="9"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="4"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=4 AND title='Customs Compliance Analyst' LIMIT 1)"/>
+            <column name="title" value="Customs Compliance Analyst"/>
+            <column name="description" value="Monitor trade documentation, HS codes, and regulatory filings for APAC shipments."/>
+            <column name="requirements" value="Knowledge of INCOTERMS, data analysis basics, and meticulous documentation habits."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="28 - 34 million VND"/>
+            <column name="benefits" value="Annual learning grant, flexible Friday hours, wellness allowance."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="9"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="5"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=5 AND title='Clinical Product Manager' LIMIT 1)"/>
+            <column name="title" value="Clinical Product Manager"/>
+            <column name="description" value="Translate clinician needs into backlog for Zeniths patient management suite."/>
+            <column name="requirements" value="Experience shipping healthcare SaaS, strong analytical thinking, empathy for users."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="50 - 65 million VND"/>
+            <column name="benefits" value="Conference travel, premium healthcare, parental support program."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="11"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="5"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=5 AND title='Nursing Operations Lead' LIMIT 1)"/>
+            <column name="title" value="Nursing Operations Lead"/>
+            <column name="description" value="Optimize staffing models and telehealth triage quality across clinics."/>
+            <column name="requirements" value="Registered nurse background plus 3+ years leading multi-site operations."/>
+            <column name="location" value="Can Tho, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="32 - 40 million VND"/>
+            <column name="benefits" value="Housing allowance, shift meals, annual retreat."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="11"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="6"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=6 AND title='Ecommerce Merchandiser' LIMIT 1)"/>
+            <column name="title" value="Ecommerce Merchandiser"/>
+            <column name="description" value="Plan digital drops, analyze sell-through, and brief creative for BluePeak collections."/>
+            <column name="requirements" value="Data-driven mindset, proficiency in Google Analytics, passion for fashion trends."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="30 - 38 million VND"/>
+            <column name="benefits" value="Merchandise credits, flexible Friday schedule, wellness stipend."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="13"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="6"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=6 AND title='Store Experience Manager' LIMIT 1)"/>
+            <column name="title" value="Store Experience Manager"/>
+            <column name="description" value="Coach boutique leaders and deploy experiential retail playbooks across the region."/>
+            <column name="requirements" value="7+ years multi-store management, strength in people development and KPIs."/>
+            <column name="location" value="Hanoi, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="40 - 48 million VND"/>
+            <column name="benefits" value="Travel allowance, quarterly bonus, leadership academy access."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="13"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="7"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=7 AND title='Grid Integration Engineer' LIMIT 1)"/>
+            <column name="title" value="Grid Integration Engineer"/>
+            <column name="description" value="Design SCADA integrations and stability studies for new solar farms."/>
+            <column name="requirements" value="Electrical engineering degree, power systems modeling, PSS/E skills."/>
+            <column name="location" value="Da Nang, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="55 - 68 million VND"/>
+            <column name="benefits" value="Site per diem, solar credits, safety bonus."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="15"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="7"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=7 AND title='Sustainability Analyst' LIMIT 1)"/>
+            <column name="title" value="Sustainability Analyst"/>
+            <column name="description" value="Model impact metrics, support ESG reporting, and collaborate with investors."/>
+            <column name="requirements" value="Strong financial modeling, understanding of ESG frameworks, stakeholder comms."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="28 - 33 million VND"/>
+            <column name="benefits" value="Education stipend, volunteer days, wellness package."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="15"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="8"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=8 AND title='Venture Debt Associate' LIMIT 1)"/>
+            <column name="title" value="Venture Debt Associate"/>
+            <column name="description" value="Evaluate growth-stage borrowers, build models, and prepare credit memos."/>
+            <column name="requirements" value="2+ years in banking or consulting, advanced Excel, storytelling skills."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="45 - 55 million VND"/>
+            <column name="benefits" value="Deal bonus, CFA sponsorship, private healthcare."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="17"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="8"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=8 AND title='Capital Markets Director' LIMIT 1)"/>
+            <column name="title" value="Capital Markets Director"/>
+            <column name="description" value="Lead fundraising mandates, structure offerings, and mentor associates."/>
+            <column name="requirements" value="8+ years structuring deals, strong LP relationships, polished communication."/>
+            <column name="location" value="Singapore"/>
+            <column name="work_type" value="Remote"/>
+            <column name="salary_range" value="90 - 110 million VND equivalent"/>
+            <column name="benefits" value="Car allowance, profit sharing, global conference travel."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="17"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="9"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=9 AND title='Art Director' LIMIT 1)"/>
+            <column name="title" value="Art Director"/>
+            <column name="description" value="Own concept development for experiential campaigns and brand refreshes."/>
+            <column name="requirements" value="Portfolio with digital and experiential work, confident client presentation skills."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="38 - 48 million VND"/>
+            <column name="benefits" value="Creative retreat, gear budget, flexible Fridays."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="19"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="9"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=9 AND title='Motion Designer' LIMIT 1)"/>
+            <column name="title" value="Motion Designer"/>
+            <column name="description" value="Deliver motion toolkits, social animations, and on-stage visuals."/>
+            <column name="requirements" value="Mastery of After Effects or Blender, attention to detail, collaboration mindset."/>
+            <column name="location" value="Remote - Vietnam"/>
+            <column name="work_type" value="Remote"/>
+            <column name="salary_range" value="28 - 34 million VND"/>
+            <column name="benefits" value="Home workstation grant, wellness stipend, education credits."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="19"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="10"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=10 AND title='Project Controls Lead' LIMIT 1)"/>
+            <column name="title" value="Project Controls Lead"/>
+            <column name="description" value="Stand up PMO standards, cost tracking, and risk logs for megaprojects."/>
+            <column name="requirements" value="Primavera or MS Project expert, cost engineering track record, leadership skills."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="60 - 75 million VND"/>
+            <column name="benefits" value="Site allowance, hazard bonus, housing support."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="21"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="10"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=10 AND title='BIM Coordinator' LIMIT 1)"/>
+            <column name="title" value="BIM Coordinator"/>
+            <column name="description" value="Manage BIM workflows, clash detection, and subcontractor coordination."/>
+            <column name="requirements" value="Revit expertise, scripting familiarity, field communication strengths."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="35 - 42 million VND"/>
+            <column name="benefits" value="Professional certification budget, meal allowance, transport shuttle."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="21"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="11"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=11 AND title='Avionics Test Engineer' LIMIT 1)"/>
+            <column name="title" value="Avionics Test Engineer"/>
+            <column name="description" value="Design and execute hardware-in-the-loop tests for UAV flight computers."/>
+            <column name="requirements" value="Electronics background, scripting knowledge, disciplined documentation."/>
+            <column name="location" value="Hanoi, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="42 - 50 million VND"/>
+            <column name="benefits" value="Flight benefits, patent bonus, cafeteria plan."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="23"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="11"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=11 AND title='Supply Chain Planner' LIMIT 1)"/>
+            <column name="title" value="Aerospace Supply Chain Planner"/>
+            <column name="description" value="Forecast component demand, manage suppliers, and maintain resilience plans."/>
+            <column name="requirements" value="Experience with ERP systems, negotiation skills, attention to quality."/>
+            <column name="location" value="Hanoi, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="35 - 41 million VND"/>
+            <column name="benefits" value="Transport shuttle, KPI bonus, premium insurance."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="23"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="12"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=12 AND title='IoT Field Specialist' LIMIT 1)"/>
+            <column name="title" value="IoT Field Specialist"/>
+            <column name="description" value="Deploy and calibrate sensor kits on partner farms across the Mekong region."/>
+            <column name="requirements" value="Comfort with travel, hardware troubleshooting, and farmer enablement."/>
+            <column name="location" value="Can Tho, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="25 - 30 million VND"/>
+            <column name="benefits" value="Per diem, equipment allowance, agritech training."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="25"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="12"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=12 AND title='Data Agronomist' LIMIT 1)"/>
+            <column name="title" value="Data Agronomist"/>
+            <column name="description" value="Convert sensor readings into actionable crop insights and advisory content."/>
+            <column name="requirements" value="Agronomy or data science background, SQL, storytelling ability."/>
+            <column name="location" value="Binh Duong, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="32 - 38 million VND"/>
+            <column name="benefits" value="Research grants, wellness stipend, flexible Fridays."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="25"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="13"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=13 AND title='Threat Detection Engineer' LIMIT 1)"/>
+            <column name="title" value="Threat Detection Engineer"/>
+            <column name="description" value="Build detections, run purple team exercises, and tune SIEM content."/>
+            <column name="requirements" value="Experience with MITRE ATT&amp;CK, scripting, and public cloud telemetry."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Remote"/>
+            <column name="salary_range" value="55 - 70 million VND"/>
+            <column name="benefits" value="Home lab stipend, conference budget, on-call bonus."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="27"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="13"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=13 AND title='Security Account Manager' LIMIT 1)"/>
+            <column name="title" value="Security Account Manager"/>
+            <column name="description" value="Own executive relationships, roadmap sessions, and renewal health."/>
+            <column name="requirements" value="Background in cybersecurity services, communication excellence, empathy."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="40 - 48 million VND"/>
+            <column name="benefits" value="Commission plan, wellness perks, certification budget."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="27"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="14"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=14 AND title='City Launcher' LIMIT 1)"/>
+            <column name="title" value="City Launcher"/>
+            <column name="description" value="Lead e-scooter deployments, hire local teams, and hit ridership targets."/>
+            <column name="requirements" value="Growth ops mindset, playbook execution, willingness to travel frequently."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="32 - 38 million VND"/>
+            <column name="benefits" value="Mobility credits, quarterly bonus, gear stipend."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="29"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="14"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=14 AND title='Embedded Systems Engineer' LIMIT 1)"/>
+            <column name="title" value="Embedded Systems Engineer"/>
+            <column name="description" value="Improve battery management and telemetry firmware for MetroRide fleets."/>
+            <column name="requirements" value="C/C++, CAN bus familiarity, lab debugging skills."/>
+            <column name="location" value="Hanoi, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="48 - 58 million VND"/>
+            <column name="benefits" value="R&amp;D allowance, stock options, wellness package."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="29"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="15"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=15 AND title='Curriculum Designer' LIMIT 1)"/>
+            <column name="title" value="STEM Curriculum Designer"/>
+            <column name="description" value="Build project-based learning modules for data and robotics cohorts."/>
+            <column name="requirements" value="Instructional design experience, STEM expertise, creative storytelling."/>
+            <column name="location" value="Da Nang, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="28 - 34 million VND"/>
+            <column name="benefits" value="Teacher wellness fund, book budget, hybrid schedule."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="31"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="15"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=15 AND title='Career Success Coach' LIMIT 1)"/>
+            <column name="title" value="Career Success Coach"/>
+            <column name="description" value="Coach learners on interview prep, resume upgrades, and employer outreach."/>
+            <column name="requirements" value="Career coaching background, communication excellence, empathy."/>
+            <column name="location" value="Remote - Vietnam"/>
+            <column name="work_type" value="Remote"/>
+            <column name="salary_range" value="24 - 29 million VND"/>
+            <column name="benefits" value="Learning credits, mental health support, remote allowance."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="31"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="16"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=16 AND title='Hotel Revenue Manager' LIMIT 1)"/>
+            <column name="title" value="Hotel Revenue Manager"/>
+            <column name="description" value="Optimize pricing strategies across boutique properties using demand signals."/>
+            <column name="requirements" value="Experience with RMS tools, analytical mindset, stakeholder influence."/>
+            <column name="location" value="Hanoi, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="35 - 45 million VND"/>
+            <column name="benefits" value="Hotel stay credits, bonus plan, travel allowance."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="33"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="16"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=16 AND title='Guest Experience Lead' LIMIT 1)"/>
+            <column name="title" value="Guest Experience Lead"/>
+            <column name="description" value="Design signature guest rituals, train front office teams, and monitor feedback data."/>
+            <column name="requirements" value="Luxury hospitality background, coaching skills, data literacy."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="42 - 50 million VND"/>
+            <column name="benefits" value="Uniform allowance, wellness program, leadership academy."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="33"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="17"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=17 AND title='Podcast Producer' LIMIT 1)"/>
+            <column name="title" value="Podcast Producer"/>
+            <column name="description" value="Shepherd weekly shows from pitch to publish with creative hosts."/>
+            <column name="requirements" value="Audio editing mastery, storytelling instincts, calm under deadline."/>
+            <column name="location" value="Hanoi, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="28 - 34 million VND"/>
+            <column name="benefits" value="Studio upgrade stipend, content bonus, flexible Fridays."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="35"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="17"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=17 AND title='Growth Marketing Strategist' LIMIT 1)"/>
+            <column name="title" value="Growth Marketing Strategist"/>
+            <column name="description" value="Stand up lifecycle experiments to increase subscriptions and engagement."/>
+            <column name="requirements" value="Lifecycle automation tools, copywriting skills, analytical rigor."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Remote"/>
+            <column name="salary_range" value="40 - 48 million VND"/>
+            <column name="benefits" value="Performance bonus, wellness stipend, remote office grant."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="35"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="18"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=18 AND title='Data Platform Engineer' LIMIT 1)"/>
+            <column name="title" value="Data Platform Engineer"/>
+            <column name="description" value="Build ingestion pipelines, governance, and observability for analytics stacks."/>
+            <column name="requirements" value="Expertise with Spark or Flink, cloud data warehouses, automation mindset."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="60 - 75 million VND"/>
+            <column name="benefits" value="Certification budget, remote allowance, profit sharing."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="37"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="18"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=18 AND title='Analytics Consultant' LIMIT 1)"/>
+            <column name="title" value="Analytics Consultant"/>
+            <column name="description" value="Embed with enterprise clients to design dashboards and data literacy programs."/>
+            <column name="requirements" value="Excellent SQL, stakeholder facilitation, polished communication."/>
+            <column name="location" value="Hanoi, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="38 - 45 million VND"/>
+            <column name="benefits" value="Billable bonus, wellness stipend, travel allowance."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="37"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="19"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=19 AND title='Process Engineer' LIMIT 1)"/>
+            <column name="title" value="Process Engineer"/>
+            <column name="description" value="Optimize treatment plant throughput, quality, and maintenance routines."/>
+            <column name="requirements" value="Chemical or mechanical engineering background, lean mindset, field presence."/>
+            <column name="location" value="Binh Duong, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="35 - 42 million VND"/>
+            <column name="benefits" value="Housing shuttle, KPI bonus, professional dues."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="39"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="19"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=19 AND title='Smart Meter Product Owner' LIMIT 1)"/>
+            <column name="title" value="Smart Meter Product Owner"/>
+            <column name="description" value="Lead roadmap for IoT meters and customer analytics portal."/>
+            <column name="requirements" value="Product ownership experience, IoT familiarity, agile leadership."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="45 - 55 million VND"/>
+            <column name="benefits" value="Stock options, home internet stipend, innovation lab budget."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="39"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="20"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=20 AND title='Technical Apparel Designer' LIMIT 1)"/>
+            <column name="title" value="Technical Apparel Designer"/>
+            <column name="description" value="Prototype performance gear, test new textiles, and collaborate with suppliers."/>
+            <column name="requirements" value="3D pattern tools, material science basics, athleticwear passion."/>
+            <column name="location" value="Hai Phong, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="32 - 38 million VND"/>
+            <column name="benefits" value="Merchandise credits, flexible hours, annual retreat."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="41"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="20"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=20 AND title='Digital Commerce Lead' LIMIT 1)"/>
+            <column name="title" value="Digital Commerce Lead"/>
+            <column name="description" value="Scale D2C channels, optimize CRM journeys, and lead growth squads."/>
+            <column name="requirements" value="7+ years in ecommerce, marketing automation mastery, leadership skills."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="45 - 60 million VND"/>
+            <column name="benefits" value="Profit sharing, wellness stipend, remote work kit."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="41"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="21"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=21 AND title='Risk Modeling Specialist' LIMIT 1)"/>
+            <column name="title" value="Risk Modeling Specialist"/>
+            <column name="description" value="Develop climate-aware actuarial models and tools for commercial lines."/>
+            <column name="requirements" value="Actuarial background, Python or R, ability to present to executives."/>
+            <column name="location" value="Hanoi, Vietnam"/>
+            <column name="work_type" value="Hybrid"/>
+            <column name="salary_range" value="55 - 70 million VND"/>
+            <column name="benefits" value="Exam support, bonus plan, wellness coverage."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="43"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="21"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=21 AND title='Partnerships Manager' LIMIT 1)"/>
+            <column name="title" value="Insurance Partnerships Manager"/>
+            <column name="description" value="Grow broker and bank partnerships across Vietnam and monitor pipeline health."/>
+            <column name="requirements" value="Relationship management expertise, sales discipline, travel readiness."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="38 - 46 million VND"/>
+            <column name="benefits" value="Car allowance, incentive plan, learning credits."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="43"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="22"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=22 AND title='Cell Therapy Scientist' LIMIT 1)"/>
+            <column name="title" value="Cell Therapy Scientist"/>
+            <column name="description" value="Design and run lab experiments supporting Radiants next-gen therapies."/>
+            <column name="requirements" value="PhD or MSc in biology, GMP familiarity, meticulous documentation."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="60 - 80 million VND"/>
+            <column name="benefits" value="Lab allowance, publication bonus, premium insurance."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="45"/>
+        </insert>
+
+        <insert tableName="job_postings">
+            <column name="company_id" valueNumeric="22"/>
+            <column name="job_position_id" valueComputed="(SELECT id FROM job_positions WHERE company_id=22 AND title='Clinical Trial Coordinator' LIMIT 1)"/>
+            <column name="title" value="Clinical Trial Coordinator"/>
+            <column name="description" value="Manage study sites, documentation, and patient logistics for clinical trials."/>
+            <column name="requirements" value="Clinical research experience, regulatory literacy, organized communication."/>
+            <column name="location" value="Ho Chi Minh City, Vietnam"/>
+            <column name="work_type" value="Onsite"/>
+            <column name="salary_range" value="38 - 45 million VND"/>
+            <column name="benefits" value="Meal stipend, transport allowance, annual retreat."/>
+            <column name="status" value="PUBLISHED"/>
+            <column name="recruiter_id" valueNumeric="45"/>
+        </insert>
+
+    </changeSet>
 </databaseChangeLog>
