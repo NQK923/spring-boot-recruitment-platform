@@ -6,6 +6,7 @@ import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import type { JobPostingPublic } from "@/lib/types";
 import { JobsSearchForm } from "./search-form";
+import { JobsResults } from "./results";
 
 async function getPublicJobs(search?: string): Promise<JobPostingPublic[]> {
   try {
@@ -84,44 +85,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         <JobsSearchForm initialQuery={rawSearch} />
       </Panel>
 
-      {jobs.length === 0 ? (
-        <Panel padding="lg" className="text-sm text-foreground/60">
-          {hasQuery
-            ? "No roles match that search. Try broader keywords or clear the filter to see every opening."
-            : "No jobs are available right now. Check back soon or sign in to receive tailored recommendations."}
-        </Panel>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {jobs.map((job) => (
-            <Panel key={job.id} padding="lg" className="flex h-full flex-col gap-4">
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                  Job ID #{job.id}
-                </p>
-                <h2 className="text-xl font-semibold text-foreground">{job.title}</h2>
-              </div>
-              <p className="line-clamp-4 text-sm text-foreground/70">
-                {job.description ??
-                  "The hiring team is preparing a detailed description. Check back soon for responsibilities and requirements."}
-              </p>
-              <div className="mt-auto flex items-center justify-between pt-4 text-sm">
-                <Link
-                  href={`${ROUTES.jobs}/${job.id}`}
-                  className="font-semibold text-foreground transition hover:underline"
-                >
-                  View full details
-                </Link>
-                <Link
-                  href={`${ROUTES.signIn}?next=${ROUTES.jobs}/${job.id}`}
-                  className="text-foreground/60 hover:text-foreground"
-                >
-                  Save for later -&gt;
-                </Link>
-              </div>
-            </Panel>
-          ))}
-        </div>
-      )}
+      <JobsResults jobs={jobs} hasQuery={hasQuery} />
     </Container>
   );
 }
