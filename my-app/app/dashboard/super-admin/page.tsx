@@ -256,7 +256,7 @@ export default async function SuperAdminDashboardPage() {
           <div>
             <h2 className="text-lg font-semibold text-foreground">Invitations awaiting acceptance</h2>
             <p className="text-sm text-foreground/60">
-              Follow up with company owners or recruiters who haven't activated their accounts yet.
+              Follow up with company owners or recruiters who haven&#39;t activated their accounts yet.
             </p>
           </div>
           <Link href="/docs/admin#templates" className="text-sm font-semibold text-foreground hover:underline">

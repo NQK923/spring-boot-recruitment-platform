@@ -178,7 +178,7 @@ export default function AdminDocsPage() {
             <div id="invites" className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
               <h3 className="text-sm font-semibold text-foreground">Invite email</h3>
               <ul className="space-y-2 text-sm text-foreground/70">
-                <li>- Subject: "You're invited to Talentflow"</li>
+                <li>- Subject: &#34;You&#39;re invited to Talentflow&#34;</li>
                 <li>- Mention who invited them and why.</li>
                 <li>- One sentence on what happens after acceptance.</li>
                 <li>- Button linking to the invitation URL plus expiry date.</li>

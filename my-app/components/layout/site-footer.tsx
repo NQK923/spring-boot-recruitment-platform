@@ -44,7 +44,6 @@ export function SiteFooter() {
         <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-600/70 via-purple-600/60 to-slate-900 p-8 text-white shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/70">Need a hand?</p>
               <h2 className="text-2xl font-semibold">Get a guided walkthrough or talk with support.</h2>
               <p className="text-sm text-white/80">
                 We are here to help with rollouts, candidate onboarding, and day-to-day pipeline questions.
