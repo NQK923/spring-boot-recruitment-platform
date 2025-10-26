@@ -25,6 +25,7 @@ public class JobPosting {
     private String requirements;
     private String location;
     private String workType;
+    private String benefits;
 
     @Enumerated(EnumType.STRING)
     private JobStatus status;

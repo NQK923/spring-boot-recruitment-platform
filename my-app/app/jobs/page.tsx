@@ -8,6 +8,8 @@ import type { JobPostingPublic } from "@/lib/types";
 import { JobsSearchForm } from "./search-form";
 import { JobsResults } from "./results";
 
+export const dynamic = "force-dynamic";
+
 async function getPublicJobs(search?: string): Promise<JobPostingPublic[]> {
   try {
     const params = new URLSearchParams();
@@ -18,6 +20,7 @@ async function getPublicJobs(search?: string): Promise<JobPostingPublic[]> {
     const response = await apiFetch(`/api/jobs/public${query ? `?${query}` : ""}`, {
       method: "GET",
       skipAuthHeaders: true,
+      cache: "no-store",
     });
     const data = await response.json();
     if (Array.isArray(data)) {

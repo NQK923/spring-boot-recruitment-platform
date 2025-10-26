@@ -14,6 +14,7 @@ async function getJob(jobId: string): Promise<JobPostingPublic | null> {
     const response = await apiFetch(`/api/jobs/public/${jobId}`, {
       method: "GET",
       skipAuthHeaders: true,
+      cache: "no-store",
     });
     if (response.status === 404) {
       return null;
@@ -82,7 +83,15 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground">Requirements</h2>
           <p className="whitespace-pre-wrap text-sm text-foreground/70">
-            Recruiters will list required skills, experience, and tools here as soon as they are confirmed.
+            {job.requirements ??
+              "Recruiters will list required skills, experience, and tools here as soon as they are confirmed."}
+          </p>
+        </div>
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground">Benefits</h2>
+          <p className="whitespace-pre-wrap text-sm text-foreground/70">
+            {job.benefits ??
+              "Compensation and benefits will be provided once this role is fully published by the hiring team."}
           </p>
         </div>
         <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-5 text-sm text-foreground/70">

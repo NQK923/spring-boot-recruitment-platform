@@ -21,6 +21,8 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
               AND (
                     LOWER(jp.title) LIKE :search OR
                     LOWER(COALESCE(jp.description, '')) LIKE :search OR
+                    LOWER(COALESCE(jp.requirements, '')) LIKE :search OR
+                    LOWER(COALESCE(jp.benefits, '')) LIKE :search OR
                     LOWER(COALESCE(jp.location, '')) LIKE :search OR
                     LOWER(COALESCE(jp.workType, '')) LIKE :search OR
                     LOWER(COALESCE(pos.department, '')) LIKE :search OR

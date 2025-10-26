@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="3-add-job-benefits" author="codex">
+        <addColumn tableName="job_postings">
+            <column name="benefits" type="TEXT"/>
+        </addColumn>
+
+        <update tableName="job_postings">
+            <column name="benefits" value="Employee stock refreshers, 15 days PTO, remote stipend, and annual conference budget."/>
+            <where>title = 'Senior Backend Engineer' AND company_id = 1</where>
+        </update>
+
+        <update tableName="job_postings">
+            <column name="benefits" value="Annual learning grant, flexible hours, design system summit travel, and wellness days."/>
+            <where>title = 'Product Designer' AND company_id = 1</where>
+        </update>
+
+        <update tableName="job_postings">
+            <column name="benefits" value="Shift allowance, safety bonus, private healthcare, and leadership development track."/>
+            <where>title = 'Manufacturing Supervisor' AND company_id = 2</where>
+        </update>
+
+        <update tableName="job_postings">
+            <column name="benefits" value="Quarterly commission accelerators, regional travel budget, and private healthcare coverage."/>
+            <where>title = 'Regional Sales Manager' AND company_id = 2</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

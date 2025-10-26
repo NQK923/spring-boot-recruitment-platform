@@ -22,33 +22,6 @@ export function JobsResults({ jobs, hasQuery }: JobsResultsProps) {
   const [workTypeFilter, setWorkTypeFilter] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<string | null>(null);
 
-  const stats = useMemo(() => {
-    const remoteFriendly = jobs.filter((job) => isRemoteFriendly(job.workType)).length;
-    const departments = new Set(
-      jobs
-        .map((job) => normalize(job.department))
-        .filter((dept): dept is string => Boolean(dept))
-    );
-
-    return [
-      {
-        label: "Open roles",
-        value: jobs.length,
-        detail: jobs.length > 0 ? "Accepting applications now" : "Refresh for new postings soon",
-      },
-      {
-        label: "Remote friendly",
-        value: remoteFriendly,
-        detail: remoteFriendly > 0 ? "Teams hiring globally" : "Primarily on-site roles",
-      },
-      {
-        label: "Departments hiring",
-        value: departments.size,
-        detail: departments.size > 0 ? "Cross-functional opportunities" : "New departments coming soon",
-      },
-    ];
-  }, [jobs]);
-
   const workTypeOptions = useMemo(() => getTopOptions(jobs.map((job) => job.workType)), [jobs]);
   const locationOptions = useMemo(() => getTopOptions(jobs.map((job) => job.location), 5), [jobs]);
 
@@ -64,6 +37,8 @@ export function JobsResults({ jobs, hasQuery }: JobsResultsProps) {
   }, [jobs, workTypeFilter, locationFilter]);
 
   const hasClientFilters = Boolean(workTypeFilter || locationFilter);
+  const hasQuickFilters = workTypeOptions.length > 0 || locationOptions.length > 0;
+  const showFiltersPanel = hasQuickFilters || hasClientFilters;
   const resultsLabel = hasClientFilters
     ? `Showing ${filteredJobs.length} role${filteredJobs.length === 1 ? "" : "s"} after filters.`
     : `Showing ${filteredJobs.length} role${filteredJobs.length === 1 ? "" : "s"} from this search.`;
@@ -75,50 +50,40 @@ export function JobsResults({ jobs, hasQuery }: JobsResultsProps) {
 
   return (
     <div className="space-y-6">
-      <Panel padding="lg" className="space-y-6">
-        <div className="grid gap-4 sm:grid-cols-3">
-          {stats.map((stat) => (
-            <div key={stat.label} className="rounded-2xl border border-border/60 bg-surface px-4 py-5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted">{stat.label}</p>
-              <p className="mt-1 text-3xl font-semibold text-foreground">{stat.value}</p>
-              <p className="mt-1 text-xs text-foreground/60">{stat.detail}</p>
-            </div>
-          ))}
-        </div>
+      <Panel padding="lg" className="space-y-4">
+        {showFiltersPanel ? (
+          <div className="space-y-4">
+            {workTypeOptions.length > 0 && (
+              <FilterRow
+                title="Work style"
+                options={workTypeOptions}
+                activeValue={workTypeFilter}
+                onToggle={(value) => setWorkTypeFilter((prev) => (prev === value ? null : value))}
+              />
+            )}
 
-        <div
-          className={cx(
-            "space-y-4",
-            (workTypeOptions.length > 0 || locationOptions.length > 0 || hasClientFilters) &&
-              "border-t border-border/60 pt-4"
-          )}
-        >
-          {workTypeOptions.length > 0 && (
-            <FilterRow
-              title="Work style"
-              options={workTypeOptions}
-              activeValue={workTypeFilter}
-              onToggle={(value) => setWorkTypeFilter((prev) => (prev === value ? null : value))}
-            />
-          )}
+            {locationOptions.length > 0 && (
+              <FilterRow
+                title="Location"
+                options={locationOptions}
+                activeValue={locationFilter}
+                onToggle={(value) => setLocationFilter((prev) => (prev === value ? null : value))}
+              />
+            )}
 
-          {locationOptions.length > 0 && (
-            <FilterRow
-              title="Location"
-              options={locationOptions}
-              activeValue={locationFilter}
-              onToggle={(value) => setLocationFilter((prev) => (prev === value ? null : value))}
-            />
-          )}
+            {hasClientFilters && (
+              <Button variant="ghost" size="sm" className="whitespace-nowrap" onClick={clearFilters}>
+                Clear quick filters
+              </Button>
+            )}
+          </div>
+        ) : (
+          <p className="text-xs text-foreground/60">
+            Quick filters will surface once recruiters add work style or location metadata to their postings.
+          </p>
+        )}
 
-          {hasClientFilters && (
-            <Button variant="ghost" size="sm" className="whitespace-nowrap" onClick={clearFilters}>
-              Clear quick filters
-            </Button>
-          )}
-
-          <p className="text-xs text-foreground/60">{resultsLabel}</p>
-        </div>
+        <p className="text-xs text-foreground/60">{resultsLabel}</p>
       </Panel>
 
       {filteredJobs.length === 0 ? (
@@ -149,7 +114,7 @@ export function JobsResults({ jobs, hasQuery }: JobsResultsProps) {
                 <JobMetaChip label={normalize(job.location) ?? "Multiple locations"} />
                 <JobMetaChip label={normalize(job.workType) ?? "Flexible work style"} />
                 {job.department && (
-                  <JobMetaChip label={job.level ? `${job.department} · ${job.level}` : job.department} />
+                  <JobMetaChip label={job.level ? `${job.department} / ${job.level}` : job.department} />
                 )}
                 {!job.department && job.level && <JobMetaChip label={job.level} />}
               </div>
@@ -275,4 +240,3 @@ function jobStatusLabel(status: string | null | undefined) {
       return status;
   }
 }
-

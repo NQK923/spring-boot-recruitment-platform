@@ -36,6 +36,7 @@ public class JobPostingService {
         newJob.setTitle(request.title());
         newJob.setDescription(request.description());
         newJob.setRequirements(request.requirements());
+        newJob.setBenefits(request.benefits());
         newJob.setLocation(request.location());
         newJob.setWorkType(request.workType());
         newJob.setCompanyId(companyId);
@@ -67,6 +68,9 @@ public class JobPostingService {
         }
         if (request.requirements() != null) {
             job.setRequirements(request.requirements());
+        }
+        if (request.benefits() != null) {
+            job.setBenefits(request.benefits());
         }
         if (request.location() != null) {
             job.setLocation(request.location());
@@ -142,6 +146,8 @@ public class JobPostingService {
                 jobPosting.getCompanyId(),
                 jobPosting.getTitle(),
                 jobPosting.getDescription(),
+                jobPosting.getRequirements(),
+                jobPosting.getBenefits(),
                 jobPosting.getLocation(),
                 jobPosting.getWorkType(),
                 department,
