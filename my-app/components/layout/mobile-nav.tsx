@@ -2,9 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { SiteNavbar } from "@/components/layout/site-navbar";
+import { SiteNavbar, type NavItem } from "@/components/layout/site-navbar";
 
-export function MobileNav() {
+type MobileNavProps = {
+  items?: NavItem[];
+};
+
+export function MobileNav({ items }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const canUseDom = typeof document !== "undefined";
 
@@ -58,7 +62,7 @@ export function MobileNav() {
                   </button>
                 </div>
                 <div className="mt-6">
-                  <SiteNavbar orientation="vertical" onNavigate={() => setOpen(false)} />
+                  <SiteNavbar items={items} orientation="vertical" onNavigate={() => setOpen(false)} />
                 </div>
               </div>
             </div>,
@@ -68,3 +72,4 @@ export function MobileNav() {
     </>
   );
 }
+

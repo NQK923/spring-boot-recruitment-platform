@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo, useState, useTransition } from "react";
-import type { ChangeEvent } from "react";
 import { updateCompanyUserAction } from "@/app/dashboard/company/actions";
 import { Button } from "@/components/ui/button";
 import { cx } from "@/lib/cx";
@@ -24,11 +23,6 @@ type AlertState =
       message: string;
     }
   | null;
-
-const ROLE_OPTIONS = [
-  { value: "RECRUITER", label: "Recruiter" },
-  { value: "COMPANY_ADMIN", label: "Company admin" },
-];
 
 export function CompanyMembersPanel({ users }: Props) {
   const [alert, setAlert] = useState<AlertState>(null);
@@ -73,14 +67,6 @@ export function CompanyMembersPanel({ users }: Props) {
     });
   }, []);
 
-  const handleRoleChange = useCallback(
-    (userId: number, event: ChangeEvent<HTMLSelectElement>) => {
-      const nextRole = event.target.value;
-      mutateMember(userId, { role: nextRole });
-    },
-    [mutateMember]
-  );
-
   const handleLockToggle = useCallback(
     (userId: number, shouldLock: boolean) => {
       mutateMember(userId, { locked: shouldLock });
@@ -111,6 +97,11 @@ export function CompanyMembersPanel({ users }: Props) {
         </p>
       ) : null}
 
+      <p className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 text-xs text-foreground/60">
+        Roles are now fixed once a teammate joins. Remove the member and send a new invitation if you need them to
+        take on a different role.
+      </p>
+
       {users.map((user) => {
         const isRecruiter = user.role.toUpperCase() === "RECRUITER";
         const isCompanyAdmin = user.role.toUpperCase() === "COMPANY_ADMIN";
@@ -138,34 +129,37 @@ export function CompanyMembersPanel({ users }: Props) {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50">
-                Role
-                <select
-                  className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-xs font-semibold text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
-                  value={user.role}
-                  disabled={isDisabled}
-                  onChange={(event) => handleRoleChange(user.id, event)}
-                >
-                  {ROLE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50">
+                <span>Role</span>
+                <span className="rounded-lg bg-foreground/5 px-3 py-1 text-foreground/70">
+                  {user.role.replace("_", " ")}
+                </span>
+              </div>
 
               {isRecruiter ? (
                 <Button
                   type="button"
-                  variant={user.locked ? "outline" : "destructive"}
+                  variant="secondary"
                   size="sm"
                   disabled={isDisabled}
+                  className={cx(
+                    "border transition",
+                    user.locked
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                      : "border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
+                  )}
                   onClick={() => handleLockToggle(user.id, !user.locked)}
                 >
                   {user.locked ? "Unlock recruiter" : "Lock recruiter"}
                 </Button>
               ) : (
-                <Button type="button" variant="outline" size="sm" disabled>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled
+                  className="text-foreground/60"
+                >
                   {isCompanyAdmin ? "Company admin" : "Managed externally"}
                 </Button>
               )}

@@ -4,8 +4,8 @@ import { Panel } from "@/components/ui/panel";
 import { UpdateCompanyForm } from "@/components/company-admin/update-company-form";
 import { InviteMemberForm } from "@/components/company-admin/invite-member-form";
 import { CompanyMembersPanel } from "@/components/company-admin/company-members-panel";
+import { CompanyJobCard } from "@/components/company-admin/company-job-card";
 import { CreateJobForm } from "@/components/jobs/create-job-form";
-import { UpdateJobForm } from "@/components/jobs/update-job-form";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import type { JobPosting, JobPosition } from "@/lib/types";
@@ -120,6 +120,10 @@ async function getCompanyJobs(): Promise<JobPosting[]> {
       jobPosition?: JobPosition | null;
       created_at?: string | null;
       updated_at?: string | null;
+      recruiter_id?: number | null;
+      recruiterId?: number | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
       salary_range?: string | null;
       work_type?: string | null;
     };
@@ -134,10 +138,10 @@ async function getCompanyJobs(): Promise<JobPosting[]> {
       location: job.location ?? null,
       workType: job.workType ?? job.work_type ?? null,
       status: normalizeJobStatus(job.status),
-      recruiterId: job.recruiterId ?? null,
+      recruiterId: job.recruiterId ?? job.recruiter_id ?? null,
       jobPosition: job.jobPosition ?? job.job_position ?? null,
-      createdAt: job.createdAt ?? job.created_at ?? null,
-      updatedAt: job.updatedAt ?? job.updated_at ?? null,
+      createdAt: job.createdAt ?? job.created_at ?? "",
+      updatedAt: job.updatedAt ?? job.updated_at ?? "",
     }));
   } catch {
     return [];
@@ -192,24 +196,70 @@ export default async function CompanyAdminDashboardPage() {
   ]);
 
   const publishedJobs = jobs.filter((job) => (job.status ?? "").toUpperCase() === "PUBLISHED");
+  const pendingInvitationCount = dashboard?.pendingInvites ?? 0;
+  const lockedUsers = users.filter((user) => user.locked).length;
+  const unassignedJobs = jobs.filter((job) => !job.recruiterId).length;
 
   const metrics = [
     {
       label: "Team members",
       value: users.length,
       helper: "Admins, recruiters, and collaborators with access.",
+      footnote: lockedUsers
+        ? `${lockedUsers} account${lockedUsers > 1 ? "s" : ""} need attention.`
+        : undefined,
     },
     {
       label: "Active jobs",
       value: dashboard?.activeJobs ?? publishedJobs.length,
       helper: "Roles currently visible to candidates.",
+      footnote: publishedJobs.length === 0 ? "No published jobs yet." : undefined,
     },
     {
       label: "Pending invitations",
-      value: dashboard?.pendingInvites ?? 0,
+      value: pendingInvitationCount,
       helper: "Invites sent but not yet accepted.",
     },
+    {
+      label: "Unassigned jobs",
+      value: unassignedJobs,
+      helper: "Postings without an owner assigned.",
+    },
   ];
+
+  const quickActions = [
+    {
+      label: "Invite teammate",
+      href: "#team",
+      description: "Send a role-specific invitation in seconds.",
+    },
+    {
+      label: "Update company profile",
+      href: "#company",
+      description: "Polish your brand details and public info.",
+    },
+    {
+      label: "Publish a job",
+      href: "#jobs",
+      description: "Launch a new role to the candidate marketplace.",
+    },
+  ];
+
+  const insights = [
+    lockedUsers > 0
+      ? `Unlock ${lockedUsers} account${lockedUsers > 1 ? "s" : ""} so teammates can sign in.`
+      : null,
+    pendingInvitationCount > 0
+      ? `Follow up on ${pendingInvitationCount} pending invitation${pendingInvitationCount > 1 ? "s" : ""}.`
+      : null,
+    unassignedJobs > 0
+      ? `${unassignedJobs} job${unassignedJobs > 1 ? "s" : ""} still need a recruiter owner.`
+      : null,
+  ].filter(Boolean) as string[];
+
+  if (insights.length === 0) {
+    insights.push("Your workspace is looking great. Keep sharing updates to stay ahead of hiring demand.");
+  }
 
   const recentInvites = dashboard?.recentInvites ?? [];
 
@@ -224,38 +274,95 @@ export default async function CompanyAdminDashboardPage() {
 
   return (
     <Container className="max-w-5xl space-y-10">
-      <Panel variant="glass" padding="lg" className="space-y-6">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-3">
+      <Panel id="overview" variant="glass" padding="lg" className="space-y-8">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+          <div className="space-y-4">
             <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
               Company admin console
             </span>
             <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
-              Configure your company space and keep hiring moving.
+              Keep your workspace aligned and hiring-ready.
             </h1>
             <p className="max-w-2xl text-sm text-foreground/70">
-              Invite teammates, update company details, and monitor roles in flight. Use these quick insights to
-              stay ahead of hiring demands.
+              Invite teammates, curate your brand presence, and monitor active roles from a single command centre.
             </p>
+            <ul className="space-y-3 text-sm text-foreground/70">
+              {insights.map((insight, index) => (
+                <li key={`${insight}-${index}`} className="flex items-start gap-3">
+                  <span className="mt-1 h-2.5 w-2.5 rounded-full bg-accent/70" aria-hidden />
+                  <span>{insight}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="relative overflow-hidden rounded-3xl border border-foreground/10 bg-gradient-to-br from-surface via-surface/85 to-surface/95 p-6 shadow-[0_18px_32px_rgba(15,23,42,0.15)]">
+            <div className="pointer-events-none absolute -top-14 right-0 h-32 w-32 rounded-full bg-accent/20 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-16 left-6 h-28 w-28 rounded-full bg-foreground/10 blur-3xl" />
+            <div className="space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
+                Workspace health
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-xs text-foreground/60">Team strength</p>
+                  <p className="mt-1 text-2xl font-semibold text-foreground">{users.length}</p>
+                  <p className="text-xs text-foreground/60">Active teammates collaborating today.</p>
+                </div>
+                <div>
+                  <p className="text-xs text-foreground/60">Published roles</p>
+                  <p className="mt-1 text-2xl font-semibold text-foreground">{publishedJobs.length}</p>
+                  <p className="text-xs text-foreground/60">Visible to candidates right now.</p>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-foreground/10 bg-surface/85 px-4 py-3 text-xs text-foreground/70">
+                {profile?.companySize
+                  ? `Company size: ${profile.companySize}.`
+                  : "Share your company size so candidates know what to expect."}
+              </div>
+            </div>
+            <div className="mt-4 rounded-xl border border-foreground/10 bg-surface/80 px-4 py-3 text-xs text-foreground/60">
+              {profile?.createdAt
+                ? `Onboarded ${formatDate(profile.createdAt)}.`
+                : "Finish your company profile to unlock richer analytics."}
+            </div>
           </div>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {metrics.map((metric) => (
             <div
               key={metric.label}
-              className="rounded-2xl border border-foreground/10 bg-surface/95 p-5 text-sm text-foreground/70"
+              className="group rounded-2xl border border-foreground/10 bg-surface/95 p-5 text-sm text-foreground/70 shadow-[0_10px_22px_rgba(15,23,42,0.08)] transition hover:border-accent/30 hover:shadow-[0_22px_36px_rgba(15,23,42,0.14)]"
             >
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
                 {metric.label}
               </p>
               <p className="mt-3 text-3xl font-semibold text-foreground">{metric.value}</p>
               <p className="mt-2 text-xs">{metric.helper}</p>
+              {metric.footnote ? (
+                <p className="mt-3 text-xs text-foreground/60">{metric.footnote}</p>
+              ) : null}
             </div>
+          ))}
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {quickActions.map((action) => (
+            <Link
+              key={action.href}
+              href={action.href}
+              className="group flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 text-sm text-foreground/75 transition hover:border-accent/40 hover:text-foreground hover:shadow-[0_20px_34px_rgba(15,23,42,0.12)]"
+            >
+              <span className="text-sm font-semibold text-foreground">{action.label}</span>
+              <p className="text-xs text-foreground/60">{action.description}</p>
+              <span className="inline-flex items-center gap-2 text-xs font-semibold text-accent transition group-hover:translate-x-0.5">
+                Jump to section
+                <span aria-hidden>→</span>
+              </span>
+            </Link>
           ))}
         </div>
       </Panel>
 
-      <Panel variant="surface" padding="lg" className="space-y-6">
+      <Panel id="company" variant="surface" padding="lg" className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">Company snapshot</h2>
@@ -312,12 +419,25 @@ export default async function CompanyAdminDashboardPage() {
         </div>
       </Panel>
 
-      <Panel variant="surface" padding="lg" className="space-y-6">
+      <Panel id="team" variant="surface" padding="lg" className="space-y-6">
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground">Team roster</h2>
           <p className="text-sm text-foreground/60">
             Company admins oversee permissions, while recruiters manage individual jobs and pipelines.
           </p>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/60">
+            <span className="inline-flex items-center rounded-full border border-foreground/15 bg-surface px-3 py-1 font-semibold uppercase tracking-[0.2em] text-foreground/70">
+              {users.length} active
+            </span>
+            <span className="inline-flex items-center rounded-full border border-foreground/15 bg-surface px-3 py-1 uppercase tracking-[0.2em]">
+              {pendingInvitationCount} pending invites
+            </span>
+            {lockedUsers > 0 ? (
+              <span className="inline-flex items-center rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-semibold uppercase tracking-[0.2em] text-accent">
+                {lockedUsers} locked
+              </span>
+            ) : null}
+          </div>
         </div>
         <div className="rounded-2xl border border-foreground/10 bg-surface/95 p-5">
           <InviteMemberForm />
@@ -325,7 +445,7 @@ export default async function CompanyAdminDashboardPage() {
         <CompanyMembersPanel users={users} />
       </Panel>
 
-      <Panel variant="surface" padding="lg" className="space-y-6">
+      <Panel id="jobs" variant="surface" padding="lg" className="space-y-6">
         <div className="space-y-3">
           <h2 className="text-lg font-semibold text-foreground">Job portfolio</h2>
           <p className="text-sm text-foreground/60">
@@ -343,32 +463,13 @@ export default async function CompanyAdminDashboardPage() {
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
             {jobs.map((job) => (
-              <div
-                key={job.id}
-                className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <p className="font-semibold text-foreground">{job.title}</p>
-                    <p className="text-xs text-foreground/60">
-                      Status {(job.status ?? "DRAFT").toLowerCase()} - Created {formatDate(job.createdAt)}
-                    </p>
-                  </div>
-                  <Link
-                    href={`${ROUTES.jobs}/${job.id}`}
-                    className="text-xs font-semibold text-accent hover:text-foreground"
-                  >
-                    Preview
-                  </Link>
-                </div>
-                <UpdateJobForm job={job} positions={positions} />
-              </div>
+              <CompanyJobCard key={job.id} job={job} positions={positions} />
             ))}
           </div>
         )}
       </Panel>
 
-      <Panel variant="surface" padding="lg" className="space-y-6">
+      <Panel id="invites" variant="surface" padding="lg" className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">Invitations in progress</h2>

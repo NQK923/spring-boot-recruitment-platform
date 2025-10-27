@@ -4,8 +4,17 @@ import { SiteNavbar } from "@/components/layout/site-navbar";
 import { NavigationActions } from "@/components/layout/navigation-actions";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { Container } from "@/components/ui/container";
+import { CompanyAdminHeader } from "@/components/layout/company-admin-header";
+import { getCurrentUser } from "@/lib/current-user";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const currentUser = await getCurrentUser();
+  const roles = currentUser?.roles ?? [];
+
+  if (roles.includes("COMPANY_ADMIN") && !roles.includes("SUPER_ADMIN")) {
+    return <CompanyAdminHeader />;
+  }
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-surface/95 shadow-[0_12px_32px_rgba(15,23,42,0.1)] backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">
       <Container className="flex h-16 items-center justify-between gap-4 sm:h-20">

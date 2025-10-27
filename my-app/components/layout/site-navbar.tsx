@@ -1,16 +1,17 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
 
-type NavItem = {
+export type NavItem = {
   href: string;
   label: string;
   badge?: string;
 };
 
-const navigation: NavItem[] = [
+const defaultNavigation: NavItem[] = [
   { href: ROUTES.home, label: "Home" },
   { href: ROUTES.jobs, label: "Jobs" },
   { href: ROUTES.candidatePortal, label: "Candidate", badge: "new" },
@@ -22,39 +23,169 @@ type SiteNavbarProps = {
   className?: string;
   orientation?: "horizontal" | "vertical";
   onNavigate?: () => void;
+  items?: NavItem[];
+  variant?: "default" | "inverse";
 };
 
 export function SiteNavbar({
   className,
   orientation = "horizontal",
   onNavigate,
+  items,
+  variant = "default",
 }: SiteNavbarProps) {
   const pathname = usePathname();
   const isVertical = orientation === "vertical";
+  const [activeHash, setActiveHash] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const updateHash = () => setActiveHash(window.location.hash);
+    updateHash();
+    window.addEventListener("hashchange", updateHash);
+    return () => {
+      window.removeEventListener("hashchange", updateHash);
+    };
+  }, []);
+
+  const navigation = useMemo(() => items ?? defaultNavigation, [items]);
+  const palette =
+    variant === "inverse"
+      ? {
+          text: "text-white/70",
+          active: "bg-white/10 text-white shadow-[0_10px_30px_rgba(15,23,42,0.2)]",
+          inactive: "hover:bg-white/10 hover:text-white",
+          indicator: "bg-white/70",
+        }
+      : {
+          text: "text-muted",
+          active: "bg-surface-muted text-foreground shadow-[0_8px_16px_rgba(15,23,42,0.08)]",
+          inactive: "hover:bg-surface-muted hover:text-foreground",
+          indicator: "bg-accent",
+        };
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const anchors = navigation
+      .map((item) => {
+        const [baseHref, anchor] = item.href.split("#");
+        if (!anchor) {
+          return null;
+        }
+        const element = document.getElementById(anchor);
+        if (!element) {
+          return null;
+        }
+        return {
+          base: baseHref || "/",
+          anchor,
+          element,
+        };
+      })
+      .filter(Boolean) as Array<{ base: string; anchor: string; element: HTMLElement }>;
+
+    if (anchors.length === 0) {
+      return;
+    }
+
+    const updateActiveAnchor = () => {
+      const path = window.location.pathname;
+      const headerOffset = 120;
+      let candidateAnchor = "";
+      let candidateTop = Number.NEGATIVE_INFINITY;
+      let fallbackAnchor = "";
+
+      anchors.forEach(({ base, anchor, element }) => {
+        if (!path.startsWith(base)) {
+          return;
+        }
+        const rect = element.getBoundingClientRect();
+        const top = rect.top;
+        if (top <= headerOffset && top > candidateTop) {
+          candidateAnchor = anchor;
+          candidateTop = top;
+        }
+        if (!candidateAnchor && !fallbackAnchor && top > headerOffset) {
+          fallbackAnchor = anchor;
+        }
+      });
+
+      const nextHash =
+        candidateAnchor !== ""
+          ? `#${candidateAnchor}`
+          : fallbackAnchor !== ""
+            ? `#${fallbackAnchor}`
+            : "";
+
+      setActiveHash((current) => (current === nextHash ? current : nextHash));
+    };
+
+    updateActiveAnchor();
+
+    let ticking = false;
+    const handleScroll = () => {
+      if (ticking) {
+        return;
+      }
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        updateActiveAnchor();
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, [navigation]);
 
   return (
     <nav
       className={[
         isVertical ? "flex flex-col gap-4" : "hidden items-center gap-6 md:gap-8 sm:flex",
-        "text-sm font-medium text-muted",
+        "text-sm font-medium",
+        palette.text,
         className,
       ]
         .filter(Boolean)
         .join(" ")}
     >
       {navigation.map((item) => {
-        const active =
-          item.href === ROUTES.home ? pathname === ROUTES.home : pathname.startsWith(item.href);
+        const [baseHref, anchor] = item.href.split("#");
+        const normalizedBase = baseHref || "/";
+        const matchesBase =
+          normalizedBase === ROUTES.home ? pathname === ROUTES.home : pathname.startsWith(normalizedBase);
+        const targetHash = anchor ? `#${anchor}` : null;
+        const active = anchor
+          ? matchesBase && (activeHash === targetHash || (!activeHash && anchor === "overview"))
+          : matchesBase;
+        const handleClick = () => {
+          onNavigate?.();
+          if (targetHash) {
+            setActiveHash(targetHash);
+          } else {
+            setActiveHash("");
+          }
+        };
+
         return (
           <Link
             key={item.href}
             href={item.href}
-            onClick={onNavigate}
+            onClick={handleClick}
             className={[
               "group relative inline-flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-150",
               active
-                ? "bg-surface-muted text-foreground shadow-[0_8px_16px_rgba(15,23,42,0.08)]"
-                : "hover:bg-surface-muted hover:text-foreground",
+                ? palette.active
+                : palette.inactive,
             ]
               .filter(Boolean)
               .join(" ")}
@@ -68,8 +199,9 @@ export function SiteNavbar({
             {!isVertical ? (
               <span
                 className={[
-                  "absolute inset-x-0 bottom-[-10px] h-px scale-x-0 bg-accent transition-transform duration-200",
+                  "absolute inset-x-0 bottom-[-10px] h-px scale-x-0 transition-transform duration-200",
                   active ? "scale-x-100" : "group-hover:scale-x-100",
+                  palette.indicator,
                 ].join(" ")}
               />
             ) : null}

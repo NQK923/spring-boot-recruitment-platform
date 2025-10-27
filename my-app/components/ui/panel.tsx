@@ -7,6 +7,7 @@ type PanelProps = {
   children: ReactNode;
   variant?: "surface" | "glass";
   padding?: "sm" | "md" | "lg";
+  id?: string;
 };
 
 const paddingMap = {
@@ -21,9 +22,11 @@ export function Panel({
   padding = "md",
   className,
   children,
+  id,
 }: PanelProps) {
   return (
     <Component
+      id={id}
       className={cx(
         "relative rounded-2xl border border-border bg-surface shadow-[0_12px_24px_rgba(15,23,42,0.08)] transition-shadow duration-200",
         variant === "glass" ? "glass-panel" : "bg-surface",
