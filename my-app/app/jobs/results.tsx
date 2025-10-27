@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState, useTransition } from "react";
+import type { KeyboardEvent, MouseEvent } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Panel } from "@/components/ui/panel";
@@ -120,6 +121,33 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
     setLocationFilter(null);
   }
 
+  const navigateToJob = useCallback(
+    (jobId: number) => {
+      router.push(`${ROUTES.jobs}/${jobId}`);
+    },
+    [router]
+  );
+
+  const createCardKeyDownHandler = useCallback(
+    (jobId: number) => (event: KeyboardEvent<HTMLDivElement>) => {
+      if (event.defaultPrevented) {
+        return;
+      }
+      if (event.target !== event.currentTarget) {
+        return;
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        navigateToJob(jobId);
+      }
+    },
+    [navigateToJob]
+  );
+
+  const handleApplyClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
+    event.stopPropagation();
+  }, []);
+
   return (
     <div className="space-y-6">
       <Panel padding="lg" className="space-y-6">
@@ -173,58 +201,66 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
         </Panel>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {filteredJobs.map((job) => (
-            <Panel key={job.id} padding="lg" className="flex h-full flex-col gap-4">
-              <div className="space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted">
-                  {jobStatusLabel(job.status)}
-                </p>
-                <h2 className="text-2xl font-semibold text-foreground">{job.title}</h2>
+          {filteredJobs.map((job) => {
+            const cardHref = `${ROUTES.jobs}/${job.id}`;
+            return (
+              <div
+                key={job.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => navigateToJob(job.id)}
+                onKeyDown={createCardKeyDownHandler(job.id)}
+                className="group flex h-full cursor-pointer flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                aria-label={`View details for ${job.title}`}
+              >
+                <Panel
+                  padding="lg"
+                  className="flex h-full flex-col gap-4 transition-shadow duration-200 group-hover:shadow-[0_16px_32px_rgba(15,23,42,0.12)]"
+                >
+                  <div className="space-y-2">
+                    <h2 className="text-2xl font-semibold text-foreground">{job.title}</h2>
+                  </div>
+
+                  <p className="line-clamp-4 text-sm text-foreground/70">
+                    {job.description ??
+                      "The hiring team is preparing a detailed description. Check back soon for responsibilities and requirements."}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <JobMetaChip label={normalize(job.location) ?? "Multiple locations"} />
+                    <JobMetaChip label={normalize(job.workType) ?? "Flexible work style"} />
+                    {job.department && (
+                      <JobMetaChip label={job.level ? `${job.department} / ${job.level}` : job.department} />
+                    )}
+                    {!job.department && job.level && <JobMetaChip label={job.level} />}
+                  </div>
+
+                  {job.salaryRange && (
+                    <p className="text-xs font-medium text-foreground">
+                      <span className="text-foreground/70">Compensation:</span> {job.salaryRange}
+                    </p>
+                  )}
+
+                  <div className="mt-auto flex flex-col gap-3 pt-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs text-foreground/60">
+                      {isRemoteFriendly(job.workType)
+                        ? "Remote-friendly team with async collaboration."
+                        : "Collaborative team with on-site rituals."}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        href={`${ROUTES.signIn}?next=${cardHref}`}
+                        className="inline-flex items-center justify-center rounded-lg border border-border/80 px-4 py-2 text-xs font-semibold text-foreground transition hover:border-foreground"
+                        onClick={handleApplyClick}
+                      >
+                        Apply to this role
+                      </Link>
+                    </div>
+                  </div>
+                </Panel>
               </div>
-
-              <p className="line-clamp-4 text-sm text-foreground/70">
-                {job.description ??
-                  "The hiring team is preparing a detailed description. Check back soon for responsibilities and requirements."}
-              </p>
-
-              <div className="flex flex-wrap gap-2 pt-2">
-                <JobMetaChip label={normalize(job.location) ?? "Multiple locations"} />
-                <JobMetaChip label={normalize(job.workType) ?? "Flexible work style"} />
-                {job.department && (
-                  <JobMetaChip label={job.level ? `${job.department} / ${job.level}` : job.department} />
-                )}
-                {!job.department && job.level && <JobMetaChip label={job.level} />}
-              </div>
-
-              {job.salaryRange && (
-                <p className="text-xs font-medium text-foreground">
-                  <span className="text-foreground/70">Compensation:</span> {job.salaryRange}
-                </p>
-              )}
-
-              <div className="mt-auto flex flex-col gap-3 pt-4 text-sm sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-xs text-foreground/60">
-                  {isRemoteFriendly(job.workType)
-                    ? "Remote-friendly team with async collaboration."
-                    : "Collaborative team with on-site rituals."}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Link
-                    href={`${ROUTES.jobs}/${job.id}`}
-                    className="font-semibold text-foreground transition hover:underline"
-                  >
-                    View full details
-                  </Link>
-                  <Link
-                    href={`${ROUTES.signIn}?next=${ROUTES.jobs}/${job.id}`}
-                    className="inline-flex items-center justify-center rounded-lg border border-border/80 px-4 py-2 text-xs font-semibold text-foreground transition hover:border-foreground"
-                  >
-                    Apply to this role
-                  </Link>
-                </div>
-              </div>
-            </Panel>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -383,19 +419,3 @@ function isRemoteFriendly(workType: string | null | undefined) {
   return Boolean(workType && workType.toLowerCase().includes("remote"));
 }
 
-function jobStatusLabel(status: string | null | undefined) {
-  if (!status) {
-    return "Now hiring";
-  }
-
-  switch (status.toUpperCase()) {
-    case "PUBLISHED":
-      return "Accepting applications";
-    case "PAUSED":
-      return "Temporarily paused";
-    case "CLOSED":
-      return "Role closed";
-    default:
-      return status;
-  }
-}

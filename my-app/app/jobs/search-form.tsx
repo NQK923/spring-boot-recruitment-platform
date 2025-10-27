@@ -39,6 +39,12 @@ export function JobsSearchForm({ initialQuery = "", className }: JobsSearchFormP
     [pathname, router, searchParamsString]
   );
 
+  const updateRouteRef = useRef(updateRoute);
+
+  useEffect(() => {
+    updateRouteRef.current = updateRoute;
+  }, [updateRoute]);
+
   useEffect(() => {
     if (skipNextDebounceRef.current) {
       skipNextDebounceRef.current = false;
@@ -49,7 +55,7 @@ export function JobsSearchForm({ initialQuery = "", className }: JobsSearchFormP
       clearTimeout(debounceHandleRef.current);
     }
     debounceHandleRef.current = setTimeout(() => {
-      updateRoute(query);
+      updateRouteRef.current(query);
     }, DEBOUNCE_MS);
 
     return () => {
@@ -57,7 +63,7 @@ export function JobsSearchForm({ initialQuery = "", className }: JobsSearchFormP
         clearTimeout(debounceHandleRef.current);
       }
     };
-  }, [query, updateRoute]);
+  }, [query]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
