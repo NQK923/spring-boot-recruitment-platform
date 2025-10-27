@@ -1,19 +1,36 @@
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
-import { SiteNavbar } from "@/components/layout/site-navbar";
+import { SiteNavbar, type NavItem } from "@/components/layout/site-navbar";
 import { NavigationActions } from "@/components/layout/navigation-actions";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { Container } from "@/components/ui/container";
 import { CompanyAdminHeader } from "@/components/layout/company-admin-header";
+import { SuperAdminHeader } from "@/components/layout/super-admin-header";
 import { getCurrentUser } from "@/lib/current-user";
 
 export async function SiteHeader() {
   const currentUser = await getCurrentUser();
   const roles = currentUser?.roles ?? [];
 
-  if (roles.includes("COMPANY_ADMIN") && !roles.includes("SUPER_ADMIN")) {
+  if (roles.includes("SUPER_ADMIN")) {
+    return <SuperAdminHeader />;
+  }
+
+  if (roles.includes("COMPANY_ADMIN")) {
     return <CompanyAdminHeader />;
   }
+
+  const baseNavigation: NavItem[] = [
+    { href: ROUTES.home, label: "Home" },
+    { href: ROUTES.jobs, label: "Jobs" },
+    { href: ROUTES.candidatePortal, label: "Candidate", badge: "new" },
+    { href: ROUTES.recruiterDashboard, label: "Recruiter" },
+    { href: ROUTES.docs, label: "Docs" },
+  ];
+
+  const navItems = roles.includes("RECRUITER")
+    ? baseNavigation
+    : baseNavigation.filter((item) => item.href !== ROUTES.recruiterDashboard);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-surface/95 shadow-[0_12px_32px_rgba(15,23,42,0.1)] backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">
@@ -31,10 +48,10 @@ export async function SiteHeader() {
             </span>
           </div>
         </Link>
-        <SiteNavbar />
+        <SiteNavbar items={navItems} />
         <div className="flex items-center gap-2 sm:gap-3">
           <NavigationActions />
-          <MobileNav />
+          <MobileNav items={navItems} />
         </div>
       </Container>
     </header>
