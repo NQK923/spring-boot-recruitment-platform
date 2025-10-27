@@ -9,7 +9,13 @@ export type JobFormState = {
   success?: string;
 };
 
-const DASHBOARD_PATH = ROUTES.recruiterDashboard;
+const DASHBOARD_PATHS = [ROUTES.recruiterDashboard, ROUTES.companyAdminDashboard] as const;
+
+function revalidateDashboards() {
+  for (const path of DASHBOARD_PATHS) {
+    revalidatePath(path);
+  }
+}
 
 function normalizeString(value: FormDataEntryValue | null, allowEmpty = false) {
   if (value === null) {
@@ -40,6 +46,8 @@ export async function createJobAction(
   const location = normalizeString(formData.get("location")) ?? "Remote";
   const workType = normalizeString(formData.get("workType")) ?? "REMOTE";
   const positionId = parseNumber(formData.get("positionId"));
+  const salaryRange = normalizeString(formData.get("salaryRange"), true);
+  const benefits = normalizeString(formData.get("benefits"), true);
 
   if (!title) {
     return { error: "Title is required." };
@@ -55,6 +63,8 @@ export async function createJobAction(
         location,
         workType,
         positionId,
+        salaryRange: salaryRange && salaryRange.length > 0 ? salaryRange : null,
+        benefits: benefits && benefits.length > 0 ? benefits : null,
       }),
     });
   } catch (error) {
@@ -62,7 +72,7 @@ export async function createJobAction(
     return { error: message };
   }
 
-  revalidatePath(DASHBOARD_PATH);
+  revalidateDashboards();
   return { success: "Job created successfully." };
 }
 
@@ -78,6 +88,8 @@ export async function updateJobAction(
   const workType = normalizeString(formData.get("workType")) ?? "REMOTE";
   const status = normalizeString(formData.get("status")) ?? "DRAFT";
   const positionId = parseNumber(formData.get("positionId"));
+  const salaryRange = normalizeString(formData.get("salaryRange"), true);
+  const benefits = normalizeString(formData.get("benefits"), true);
 
   if (!title) {
     return { error: "Title cannot be empty." };
@@ -94,6 +106,8 @@ export async function updateJobAction(
         workType,
         status,
         positionId,
+        salaryRange: salaryRange && salaryRange.length > 0 ? salaryRange : null,
+        benefits: benefits && benefits.length > 0 ? benefits : null,
       }),
     });
   } catch (error) {
@@ -101,6 +115,6 @@ export async function updateJobAction(
     return { error: message };
   }
 
-  revalidatePath(DASHBOARD_PATH);
+  revalidateDashboards();
   return { success: "Job updated successfully." };
 }

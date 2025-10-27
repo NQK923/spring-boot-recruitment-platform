@@ -3,6 +3,7 @@ package com.recruitment.platform.company.controller;
 import com.recruitment.platform.company.dto.CompanyUserResponse;
 import com.recruitment.platform.company.dto.CreateCompanyRequest;
 import com.recruitment.platform.company.dto.UpdateCompanyRequest;
+import com.recruitment.platform.company.dto.UpdateCompanyUserRequest;
 import com.recruitment.platform.company.dto.UserInviteRequest;
 import com.recruitment.platform.company.model.Company;
 import com.recruitment.platform.company.service.CompanyService;
@@ -114,6 +115,26 @@ public class CompanyController {
             return ResponseEntity.ok(companyService.getCompanyUsers(companyId));
         } catch (IllegalStateException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PatchMapping("/me/users/{userId}")
+    @PreAuthorize("hasAuthority('SCOPE_COMPANY_ADMIN')")
+    public ResponseEntity<?> updateMyCompanyUser(@PathVariable Long userId,
+                                                 @RequestBody UpdateCompanyUserRequest request,
+                                                 @RequestHeader(value = "X-Company-ID", required = false) Long requesterCompanyId) {
+        try {
+            Long companyId = requireCompanyId(requesterCompanyId);
+            companyService.updateCompanyUser(companyId, userId, request.role(), request.locked());
+            return companyService.getCompanyUsers(companyId).stream()
+                    .filter(user -> user.userId().equals(userId))
+                    .findFirst()
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Company context missing");
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 

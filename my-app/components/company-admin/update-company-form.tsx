@@ -10,6 +10,8 @@ type CompanyProfile = {
   description?: string | null;
   website?: string | null;
   logoUrl?: string | null;
+  companySize?: string | null;
+  companyAddress?: string | null;
 };
 
 const initialState: UpdateCompanyState = {};
@@ -51,6 +53,29 @@ export function UpdateCompanyForm({ profile }: { profile: CompanyProfile }) {
           name="logoUrl"
           defaultValue={profile.logoUrl ?? ""}
           placeholder="https://cdn.example.com/logo.png"
+        />
+      </div>
+      <div className="space-y-2">
+        <label htmlFor="company-size" className="font-semibold text-foreground">
+          Company size
+        </label>
+        <Input
+          id="company-size"
+          name="companySize"
+          defaultValue={profile.companySize ?? ""}
+          placeholder="e.g. 51-200 employees"
+        />
+      </div>
+      <div className="space-y-2">
+        <label htmlFor="company-address" className="font-semibold text-foreground">
+          Headquarters / primary address
+        </label>
+        <textarea
+          id="company-address"
+          name="companyAddress"
+          defaultValue={profile.companyAddress ?? ""}
+          placeholder="123 Nguyen Trai, District 1, Ho Chi Minh City"
+          className="min-h-[72px] w-full rounded-2xl border border-border/70 bg-surface/98 px-4 py-3 text-sm text-foreground shadow-[0_6px_18px_rgba(var(--shadow-soft),0.22)] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
         />
       </div>
       <div className="space-y-2">

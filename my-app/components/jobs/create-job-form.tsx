@@ -105,6 +105,27 @@ export function CreateJobForm({ positions }: Props) {
         />
       </label>
 
+      <label className="flex flex-col gap-1 text-sm text-foreground/80">
+        Salary range
+        <input
+          name="salaryRange"
+          placeholder="e.g. 40,000,000 - 60,000,000 VND / month"
+          disabled={pending}
+          className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-sm text-foreground/80">
+        Benefits
+        <textarea
+          name="benefits"
+          placeholder="Summarize perks, allowances, or unique benefits."
+          rows={3}
+          disabled={pending}
+          className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
+        />
+      </label>
+
       {state?.error ? (
         <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {state.error}

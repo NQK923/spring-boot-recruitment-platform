@@ -22,24 +22,29 @@ export function UpdateJobForm({ job, positions }: Props) {
   );
 
   return (
-    <form action={formAction} className="space-y-3 rounded-xl border border-foreground/10 bg-background/80 p-4">
+    <form action={formAction} className="space-y-4 rounded-xl border border-foreground/10 bg-background/80 p-4">
       <div className="flex flex-col gap-1 text-sm">
-        <p className="font-semibold text-foreground">{job.title}</p>
-        <p className="text-xs text-foreground/50">
-          Last updated {job.updatedAt ? new Date(job.updatedAt).toLocaleDateString() : "recently"}
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
+          Job title
+          <input
+            name="title"
+            defaultValue={job.title}
+            required
+            disabled={pending}
+            className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
+          />
+        </label>
+        <p className="text-[11px] uppercase tracking-[0.2em] text-foreground/40">
+          Last updated {job.updatedAt ? new Date(job.updatedAt).toLocaleString() : "recently"}
         </p>
       </div>
 
-      <input type="hidden" name="title" value={job.title} />
-      <input type="hidden" name="description" value={job.description ?? ""} />
-      <input type="hidden" name="requirements" value={job.requirements ?? ""} />
-
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-2">
         <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
           Status
           <select
             name="status"
-            defaultValue={job.status}
+            defaultValue={job.status ?? "DRAFT"}
             disabled={pending}
             className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
           >
@@ -66,17 +71,17 @@ export function UpdateJobForm({ job, positions }: Props) {
             ))}
           </select>
         </label>
-
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
-          Location
-          <input
-            name="location"
-            defaultValue={job.location ?? ""}
-            disabled={pending}
-            className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
-          />
-        </label>
       </div>
+
+      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
+        Location
+        <input
+          name="location"
+          defaultValue={job.location ?? ""}
+          disabled={pending}
+          className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
+        />
+      </label>
 
       <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
         Job position
@@ -95,6 +100,49 @@ export function UpdateJobForm({ job, positions }: Props) {
             </option>
           ))}
         </select>
+      </label>
+
+      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
+        Salary range
+        <input
+          name="salaryRange"
+          defaultValue={job.salaryRange ?? ""}
+          disabled={pending}
+          className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
+        Description
+        <textarea
+          name="description"
+          defaultValue={job.description ?? ""}
+          rows={3}
+          disabled={pending}
+          className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
+        Requirements
+        <textarea
+          name="requirements"
+          defaultValue={job.requirements ?? ""}
+          rows={3}
+          disabled={pending}
+          className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
+        Benefits
+        <textarea
+          name="benefits"
+          defaultValue={job.benefits ?? ""}
+          rows={3}
+          disabled={pending}
+          className="rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
+        />
       </label>
 
       {state?.error ? (

@@ -13,5 +13,6 @@ public class CompanyUser {
     private CompanyUserPK id;
 
     private String role;
+    private boolean locked = false;
 
 }

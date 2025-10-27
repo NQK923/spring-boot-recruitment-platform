@@ -142,8 +142,28 @@ public class CompanyService {
                 .map(member -> new CompanyUserResponse(
                         member.getId().getUserId(),
                         finalEmailMap.get(member.getId().getUserId()),
-                        member.getRole()
+                        member.getRole(),
+                        member.isLocked()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public CompanyUser updateCompanyUser(Long companyId, Long userId, String role, Boolean locked) {
+        CompanyUserPK pk = new CompanyUserPK();
+        pk.setCompanyId(companyId);
+        pk.setUserId(userId);
+
+        CompanyUser companyUser = companyUserRepository.findById(pk)
+                .orElseThrow(() -> new IllegalArgumentException("Company user relationship not found"));
+
+        if (role != null && !role.isBlank()) {
+            companyUser.setRole(role);
+        }
+        if (locked != null) {
+            companyUser.setLocked(locked);
+        }
+
+        return companyUserRepository.save(companyUser);
     }
 }

@@ -16,6 +16,8 @@ export async function updateCompanyAction(
   const description = String(formData.get("description") ?? "").trim();
   const website = String(formData.get("website") ?? "").trim();
   const logoUrl = String(formData.get("logoUrl") ?? "").trim();
+  const companySize = String(formData.get("companySize") ?? "").trim();
+  const companyAddress = String(formData.get("companyAddress") ?? "").trim();
 
   if (!name) {
     return { error: "Company name is required." };
@@ -29,6 +31,8 @@ export async function updateCompanyAction(
         description: description || null,
         website: website || null,
         logoUrl: logoUrl || null,
+        companySize: companySize || null,
+        companyAddress: companyAddress || null,
       }),
     });
   } catch (error) {
@@ -71,4 +75,48 @@ export async function inviteCompanyMemberAction(
 
   revalidatePath("/dashboard/company");
   return { success: "Invitation sent successfully." };
+}
+
+export type UpdateCompanyUserState = {
+  error?: string;
+  success?: string;
+};
+
+export type UpdateCompanyUserInput = {
+  role?: string | null;
+  locked?: boolean;
+};
+
+export async function updateCompanyUserAction(
+  userId: number,
+  input: UpdateCompanyUserInput
+): Promise<UpdateCompanyUserState> {
+  const payload: Record<string, unknown> = {};
+  if (input.role !== undefined) {
+    const normalizedRole = input.role?.trim() ?? null;
+    if (normalizedRole && !["RECRUITER", "COMPANY_ADMIN"].includes(normalizedRole)) {
+      return { error: "Unsupported role." };
+    }
+    payload.role = normalizedRole;
+  }
+  if (input.locked !== undefined) {
+    payload.locked = input.locked;
+  }
+
+  if (Object.keys(payload).length === 0) {
+    return { error: "Nothing to update." };
+  }
+
+  try {
+    await apiFetch(`/api/companies/me/users/${userId}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to update team member.";
+    return { error: message };
+  }
+
+  revalidatePath("/dashboard/company");
+  return { success: "Team member updated." };
 }
