@@ -3,17 +3,34 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
-import type { JobPostingPublic } from "@/lib/types";
+import type { JobPostingPublic, PaginatedResponse } from "@/lib/types";
 import { JobsResults } from "./results";
 
 export const dynamic = "force-dynamic";
 
-async function getPublicJobs(search?: string): Promise<JobPostingPublic[]> {
+const DEFAULT_PAGE_SIZE = 12;
+
+type JobsPageResponse = PaginatedResponse<JobPostingPublic>;
+
+const EMPTY_JOBS_PAGE: JobsPageResponse = {
+  items: [],
+  totalItems: 0,
+  totalPages: 0,
+  page: 0,
+  size: DEFAULT_PAGE_SIZE,
+  hasNext: false,
+  hasPrevious: false,
+};
+
+async function getPublicJobs(search: string, page: number, size: number): Promise<JobsPageResponse> {
   try {
     const params = new URLSearchParams();
-    if (search && search.trim().length > 0) {
-      params.set("search", search.trim());
+    const normalizedSearch = search.trim();
+    if (normalizedSearch.length > 0) {
+      params.set("search", normalizedSearch);
     }
+    params.set("page", String(page));
+    params.set("size", String(size));
     const query = params.toString();
     const response = await apiFetch(`/api/jobs/public${query ? `?${query}` : ""}`, {
       method: "GET",
@@ -21,25 +38,60 @@ async function getPublicJobs(search?: string): Promise<JobPostingPublic[]> {
       cache: "no-store",
     });
     const data = await response.json();
-    if (Array.isArray(data)) {
-      return data as JobPostingPublic[];
+    if (data && typeof data === "object" && Array.isArray((data as JobsPageResponse).items)) {
+      const pageData = data as JobsPageResponse;
+      return {
+        ...pageData,
+        items: (pageData.items ?? []).filter((item): item is JobPostingPublic => Boolean(item)),
+      };
     }
-    return [];
+    return {
+      ...EMPTY_JOBS_PAGE,
+      page,
+      size,
+    };
   } catch {
-    return [];
+    return {
+      ...EMPTY_JOBS_PAGE,
+      page,
+      size,
+    };
   }
 }
 
 type JobsPageProps = {
-  searchParams?: {
-    search?: string;
+  searchParams?: Promise<{
+    search?: string | string[];
+    page?: string | string[];
+  }> | {
+    search?: string | string[];
+    page?: string | string[];
   };
 };
 
 export default async function JobsPage({ searchParams }: JobsPageProps) {
-  const rawSearch = typeof searchParams?.search === "string" ? searchParams.search : "";
+  const resolvedSearchParams = await Promise.resolve(searchParams);
+  const rawSearchValue = resolvedSearchParams?.search;
+  const rawPageValue = resolvedSearchParams?.page;
+  const rawSearch =
+    typeof rawSearchValue === "string"
+      ? rawSearchValue
+      : Array.isArray(rawSearchValue) && rawSearchValue.length > 0
+        ? rawSearchValue[0]
+        : "";
+  const pageParam =
+    typeof rawPageValue === "string"
+      ? rawPageValue
+      : Array.isArray(rawPageValue) && rawPageValue.length > 0
+        ? rawPageValue[0]
+        : undefined;
   const normalizedSearch = rawSearch.trim();
-  const jobs = await getPublicJobs(normalizedSearch);
+  const uiPage = Number.parseInt(pageParam ?? "", 10);
+  const currentPage = Number.isFinite(uiPage) && uiPage > 0 ? uiPage : 1;
+  const backendPage = currentPage - 1;
+
+  const jobsPage = await getPublicJobs(normalizedSearch, backendPage, DEFAULT_PAGE_SIZE);
+  const effectiveUiPage = Math.max(jobsPage.page, 0) + 1;
   const hasQuery = normalizedSearch.length > 0;
 
   return (
@@ -75,7 +127,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         </div>
       </header>
 
-      <JobsResults jobs={jobs} hasQuery={hasQuery} initialQuery={rawSearch} />
+      <JobsResults pageData={jobsPage} hasQuery={hasQuery} initialQuery={rawSearch} currentUiPage={effectiveUiPage} />
     </Container>
   );
 }

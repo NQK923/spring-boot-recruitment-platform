@@ -30,6 +30,7 @@ export function JobsSearchForm({ initialQuery = "", className }: JobsSearchFormP
       } else {
         nextSearchParams.delete("search");
       }
+      nextSearchParams.delete("page");
 
       const queryString = nextSearchParams.toString();
       const target = queryString.length > 0 ? `${pathname}?${queryString}` : pathname;

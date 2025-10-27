@@ -9,6 +9,10 @@ import com.recruitment.platform.job.model.JobPosting;
 import com.recruitment.platform.job.model.JobStatus;
 import com.recruitment.platform.job.repository.JobPositionRepository;
 import com.recruitment.platform.job.repository.JobPostingRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +20,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class JobPostingService {
+    private static final int DEFAULT_PAGE_SIZE = 12;
+    private static final int MAX_PAGE_SIZE = 50;
 
     private final JobPostingRepository jobPostingRepository;
     private final JobPositionRepository jobPositionRepository;
@@ -112,21 +117,18 @@ public class JobPostingService {
         return jobPositionRepository.findByCompanyId(companyId);
     }
 
-    public List<JobPostingPublicDto> findAllPublicJobs() {
-        return jobPostingRepository.findByStatus(JobStatus.PUBLISHED).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
+    public Page<JobPostingPublicDto> searchPublicJobs(String searchTerm, Integer page, Integer size) {
+        Pageable pageable = resolvePageable(page, size);
+        Page<JobPosting> resultPage;
 
-    public List<JobPostingPublicDto> searchPublicJobs(String searchTerm) {
         if (!hasText(searchTerm)) {
-            return findAllPublicJobs();
+            resultPage = jobPostingRepository.findByStatus(JobStatus.PUBLISHED, pageable);
+        } else {
+            String normalizedPattern = "%" + searchTerm.trim().toLowerCase(Locale.ROOT) + "%";
+            resultPage = jobPostingRepository.searchPublishedJobsByTitleOrLocation(JobStatus.PUBLISHED, normalizedPattern, pageable);
         }
 
-        String normalizedPattern = "%" + searchTerm.trim().toLowerCase(Locale.ROOT) + "%";
-        return jobPostingRepository.searchPublishedJobsByTitleOrLocation(JobStatus.PUBLISHED, normalizedPattern).stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return resultPage.map(this::convertToDto);
     }
 
     public Optional<JobPosting> findJobById(Long id) {
@@ -171,5 +173,21 @@ public class JobPostingService {
 
     private boolean hasText(String value) {
         return value != null && !value.trim().isEmpty();
+    }
+
+    private Pageable resolvePageable(Integer page, Integer size) {
+        int safePage = page != null && page >= 0 ? page : 0;
+        int resolvedSize;
+        if (size == null) {
+            resolvedSize = DEFAULT_PAGE_SIZE;
+        } else {
+            resolvedSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+        }
+        Sort sort = Sort.by(
+                Sort.Order.desc("updatedAt"),
+                Sort.Order.desc("createdAt"),
+                Sort.Order.desc("id")
+        );
+        return PageRequest.of(safePage, resolvedSize, sort);
     }
 }

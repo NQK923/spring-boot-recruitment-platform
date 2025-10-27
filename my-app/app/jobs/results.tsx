@@ -1,18 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
-import type { JobPostingPublic } from "@/lib/types";
+import type { JobPostingPublic, PaginatedResponse } from "@/lib/types";
 import { cx } from "@/lib/cx";
 import { JobsSearchForm } from "./search-form";
 
 type JobsResultsProps = {
-  jobs: JobPostingPublic[];
+  pageData: PaginatedResponse<JobPostingPublic>;
   hasQuery: boolean;
   initialQuery: string;
+  currentUiPage: number;
 };
 
 type FilterOption = {
@@ -20,11 +22,27 @@ type FilterOption = {
   value: string;
 };
 
-export function JobsResults({ jobs, hasQuery, initialQuery }: JobsResultsProps) {
+export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }: JobsResultsProps) {
   const [workTypeFilter, setWorkTypeFilter] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<string | null>(null);
+  const [isPaging, startTransition] = useTransition();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamsString = searchParams.toString();
+
+  const jobs = useMemo<JobPostingPublic[]>(() => pageData.items ?? [], [pageData.items]);
+  const totalItems = pageData.totalItems ?? 0;
+  const totalPages = pageData.totalPages ?? 0;
+  const pageSize = pageData.size ?? (jobs.length > 0 ? jobs.length : 12);
+  const serverPage = pageData.page ?? 0;
+  const currentPage = Math.max(currentUiPage, 1);
   const normalizedQuery = initialQuery.trim();
   const searchLabel = normalizedQuery.length > 0 ? normalizedQuery : initialQuery;
+  const hasPageResults = jobs.length > 0;
+
+  const pageStart = hasPageResults ? serverPage * pageSize + 1 : 0;
+  const pageEnd = hasPageResults ? pageStart + jobs.length - 1 : 0;
 
   const workTypeOptions = useMemo(() => getTopOptions(jobs.map((job) => job.workType)), [jobs]);
   const locationOptions = useMemo(() => getTopOptions(jobs.map((job) => job.location), 5), [jobs]);
@@ -43,12 +61,59 @@ export function JobsResults({ jobs, hasQuery, initialQuery }: JobsResultsProps) 
   const hasClientFilters = Boolean(workTypeFilter || locationFilter);
   const hasQuickFilters = workTypeOptions.length > 0 || locationOptions.length > 0;
   const showFiltersPanel = hasQuickFilters || hasClientFilters;
-  const searchSummary = hasQuery
-    ? `Showing ${jobs.length} result${jobs.length === 1 ? "" : "s"} for "${searchLabel}".`
-    : `Showing ${jobs.length} open role${jobs.length === 1 ? "" : "s"}.`;
-  const resultsLabel = hasClientFilters
-    ? `Showing ${filteredJobs.length} role${filteredJobs.length === 1 ? "" : "s"} after filters.`
-    : `Showing ${filteredJobs.length} role${filteredJobs.length === 1 ? "" : "s"} from this search.`;
+
+  const searchSummary =
+    totalItems > 0
+      ? hasQuery
+        ? `Found ${totalItems} role${pluralize(totalItems)} matching "${searchLabel}".`
+        : `Found ${totalItems} open role${pluralize(totalItems)}.`
+      : hasQuery
+        ? `No roles match "${searchLabel}".`
+        : "No open roles are available right now.";
+
+  const basePageLabel =
+    totalItems === 0
+      ? ""
+      : hasPageResults
+        ? `Viewing ${pageStart}-${pageEnd} of ${totalItems} role${pluralize(totalItems)}.`
+        : "No roles on this page. Try a different page number.";
+
+  const filteredLabel = hasClientFilters
+    ? filteredJobs.length === 0
+      ? "Quick filters removed all roles on this page. Clear filters to see every match."
+      : `After filters, ${filteredJobs.length} role${pluralize(filteredJobs.length)} remain on this page.`
+    : "";
+
+  const resultsLabel = [basePageLabel, filteredLabel].filter(Boolean).join(" ");
+
+  const emptyStateMessage = hasClientFilters
+    ? "Nothing matches those filters. Clear them to view every opening again."
+    : totalItems === 0
+      ? hasQuery
+        ? "No roles match that search. Try broader keywords or reset the search above."
+        : "No jobs are available right now. Check back soon or sign in to receive tailored recommendations."
+      : "No roles appear on this page. Try a different page number.";
+
+  const handlePageChange = useCallback(
+    (targetPage: number) => {
+      if (targetPage === currentPage || targetPage < 1) {
+        return;
+      }
+      if (totalPages > 0 && targetPage > totalPages) {
+        return;
+      }
+      const nextSearchParams = new URLSearchParams(searchParamsString);
+      if (targetPage <= 1) {
+        nextSearchParams.delete("page");
+      } else {
+        nextSearchParams.set("page", String(targetPage));
+      }
+      const queryString = nextSearchParams.toString();
+      const href = queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
+      startTransition(() => router.push(href));
+    },
+    [currentPage, pathname, router, searchParamsString, startTransition, totalPages]
+  );
 
   function clearFilters() {
     setWorkTypeFilter(null);
@@ -98,17 +163,13 @@ export function JobsResults({ jobs, hasQuery, initialQuery }: JobsResultsProps) 
             </p>
           )}
 
-          <p className="text-xs text-foreground/60">{resultsLabel}</p>
+          {resultsLabel.length > 0 && <p className="text-xs text-foreground/60">{resultsLabel}</p>}
         </div>
       </Panel>
 
       {filteredJobs.length === 0 ? (
         <Panel padding="lg" className="text-sm text-foreground/60">
-          {hasClientFilters
-            ? "Nothing matches those filters. Clear them to view every opening again."
-            : hasQuery
-              ? "No roles match that search. Try broader keywords or reset the search above."
-              : "No jobs are available right now. Check back soon or sign in to receive tailored recommendations."}
+          {emptyStateMessage}
         </Panel>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
@@ -166,6 +227,17 @@ export function JobsResults({ jobs, hasQuery, initialQuery }: JobsResultsProps) 
           ))}
         </div>
       )}
+
+      <PaginationControls
+        page={currentPage}
+        totalPages={totalPages}
+        hasNext={pageData.hasNext}
+        hasPrevious={pageData.hasPrevious}
+        onPageChange={handlePageChange}
+        isPending={isPaging}
+        totalItems={totalItems}
+        pageSize={pageSize}
+      />
     </div>
   );
 }
@@ -176,6 +248,67 @@ type FilterRowProps = {
   activeValue: string | null;
   onToggle: (value: string) => void;
 };
+
+type PaginationControlsProps = {
+  page: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+  onPageChange: (page: number) => void;
+  isPending: boolean;
+  totalItems: number;
+  pageSize: number;
+};
+
+function PaginationControls({
+  page,
+  totalPages,
+  hasNext,
+  hasPrevious,
+  onPageChange,
+  isPending,
+  totalItems,
+  pageSize,
+}: PaginationControlsProps) {
+  const effectiveTotalPages =
+    totalPages > 0 ? totalPages : totalItems > 0 ? Math.max(Math.ceil(totalItems / Math.max(pageSize, 1)), 1) : 0;
+
+  if (totalItems === 0 || effectiveTotalPages <= 1) {
+    return null;
+  }
+
+  const disablePrev = isPending || (!hasPrevious && page <= 1);
+  const disableNext = isPending || (!hasNext && page >= effectiveTotalPages);
+  const summary = `Page ${page} of ${effectiveTotalPages} (${totalItems} role${pluralize(totalItems)} total)`;
+
+  return (
+    <div className="flex flex-col gap-3 border-t border-border/40 pt-4 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-xs text-foreground/60">{summary}</p>
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(page - 1)}
+          disabled={disablePrev}
+          aria-label="Go to previous page"
+        >
+          Previous
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(page + 1)}
+          disabled={disableNext}
+          aria-label="Go to next page"
+        >
+          Next
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 function FilterRow({ title, options, activeValue, onToggle }: FilterRowProps) {
   return (
@@ -216,6 +349,10 @@ function JobMetaChip({ label }: { label: string }) {
       {label}
     </span>
   );
+}
+
+function pluralize(count: number) {
+  return count === 1 ? "" : "s";
 }
 
 function normalize(value: string | null | undefined) {

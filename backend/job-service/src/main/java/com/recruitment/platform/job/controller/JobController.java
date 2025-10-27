@@ -4,6 +4,7 @@ import com.recruitment.platform.job.dto.CreateJobPositionRequest;
 import com.recruitment.platform.job.dto.CreateJobRequest;
 import com.recruitment.platform.job.dto.JobPositionResponse;
 import com.recruitment.platform.job.dto.JobPostingPublicDto;
+import com.recruitment.platform.job.dto.PageResponse;
 import com.recruitment.platform.job.dto.UpdateJobRequest;
 import com.recruitment.platform.job.model.JobPosition;
 import com.recruitment.platform.job.model.JobPosting;
@@ -29,8 +30,10 @@ public class JobController {
     }
 
     @GetMapping("/public")
-    public List<JobPostingPublicDto> getOpenJobs(@RequestParam(value = "search", required = false) String search) {
-        return service.searchPublicJobs(search);
+    public PageResponse<JobPostingPublicDto> getOpenJobs(@RequestParam(value = "search", required = false) String search,
+                                                         @RequestParam(value = "page", required = false) Integer page,
+                                                         @RequestParam(value = "size", required = false) Integer size) {
+        return PageResponse.of(service.searchPublicJobs(search, page, size));
     }
 
     @GetMapping("/public/{id}")

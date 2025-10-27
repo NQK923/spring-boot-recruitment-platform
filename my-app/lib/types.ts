@@ -198,3 +198,13 @@ export type CompanyPublicProfile = {
   companySize: string | null;
   companyAddress: string | null;
 };
+
+export type PaginatedResponse<T> = {
+  items: T[];
+  totalItems: number;
+  totalPages: number;
+  page: number;
+  size: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+};

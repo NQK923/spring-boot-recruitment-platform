@@ -4,6 +4,8 @@ import com.recruitment.platform.job.dto.CompanyJobStatusAggregation;
 import com.recruitment.platform.job.dto.JobStatusAggregation;
 import com.recruitment.platform.job.model.JobPosting;
 import com.recruitment.platform.job.model.JobStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
-    List<JobPosting> findByStatus(JobStatus status);
+    Page<JobPosting> findByStatus(JobStatus status, Pageable pageable);
     List<JobPosting> findByCompanyId(Long companyId);
 
     @Query("""
@@ -22,7 +24,9 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
                     LOWER(COALESCE(jp.location, '')) LIKE :search
                   )
             """)
-    List<JobPosting> searchPublishedJobsByTitleOrLocation(@Param("status") JobStatus status, @Param("search") String search);
+    Page<JobPosting> searchPublishedJobsByTitleOrLocation(@Param("status") JobStatus status,
+                                                          @Param("search") String search,
+                                                          Pageable pageable);
 
     @Query("""
             SELECT new com.recruitment.platform.job.dto.JobStatusAggregation(jp.status, COUNT(jp))
