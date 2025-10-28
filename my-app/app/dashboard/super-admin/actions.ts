@@ -1,78 +1,55 @@
-'use server';
+"use server";
 
 import { revalidatePath } from "next/cache";
+import { ROUTES } from "@/lib/routes";
 import { apiFetch } from "@/lib/api";
 
-export type CreateCompanyState = {
-  error?: string;
-  success?: string;
-};
-
-export async function createCompanyAction(
-  _prevState: CreateCompanyState,
-  formData: FormData
-): Promise<CreateCompanyState> {
-  const name = String(formData.get("name") ?? "").trim();
-  const description = String(formData.get("description") ?? "").trim();
-  const website = String(formData.get("website") ?? "").trim();
-  const logoUrl = String(formData.get("logoUrl") ?? "").trim();
-
-  if (!name) {
-    return { error: "Company name is required." };
-  }
-
-  try {
-    await apiFetch("/api/companies", {
-      method: "POST",
-      body: JSON.stringify({
-        name,
-        description: description || null,
-        website: website || null,
-        logoUrl: logoUrl || null,
-      }),
-    });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to create company.";
-    return { error: message };
-  }
-
-  revalidatePath("/dashboard/super-admin");
-  return { success: "Company created successfully." };
+function safeNumber(value: FormDataEntryValue | null): number | null {
+  if (value == null) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
-export type InviteCompanyUserState = {
-  error?: string;
-  success?: string;
-};
-
-export async function inviteCompanyUserAction(
-  _prevState: InviteCompanyUserState,
-  formData: FormData
-): Promise<InviteCompanyUserState> {
-  const companyId = Number(formData.get("companyId") ?? 0);
-  const email = String(formData.get("email") ?? "").trim();
-  const role = String(formData.get("role") ?? "").trim();
-
-  if (!companyId || Number.isNaN(companyId)) {
-    return { error: "Select a company before sending an invite." };
-  }
-  if (!email) {
-    return { error: "Email address is required." };
-  }
-  if (!role) {
-    return { error: "Choose a role for the invite." };
+export async function updateCompanyStatusAction(formData: FormData): Promise<void> {
+  const companyId = safeNumber(formData.get("companyId"));
+  const status = formData.get("status");
+  if (companyId == null || typeof status !== "string" || status.trim() === "") {
+    console.error("Invalid company status payload.", { companyId, status });
+    return;
   }
 
   try {
-    await apiFetch(`/api/companies/${companyId}/users/invite`, {
-      method: "POST",
-      body: JSON.stringify({ email, role }),
+    await apiFetch(`/api/companies/${companyId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status }),
     });
+    revalidatePath(ROUTES.superAdminDashboard);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to send invitation.";
-    return { error: message };
+    console.error("Failed to update company status", error);
+  }
+}
+
+export async function updateJobStatusAction(formData: FormData): Promise<void> {
+  const jobId = safeNumber(formData.get("jobId"));
+  const status = formData.get("status");
+  if (jobId == null || typeof status !== "string" || status.trim() === "") {
+    console.error("Invalid job status payload.", { jobId, status });
+    return;
   }
 
-  revalidatePath("/dashboard/super-admin");
-  return { success: "Invitation sent successfully." };
+  try {
+    await apiFetch(`/api/jobs/${jobId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status }),
+    });
+    revalidatePath(ROUTES.superAdminDashboard);
+  } catch (error) {
+    console.error("Failed to update job status", error);
+  }
 }

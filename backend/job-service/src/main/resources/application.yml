@@ -31,3 +31,5 @@ eureka:
 app:
   jwt:
     secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"
+  gateway:
+    base-url: http://gateway-service:8080

@@ -8,9 +8,41 @@ import { CompanyAdminHeader } from "@/components/layout/company-admin-header";
 import { SuperAdminHeader } from "@/components/layout/super-admin-header";
 import { getCurrentUser } from "@/lib/current-user";
 
+function buildNavigation({
+  roles,
+  isAuthenticated,
+}: {
+  roles: string[];
+  isAuthenticated: boolean;
+}): NavItem[] {
+  const items: NavItem[] = [
+    { href: ROUTES.home, label: "Home" },
+    { href: ROUTES.jobs, label: "Jobs" },
+  ];
+
+  const ensureItem = (item: NavItem) => {
+    if (!items.some((existing) => existing.href === item.href)) {
+      items.push(item);
+    }
+  };
+
+  if (!isAuthenticated || roles.includes("CANDIDATE")) {
+    ensureItem({ href: ROUTES.candidatePortal, label: "Candidate" });
+  }
+
+  if (roles.includes("RECRUITER")) {
+    ensureItem({ href: ROUTES.recruiterDashboard, label: "Recruiter" });
+  }
+
+  ensureItem({ href: ROUTES.docs, label: "Docs" });
+
+  return items;
+}
+
 export async function SiteHeader() {
   const currentUser = await getCurrentUser();
   const roles = currentUser?.roles ?? [];
+  const isAuthenticated = Boolean(currentUser);
 
   if (roles.includes("SUPER_ADMIN")) {
     return <SuperAdminHeader />;
@@ -20,17 +52,7 @@ export async function SiteHeader() {
     return <CompanyAdminHeader />;
   }
 
-  const baseNavigation: NavItem[] = [
-    { href: ROUTES.home, label: "Home" },
-    { href: ROUTES.jobs, label: "Jobs" },
-    { href: ROUTES.candidatePortal, label: "Candidate", badge: "new" },
-    { href: ROUTES.recruiterDashboard, label: "Recruiter" },
-    { href: ROUTES.docs, label: "Docs" },
-  ];
-
-  const navItems = roles.includes("RECRUITER")
-    ? baseNavigation
-    : baseNavigation.filter((item) => item.href !== ROUTES.recruiterDashboard);
+  const navItems = buildNavigation({ roles, isAuthenticated });
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-surface/95 shadow-[0_12px_32px_rgba(15,23,42,0.1)] backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">

@@ -2,36 +2,24 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
-import { CreateCompanyForm } from "@/components/super-admin/create-company-form";
-import { InviteCompanyUserForm } from "@/components/super-admin/invite-company-user-form";
+import { DebouncedSearchInput } from "@/components/super-admin/debounced-search-input";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import type { JobPosting } from "@/lib/types";
-
-
-type SuperAdminDashboard = {
-  totalCompanies?: number;
-  activeCompanies?: number;
-  pendingInvites?: number;
-  totalCompanyAdmins?: number;
-  recentCompanies?: Array<{
-    id?: number;
-    name?: string;
-    status?: string;
-    createdAt?: string;
-    adminCount?: number;
-  }>;
-  pendingInvitations?: Array<{
-    email?: string;
-    companyName?: string;
-    role?: string;
-    invitedAt?: string;
-  }>;
-};
+import { updateCompanyStatusAction, updateJobStatusAction } from "@/app/dashboard/super-admin/actions";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 
-async function getSuperAdminDashboard(): Promise<SuperAdminDashboard | null> {
+function formatDate(value?: string | null) {
+  if (!value) return "Unknown";
+  try {
+    return dateFormatter.format(new Date(value));
+  } catch {
+    return value;
+  }
+}
+
+async function getSuperAdminDashboard() {
   try {
     const response = await apiFetch("/api/companies/dashboard/super-admin", { method: "GET" });
     const data = await response.json();
@@ -41,21 +29,6 @@ async function getSuperAdminDashboard(): Promise<SuperAdminDashboard | null> {
   }
 }
 
-type CompanySummary = {
-  id: number;
-  name: string;
-  status?: string | null;
-  createdAt?: string | null;
-  industry?: string | null;
-  adminCount?: number | null;
-};
-
-type CompanyApiResponse = Partial<CompanySummary> & {
-  created_at?: string | null;
-  sector?: string | null;
-  admin_count?: number | null;
-};
-
 async function getCompanies(): Promise<CompanySummary[]> {
   try {
     const response = await apiFetch("/api/companies", { method: "GET" });
@@ -63,8 +36,7 @@ async function getCompanies(): Promise<CompanySummary[]> {
     if (!Array.isArray(data)) {
       return [];
     }
-    const rawCompanies = data as CompanyApiResponse[];
-    return rawCompanies.map((company, index) => ({
+    return (data as CompanyApiResponse[]).map((company, index) => ({
       id: Number(company.id ?? index),
       name: String(company.name ?? "Unnamed company"),
       status: company.status ?? null,
@@ -77,12 +49,7 @@ async function getCompanies(): Promise<CompanySummary[]> {
   }
 }
 
-type JobApiResponse = Partial<JobPosting> & {
-  company_id?: number | null;
-  companyId?: number | null;
-};
-
-async function getAllJobs(): Promise<JobPosting[]> {
+async function getJobs(): Promise<JobPosting[]> {
   try {
     const response = await apiFetch("/api/jobs", { method: "GET" });
     const data = await response.json();
@@ -110,60 +77,41 @@ async function getAllJobs(): Promise<JobPosting[]> {
   }
 }
 
-function formatDate(value?: string | null) {
-  if (!value) return "Unknown";
-  try {
-    return dateFormatter.format(new Date(value));
-  } catch {
-    return value;
-  }
-}
-
-type SuperAdminSearchParams = {
-  company?: string;
-  job?: string;
-  account?: string;
-};
-
 export default async function SuperAdminDashboardPage({
   searchParams,
 }: {
-  searchParams?: SuperAdminSearchParams;
+  searchParams?: SuperAdminSearchParams | Promise<SuperAdminSearchParams>;
 }) {
+  const resolvedSearchParams = ((await Promise.resolve(searchParams)) ?? {}) as SuperAdminSearchParams;
+
   const [dashboard, companies, jobs] = await Promise.all([
     getSuperAdminDashboard(),
     getCompanies(),
-    getAllJobs(),
+    getJobs(),
   ]);
 
   const companyQuery =
-    typeof searchParams?.company === "string" ? searchParams.company.trim() : "";
-  const jobQuery = typeof searchParams?.job === "string" ? searchParams.job.trim() : "";
+    typeof resolvedSearchParams.company === "string" ? resolvedSearchParams.company.trim() : "";
+  const jobQuery = typeof resolvedSearchParams.job === "string" ? resolvedSearchParams.job.trim() : "";
   const accountQuery =
-    typeof searchParams?.account === "string" ? searchParams.account.trim() : "";
+    typeof resolvedSearchParams.account === "string" ? resolvedSearchParams.account.trim() : "";
 
   const companyLookup = new Map(companies.map((company) => [company.id, company.name]));
 
-  const filteredCompanies =
-    companyQuery.length === 0
-      ? companies
-      : companies.filter((company) =>
-          company.name.toLowerCase().includes(companyQuery.toLowerCase())
-        );
+  const filteredCompanies = (companyQuery ? companies.filter((company) => company.name.toLowerCase().includes(companyQuery.toLowerCase())) : companies).sort((a, b) => a.name.localeCompare(b.name));
 
-  const jobsWithCompany = jobs.map((job) => ({
+  const enrichedJobs = jobs.map((job) => ({
     ...job,
     companyName: companyLookup.get(job.companyId) ?? "Unknown company",
   }));
 
-  const filteredJobs =
-    jobQuery.length === 0
-      ? jobsWithCompany
-      : jobsWithCompany.filter(
-          (job) =>
-            job.title.toLowerCase().includes(jobQuery.toLowerCase()) ||
-            job.companyName.toLowerCase().includes(jobQuery.toLowerCase())
-        );
+  const filteredJobs = jobQuery
+    ? enrichedJobs.filter(
+        (job) =>
+          job.title.toLowerCase().includes(jobQuery.toLowerCase()) ||
+          job.companyName.toLowerCase().includes(jobQuery.toLowerCase())
+      )
+    : enrichedJobs;
 
   const accountsByCompany = companies.map((company) => ({
     id: company.id,
@@ -172,18 +120,15 @@ export default async function SuperAdminDashboardPage({
     status: company.status ?? null,
   }));
 
-  const filteredAccounts =
-    accountQuery.length === 0
-      ? accountsByCompany
-      : accountsByCompany.filter((account) =>
-          account.name.toLowerCase().includes(accountQuery.toLowerCase())
-        );
+  const filteredAccounts = accountQuery
+    ? accountsByCompany.filter((account) => account.name.toLowerCase().includes(accountQuery.toLowerCase()))
+    : accountsByCompany;
 
   const metrics = [
     {
       label: "Companies onboarded",
       value: dashboard?.totalCompanies ?? companies.length,
-      helper: "Total tenants running on Talentflow.",
+      helper: "Tenants currently hosted.",
     },
     {
       label: "Active companies",
@@ -195,7 +140,7 @@ export default async function SuperAdminDashboardPage({
     {
       label: "Pending invitations",
       value: dashboard?.pendingInvites ?? 0,
-      helper: "Company, admin, or recruiter invites awaiting acceptance.",
+      helper: "Outstanding super-admin or workspace invites.",
     },
   ];
 
@@ -207,25 +152,42 @@ export default async function SuperAdminDashboardPage({
       invitedAt: invite.invitedAt ?? null,
     })) ?? [];
 
-  const companyOptions = companies.map((company) => ({
-    id: company.id,
-    name: company.name,
-  }));
+  const companyStatusOptions = Array.from(
+    new Set(
+      companies
+        .map((company) => (company.status ?? "").toUpperCase())
+        .filter((status) => status.length > 0)
+        .concat(["ACTIVE", "INACTIVE", "PENDING"])
+    )
+  );
+
+  const jobStatusOptions: JobPosting["status"][] = ["DRAFT", "PUBLISHED", "PAUSED", "CLOSED"];
 
   return (
     <Container className="max-w-6xl space-y-10">
       <Panel id="overview" variant="glass" padding="lg" className="space-y-6">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-              Super admin console
-            </span>
-            <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
-              Orchestrate every tenant from a single view.
-            </h1>
+            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">Super admin console</span>
+            <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">Status-first platform control.</h1>
             <p className="max-w-2xl text-sm text-foreground/70">
-              Review company health, spin up new workspaces, and keep onboarding flowing smoothly. Use the quick
-              actions to create organisations and invite company leaders in minutes.
+              Keep the platform steady by monitoring tenant and job status. Workspace owners maintain their content you focus on visibility and readiness.
+            </p>
+            <ul className="space-y-2 text-sm text-foreground/70">
+              <li className="flex items-start gap-2">
+                <span className="mt-1 h-2 w-2 rounded-full bg-accent" aria-hidden />
+                <span>Use the management panels to search, review, and adjust status without touching workspace configuration.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-1 h-2 w-2 rounded-full bg-accent" aria-hidden />
+                <span>Status changes instantly revalidate this dashboard for accurate follow-up.</span>
+              </li>
+            </ul>
+          </div>
+          <div className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 text-sm text-foreground/70">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Workflow tips</p>
+            <p>
+              1. Review metrics for anomalies. 2. Filter companies or jobs to locate the tenant in question. 3. Update status and leave messaging to local admins.
             </p>
           </div>
         </div>
@@ -235,9 +197,7 @@ export default async function SuperAdminDashboardPage({
               key={metric.label}
               className="rounded-2xl border border-foreground/10 bg-surface/95 p-5 text-sm text-foreground/70"
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                {metric.label}
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">{metric.label}</p>
               <p className="mt-3 text-3xl font-semibold text-foreground">{metric.value}</p>
               <p className="mt-2 text-xs">{metric.helper}</p>
             </div>
@@ -246,75 +206,97 @@ export default async function SuperAdminDashboardPage({
       </Panel>
 
       <Panel id="operations" variant="surface" padding="lg" className="space-y-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">Quick actions</h2>
-            <p className="text-sm text-foreground/60">
-              Launch new tenants, invite administrators, and share onboarding resources without leaving this view.
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground">Platform operations</h2>
+          <p className="text-sm text-foreground/60">
+            Super admins focus on visibility and status alignment. Workspace owners own data, roles, and content.
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Company status</p>
+            <p className="text-sm text-foreground/70">
+              Toggle companies between <span className="font-semibold text-foreground">active</span> and <span className="font-semibold text-foreground">inactive</span> to control access without altering data.
             </p>
           </div>
-        </div>
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="space-y-4 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-            <div className="space-y-1">
-              <h3 className="text-sm font-semibold text-foreground">Create company</h3>
-              <p className="text-xs text-foreground/60">
-                Capture the essentials and spin up a new workspace instantly.
-              </p>
-            </div>
-            <CreateCompanyForm />
+          <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Job visibility</p>
+            <p className="text-sm text-foreground/70">
+              Promote, pause, or close roles to align hiring focus while recruiters maintain descriptions and requirements.
+            </p>
           </div>
-          <div className="space-y-4 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-            <div className="space-y-1">
-              <h3 className="text-sm font-semibold text-foreground">Invite company admin or recruiter</h3>
-              <p className="text-xs text-foreground/60">
-                Send activation links so leaders can configure their teams and start hiring.
-              </p>
-            </div>
-            <InviteCompanyUserForm companies={companyOptions} />
+          <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Coverage signals</p>
+            <p className="text-sm text-foreground/70">
+              Watch admin counts and status mismatches to know when to nudge a tenant or flag capacity issues.
+            </p>
           </div>
         </div>
       </Panel>
 
-      <Panel id="companies" variant="surface" padding="lg" className="space-y-6">
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Company management</h2>
-          <p className="text-sm text-foreground/60">
-            Search and jump into any tenant to review onboarding progress, job activity, and admin coverage.
-          </p>
+      <CompanyManagementPanel
+        companies={filteredCompanies}
+        companyStatusOptions={companyStatusOptions}
+        companyQuery={companyQuery}
+        jobQuery={jobQuery}
+        accountQuery={accountQuery}
+      />
+
+      <JobManagementPanel
+        jobs={filteredJobs}
+        jobStatusOptions={jobStatusOptions}
+        companyQuery={companyQuery}
+        jobQuery={jobQuery}
+        accountQuery={accountQuery}
+      />
+
+      <AccountManagementPanel
+        accounts={filteredAccounts}
+        companyQuery={companyQuery}
+        jobQuery={jobQuery}
+        accountQuery={accountQuery}
+      />
+
+      <InvitationsPanel pendingInvites={pendingInvites} />
+    </Container>
+  );
+}
+
+function CompanyManagementPanel({
+  companies,
+  companyStatusOptions,
+  companyQuery,
+  jobQuery,
+  accountQuery,
+}: {
+  companies: CompanySummary[];
+  companyStatusOptions: string[];
+  companyQuery: string;
+  jobQuery: string;
+  accountQuery: string;
+}) {
+  return (
+    <Panel id="companies" variant="surface" padding="lg" className="space-y-6">
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold text-foreground">Company management</h2>
+        <p className="text-sm text-foreground/60">
+          Search tenants and update their status. Workspace owners manage all other company settings.
+        </p>
+      </div>
+      <DebouncedSearchInput
+        param="company"
+        placeholder="Search companies by name"
+        initialValue={companyQuery}
+      />
+      {companies.length === 0 ? (
+        <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
+          No companies matched your search.
         </div>
-        <form
-          className="flex flex-wrap items-center gap-3 rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3"
-          action={ROUTES.superAdminDashboard}
-        >
-          <input
-            type="search"
-            name="company"
-            defaultValue={companyQuery}
-            placeholder="Search companies by name"
-            className="flex-1 min-w-[220px] rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none transition focus:border-foreground/40"
-          />
-          {jobQuery ? <input type="hidden" name="job" value={jobQuery} /> : null}
-          {accountQuery ? <input type="hidden" name="account" value={accountQuery} /> : null}
-          <Button type="submit" size="sm" variant="secondary">
-            Search
-          </Button>
-          {companyQuery ? (
-            <Link
-              href={ROUTES.superAdminDashboard}
-              className="text-sm font-semibold text-foreground hover:text-accent"
-            >
-              Clear
-            </Link>
-          ) : null}
-        </form>
-        {filteredCompanies.length === 0 ? (
-          <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
-            No companies matched your search. Try a different name or reset the filters.
-          </div>
-        ) : (
-          <div className="grid gap-3 md:grid-cols-2">
-            {filteredCompanies.map((company) => (
+      ) : (
+        <div className="grid gap-3 md:grid-cols-2">
+          {companies.map((company) => {
+            const statusValue = (company.status ?? "PENDING").toUpperCase();
+            return (
               <div
                 key={company.id}
                 className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 text-sm text-foreground/70"
@@ -323,226 +305,275 @@ export default async function SuperAdminDashboardPage({
                   <div>
                     <p className="font-semibold text-foreground">{company.name}</p>
                     <p className="text-xs text-foreground/60">
-                      Created {formatDate(company.createdAt)} · Status {(company.status ?? "pending").toLowerCase()}
+                      Created {formatDate(company.createdAt)} | Status {statusValue.toLowerCase()}
                     </p>
                   </div>
-                  <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                  <span className="rounded-full bg-foreground/10 px-3 py-1 text-xs font-semibold text-foreground/70">
                     Admins {company.adminCount ?? 0}
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/60">
-                  {company.industry ? <span>{company.industry}</span> : null}
+                  {company.industry ? <span>{company.industry}</span> : <span>Industry unknown</span>}
                 </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Link
-                    href={`${ROUTES.companyAdminDashboard}?companyId=${company.id}`}
-                    className="text-xs font-semibold text-accent transition hover:text-foreground"
+                <form action={updateCompanyStatusAction} className="flex flex-wrap items-center gap-2 text-xs">
+                  <input type="hidden" name="companyId" value={company.id} />
+                  <select
+                    name="status"
+                    defaultValue={statusValue}
+                    className="rounded-lg border border-foreground/20 bg-background px-2 py-1 text-xs uppercase tracking-[0.2em] outline-none transition focus:border-foreground/40"
                   >
-                    Manage company →
-                  </Link>
-                  <Link
-                    href={`${ROUTES.superAdminDashboard}?company=${encodeURIComponent(company.name)}&job=${jobQuery}&account=${accountQuery}`}
-                    className="text-xs text-foreground/60 hover:text-foreground"
-                  >
-                    Filter jobs
-                  </Link>
-                </div>
+                    {companyStatusOptions.map((statusOption) => (
+                      <option key={statusOption} value={statusOption}>
+                        {statusOption.charAt(0) + statusOption.slice(1).toLowerCase()}
+                      </option>
+                    ))}
+                  </select>
+                  <Button type="submit" size="sm" variant="secondary">
+                    Update status
+                  </Button>
+                </form>
               </div>
-            ))}
-          </div>
-        )}
-      </Panel>
-
-      <Panel id="jobs" variant="surface" padding="lg" className="space-y-6">
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Job management</h2>
-          <p className="text-sm text-foreground/60">
-            Track every open role across tenants. Search by job title or company to jump straight into a posting.
-          </p>
+            );
+          })}
         </div>
-        <form
-          className="flex flex-wrap items-center gap-3 rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3"
-          action={ROUTES.superAdminDashboard}
-        >
-          {companyQuery ? <input type="hidden" name="company" value={companyQuery} /> : null}
-          <input
-            type="search"
-            name="job"
-            defaultValue={jobQuery}
-            placeholder="Search jobs by title or company"
-            className="flex-1 min-w-[220px] rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none transition focus:border-foreground/40"
-          />
-          {accountQuery ? <input type="hidden" name="account" value={accountQuery} /> : null}
-          <Button type="submit" size="sm" variant="secondary">
-            Search
-          </Button>
-          {jobQuery ? (
-            <Link
-              href={`${ROUTES.superAdminDashboard}?company=${encodeURIComponent(
-                companyQuery
-              )}&account=${encodeURIComponent(accountQuery)}`}
-              className="text-sm font-semibold text-foreground hover:text-accent"
-            >
-              Clear
-            </Link>
-          ) : null}
-        </form>
-        {filteredJobs.length === 0 ? (
-          <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
-            No jobs matched your search. Adjust the filters or ask company admins to publish roles.
-          </div>
-        ) : (
-          <div className="overflow-x-auto rounded-2xl border border-foreground/10 bg-surface/95 shadow-[0_10px_24px_rgba(15,23,42,0.08)]">
-            <table className="min-w-full divide-y divide-foreground/10 text-left text-sm">
-              <thead className="text-xs uppercase tracking-[0.28em] text-foreground/50">
-                <tr>
-                  <th className="px-4 py-3">Job</th>
-                  <th className="px-4 py-3">Company</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-foreground/10">
-                {filteredJobs.map((job) => (
-                  <tr key={job.id}>
-                    <td className="px-4 py-3 text-sm text-foreground">{job.title}</td>
-                    <td className="px-4 py-3 text-sm text-foreground/70">{job.companyName}</td>
-                    <td className="px-4 py-3 text-sm text-foreground/60">{job.status.toLowerCase()}</td>
-                    <td className="px-4 py-3 text-right text-xs">
-                      <Link
-                        href={`${ROUTES.jobs}/${job.id}`}
-                        className="font-semibold text-accent transition hover:text-foreground"
-                      >
-                        Preview →
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Panel>
-
-      <Panel id="accounts" variant="surface" padding="lg" className="space-y-6">
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Account management</h2>
-          <p className="text-sm text-foreground/60">
-            See which tenants have adequate coverage. Filter by company to review admin counts and plan follow-up.
-          </p>
-        </div>
-        <form
-          className="flex flex-wrap items-center gap-3 rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3"
-          action={ROUTES.superAdminDashboard}
-        >
-          {companyQuery ? <input type="hidden" name="company" value={companyQuery} /> : null}
-          {jobQuery ? <input type="hidden" name="job" value={jobQuery} /> : null}
-          <input
-            type="search"
-            name="account"
-            defaultValue={accountQuery}
-            placeholder="Search accounts by company"
-            className="flex-1 min-w-[220px] rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none transition focus:border-foreground/40"
-          />
-          <Button type="submit" size="sm" variant="secondary">
-            Search
-          </Button>
-          {accountQuery ? (
-            <Link
-              href={`${ROUTES.superAdminDashboard}?company=${encodeURIComponent(
-                companyQuery
-              )}&job=${encodeURIComponent(jobQuery)}`}
-              className="text-sm font-semibold text-foreground hover:text-accent"
-            >
-              Clear
-            </Link>
-          ) : null}
-        </form>
-        {filteredAccounts.length === 0 ? (
-          <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
-            No companies matched your filter. Reset the search to see the complete list.
-          </div>
-        ) : (
-          <div className="grid gap-3 md:grid-cols-2">
-            {filteredAccounts.map((account) => (
-              <div
-                key={account.id}
-                className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 text-sm text-foreground/70"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold text-foreground">{account.name}</p>
-                    <p className="text-xs text-foreground/60">
-                      Status {(account.status ?? "pending").toLowerCase()}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-foreground/10 px-3 py-1 text-xs font-semibold text-foreground/70">
-                    Admins {account.adminCount}
-                  </span>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/60">
-                  <Link
-                    href={`${ROUTES.companyAdminDashboard}?companyId=${account.id}`}
-                    className="font-semibold text-accent transition hover:text-foreground"
-                  >
-                    Manage accounts
-                  </Link>
-                  <span>•</span>
-                  <Link
-                    href={`${ROUTES.superAdminDashboard}?company=${encodeURIComponent(
-                      account.name
-                    )}&job=${jobQuery}&account=${accountQuery}`}
-                    className="font-semibold text-accent transition hover:text-foreground"
-                  >
-                    Filter jobs
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </Panel>
-
-      <Panel id="invitations" variant="surface" padding="lg" className="space-y-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">Invitations awaiting acceptance</h2>
-            <p className="text-sm text-foreground/60">
-              Follow up with company owners or recruiters who haven&#39;t activated their accounts yet.
-            </p>
-          </div>
-        </div>
-        {pendingInvites.length === 0 ? (
-          <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
-            No pending invitations. Great job keeping onboarding tidy!
-          </div>
-        ) : (
-          <div className="space-y-3 text-sm">
-            {pendingInvites.map((invite, index) => (
-              <div
-                key={`${invite.email}-${index}`}
-                className="flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div>
-                  <p className="font-semibold text-foreground">{invite.email}</p>
-                  <p className="text-xs text-foreground/60">
-                    {invite.companyName ?? "Unassigned company"} - {invite.role ?? "Role pending"}
-                  </p>
-                </div>
-                <p className="text-xs text-foreground/50">
-                  Sent {invite.invitedAt ? formatDate(invite.invitedAt) : "recently"}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </Panel>
-
-    </Container>
+      )}
+    </Panel>
   );
 }
 
+function JobManagementPanel({
+  jobs,
+  jobStatusOptions,
+  companyQuery,
+  jobQuery,
+  accountQuery,
+}: {
+  jobs: Array<JobPosting & { companyName: string }>;
+  jobStatusOptions: JobPosting["status"][];
+  companyQuery: string;
+  jobQuery: string;
+  accountQuery: string;
+}) {
+  return (
+    <Panel id="jobs" variant="surface" padding="lg" className="space-y-6">
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold text-foreground">Job management</h2>
+        <p className="text-sm text-foreground/60">
+          Search roles across tenants and adjust their visibility. Recruiting teams remain owners of job content.
+        </p>
+      </div>
+      <DebouncedSearchInput
+        param="job"
+        placeholder="Search jobs by title or company"
+        initialValue={jobQuery}
+      />
+      {jobs.length === 0 ? (
+        <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
+          No jobs matched your search.
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-2xl border border-foreground/10 bg-surface/95 shadow-[0_10px_24px_rgba(15,23,42,0.08)]">
+          <table className="min-w-full divide-y divide-foreground/10 text-left text-sm">
+            <thead className="text-xs uppercase tracking-[0.28em] text-foreground/50">
+              <tr>
+                <th className="px-4 py-3">Job</th>
+                <th className="px-4 py-3">Company</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 text-right">Preview</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-foreground/10">
+              {jobs.map((job) => (
+                <tr key={job.id}>
+                  <td className="px-4 py-3 text-sm text-foreground">{job.title}</td>
+                  <td className="px-4 py-3 text-sm text-foreground/70">{job.companyName}</td>
+                  <td className="px-4 py-3 text-sm text-foreground/60">
+                    <form action={updateJobStatusAction} className="flex items-center gap-2">
+                      <input type="hidden" name="jobId" value={job.id} />
+                      <select
+                        name="status"
+                        defaultValue={job.status}
+                        className="rounded-lg border border-foreground/20 bg-background px-2 py-1 text-xs uppercase tracking-[0.2em] outline-none transition focus:border-foreground/40"
+                      >
+                        {jobStatusOptions.map((statusOption) => (
+                          <option key={statusOption} value={statusOption}>
+                            {statusOption.charAt(0) + statusOption.slice(1).toLowerCase()}
+                          </option>
+                        ))}
+                      </select>
+                      <Button type="submit" size="sm" variant="secondary">
+                        Update
+                      </Button>
+                    </form>
+                  </td>
+                  <td className="px-4 py-3 text-right text-xs">
+                    <Link
+                      href={`${ROUTES.jobs}/${job.id}`}
+                      className="font-semibold text-accent transition hover:text-foreground"
+                    >
+                      Preview ?
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Panel>
+  );
+}
 
+function AccountManagementPanel({
+  accounts,
+  companyQuery,
+  jobQuery,
+  accountQuery,
+}: {
+  accounts: Array<{ id: number; name: string; adminCount: number; status: string | null }>;
+  companyQuery: string;
+  jobQuery: string;
+  accountQuery: string;
+}) {
+  return (
+    <Panel id="accounts" variant="surface" padding="lg" className="space-y-6">
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold text-foreground">Account coverage</h2>
+        <p className="text-sm text-foreground/60">
+          Ensure every tenant has enough administrators to stay responsive. Use the search to focus on a specific company.
+        </p>
+      </div>
+      <DebouncedSearchInput
+        param="account"
+        placeholder="Search accounts by company"
+        initialValue={accountQuery}
+      />
+      {accounts.length === 0 ? (
+        <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
+          No companies matched your filter.
+        </div>
+      ) : (
+        <div className="grid gap-3 md:grid-cols-2">
+          {accounts.map((account) => (
+            <div
+              key={account.id}
+              className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 text-sm text-foreground/70"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-foreground">{account.name}</p>
+                  <p className="text-xs text-foreground/60">
+                    Status {(account.status ?? "pending").toLowerCase()}
+                  </p>
+                </div>
+                <span className="rounded-full bg-foreground/10 px-3 py-1 text-xs font-semibold text-foreground/70">
+                  Admins {account.adminCount}
+                </span>
+              </div>
+              <p className="text-xs text-foreground/60">
+                Need more context? Filter the jobs panel for this tenant to see what they are hiring for.
+              </p>
+              <Link
+                href={`${ROUTES.superAdminDashboard}?company=${encodeURIComponent(account.name)}&job=${jobQuery}&account=${accountQuery}`}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-accent transition hover:text-foreground"
+              >
+                Filter jobs
+                <span aria-hidden>?</span>
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
+    </Panel>
+  );
+}
 
+function InvitationsPanel({ pendingInvites }: { pendingInvites: PendingInvite[] }) {
+  return (
+    <Panel id="invitations" variant="surface" padding="lg" className="space-y-6">
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold text-foreground">Invitations awaiting acceptance</h2>
+        <p className="text-sm text-foreground/60">
+          Follow up with company owners or recruiters who haven&apos;t activated their accounts yet.
+        </p>
+      </div>
+      {pendingInvites.length === 0 ? (
+        <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
+          No pending invitations. Great job keeping onboarding tidy!
+        </div>
+      ) : (
+        <div className="space-y-3 text-sm">
+          {pendingInvites.map((invite, index) => (
+            <div
+              key={`${invite.email}-${index}`}
+              className="flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p className="font-semibold text-foreground">{invite.email}</p>
+                <p className="text-xs text-foreground/60">
+                  {invite.companyName ?? "Unassigned company"} - {invite.role ?? "Role pending"}
+                </p>
+              </div>
+              <p className="text-xs text-foreground/50">Sent {invite.invitedAt ? formatDate(invite.invitedAt) : "recently"}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </Panel>
+  );
+}
 
+// Types -----------------------------------------------------------------------------
 
+type SuperAdminDashboard = {
+  totalCompanies?: number;
+  activeCompanies?: number;
+  pendingInvites?: number;
+  totalCompanyAdmins?: number;
+  recentCompanies?: Array<{
+    id?: number;
+    name?: string;
+    status?: string;
+    createdAt?: string;
+    adminCount?: number;
+  }>;
+  pendingInvitations?: Array<{
+    email?: string;
+    companyName?: string;
+    role?: string;
+    invitedAt?: string;
+  }>;
+};
+
+type CompanySummary = {
+  id: number;
+  name: string;
+  status?: string | null;
+  createdAt?: string | null;
+  industry?: string | null;
+  adminCount?: number | null;
+};
+
+type CompanyApiResponse = Partial<CompanySummary> & {
+  created_at?: string | null;
+  sector?: string | null;
+  admin_count?: number | null;
+};
+
+type JobApiResponse = Partial<JobPosting> & {
+  company_id?: number | null;
+  companyId?: number | null;
+};
+
+type PendingInvite = {
+  email: string;
+  companyName?: string | null;
+  role?: string | null;
+  invitedAt?: string | null;
+};
+
+type SuperAdminSearchParams = {
+  company?: string;
+  job?: string;
+  account?: string;
+};

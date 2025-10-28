@@ -14,6 +14,7 @@ import java.util.List;
 
 public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     Page<JobPosting> findByStatus(JobStatus status, Pageable pageable);
+    Page<JobPosting> findByStatusAndCompanyIdIn(JobStatus status, List<Long> companyIds, Pageable pageable);
     List<JobPosting> findByCompanyId(Long companyId);
 
     @Query("""
@@ -27,6 +28,20 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     Page<JobPosting> searchPublishedJobsByTitleOrLocation(@Param("status") JobStatus status,
                                                           @Param("search") String search,
                                                           Pageable pageable);
+
+    @Query("""
+            SELECT jp FROM JobPosting jp
+            WHERE jp.status = :status
+              AND jp.companyId IN :companyIds
+              AND (
+                    LOWER(jp.title) LIKE :search OR
+                    LOWER(COALESCE(jp.location, '')) LIKE :search
+                  )
+            """)
+    Page<JobPosting> searchPublishedJobsByTitleOrLocationAndCompanyIds(@Param("status") JobStatus status,
+                                                                       @Param("search") String search,
+                                                                       @Param("companyIds") List<Long> companyIds,
+                                                                       Pageable pageable);
 
     @Query("""
             SELECT new com.recruitment.platform.job.dto.JobStatusAggregation(jp.status, COUNT(jp))

@@ -8,6 +8,7 @@ import com.recruitment.platform.company.dto.CreateCompanyRequest;
 import com.recruitment.platform.company.dto.UpdateCompanyRequest;
 import com.recruitment.platform.company.dto.UserInviteRequest;
 import com.recruitment.platform.company.model.Company;
+import com.recruitment.platform.company.model.CompanyStatus;
 import com.recruitment.platform.company.model.CompanyUser;
 import com.recruitment.platform.company.model.CompanyUserPK;
 import com.recruitment.platform.company.repository.CompanyRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,6 +76,7 @@ public class CompanyService {
         company.setLogoUrl(request.logoUrl());
         company.setCompanySize(request.companySize());
         company.setCompanyAddress(request.companyAddress());
+        company.setStatus(Optional.ofNullable(request.status()).orElse(CompanyStatus.PENDING));
         return companyRepository.save(company);
     }
 
@@ -103,6 +106,9 @@ public class CompanyService {
         }
         if (request.companyAddress() != null) {
             company.setCompanyAddress(request.companyAddress());
+        }
+        if (request.status() != null) {
+            company.setStatus(request.status());
         }
         return companyRepository.save(company);
     }
@@ -165,5 +171,26 @@ public class CompanyService {
         }
 
         return companyUserRepository.save(companyUser);
+    }
+
+    public Map<Long, CompanyStatus> getCompanyStatuses(List<Long> companyIds) {
+        if (companyIds == null || companyIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return companyRepository.findAllById(companyIds).stream()
+                .collect(Collectors.toMap(
+                        Company::getId,
+                        Company::getStatus,
+                        (existing, replacement) -> existing,
+                        LinkedHashMap::new
+                ));
+    }
+
+    public List<Long> findCompanyIdsByStatus(CompanyStatus status) {
+        if (status == null) {
+            return Collections.emptyList();
+        }
+        List<Long> ids = companyRepository.findIdsByStatus(status);
+        return ids != null ? ids : Collections.emptyList();
     }
 }

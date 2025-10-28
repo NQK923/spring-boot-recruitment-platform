@@ -1,5 +1,7 @@
 package com.recruitment.platform.job.service;
 
+import com.recruitment.platform.job.client.CompanyServiceClient;
+import com.recruitment.platform.job.client.dto.CompanyStatusResponse;
 import com.recruitment.platform.job.dto.CreateJobPositionRequest;
 import com.recruitment.platform.job.dto.CreateJobRequest;
 import com.recruitment.platform.job.dto.JobPostingPublicDto;
@@ -9,7 +11,11 @@ import com.recruitment.platform.job.model.JobPosting;
 import com.recruitment.platform.job.model.JobStatus;
 import com.recruitment.platform.job.repository.JobPositionRepository;
 import com.recruitment.platform.job.repository.JobPostingRepository;
+import feign.FeignException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,22 +23,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class JobPostingService {
     private static final int DEFAULT_PAGE_SIZE = 12;
     private static final int MAX_PAGE_SIZE = 50;
+    private static final Logger log = LoggerFactory.getLogger(JobPostingService.class);
 
     private final JobPostingRepository jobPostingRepository;
     private final JobPositionRepository jobPositionRepository;
+    private final CompanyServiceClient companyServiceClient;
 
     public JobPostingService(JobPostingRepository jobPostingRepository,
-                             JobPositionRepository jobPositionRepository) {
+                             JobPositionRepository jobPositionRepository,
+                             CompanyServiceClient companyServiceClient) {
         this.jobPostingRepository = jobPostingRepository;
         this.jobPositionRepository = jobPositionRepository;
+        this.companyServiceClient = companyServiceClient;
     }
 
     @Transactional
@@ -119,13 +131,23 @@ public class JobPostingService {
 
     public Page<JobPostingPublicDto> searchPublicJobs(String searchTerm, Integer page, Integer size) {
         Pageable pageable = resolvePageable(page, size);
+        List<Long> activeCompanyIds = fetchActiveCompanyIds();
+        if (activeCompanyIds.isEmpty()) {
+            return new PageImpl<JobPosting>(Collections.emptyList(), pageable, 0).map(this::convertToDto);
+        }
+
         Page<JobPosting> resultPage;
 
         if (!hasText(searchTerm)) {
-            resultPage = jobPostingRepository.findByStatus(JobStatus.PUBLISHED, pageable);
+            resultPage = jobPostingRepository.findByStatusAndCompanyIdIn(JobStatus.PUBLISHED, activeCompanyIds, pageable);
         } else {
             String normalizedPattern = "%" + searchTerm.trim().toLowerCase(Locale.ROOT) + "%";
-            resultPage = jobPostingRepository.searchPublishedJobsByTitleOrLocation(JobStatus.PUBLISHED, normalizedPattern, pageable);
+            resultPage = jobPostingRepository.searchPublishedJobsByTitleOrLocationAndCompanyIds(
+                    JobStatus.PUBLISHED,
+                    normalizedPattern,
+                    activeCompanyIds,
+                    pageable
+            );
         }
 
         return resultPage.map(this::convertToDto);
@@ -138,6 +160,7 @@ public class JobPostingService {
     public Optional<JobPostingPublicDto> findPublicJobById(Long id) {
         return jobPostingRepository.findById(id)
                 .filter(job -> job.getStatus() == JobStatus.PUBLISHED)
+                .filter(job -> isCompanyActive(job.getCompanyId()))
                 .map(this::convertToDto);
     }
 
@@ -189,5 +212,40 @@ public class JobPostingService {
                 Sort.Order.desc("id")
         );
         return PageRequest.of(safePage, resolvedSize, sort);
+    }
+
+    private List<Long> fetchActiveCompanyIds() {
+        try {
+            List<Long> response = companyServiceClient.getActiveCompanyIds();
+            if (response == null) {
+                return Collections.emptyList();
+            }
+            return response.stream()
+                    .filter(id -> id != null && id > 0)
+                    .distinct()
+                    .collect(Collectors.toList());
+        } catch (FeignException ex) {
+            log.warn("Unable to load active company IDs from company-service", ex);
+            return Collections.emptyList();
+        }
+    }
+
+    private boolean isCompanyActive(Long companyId) {
+        if (companyId == null) {
+            return false;
+        }
+        try {
+            List<CompanyStatusResponse> responses = companyServiceClient.getCompanyStatuses(List.of(companyId));
+            if (responses == null || responses.isEmpty()) {
+                return false;
+            }
+            return responses.stream()
+                    .anyMatch(response ->
+                            companyId.equals(response.companyId())
+                                    && "ACTIVE".equalsIgnoreCase(response.status()));
+        } catch (FeignException ex) {
+            log.warn("Unable to fetch status for company {}", companyId, ex);
+            return false;
+        }
     }
 }

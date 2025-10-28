@@ -1,6 +1,9 @@
 package com.recruitment.platform.company.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,6 +27,9 @@ public class Company {
     private String logoUrl;
     private String companySize;
     private String companyAddress;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CompanyStatus status = CompanyStatus.PENDING;
     private Instant createdAt = Instant.now();
 
 }
