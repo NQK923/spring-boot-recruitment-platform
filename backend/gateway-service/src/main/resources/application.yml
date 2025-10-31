@@ -60,6 +60,10 @@ spring:
           uri: lb://COMPANY-SERVICE
           predicates:
             - Path=/api/internal/companies/users/{userId}/company
+        - id: company-internal-status
+          uri: lb://COMPANY-SERVICE
+          predicates:
+            - Path=/api/internal/companies/status/**
         - id: application-internal
           uri: lb://APPLICATION-SERVICE
           predicates:

@@ -19,9 +19,27 @@ function formatDate(value?: string | null) {
   }
 }
 
+function buildRedirectPath(companyQuery: string, jobQuery: string, accountQuery: string) {
+  const params = new URLSearchParams();
+  if (companyQuery) {
+    params.set("company", companyQuery);
+  }
+  if (jobQuery) {
+    params.set("job", jobQuery);
+  }
+  if (accountQuery) {
+    params.set("account", accountQuery);
+  }
+  const queryString = params.toString();
+  return queryString ? `${ROUTES.superAdminDashboard}?${queryString}` : ROUTES.superAdminDashboard;
+}
+
 async function getSuperAdminDashboard() {
   try {
-    const response = await apiFetch("/api/companies/dashboard/super-admin", { method: "GET" });
+    const response = await apiFetch("/api/companies/dashboard/super-admin", {
+      method: "GET",
+      cache: "no-store",
+    });
     const data = await response.json();
     return data as SuperAdminDashboard;
   } catch {
@@ -31,7 +49,10 @@ async function getSuperAdminDashboard() {
 
 async function getCompanies(): Promise<CompanySummary[]> {
   try {
-    const response = await apiFetch("/api/companies", { method: "GET" });
+    const response = await apiFetch("/api/companies", {
+      method: "GET",
+      cache: "no-store",
+    });
     const data = await response.json();
     if (!Array.isArray(data)) {
       return [];
@@ -51,7 +72,10 @@ async function getCompanies(): Promise<CompanySummary[]> {
 
 async function getJobs(): Promise<JobPosting[]> {
   try {
-    const response = await apiFetch("/api/jobs", { method: "GET" });
+    const response = await apiFetch("/api/jobs", {
+      method: "GET",
+      cache: "no-store",
+    });
     const data = await response.json();
     if (!Array.isArray(data)) {
       return [];
@@ -275,6 +299,8 @@ function CompanyManagementPanel({
   jobQuery: string;
   accountQuery: string;
 }) {
+  const redirectPath = buildRedirectPath(companyQuery, jobQuery, accountQuery);
+
   return (
     <Panel id="companies" variant="surface" padding="lg" className="space-y-6">
       <div className="space-y-3">
@@ -317,7 +343,9 @@ function CompanyManagementPanel({
                 </div>
                 <form action={updateCompanyStatusAction} className="flex flex-wrap items-center gap-2 text-xs">
                   <input type="hidden" name="companyId" value={company.id} />
+                  <input type="hidden" name="redirectTo" value={redirectPath} />
                   <select
+                    key={`company-status-${company.id}-${statusValue}`}
                     name="status"
                     defaultValue={statusValue}
                     className="rounded-lg border border-foreground/20 bg-background px-2 py-1 text-xs uppercase tracking-[0.2em] outline-none transition focus:border-foreground/40"
@@ -354,6 +382,8 @@ function JobManagementPanel({
   jobQuery: string;
   accountQuery: string;
 }) {
+  const redirectPath = buildRedirectPath(companyQuery, jobQuery, accountQuery);
+
   return (
     <Panel id="jobs" variant="surface" padding="lg" className="space-y-6">
       <div className="space-y-3">
@@ -390,7 +420,9 @@ function JobManagementPanel({
                   <td className="px-4 py-3 text-sm text-foreground/60">
                     <form action={updateJobStatusAction} className="flex items-center gap-2">
                       <input type="hidden" name="jobId" value={job.id} />
+                      <input type="hidden" name="redirectTo" value={redirectPath} />
                       <select
+                        key={`job-status-${job.id}-${job.status}`}
                         name="status"
                         defaultValue={job.status}
                         className="rounded-lg border border-foreground/20 bg-background px-2 py-1 text-xs uppercase tracking-[0.2em] outline-none transition focus:border-foreground/40"

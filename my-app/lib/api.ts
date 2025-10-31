@@ -18,8 +18,16 @@ export async function apiFetch(path: string, options: ApiFetchOptions = {}) {
 
   const { skipAuthHeaders, headers, ...rest } = options;
   const requestHeaders = new Headers(headers);
+  const requestInit: RequestInit = { ...rest };
 
-  const body = rest.body;
+  const method = (requestInit.method ?? "GET").toUpperCase();
+  requestInit.method = method;
+
+  if (method === "GET" && requestInit.cache == null) {
+    requestInit.cache = "no-store";
+  }
+
+  const body = requestInit.body;
   const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
   const isBlob = typeof Blob !== "undefined" && body instanceof Blob;
   const isArrayBuffer = typeof ArrayBuffer !== "undefined" && body instanceof ArrayBuffer;
@@ -46,7 +54,7 @@ export async function apiFetch(path: string, options: ApiFetchOptions = {}) {
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...rest,
+    ...requestInit,
     headers: requestHeaders,
     credentials: "include",
   });

@@ -42,6 +42,7 @@ export function DebouncedSearchInput({
 
   useEffect(() => {
     const normalizedInitial = initialValue.trim();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setValue(initialValue);
     setLastApplied(normalizedInitial);
   }, [initialValue]);
