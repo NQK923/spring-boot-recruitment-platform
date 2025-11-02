@@ -1,0 +1,217 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=khanh090203
+      - POSTGRES_MULTIPLE_DATABASES=auth_db,company_db,user_profile_db,job_db,application_db,interview_db,file_storage_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d/create-multiple-databases.sh:/docker-entrypoint-initdb.d/create-multiple-databases.sh
+    networks:
+      - recruitment-net
+
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - recruitment-net
+
+  discovery-service:
+    image: eclipse-temurin:17-jre-jammy
+    container_name: discovery-service
+    working_dir: /app
+    command: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - ./backend/discovery-service/target/discovery-service-1.0.0-SNAPSHOT.jar:/app/app.jar:ro
+    ports:
+      - "8761:8761"
+    networks:
+      - recruitment-net
+
+  gateway-service:
+    image: eclipse-temurin:17-jre-jammy
+    container_name: gateway-service
+    working_dir: /app
+    command: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - ./backend/gateway-service/target/gateway-service-1.0.0-SNAPSHOT.jar:/app/app.jar:ro
+    depends_on:
+      - discovery-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+    ports:
+      - "8080:8080"
+    networks:
+      - recruitment-net
+
+  auth-service:
+    image: eclipse-temurin:17-jre-jammy
+    container_name: auth-service
+    working_dir: /app
+    command: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - ./backend/auth-service/target/auth-service-1.0.0-SNAPSHOT.jar:/app/app.jar:ro
+    depends_on:
+      - discovery-service
+      - postgres
+      - rabbitmq
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/auth_db
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+      - GATEWAY_BASE_URL=http://gateway-service:8080
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+    profiles: ["containerized"]
+    networks:
+      - recruitment-net
+
+  company-service:
+    image: eclipse-temurin:17-jre-jammy
+    container_name: company-service
+    working_dir: /app
+    command: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - ./backend/company-service/target/company-service-1.0.0-SNAPSHOT.jar:/app/app.jar:ro
+    depends_on:
+      - discovery-service
+      - postgres
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/company_db
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+    profiles: ["containerized"]
+    networks:
+      - recruitment-net
+
+  user-profile-service:
+    image: eclipse-temurin:17-jre-jammy
+    container_name: user-profile-service
+    working_dir: /app
+    command: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - ./backend/user-profile-service/target/user-profile-service-1.0.0-SNAPSHOT.jar:/app/app.jar:ro
+    depends_on:
+      - discovery-service
+      - postgres
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/user_profile_db
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+    profiles: ["containerized"]
+    networks:
+      - recruitment-net
+
+  job-service:
+    image: eclipse-temurin:17-jre-jammy
+    container_name: job-service
+    working_dir: /app
+    command: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - ./backend/job-service/target/job-service-1.0.0-SNAPSHOT.jar:/app/app.jar:ro
+    depends_on:
+      - discovery-service
+      - postgres
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/job_db
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+    profiles: ["containerized"]
+    networks:
+      - recruitment-net
+
+  application-service:
+    image: eclipse-temurin:17-jre-jammy
+    container_name: application-service
+    working_dir: /app
+    command: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - ./backend/application-service/target/application-service-1.0.0-SNAPSHOT.jar:/app/app.jar:ro
+    depends_on:
+      - discovery-service
+      - postgres
+      - rabbitmq
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/application_db
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+    profiles: ["containerized"]
+    networks:
+      - recruitment-net
+
+  interview-service:
+    image: eclipse-temurin:17-jre-jammy
+    container_name: interview-service
+    working_dir: /app
+    command: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - ./backend/interview-service/target/interview-service-1.0.0-SNAPSHOT.jar:/app/app.jar:ro
+    depends_on:
+      - discovery-service
+      - postgres
+      - rabbitmq
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/interview_db
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+    profiles: ["containerized"]
+    networks:
+      - recruitment-net
+
+  notification-service:
+    image: eclipse-temurin:17-jre-jammy
+    container_name: notification-service
+    working_dir: /app
+    command: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - ./backend/notification-service/target/notification-service-1.0.0-SNAPSHOT.jar:/app/app.jar:ro
+    depends_on:
+      - discovery-service
+      - rabbitmq
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    profiles: ["containerized"]
+    networks:
+      - recruitment-net
+
+  file-storage-service:
+    image: eclipse-temurin:17-jre-jammy
+    container_name: file-storage-service
+    working_dir: /app
+    command: ["java", "-jar", "/app/app.jar"]
+    volumes:
+      - ./backend/file-storage-service/target/file-storage-service-1.0.0-SNAPSHOT.jar:/app/app.jar:ro
+      - file_storage_data:/uploads
+    depends_on:
+      - discovery-service
+      - postgres
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/file_storage_db
+      - APP_JWT_SECRET=${APP_JWT_SECRET}
+      - app.storage.upload-dir=/uploads
+    profiles: ["containerized"]
+    networks:
+      - recruitment-net
+
+volumes:
+  postgres_data:
+  file_storage_data:
+
+networks:
+  recruitment-net:
+    driver: bridge
