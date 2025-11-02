@@ -34,7 +34,6 @@ export async function apiFetch(path: string, options: ApiFetchOptions = {}) {
   const isUrlEncoded =
     typeof URLSearchParams !== "undefined" && body instanceof URLSearchParams;
   const shouldSetJsonContentType =
-    !skipAuthHeaders &&
     !requestHeaders.has("Content-Type") &&
     body !== undefined &&
     !isFormData &&

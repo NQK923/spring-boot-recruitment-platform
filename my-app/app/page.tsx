@@ -1,656 +1,480 @@
-﻿import type { JSX } from "react";
+import type { JSX } from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
+import { apiFetch } from "@/lib/api";
 import { getCurrentUser } from "@/lib/current-user";
-import { getPublicOverview } from "@/lib/overview";
 import { ROUTES } from "@/lib/routes";
-import type { MeResponse, PublicOverviewResponse } from "@/lib/types";
+import type { JobPostingPublic, PaginatedResponse, MeResponse } from "@/lib/types";
 
-const numberFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
-const compactFormatter = new Intl.NumberFormat("en-US", {
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
+const LATEST_JOBS_LIMIT = 6;
 
-const PIPELINE_LABELS: Record<string, string> = {
-  APPLIED: "Applied",
-  SCREENING: "Screening",
-  INTERVIEWING: "Interviews",
-  OFFERED: "Offers",
-  HIRED: "Hired",
-  REJECTED: "Closed",
+type JourneyStep = {
+  title: string;
+  description: string;
 };
 
-const WORKFLOW_PILLARS = [
+type JourneyTrack = {
+  id: "candidate" | "recruiter";
+  label: string;
+  title: string;
+  caption: string;
+  steps: JourneyStep[];
+};
+
+const JOURNEYS: JourneyTrack[] = [
   {
-    title: "Rollout faster",
-    description: "Super admins spin up companies, invite admins, and supervise dashboards without hopping across tools.",
-    bullets: [
-      "Company Service keeps tenant rosters and templates in sync.",
-      "Gateway routes every API call through a single, secured edge.",
-      "Dashboards surface KPIs from each microservice instantly.",
+    id: "candidate",
+    label: "Candidate",
+    title: "Own every step of your job search",
+    caption: "Manage profiles, apply in minutes, and track progress with live updates.",
+    steps: [
+      {
+        title: "Publish a standout profile",
+        description:
+          "Sync your CV, experience, and skills so recruiters instantly see your strengths.",
+      },
+      {
+        title: "Apply without retyping",
+        description:
+          "Send applications in a few clicks; we reuse the information you already stored.",
+      },
+      {
+        title: "Stay in the loop",
+        description:
+          "Stage updates and interview invites arrive instantly, so you always know what is next.",
+      },
     ],
   },
   {
-    title: "Keep recruiters in flow",
-    description: "Application and Interview Services stream live context so recruiters never lose the thread with candidates.",
-    bullets: [
-      "Application history tracks ownership, tasks, and stage changes.",
-      "Interview Service shares ICS feeds plus reschedule events.",
-      "Notification Service emails updates the moment something shifts.",
-    ],
-  },
-  {
-    title: "Delight candidates",
-    description: "Candidates manage CVs, submit applications, and download interview calendars through polished, secure surfaces.",
-    bullets: [
-      "User Profile Service stores versions and file references.",
-      "Public job board only exposes approved, published postings.",
-      "File Storage Service protects every upload behind JWT checks.",
+    id: "recruiter",
+    label: "Recruiter",
+    title: "Move fast with a single pipeline",
+    caption: "Coordinate hiring, interviews, and comms across the team with shared context.",
+    steps: [
+      {
+        title: "Launch a hiring campaign",
+        description:
+          "Publish jobs, invite teammates, and assign ownership for each company workspace.",
+      },
+      {
+        title: "Prioritize the right talent",
+        description:
+          "Pipeline views highlight notes, tasks, and history to keep the team aligned.",
+      },
+      {
+        title: "Schedule and close with confidence",
+        description:
+          "Calendar feeds, ICS, and automated emails keep candidates cared for at every step.",
+      },
     ],
   },
 ];
 
-const STACK_HIGHLIGHTS = [
+const TESTIMONIALS = [
   {
-    tag: "Gateway",
-    title: "Single policy edge",
-    description: "All traffic flows gateway → service so headers, JWTs, and rate limits stay consistent no matter the client.",
+    quote:
+      "TalentFlow gives me a clear timeline. I can prepare for every interview without waiting on emails.",
+    author: "Minh Anh",
+    role: "Product Designer",
   },
   {
-    tag: "Events",
-    title: "Realtime pulses",
-    description: "RabbitMQ broadcasts (user.invited, application.status.changed, interview.scheduled) keep every dashboard alive.",
+    quote:
+      "Our hiring squad finally works in one place. Notes, tasks, and status changes never get lost.",
+    author: "Phuong Nam",
+    role: "Recruitment Lead",
   },
   {
-    tag: "Audit",
-    title: "Governance ready",
-    description: "Each microservice owns its schema, Liquibase history, and emits signals that surface here with full traceability.",
+    quote:
+      "Rolling TalentFlow out to multiple companies was painless. Governance is tight while each team keeps its own view.",
+    author: "Lan Huong",
+    role: "HR Operations Manager",
   },
 ];
 
-export default async function Home() {
-  const [viewer, overview] = await Promise.all([
-    getCurrentUser(),
-    getPublicOverview().catch(() => null),
-  ]);
+const TRUSTED_COMPANIES = [
+  "Aidata",
+  "BluePeak Studio",
+  "NextOne Labs",
+  "Southwind Group",
+  "TechNext",
+  "Vega Commerce",
+];
 
-  const metrics = overview?.metrics;
-  const pipelineStages = overview?.pipeline.applicationStages ?? [];
-  const jobStatuses = overview?.pipeline.jobStatuses ?? [];
-  const spotlightJobs = overview?.spotlightJobs ?? [];
-  const publishedJobs = jobStatuses.find((status) => status.status === "PUBLISHED")?.count ?? 0;
+async function getLatestJobs(): Promise<JobPostingPublic[]> {
+  try {
+    const params = new URLSearchParams({
+      page: "0",
+      size: String(LATEST_JOBS_LIMIT),
+    });
 
-  const statsCards = [
-    {
-      label: "Active companies",
-      value: metrics?.companies ?? 0,
-      detail: "Hiring teams live this month",
-    },
-    {
-      label: "Candidate profiles",
-      value: metrics?.candidates ?? 0,
-      detail: "Profiles keeping CVs current",
-    },
-    {
-      label: "Open roles",
-      value: publishedJobs,
-      detail: `${formatNumber(metrics?.jobs)} tracked overall`,
-    },
-    {
-      label: "Interviews coordinated",
-      value: metrics?.interviews ?? 0,
-      detail: `${formatNumber(metrics?.upcomingInterviews)} upcoming this week`,
-    },
-  ];
+    const response = await apiFetch(`/api/jobs/public?${params.toString()}`, {
+      method: "GET",
+      skipAuthHeaders: true,
+      cache: "no-store",
+    });
 
-  const stageCounts = pipelineStages.map((stage) => stage.count);
-  const stageMax = stageCounts.length > 0 ? Math.max(...stageCounts) : 1;
-  const totalPipelineCandidates = pipelineStages.reduce((sum, stage) => sum + stage.count, 0);
+    const data = (await response.json()) as PaginatedResponse<JobPostingPublic>;
+    return (data.items ?? [])
+      .filter((item): item is JobPostingPublic => Boolean(item))
+      .slice(0, LATEST_JOBS_LIMIT);
+  } catch {
+    return [];
+  }
+}
 
-  const focusSignals = [
-    {
-      label: "Pipeline coverage",
-      detail:
-        pipelineStages.length > 0
-          ? `${formatNumber(totalPipelineCandidates)} candidates across ${pipelineStages.length} stages`
-          : "Pipeline will populate after your first applications",
-    },
-    {
-      label: "Interview momentum",
-      detail:
-        metrics?.upcomingInterviews && metrics.upcomingInterviews > 0
-          ? `${formatNumber(metrics.upcomingInterviews)} interviews scheduled for the next 7 days`
-          : "Interview Service syncs automatically once recruiters schedule events",
-    },
-    {
-      label: "Job visibility",
-      detail:
-        publishedJobs > 0
-          ? `${formatNumber(publishedJobs)} public postings are live right now`
-          : "Publish a role to showcase it on the public board",
-    },
-  ];
+function formatJobSummary(job: JobPostingPublic) {
+  const base =
+    job.description ?? job.requirements ?? "Recruiters will add more details shortly. Check back soon.";
+  return base.length > 160 ? `${base.slice(0, 157)}…` : base;
+}
 
-  const operationsNotes = [
-    "Gateway Service injects X-Company-ID so downstream APIs always understand tenant context.",
-    "RabbitMQ topics (e.g., application.status.changed) keep this dashboard updated without manual refreshes.",
-    "Every figure comes from its owning microservice and is routed through the gateway for JWT validation.",
-  ];
-
-  const renderPrimaryCtas = (user: MeResponse | null): JSX.Element => {
-    if (!user) {
-      return (
-        <>
-          <Link href={ROUTES.signIn}>
-            <Button size="lg">Start as recruiter</Button>
-          </Link>
-          <Link href={ROUTES.register}>
-            <Button size="lg" variant="secondary">
-              Create candidate account
-            </Button>
-          </Link>
-        </>
-      );
-    }
-
-    const roles = user.roles ?? [];
-    const isSuperAdmin = roles.includes("SUPER_ADMIN");
-    const isCompanyAdmin = roles.includes("COMPANY_ADMIN");
-    const isRecruiter = roles.includes("RECRUITER");
-    const isCandidate = roles.includes("CANDIDATE");
-
-    if (isSuperAdmin) {
-      return (
-        <>
-          <Link href={ROUTES.superAdminDashboard}>
-            <Button size="lg">Open admin console</Button>
-          </Link>
-          <Link href={isRecruiter ? ROUTES.recruiterDashboard : ROUTES.docs}>
-            <Button size="lg" variant="secondary">
-              {isRecruiter ? "Switch to recruiter tools" : "Rollout checklist"}
-            </Button>
-          </Link>
-        </>
-      );
-    }
-
-    if (isCompanyAdmin) {
-      return (
-        <>
-          <Link href={ROUTES.companyAdminDashboard}>
-            <Button size="lg">View company workspace</Button>
-          </Link>
-          <Link href={ROUTES.recruiterDashboard}>
-            <Button size="lg" variant="secondary">
-              Manage hiring pipeline
-            </Button>
-          </Link>
-        </>
-      );
-    }
-
-    if (isRecruiter) {
-      return (
-        <>
-          <Link href={ROUTES.recruiterDashboard}>
-            <Button size="lg">Go to pipeline</Button>
-          </Link>
-          <Link href={ROUTES.jobs}>
-            <Button size="lg" variant="secondary">
-              Browse live roles
-            </Button>
-          </Link>
-        </>
-      );
-    }
-
-    if (isCandidate) {
-      return (
-        <>
-          <Link href={ROUTES.candidateProfile}>
-            <Button size="lg">Update my profile</Button>
-          </Link>
-          <Link href={ROUTES.jobs}>
-            <Button size="lg" variant="secondary">
-              Browse open roles
-            </Button>
-          </Link>
-        </>
-      );
-    }
-
+function renderHeroActions(viewer: MeResponse | null): JSX.Element {
+  if (!viewer) {
     return (
       <>
-        <Link href={ROUTES.signIn}>
-          <Button size="lg">Sign in</Button>
-        </Link>
         <Link href={ROUTES.register}>
+          <Button size="lg">Create candidate profile</Button>
+        </Link>
+        <Link href={ROUTES.signIn}>
           <Button size="lg" variant="secondary">
-            Create account
+            Sign in as recruiter
           </Button>
         </Link>
       </>
     );
-  };
+  }
+
+  const roles = new Set(viewer.roles ?? []);
+
+  if (roles.has("SUPER_ADMIN")) {
+    return (
+      <>
+        <Link href={ROUTES.superAdminDashboard}>
+          <Button size="lg">Open super admin console</Button>
+        </Link>
+        <Link href={ROUTES.docs}>
+          <Button size="lg" variant="secondary">
+            Rollout checklist
+          </Button>
+        </Link>
+      </>
+    );
+  }
+
+  if (roles.has("COMPANY_ADMIN")) {
+    return (
+      <>
+        <Link href={ROUTES.companyAdminDashboard}>
+          <Button size="lg">Enter company workspace</Button>
+        </Link>
+        <Link href={ROUTES.recruiterDashboard}>
+          <Button size="lg" variant="secondary">
+            View recruiting dashboard
+          </Button>
+        </Link>
+      </>
+    );
+  }
+
+  if (roles.has("RECRUITER")) {
+    return (
+      <>
+        <Link href={ROUTES.recruiterDashboard}>
+          <Button size="lg">Open recruiting dashboard</Button>
+        </Link>
+        <Link href={ROUTES.jobs}>
+          <Button size="lg" variant="secondary">
+            Browse live jobs
+          </Button>
+        </Link>
+      </>
+    );
+  }
 
   return (
-    <main className="bg-slate-950 text-white">
-      <HeroSection overview={overview} viewer={viewer} renderPrimaryCtas={renderPrimaryCtas} />
+    <>
+      <Link href={ROUTES.candidateProfile}>
+        <Button size="lg">Go to my profile</Button>
+      </Link>
+      <Link href={ROUTES.jobs}>
+        <Button size="lg" variant="secondary">
+          Browse open jobs
+        </Button>
+      </Link>
+    </>
+  );
+}
 
-      <section className="bg-slate-950">
-        <Container className="py-10">
-          <div className="grid gap-4 md:grid-cols-3">
-            {STACK_HIGHLIGHTS.map((item) => (
-              <Panel
-                padding="sm"
-                key={item.title}
-                className="space-y-2 border border-white/10 bg-white/5 text-white shadow-[0_15px_45px_rgba(2,6,23,0.5)]"
-              >
-                <span className="inline-flex w-fit items-center rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">
-                  {item.tag}
-                </span>
-                <h3 className="text-xl font-semibold">{item.title}</h3>
-                <p className="text-sm text-slate-200">{item.description}</p>
-              </Panel>
-            ))}
-          </div>
-        </Container>
-      </section>
+function LatestJobCard({ job }: { job: JobPostingPublic }) {
+  const location = job.location?.trim() || "Remote or on-site";
+  const workType = job.workType?.trim() || "Full time";
+  const department = job.department?.trim();
+  const summary = formatJobSummary(job);
 
-      <section className="relative overflow-hidden bg-slate-950">
-        <div className="pointer-events-none absolute inset-0 opacity-50">
-          <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-indigo-900/40 to-transparent" />
-          <div className="absolute left-1/2 top-8 h-64 w-64 -translate-x-1/2 rounded-full bg-sky-500/20 blur-3xl" />
+  return (
+    <Panel className="flex h-full flex-col gap-5">
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
+          {workType}
+        </span>
+        <h3 className="text-xl font-semibold text-foreground">{job.title}</h3>
+        <p className="text-sm leading-relaxed text-foreground/70">{summary}</p>
+      </div>
+
+      <div className="mt-auto flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-wrap gap-2 text-xs text-foreground/60">
+          <span className="rounded-full border border-foreground/15 px-3 py-1">{location}</span>
+          {department ? (
+            <span className="rounded-full border border-foreground/15 px-3 py-1">
+              {department}
+            </span>
+          ) : null}
         </div>
-        <Container className="relative space-y-8 py-16">
-          <div className="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
-            <Panel
-              padding="lg"
-              className="space-y-6 border border-white/10 bg-gradient-to-br from-slate-900/90 via-indigo-950/40 to-slate-950/60 text-white shadow-[0_35px_90px_rgba(2,6,23,0.65)]"
-            >
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">Live platform snapshot</p>
-                <h2 className="text-3xl font-semibold">Real activity powering recruiting teams</h2>
-                <p className="text-base text-slate-200">
-                  Auth, Company, Job, Application, and Interview services stream metrics through the gateway, so this view
-                  never drifts from reality.
-                </p>
-              </div>
-              <div className="space-y-4">
-                {focusSignals.map((signal) => (
-                  <div key={signal.label} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">{signal.label}</p>
-                    <p className="mt-2 text-sm text-slate-200">{signal.detail}</p>
-                  </div>
-                ))}
-              </div>
-            </Panel>
+        <Link href={`${ROUTES.jobs}/${job.id}`}>
+          <Button size="sm" variant="secondary">
+            View details
+          </Button>
+        </Link>
+      </div>
+    </Panel>
+  );
+}
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {statsCards.map((metric) => (
-                <Panel
-                  key={metric.label}
-                  padding="lg"
-                  className="space-y-2 border-white/10 bg-slate-900/70 text-white shadow-[0_25px_60px_rgba(2,6,23,0.55)]"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-[0.5em] text-indigo-200">{metric.label}</p>
-                  <p className="text-4xl font-semibold">{formatMetric(metric.value)}</p>
-                  <p className="text-sm text-slate-300">{metric.detail}</p>
-                </Panel>
-              ))}
+export default async function Home() {
+  const [viewer, latestJobs] = await Promise.all([
+    getCurrentUser().catch(() => null),
+    getLatestJobs(),
+  ]);
+
+  return (
+    <main className="flex flex-col gap-24 pb-24">
+      <section className="relative overflow-hidden bg-[linear-gradient(165deg,_rgba(15,23,42,0.9)_0%,_rgba(15,23,42,0.6)_40%,_transparent_100%)]">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.35),_transparent_55%)]" />
+        <Container className="flex flex-col gap-16 py-20 text-white lg:flex-row lg:items-center">
+          <div className="max-w-2xl space-y-6">
+            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">
+              All-in-one recruiting
+            </span>
+            <h1 className="text-4xl font-semibold sm:text-5xl">
+              Bring candidates and hiring teams together on one platform
+            </h1>
+            <p className="text-base leading-relaxed text-white/80">
+              TalentFlow centralizes job publishing, candidate communication, and interview
+              orchestration while the gateway keeps every call secure.
+            </p>
+            <div className="flex flex-wrap gap-3">{renderHeroActions(viewer)}</div>
+            <div className="flex flex-wrap gap-3 text-xs text-white/60">
+              <span className="rounded-full border border-white/20 px-3 py-1">
+                End-to-end JWT protection
+              </span>
+              <span className="rounded-full border border-white/20 px-3 py-1">
+                Ready for multi-company rollouts
+              </span>
+              <span className="rounded-full border border-white/20 px-3 py-1">
+                Pipeline metrics in real time
+              </span>
             </div>
           </div>
-
-          <Panel className="flex flex-col gap-6 border border-white/10 bg-white/5 text-sm text-slate-200 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-2xl space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">Operational notes</p>
-              <p>
-                Every metric is sourced from the owning microservice, validated through JWT headers added by the gateway,
-                and refreshed whenever RabbitMQ signals land.
-              </p>
-            </div>
-            <ul className="space-y-2 md:w-1/2">
-              {operationsNotes.map((note) => (
-                <li key={note} className="flex gap-2">
-                  <span className="mt-1 inline-flex h-1.5 w-1.5 rounded-full bg-indigo-300" />
-                  <span>{note}</span>
+          <Panel variant="glass" className="bg-white/10 text-left text-sm text-white/85 backdrop-blur-md">
+            <div className="space-y-4">
+              <p className="text-lg font-semibold text-white">TalentFlow supports:</p>
+              <ul className="space-y-3">
+                <li className="flex gap-3">
+                  <span className="mt-1 inline-flex h-2.5 w-2.5 flex-shrink-0 rounded-full bg-emerald-400" />
+                  <span>
+                    <strong className="font-semibold text-white">Candidates</strong> manage CVs,
+                    applications, and notifications without losing context.
+                  </span>
                 </li>
-              ))}
-            </ul>
+                <li className="flex gap-3">
+                  <span className="mt-1 inline-flex h-2.5 w-2.5 flex-shrink-0 rounded-full bg-sky-400" />
+                  <span>
+                    <strong className="font-semibold text-white">Recruiters</strong> collaborate on a
+                    shared pipeline with tasks, notes, and interview plans.
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="mt-1 inline-flex h-2.5 w-2.5 flex-shrink-0 rounded-full bg-violet-400" />
+                  <span>
+                    <strong className="font-semibold text-white">Admins</strong> govern multi-company
+                    deployments with dashboards and audit trails.
+                  </span>
+                </li>
+              </ul>
+            </div>
           </Panel>
         </Container>
       </section>
 
-      <section className="bg-slate-950">
-        <Container className="space-y-10 py-16">
-          <div className="flex flex-col gap-3 text-sm text-slate-300 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-300">Pipeline health</p>
-              <p>The order below mirrors the Application Service stages recruiters update all day long.</p>
+      <section>
+        <Container className="space-y-10">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="max-w-2xl space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+                Latest openings
+              </span>
+              <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
+                Fresh roles hiring right now
+              </h2>
+              <p className="text-sm text-foreground/70">
+                Jump into the newest opportunities before anyone else. Sign in to apply instantly and
+                receive progress alerts.
+              </p>
             </div>
-            <div className="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-indigo-200">
-              <span className="rounded-full bg-white/5 px-3 py-1 text-white/80">Live data</span>
-              <span className="rounded-full bg-white/5 px-3 py-1 text-white/80">Gateway secured</span>
-              <span className="rounded-full bg-white/5 px-3 py-1 text-white/80">Auto refreshed</span>
-            </div>
+            <Link href={ROUTES.jobs}>
+              <Button variant="ghost" size="md">
+                Xem t&#x1EA5;t c&#x1EA3;
+              </Button>
+            </Link>
           </div>
 
-          <div className="grid gap-6 xl:grid-cols-[1.4fr,0.8fr]">
-            <Panel
-              padding="lg"
-              className="space-y-6 border border-white/10 bg-gradient-to-b from-white/10 via-white/5 to-transparent text-white"
-            >
-              <div className="space-y-4">
-                <div className="flex flex-col gap-1">
-                  <h3 className="text-2xl font-semibold">Applications in motion</h3>
-                  <p className="text-sm text-slate-300">Totals follow the standard pipeline order recruiters see in dashboards.</p>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {latestJobs.length > 0 ? (
+              latestJobs.map((job) => <LatestJobCard key={job.id} job={job} />)
+            ) : (
+              <Panel className="md:col-span-2 xl:col-span-3">
+                <div className="flex flex-col gap-4 text-center sm:text-left">
+                  <h3 className="text-xl font-semibold text-foreground">
+                    No jobs published yet
+                  </h3>
+                  <p className="text-sm text-foreground/70">
+                    Once recruiters publish openings they will appear here immediately. Check back
+                    soon or sign in to create the first posting.
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
+                    <Link href={ROUTES.recruiterDashboard}>
+                      <Button size="sm">Create a job</Button>
+                    </Link>
+                    <Link href={ROUTES.jobs}>
+                      <Button size="sm" variant="secondary">
+                        Browse job board
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-3 text-xs font-semibold text-slate-200">
-                  <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1">
-                    {formatNumber(totalPipelineCandidates)} candidates tracked
+              </Panel>
+            )}
+          </div>
+        </Container>
+      </section>
+
+      <section>
+        <Container className="space-y-10">
+          <div className="space-y-2 text-center">
+            <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+              How it works
+            </span>
+            <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
+              Purpose-built journeys for every role
+            </h2>
+            <p className="mx-auto max-w-2xl text-sm text-foreground/70">
+              Each microservice shares context through the gateway so candidates, recruiters, and
+              admins always know what comes next.
+            </p>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {JOURNEYS.map((journey) => (
+              <Panel key={journey.id} className="flex h-full flex-col gap-6">
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
+                    {journey.label}
                   </span>
-                  <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1">
-                    {pipelineStages.length} stages active
-                  </span>
-                  <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1">
-                    {formatNumber(metrics?.applications)} lifetime applications
-                  </span>
+                  <h3 className="text-2xl font-semibold text-foreground">{journey.title}</h3>
+                  <p className="text-sm text-foreground/70">{journey.caption}</p>
                 </div>
-              </div>
-
-              {pipelineStages.length === 0 ? (
-                <p className="text-sm text-slate-300">
-                  We haven&#39;t detected any applications yet. As soon as candidates apply, real data will appear here.
-                </p>
-              ) : (
-                <ol className="space-y-4">
-                  {pipelineStages.map((stage, index) => {
-                    const displayName = PIPELINE_LABELS[stage.stage] ?? stage.stage;
-                    const fillPercentage = stage.count > 0 ? Math.max((stage.count / stageMax) * 100, 8) : 4;
-
-                    return (
-                      <li
-                        key={stage.stage}
-                        className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-white/30"
-                      >
-                        <div className="flex items-start gap-4 text-sm">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 font-semibold text-white">
-                            {String(index + 1).padStart(2, "0")}
-                          </div>
-                          <div className="flex-1 space-y-1">
-                            <p className="text-base font-semibold text-white">{displayName}</p>
-                            <p className="text-slate-300">
-                              {stage.count === 1 ? "1 candidate" : `${formatNumber(stage.count)} candidates`}
-                            </p>
-                          </div>
-                          <p className="text-2xl font-semibold text-white">{formatNumber(stage.count)}</p>
-                        </div>
-                        <div className="mt-3 h-1.5 rounded-full bg-white/10">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-sky-500 to-blue-600"
-                            style={{ width: `${fillPercentage}%` }}
-                          />
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ol>
-              )}
-            </Panel>
-
-            <div className="space-y-6">
-              <Panel className="space-y-6 border border-white/10 bg-white/5 text-white">
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-300">Job board</p>
-                  <h3 className="text-2xl font-semibold">Publishing velocity</h3>
-                  <p className="text-sm text-slate-300">Job Service metrics route through the gateway before surfacing here.</p>
-                </div>
-
-                <div className="space-y-3">
-                  {jobStatuses.length === 0 && (
-                    <p className="text-sm text-slate-300">
-                      Job Service hasn&#39;t reported any postings yet. Publish your first role to unlock this view.
-                    </p>
-                  )}
-                  {jobStatuses.map((status) => (
-                    <div key={status.status} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-white">{status.status}</p>
-                          <p className="text-xs text-slate-300">via Job Service metrics</p>
-                        </div>
-                        <p className="text-2xl font-semibold text-white">{formatNumber(status.count)}</p>
+                <div className="space-y-4">
+                  {journey.steps.map((step, index) => (
+                    <div
+                      key={step.title}
+                      className="flex gap-4 rounded-xl border border-border/60 bg-surface-muted px-4 py-4"
+                    >
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[rgba(var(--accent),0.08)] text-sm font-semibold text-[rgb(var(--accent))]">
+                        {(index + 1).toString().padStart(2, "0")}
+                      </div>
+                      <div className="space-y-1">
+                        <p className="font-semibold text-foreground">{step.title}</p>
+                        <p className="text-sm text-foreground/70">{step.description}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-
-                <div className="rounded-2xl border border-dashed border-white/20 px-4 py-3 text-sm text-slate-200">
-                  <span className="font-semibold text-white">{formatNumber(metrics?.upcomingInterviews)}</span> interviews
-                  scheduled for the next week, streamed directly from Interview Service.
-                </div>
-              </Panel>
-
-              <Panel className="space-y-4 border border-white/10 bg-white/5 text-white">
-                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-300">Quick follow-ups</p>
-                <p className="text-sm text-slate-300">
-                  Jump into the workspace that matters most after reviewing these numbers.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Link href={ROUTES.jobs}>
-                    <Button size="sm" variant="secondary" className="bg-white/10 text-white hover:bg-white/20">
-                      View job workspace
-                    </Button>
-                  </Link>
-                  <Link href={ROUTES.recruiterDashboard}>
-                    <Button size="sm" className="bg-indigo-500 text-white hover:bg-indigo-400">
-                      Open recruiter dashboard
-                    </Button>
-                  </Link>
-                </div>
-              </Panel>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      <section className="bg-gradient-to-b from-slate-950 via-slate-940/30 to-slate-950">
-        <Container className="space-y-10 py-16">
-          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-300">Workflow guardrails</p>
-              <h3 className="text-3xl font-semibold text-white">Purpose-built for every role on the platform</h3>
-            </div>
-            <p className="text-sm text-slate-300 md:max-w-xl">
-              Each pillar below mirrors how the backend services collaborate through the gateway so experiences stay
-              consistent for super admins, recruiters, and candidates alike.
-            </p>
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-3">
-            {WORKFLOW_PILLARS.map((pillar) => (
-              <Panel
-                key={pillar.title}
-                className="flex h-full flex-col justify-between space-y-4 border-white/10 bg-white/5 text-white"
-              >
-                <div className="space-y-2">
-                  <h4 className="text-2xl font-semibold">{pillar.title}</h4>
-                  <p className="text-sm text-slate-200">{pillar.description}</p>
-                </div>
-                <ul className="space-y-3 text-sm text-slate-200">
-                  {pillar.bullets.map((item) => (
-                    <li key={item} className="flex gap-3">
-                      <span className="mt-1 inline-flex h-2 w-2 rounded-full bg-gradient-to-r from-sky-500 to-indigo-500" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
               </Panel>
             ))}
           </div>
         </Container>
       </section>
 
-      <section className="bg-slate-950">
-        <Container className="space-y-8 py-16">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-300">Job spotlight</p>
-              <h3 className="text-3xl font-semibold text-white">Latest public roles across tenants</h3>
-              <p className="text-sm text-slate-300">Listings synchronize from the Job Service once recruiters publish them.</p>
+      <section className="bg-surface-muted/60 py-16">
+        <Container className="space-y-12">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl space-y-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+                Social proof
+              </span>
+              <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
+                Teams scaling with TalentFlow
+              </h2>
+              <p className="text-sm text-foreground/70">
+                They automate email nudges, share dashboards with leadership, and keep candidates
+                informed every step of the way.
+              </p>
             </div>
-            <Link href={ROUTES.jobs}>
-              <Button variant="secondary">Browse all published jobs</Button>
-            </Link>
+            <div className="flex flex-wrap gap-3 text-xs text-foreground/60">
+              {TRUSTED_COMPANIES.map((company) => (
+                <span
+                  key={company}
+                  className="rounded-full border border-foreground/15 px-3 py-1"
+                >
+                  {company}
+                </span>
+              ))}
+            </div>
           </div>
-
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {spotlightJobs.length === 0 && (
-              <Panel className="col-span-full border-white/10 bg-white/5 text-center text-sm text-slate-300">
-                No public postings yet. Recruiters can publish roles directly from the job workspace.
-              </Panel>
-            )}
-            {spotlightJobs.map((job) => (
-              <Panel
-                key={job.id}
-                padding="lg"
-                className="flex h-full flex-col justify-between space-y-4 border-white/10 bg-gradient-to-br from-slate-900/70 to-slate-950/20 text-white shadow-[0_25px_60px_rgba(2,6,23,0.55)]"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.5em] text-indigo-200">
-                    <span>Role #{job.id}</span>
-                    <span>{job.companyId ? `Company #${job.companyId}` : "Multi-tenant"}</span>
-                  </div>
-                  <h4 className="text-2xl font-semibold text-white">{job.title}</h4>
-                  <p className="text-sm text-slate-300">
-                    {job.description ?? "Full description available on the job detail page."}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {TESTIMONIALS.map((item) => (
+              <Panel key={item.author} className="flex h-full flex-col justify-between gap-6">
+                <p className="text-sm leading-relaxed text-foreground/80">“{item.quote}”</p>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{item.author}</p>
+                  <p className="text-xs uppercase tracking-[0.24em] text-foreground/50">
+                    {item.role}
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-2 text-xs font-medium text-slate-200">
-                  {job.salaryRange && (
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.salaryRange}</span>
-                  )}
-                  {job.location && <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.location}</span>}
-                  {job.workType && <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.workType}</span>}
-                  {job.department && (
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.department}</span>
-                  )}
-                  {job.level && <span className="rounded-full bg-white/10 px-3 py-1 text-white">{job.level}</span>}
-                </div>
               </Panel>
             ))}
           </div>
         </Container>
       </section>
 
-      <section className="bg-slate-950">
-        <Container className="py-16">
-          <Panel className="flex flex-col gap-6 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 text-white shadow-[0_30px_80px_rgba(2,6,23,0.65)] md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.5em] text-indigo-200">
-                Bring your data with you
-              </p>
-              <h3 className="text-2xl font-semibold">Every event is audited so teams can move with confidence.</h3>
-              <p className="text-sm text-indigo-200">Managed messaging, retention rules, and policy guardrails keep each team safe.</p>
+      <section>
+        <Container>
+          <Panel className="flex flex-col items-center gap-6 bg-gradient-to-r from-[rgba(var(--accent),0.12)] to-transparent text-center">
+            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-accent/70">
+              Ready to get started
+            </span>
+            <h2 className="max-w-2xl text-3xl font-semibold text-foreground sm:text-4xl">
+              Launch a modern recruiting workflow today
+            </h2>
+            <p className="max-w-xl text-sm text-foreground/70">
+              Connect to the gateway, plug in your services, and move from job posting to offer
+              without losing context.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href={ROUTES.register}>
+                <Button size="lg">Start as candidate</Button>
+              </Link>
+              <Link href={ROUTES.signIn}>
+                <Button size="lg" variant="secondary">
+                  Talk to recruiting team
+                </Button>
+              </Link>
             </div>
-            <div className="flex flex-wrap gap-3">{renderPrimaryCtas(viewer)}</div>
           </Panel>
         </Container>
       </section>
     </main>
   );
-}
-
-type HeroSectionProps = {
-  overview: PublicOverviewResponse | null;
-  viewer: MeResponse | null;
-  renderPrimaryCtas: (user: MeResponse | null) => JSX.Element;
-};
-
-function HeroSection({ overview, viewer, renderPrimaryCtas }: HeroSectionProps) {
-  const metrics = overview?.metrics;
-
-  const trustSignals = [
-    `${formatNumber(metrics?.applications)} applications monitored`,
-    `${formatNumber(metrics?.interviews)} interviews orchestrated`,
-    `${formatNumber(metrics?.companies)} multi-tenant companies live`,
-  ];
-
-  return (
-    <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
-      <div className="pointer-events-none absolute inset-0 opacity-70">
-        <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-indigo-500/30 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-sky-500/30 blur-3xl" />
-      </div>
-      <Container className="relative py-16">
-        <div className="grid gap-12 lg:grid-cols-[1.1fr,0.9fr]">
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.6em] text-indigo-200">
-                Recruitment control plane
-              </p>
-              <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
-                Operate every candidate touchpoint from one governance-ready workspace.
-              </h1>
-              <p className="text-lg text-slate-200">
-                The recruitment platform unifies sourcing, collaboration, and interviews so talent teams launch faster
-                without compromising compliance.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-4">{renderPrimaryCtas(viewer)}</div>
-            <div className="flex flex-wrap gap-5 text-sm text-indigo-100">
-              {trustSignals.map((signal) => (
-                <div key={signal} className="flex items-center gap-2">
-                  <span className="inline-flex h-2 w-2 rounded-full bg-gradient-to-r from-sky-400 to-indigo-400" />
-                  <span>{signal}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Panel variant="glass" className="bg-white/5 text-white backdrop-blur">
-            <div className="space-y-6">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">Data lineage</p>
-                <h2 className="mt-2 text-2xl font-semibold">Live performance snapshot</h2>
-                <p className="text-sm text-indigo-100">Figures update automatically as recruiters work their queues.</p>
-              </div>
-              <dl className="space-y-4">
-                <div className="rounded-2xl border border-white/10 p-4">
-                  <dt className="text-sm uppercase tracking-[0.3em] text-indigo-200">Companies</dt>
-                  <dd className="text-3xl font-semibold">{formatMetric(metrics?.companies ?? 0)}</dd>
-                  <p className="text-xs text-indigo-100">Organizations coordinating hiring on Talentflow</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 p-4">
-                  <dt className="text-sm uppercase tracking-[0.3em] text-indigo-200">Applications</dt>
-                  <dd className="text-3xl font-semibold">{formatMetric(metrics?.applications ?? 0)}</dd>
-                  <p className="text-xs text-indigo-100">Application progress recorded across every stage</p>
-                </div>
-                <div className="rounded-2xl border border-white/10 p-4">
-                  <dt className="text-sm uppercase tracking-[0.3em] text-indigo-200">Interviews</dt>
-                  <dd className="text-3xl font-semibold">{formatMetric(metrics?.interviews ?? 0)}</dd>
-                  <p className="text-xs text-indigo-100">Upcoming interviews that keep teams aligned</p>
-                </div>
-              </dl>
-            </div>
-          </Panel>
-        </div>
-      </Container>
-    </section>
-  );
-}
-
-function formatMetric(value: number) {
-  if (value >= 1000) {
-    return compactFormatter.format(value);
-  }
-  return numberFormatter.format(value);
-}
-
-function formatNumber(value: number | undefined | null) {
-  return numberFormatter.format(value ?? 0);
 }
