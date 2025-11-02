@@ -5,9 +5,9 @@ spring:
   application:
     name: APPLICATION-SERVICE
   datasource:
-    url: jdbc:postgresql://${SUPABASE_HOST:localhost}:${SUPABASE_PORT:5432}/${SUPABASE_DB:postgres}?sslmode=require
-    username: ${SUPABASE_USERNAME:postgres}
-    password: ${SUPABASE_PASSWORD:}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${SUPABASE_HOST:aws-1-ap-southeast-1.pooler.supabase.com}:${SUPABASE_PORT:5432}/${SUPABASE_DB:postgres}?currentSchema=application_db&sslmode=require}
+    username: ${SPRING_DATASOURCE_USERNAME:${SUPABASE_USERNAME:postgres.npynwsukvsxrsmxssikx}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${SUPABASE_PASSWORD:}}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-init-sql: >
