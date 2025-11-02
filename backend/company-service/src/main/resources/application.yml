@@ -5,18 +5,29 @@ spring:
   application:
     name: COMPANY-SERVICE
   datasource:
-    url: jdbc:postgresql://localhost:5432/company_db # <-- IMPORTANT: Change this
-    username: postgres
-    password: khanh090203
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db.assfzyuoglllaqwvcetg.supabase.co:5432/postgres?currentSchema=company_db&sslmode=require}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS company_db;
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
+    properties:
+      hibernate:
+        default_schema: company_db
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
+    default-schema: company_db
+    liquibase-schema: company_db
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
 
   security:
     oauth2:
@@ -28,7 +39,6 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
-
 
 app:
   jwt:

@@ -5,16 +5,27 @@ spring:
   application:
     name: INTERVIEW-SERVICE
   datasource:
-    url: jdbc:postgresql://localhost:5432/interview_db
-    username: postgres
-    password: khanh090203
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db.assfzyuoglllaqwvcetg.supabase.co:5432/postgres?currentSchema=interview_db&sslmode=require}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS interview_db;
   jpa:
     hibernate:
       ddl-auto: none
+    properties:
+      hibernate:
+        default_schema: interview_db
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
+    default-schema: interview_db
+    liquibase-schema: interview_db
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
   security:
     oauth2:
       resourceserver:

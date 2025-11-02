@@ -1,21 +1,5 @@
 services:
   # Infrastructure Services
-  postgres:
-    image: postgres:17-alpine
-    container_name: postgres_db
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=khanh090203
-      # Create databases for each service
-      - POSTGRES_MULTIPLE_DATABASES=auth_db,company_db,user_profile_db,job_db,application_db,interview_db,file_storage_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      # Script to create multiple databases
-      - ./docker-entrypoint-initdb.d/create-multiple-databases.sh:/docker-entrypoint-initdb.d/create-multiple-databases.sh
-    networks:
-      - recruitment-net
 
   rabbitmq:
     image: rabbitmq:latest
@@ -65,11 +49,12 @@ services:
     container_name: auth-service
     depends_on:
       - discovery-service
-      - postgres
       - rabbitmq
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/auth_db
+      - SPRING_DATASOURCE_URL=${SUPABASE_JDBC_BASE}?currentSchema=auth_db&sslmode=require
+      - SPRING_DATASOURCE_USERNAME=${SUPABASE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SUPABASE_PASSWORD}
       - SPRING_RABBITMQ_HOST=rabbitmq
       - APP_JWT_SECRET=${APP_JWT_SECRET}
       - GATEWAY_BASE_URL=http://gateway-service:8080
@@ -87,10 +72,12 @@ services:
       args:
         JAR_FILE_PATH: backend/company-service/target/company-service-1.0.0-SNAPSHOT.jar
     container_name: company-service
-    depends_on: [discovery-service, postgres]
+    depends_on: [discovery-service]
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/company_db
+      - SPRING_DATASOURCE_URL=${SUPABASE_JDBC_BASE}?currentSchema=company_db&sslmode=require
+      - SPRING_DATASOURCE_USERNAME=${SUPABASE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SUPABASE_PASSWORD}
       - APP_JWT_SECRET=${APP_JWT_SECRET}
     networks: [recruitment-net]
 
@@ -101,10 +88,12 @@ services:
       args:
         JAR_FILE_PATH: backend/user-profile-service/target/user-profile-service-1.0.0-SNAPSHOT.jar
     container_name: user-profile-service
-    depends_on: [discovery-service, postgres]
+    depends_on: [discovery-service]
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/user_profile_db
+      - SPRING_DATASOURCE_URL=${SUPABASE_JDBC_BASE}?currentSchema=user_profile_db&sslmode=require
+      - SPRING_DATASOURCE_USERNAME=${SUPABASE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SUPABASE_PASSWORD}
       - APP_JWT_SECRET=${APP_JWT_SECRET}
     networks: [recruitment-net]
 
@@ -115,10 +104,12 @@ services:
       args:
         JAR_FILE_PATH: backend/job-service/target/job-service-1.0.0-SNAPSHOT.jar
     container_name: job-service
-    depends_on: [discovery-service, postgres]
+    depends_on: [discovery-service]
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/job_db
+      - SPRING_DATASOURCE_URL=${SUPABASE_JDBC_BASE}?currentSchema=job_db&sslmode=require
+      - SPRING_DATASOURCE_USERNAME=${SUPABASE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SUPABASE_PASSWORD}
       - APP_JWT_SECRET=${APP_JWT_SECRET}
     networks: [recruitment-net]
 
@@ -129,10 +120,12 @@ services:
       args:
         JAR_FILE_PATH: backend/application-service/target/application-service-1.0.0-SNAPSHOT.jar
     container_name: application-service
-    depends_on: [discovery-service, postgres, rabbitmq]
+    depends_on: [discovery-service, rabbitmq]
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/application_db
+      - SPRING_DATASOURCE_URL=${SUPABASE_JDBC_BASE}?currentSchema=application_db&sslmode=require
+      - SPRING_DATASOURCE_USERNAME=${SUPABASE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SUPABASE_PASSWORD}
       - SPRING_RABBITMQ_HOST=rabbitmq
       - APP_JWT_SECRET=${APP_JWT_SECRET}
     networks: [recruitment-net]
@@ -144,10 +137,12 @@ services:
       args:
         JAR_FILE_PATH: backend/interview-service/target/interview-service-1.0.0-SNAPSHOT.jar
     container_name: interview-service
-    depends_on: [discovery-service, postgres, rabbitmq]
+    depends_on: [discovery-service, rabbitmq]
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/interview_db
+      - SPRING_DATASOURCE_URL=${SUPABASE_JDBC_BASE}?currentSchema=interview_db&sslmode=require
+      - SPRING_DATASOURCE_USERNAME=${SUPABASE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SUPABASE_PASSWORD}
       - SPRING_RABBITMQ_HOST=rabbitmq
       - APP_JWT_SECRET=${APP_JWT_SECRET}
     networks: [recruitment-net]
@@ -172,10 +167,12 @@ services:
       args:
         JAR_FILE_PATH: backend/file-storage-service/target/file-storage-service-1.0.0-SNAPSHOT.jar
     container_name: file-storage-service
-    depends_on: [discovery-service, postgres]
+    depends_on: [discovery-service]
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/file_storage_db
+      - SPRING_DATASOURCE_URL=${SUPABASE_JDBC_BASE}?currentSchema=file_storage_db&sslmode=require
+      - SPRING_DATASOURCE_USERNAME=${SUPABASE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SUPABASE_PASSWORD}
       - APP_JWT_SECRET=${APP_JWT_SECRET}
       - app.storage.upload-dir=/uploads # Use a path inside the container
     volumes:
@@ -183,7 +180,6 @@ services:
     networks: [recruitment-net]
 
 volumes:
-  postgres_data:
   file_storage_data:
 
 networks:

@@ -5,16 +5,27 @@ spring:
   application:
     name: USER-PROFILE-SERVICE
   datasource:
-    url: jdbc:postgresql://localhost:5432/user_profile_db
-    username: postgres
-    password: khanh090203
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db.assfzyuoglllaqwvcetg.supabase.co:5432/postgres?currentSchema=user_profile_db&sslmode=require}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS user_profile_db;
   jpa:
     hibernate:
       ddl-auto: none
+    properties:
+      hibernate:
+        default_schema: user_profile_db
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
+    default-schema: user_profile_db
+    liquibase-schema: user_profile_db
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
   security:
     oauth2:
       resourceserver:
