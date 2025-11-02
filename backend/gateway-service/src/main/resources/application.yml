@@ -97,4 +97,4 @@ eureka:
 
 app:
   jwt:
-    secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"
+    secret: ${APP_JWT_SECRET:}

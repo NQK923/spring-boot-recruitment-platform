@@ -5,12 +5,14 @@ spring:
   application:
     name: INTERVIEW-SERVICE
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db.assfzyuoglllaqwvcetg.supabase.co:5432/postgres?currentSchema=interview_db&sslmode=require}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: jdbc:postgresql://${SUPABASE_HOST:localhost}:${SUPABASE_PORT:5432}/${SUPABASE_DB:postgres}?sslmode=require
+    username: ${SUPABASE_USERNAME:postgres}
+    password: ${SUPABASE_PASSWORD:}
     driver-class-name: org.postgresql.Driver
     hikari:
-      connection-init-sql: CREATE SCHEMA IF NOT EXISTS interview_db;
+      connection-init-sql: >
+        CREATE SCHEMA IF NOT EXISTS interview_db;
+        SET search_path TO interview_db;
   jpa:
     hibernate:
       ddl-auto: none
@@ -32,10 +34,10 @@ spring:
         jwt:
           issuer-uri: http://localhost:8080/api/auth # Placeholder
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
   cloud:
     stream:
       defaultBinder: rabbit
@@ -57,4 +59,4 @@ eureka:
 
 app:
   jwt:
-    secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"
+    secret: ${APP_JWT_SECRET:}

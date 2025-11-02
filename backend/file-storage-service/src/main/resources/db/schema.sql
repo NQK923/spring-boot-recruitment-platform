@@ -1,0 +1,1 @@
+CREATE SCHEMA IF NOT EXISTS file_storage_db;

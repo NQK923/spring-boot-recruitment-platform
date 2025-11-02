@@ -5,12 +5,14 @@ spring:
   application:
     name: APPLICATION-SERVICE
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://db.assfzyuoglllaqwvcetg.supabase.co:5432/postgres?currentSchema=application_db&sslmode=require}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: jdbc:postgresql://${SUPABASE_HOST:localhost}:${SUPABASE_PORT:5432}/${SUPABASE_DB:postgres}?sslmode=require
+    username: ${SUPABASE_USERNAME:postgres}
+    password: ${SUPABASE_PASSWORD:}
     driver-class-name: org.postgresql.Driver
     hikari:
-      connection-init-sql: CREATE SCHEMA IF NOT EXISTS application_db;
+      connection-init-sql: >
+        CREATE SCHEMA IF NOT EXISTS application_db;
+        SET search_path TO application_db;
 
 
   liquibase:
@@ -31,10 +33,10 @@ spring:
       schema-locations: classpath:db/schema.sql
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
 
   cloud:
     stream:
@@ -55,7 +57,7 @@ eureka:
 
 app:
   jwt:
-    secret: "7zZFJQIluiTVIZLWJzzEB8Qsd2oWWMCTlvp5WWMffStMaX-Biw04q3pox8z2Fx4BYSQr4MPRZejC-OAj2rsZHg"
+    secret: ${APP_JWT_SECRET:}
 
 security:
   oauth2:
