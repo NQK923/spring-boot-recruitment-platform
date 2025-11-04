@@ -27,6 +27,10 @@ spring:
               uri: lb://JOB-SERVICE
               predicates:
                 - Path=/api/jobs/**
+            - id: chat-service
+              uri: lb://CHAT-SERVICE
+              predicates:
+                - Path=/api/chat/**
             - id: user-profile-service
               uri: lb://USER-PROFILE-SERVICE
               predicates:

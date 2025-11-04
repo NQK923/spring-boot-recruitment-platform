@@ -33,6 +33,7 @@
         <module>backend/interview-service</module>
         <module>backend/notification-service</module>
         <module>backend/file-storage-service</module>
+        <module>backend/chat-service</module>
     </modules>
 
     <dependencyManagement>

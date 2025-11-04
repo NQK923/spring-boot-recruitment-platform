@@ -1,0 +1,35 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: chat-service
+  main:
+    web-application-type: reactive
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET:}
+  chat:
+    rate-limit:
+      requests-per-minute: ${CHAT_REQUESTS_PER_MINUTE:10}
+
+gemini:
+  api-key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-2.5-flash-lite}
+  base-url: ${GEMINI_BASE:https://generativelanguage.googleapis.com/v1beta}
+  temperature: ${GEMINI_TEMPERATURE:0.3}
+  top-p: ${GEMINI_TOP_P:0.9}
+  max-tokens: ${GEMINI_MAX_TOKENS:400}
+  system-prompt-path: classpath:prompts/system.txt
+  company-name: ${COMPANY_NAME:Your Company}
+  careers-url: ${CAREERS_URL:https://careers.example.com}
+  candidate-portal-url: ${CANDIDATE_PORTAL_URL:https://candidate.example.com}
+  policy-url: ${POLICY_URL:https://example.com/policy}
+  privacy-url: ${PRIVACY_URL:https://example.com/privacy}
+  public-hr-mailbox: ${PUBLIC_HR_MAILBOX:hr@example.com}
