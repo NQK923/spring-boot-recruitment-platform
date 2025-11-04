@@ -47,6 +47,10 @@ spring:
             - id: file-storage-internal
               uri: lb://FILE-STORAGE-SERVICE
               predicates:
+                - Path=/api/files/internal/**
+            - id: file-storage-internal-legacy
+              uri: lb://FILE-STORAGE-SERVICE
+              predicates:
                 - Path=/api/internal/files/**
             - id: auth-internal-invites
               uri: lb://AUTH-SERVICE

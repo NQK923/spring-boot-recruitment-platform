@@ -286,7 +286,24 @@ public class AuthService {
                 .orElseGet(() -> createNewSocialUser(email, "google"));
 
         Object nameClaim = payload.get("name");
-        String fullName = nameClaim instanceof String ? (String) nameClaim : null;
+        String fullName = nameClaim instanceof String ? ((String) nameClaim).trim() : null;
+        if (!StringUtils.hasText(fullName)) {
+            Object given = payload.get("given_name");
+            Object family = payload.get("family_name");
+            String givenName = given instanceof String ? ((String) given).trim() : null;
+            String familyName = family instanceof String ? ((String) family).trim() : null;
+            StringBuilder builder = new StringBuilder();
+            if (StringUtils.hasText(givenName)) {
+                builder.append(givenName);
+            }
+            if (StringUtils.hasText(familyName)) {
+                if (builder.length() > 0) {
+                    builder.append(" ");
+                }
+                builder.append(familyName);
+            }
+            fullName = builder.length() > 0 ? builder.toString() : null;
+        }
 
         Object picture = payload.get("picture");
         String avatarUrl = picture instanceof String ? (String) picture : null;
@@ -308,11 +325,14 @@ public class AuthService {
     }
 
     private void syncSocialProfile(Long userId, String fullName, String avatarUrl) {
-        if (!StringUtils.hasText(avatarUrl) && !StringUtils.hasText(fullName)) {
+        String normalizedName = StringUtils.hasText(fullName) ? fullName.trim() : null;
+        String normalizedAvatar = StringUtils.hasText(avatarUrl) ? avatarUrl.trim() : null;
+
+        if (!StringUtils.hasText(normalizedAvatar) && !StringUtils.hasText(normalizedName)) {
             return;
         }
         try {
-            userProfileServiceClient.syncAvatar(userId, new AvatarSyncRequest(avatarUrl, fullName));
+            userProfileServiceClient.syncAvatar(userId, new AvatarSyncRequest(normalizedAvatar, normalizedName));
         } catch (Exception ex) {
             log.warn("Unable to sync social identity for user {}: {}", userId, ex.getMessage());
         }
@@ -335,7 +355,11 @@ public class AuthService {
         User user = userRepository.findByEmail(githubUser.email())
                 .orElseGet(() -> createNewSocialUser(githubUser.email(), "github"));
 
-        syncSocialProfile(user.getId(), githubUser.name(), githubUser.avatarUrl());
+        String displayName = StringUtils.hasText(githubUser.name())
+                ? githubUser.name().trim()
+                : (StringUtils.hasText(githubUser.login()) ? githubUser.login().trim() : null);
+
+        syncSocialProfile(user.getId(), displayName, githubUser.avatarUrl());
 
         return issueSocialJwt(user);
     }

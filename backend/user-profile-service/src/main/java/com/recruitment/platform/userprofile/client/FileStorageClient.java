@@ -20,6 +20,6 @@ public interface FileStorageClient {
     @PostMapping(value = "/api/files/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     AvatarUploadResponse uploadAvatar(@RequestPart("file") MultipartFile file);
 
-    @PostMapping(value = "/api/internal/files/avatars/sync")
+    @PostMapping(value = "/api/files/internal/avatars/sync")
     AvatarUploadResponse syncAvatar(@RequestBody FileAvatarSyncRequest request);
 }

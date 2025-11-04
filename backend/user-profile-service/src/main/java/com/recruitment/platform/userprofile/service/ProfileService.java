@@ -204,22 +204,29 @@ public class ProfileService {
             return;
         }
         Profile profile = getOrCreateProfileEntity(userId);
-        try {
-            if (StringUtils.hasText(sourceUrl) && !StringUtils.hasText(profile.getAvatarPath())) {
+        boolean updated = false;
+
+        if (StringUtils.hasText(fullName) && !StringUtils.hasText(profile.getFullName())) {
+            profile.setFullName(fullName);
+            updated = true;
+            log.info("Synced full name for user {} from external provider.", userId);
+        }
+
+        if (StringUtils.hasText(sourceUrl) && !StringUtils.hasText(profile.getAvatarPath())) {
+            try {
                 AvatarUploadResponse response = fileStorageClient.syncAvatar(new FileAvatarSyncRequest(userId, sourceUrl));
                 if (response != null && StringUtils.hasText(response.publicUrl())) {
                     profile.setAvatarPath(response.publicUrl());
+                    updated = true;
                     log.info("Synced avatar for user {} from external provider.", userId);
                 }
+            } catch (Exception ex) {
+                log.warn("Failed to sync avatar from {} for user {}: {}", sourceUrl, userId, ex.getMessage());
             }
-            if (StringUtils.hasText(fullName) && !StringUtils.hasText(profile.getFullName())) {
-                profile.setFullName(fullName);
-            }
-            if (StringUtils.hasText(profile.getAvatarPath()) || StringUtils.hasText(profile.getFullName())) {
-                profileRepository.save(profile);
-            }
-        } catch (Exception ex) {
-            log.warn("Failed to sync profile identity for user {}: {}", userId, ex.getMessage());
+        }
+
+        if (updated) {
+            profileRepository.save(profile);
         }
     }
 
