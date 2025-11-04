@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
+import { ChatBox } from "@/components/candidate/ChatBox";
 import { apiFetch } from "@/lib/api";
 import { getCurrentUser } from "@/lib/current-user";
 import { ROUTES } from "@/lib/routes";
@@ -306,6 +307,24 @@ export default async function Home() {
               </ul>
             </div>
           </Panel>
+        </Container>
+      </section>
+
+      <section className="bg-surface-muted/40 py-16">
+        <Container className="space-y-8">
+          <div className="space-y-3 text-center sm:text-left">
+            <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+              Ask our assistant
+            </span>
+            <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
+              Trợ lý ứng viên luôn sẵn sàng hỗ trợ
+            </h2>
+            <p className="mx-auto max-w-2xl text-sm text-foreground/70 sm:mx-0">
+              Không cần đăng nhập. Đặt câu hỏi về JD, quy trình tuyển dụng, trạng thái hồ sơ hoặc cách
+              chuẩn bị phỏng vấn và nhận gợi ý ngay lập tức.
+            </p>
+          </div>
+          <ChatBox apiBasePath="/api/chat" />
         </Container>
       </section>
 

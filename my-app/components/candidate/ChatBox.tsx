@@ -49,7 +49,11 @@ function toPayload(messages: ChatMessage[]): ChatPayloadMessage[] {
   return messages.map(({ role, content }) => ({ role, content }));
 }
 
-export function ChatBox() {
+type ChatBoxProps = {
+  apiBasePath?: string;
+};
+
+export function ChatBox({ apiBasePath }: ChatBoxProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [language, setLanguage] = useState<"vi" | "en">("vi");
@@ -144,7 +148,8 @@ export function ChatBox() {
 
   const requestResponse = async (payloadMessages: ChatPayloadMessage[]) => {
     try {
-      const response = await fetch("/api/candidate/chat/message", {
+      const basePath = apiBasePath ?? "/api/candidate/chat";
+      const response = await fetch(`${basePath}/message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -211,7 +216,8 @@ export function ChatBox() {
       });
       const encodedContext = encodeContextPayload(toPayload(context));
 
-      const response = await fetch(`/api/candidate/chat/stream?${params.toString()}`, {
+      const basePath = apiBasePath ?? "/api/candidate/chat";
+      const response = await fetch(`${basePath}/stream?${params.toString()}`, {
         method: "GET",
         headers: encodedContext ? { "X-Context": encodedContext } : undefined,
         signal: controller.signal,
