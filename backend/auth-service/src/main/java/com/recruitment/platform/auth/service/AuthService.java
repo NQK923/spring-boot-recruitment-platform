@@ -285,9 +285,12 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> createNewSocialUser(email, "google"));
 
+        Object nameClaim = payload.get("name");
+        String fullName = nameClaim instanceof String ? (String) nameClaim : null;
+
         Object picture = payload.get("picture");
         String avatarUrl = picture instanceof String ? (String) picture : null;
-        syncAvatarIfAvailable(user.getId(), avatarUrl);
+        syncSocialProfile(user.getId(), fullName, avatarUrl);
 
         return issueSocialJwt(user);
     }
@@ -304,14 +307,14 @@ public class AuthService {
         return tokenProvider.generateToken(authentication);
     }
 
-    private void syncAvatarIfAvailable(Long userId, String avatarUrl) {
-        if (!StringUtils.hasText(avatarUrl)) {
+    private void syncSocialProfile(Long userId, String fullName, String avatarUrl) {
+        if (!StringUtils.hasText(avatarUrl) && !StringUtils.hasText(fullName)) {
             return;
         }
         try {
-            userProfileServiceClient.syncAvatar(userId, new AvatarSyncRequest(avatarUrl));
+            userProfileServiceClient.syncAvatar(userId, new AvatarSyncRequest(avatarUrl, fullName));
         } catch (Exception ex) {
-            log.warn("Unable to sync avatar for user {} using {}: {}", userId, avatarUrl, ex.getMessage());
+            log.warn("Unable to sync social identity for user {}: {}", userId, ex.getMessage());
         }
     }
 
@@ -332,7 +335,7 @@ public class AuthService {
         User user = userRepository.findByEmail(githubUser.email())
                 .orElseGet(() -> createNewSocialUser(githubUser.email(), "github"));
 
-        syncAvatarIfAvailable(user.getId(), githubUser.avatarUrl());
+        syncSocialProfile(user.getId(), githubUser.name(), githubUser.avatarUrl());
 
         return issueSocialJwt(user);
     }

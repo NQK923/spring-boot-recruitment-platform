@@ -1,4 +1,4 @@
 package com.recruitment.platform.auth.client.dto;
 
-public record AvatarSyncRequest(String sourceUrl) {
+public record AvatarSyncRequest(String sourceUrl, String fullName) {
 }

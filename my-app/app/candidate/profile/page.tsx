@@ -133,11 +133,8 @@ export default async function CandidateProfilePage() {
           ) : (
             <div className="space-y-3 text-sm">
               {cvs.map((cv) => {
-                const downloadHref =
-                  cv.downloadUrl ??
-                  (cv.fileId
-                    ? `${process.env.NEXT_PUBLIC_API_BASE_URL ?? ""}/api/files/${cv.fileId}`
-                    : null);
+                  const downloadHref =
+                    cv.downloadUrl ?? (cv.fileId ? `/api/files/${cv.fileId}` : null);
 
                 return (
                   <div

@@ -18,10 +18,11 @@ public class ProfileInternalController {
     @PostMapping("/{userId}/avatar")
     public ResponseEntity<Void> syncAvatar(@PathVariable Long userId,
                                            @RequestBody ProfileAvatarSyncRequest request) {
-        if (request == null || request.sourceUrl() == null || request.sourceUrl().isBlank()) {
+        if (request == null || (request.sourceUrl() == null || request.sourceUrl().isBlank())
+                && (request.fullName() == null || request.fullName().isBlank())) {
             return ResponseEntity.badRequest().build();
         }
-        profileService.syncAvatarFromExternalIfEmpty(userId, request.sourceUrl());
+        profileService.syncAvatarFromExternalIfEmpty(userId, request.sourceUrl(), request.fullName());
         return ResponseEntity.accepted().build();
     }
 }
