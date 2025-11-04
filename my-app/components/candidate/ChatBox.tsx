@@ -400,53 +400,51 @@ export function ChatBox({ apiBasePath }: ChatBoxProps) {
   };
 
   return (
-    <Panel variant="surface" padding="lg" className="mx-auto max-w-4xl space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold text-foreground">Trợ lý ứng viên</h1>
-          <p className="max-w-xl text-sm text-foreground/70">
-            Trao đổi nhanh với trợ lý AI để hiểu rõ JD, quy trình tuyển dụng và những bước tiếp theo trong hành trình ứng tuyển.
-          </p>
+    <Panel
+      variant="surface"
+      padding="lg"
+      className="mx-auto max-w-4xl space-y-6 border-0 bg-gradient-to-br from-surface via-surface-muted/60 to-surface/60 shadow-xl"
+    >
+      <div className="flex flex-col gap-4 rounded-3xl bg-foreground/5 p-6 sm:flex-row sm:items-start sm:justify-between sm:p-8">
+        <div className="space-y-3 text-left">
+          <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-foreground/70">
+            Recruitment-only
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-semibold text-foreground sm:text-[32px]">Trợ lý ứng viên</h1>
+            <p className="max-w-xl text-sm leading-relaxed text-foreground/80">
+              Trao đổi như một cuộc hội thoại thực thụ. Trợ lý AI sẽ giải đáp nhanh gọn về vị trí, quy trình tuyển dụng, hồ sơ
+              của bạn và cung cấp hướng dẫn tiếp theo.
+            </p>
+          </div>
         </div>
-        <span
-          className="inline-flex shrink-0 items-center gap-2 rounded-full border border-foreground/15 bg-foreground/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-foreground/70"
-          title="Chat chỉ trả lời các câu hỏi liên quan đến tuyển dụng, hồ sơ và phỏng vấn."
-        >
-          Recruitment-only
-        </span>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-foreground/20 bg-surface-muted/60 p-4 text-xs text-foreground/60">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[rgba(var(--accent),0.15)] text-[rgba(var(--accent),1)]">
-            ⚡
-          </span>
-          <span>Streaming</span>
-          <label className="relative inline-flex cursor-pointer items-center">
-            <input
-              type="checkbox"
-              className="peer sr-only"
-              checked={streamMode}
-              onChange={(event) => {
-                setStreamMode(event.target.checked);
-                setInfoMessage(null);
-              }}
-            />
-            <span className="h-5 w-9 rounded-full bg-foreground/20 after:absolute after:left-1 after:top-1 after:h-3 after:w-3 after:rounded-full after:bg-white after:transition peer-checked:bg-[rgba(var(--accent),0.45)] peer-checked:after:translate-x-4"></span>
-          </label>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-foreground/70">Ngôn ngữ:</span>
-          <select
-            value={language}
-            onChange={(event) => setLanguage(event.target.value as "vi" | "en")}
-            className="rounded-lg border border-foreground/20 bg-transparent px-2 py-1 text-foreground focus:outline-none focus:ring-2 focus:ring-[rgba(var(--accent),0.35)]"
-          >
-            <option value="vi">Tiếng Việt</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-        <div className="flex items-center gap-2 text-foreground/60">
+        <div className="flex flex-col gap-3 rounded-2xl bg-surface/60 p-4 text-xs text-foreground/70 shadow-[0_8px_20px_rgba(15,23,42,0.08)] sm:min-w-[220px]">
+          <div className="flex items-center justify-between gap-4">
+            <span className="font-semibold tracking-wide text-foreground/80">Streaming</span>
+            <label className="relative inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                className="peer sr-only"
+                checked={streamMode}
+                onChange={(event) => {
+                  setStreamMode(event.target.checked);
+                  setInfoMessage(null);
+                }}
+              />
+              <span className="h-5 w-9 rounded-full bg-foreground/20 after:absolute after:left-1 after:top-1 after:h-3 after:w-3 after:rounded-full after:bg-white after:transition peer-checked:bg-[rgba(var(--accent),0.5)] peer-checked:after:translate-x-4"></span>
+            </label>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="font-semibold tracking-wide text-foreground/80">Ngôn ngữ</span>
+            <select
+              value={language}
+              onChange={(event) => setLanguage(event.target.value as "vi" | "en")}
+              className="rounded-xl border border-foreground/15 bg-surface px-2 py-1 text-foreground focus:outline-none focus:ring-2 focus:ring-[rgba(var(--accent),0.45)]"
+            >
+              <option value="vi">Tiếng Việt</option>
+              <option value="en">English</option>
+            </select>
+          </div>
           <Button variant="ghost" size="sm" onClick={resetConversation} disabled={!messages.length}>
             Làm mới hội thoại
           </Button>
@@ -459,7 +457,7 @@ export function ChatBox({ apiBasePath }: ChatBoxProps) {
             key={faq.prompt}
             type="button"
             onClick={() => handleFaqClick(faq.prompt)}
-            className="rounded-full border border-foreground/15 bg-surface px-3 py-1 text-xs text-foreground/70 transition hover:border-[rgba(var(--accent),0.4)] hover:text-[rgba(var(--accent),1)]"
+            className="rounded-3xl border border-foreground/10 bg-surface px-3 py-1.5 text-xs font-medium text-foreground/75 transition hover:border-[rgba(var(--accent),0.4)] hover:bg-[rgba(var(--accent),0.1)] hover:text-[rgba(var(--accent),1)]"
           >
             {faq.label}
           </button>
@@ -480,34 +478,41 @@ export function ChatBox({ apiBasePath }: ChatBoxProps) {
 
       <div
         ref={scrollRef}
-        className="max-h-[480px] space-y-4 overflow-y-auto rounded-2xl border border-foreground/10 bg-surface/90 p-4"
+        className="max-h-[480px] space-y-4 overflow-y-auto rounded-3xl border border-foreground/10 bg-surface p-4 sm:p-6"
       >
         {messages.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-foreground/15 bg-surface-muted/60 p-6 text-sm text-foreground/60">
-            Bắt đầu hội thoại bằng cách chọn một câu hỏi gợi ý hoặc nhập thắc mắc của bạn về JD, trạng thái hồ sơ, phỏng vấn hay phúc lợi.
+          <div className="rounded-3xl border border-dashed border-foreground/15 bg-surface-muted/60 p-6 text-sm leading-relaxed text-foreground/60 shadow-inner">
+            Bắt đầu hội thoại bằng cách chọn câu hỏi gợi ý hoặc nhập điều bạn muốn biết về JD, trạng thái hồ sơ, phỏng vấn hay phúc lợi. Trợ lý sẽ phản hồi như một cuộc chat thực thụ.
           </div>
         ) : (
           messages.map((message) => (
             <div
               key={message.id}
               className={cx(
-                "flex",
+                "flex w-full",
                 message.role === "user" ? "justify-end" : "justify-start"
               )}
             >
               <div
                 className={cx(
-                  "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
-                  message.role === "user"
-                    ? "bg-[rgba(var(--accent),0.12)] text-[rgba(var(--accent),1)]"
-                    : "bg-foreground/5 text-foreground"
+                  "flex max-w-[75%] flex-col gap-2 text-sm sm:max-w-[70%]",
+                  message.role === "user" ? "items-end text-right" : "items-start text-left"
                 )}
               >
-                {message.content.split("\n").map((line, index) => (
-                  <p key={`${message.id}-${index}`} className="whitespace-pre-wrap">
-                    {line}
-                  </p>
-                ))}
+                <div
+                  className={cx(
+                    "relative w-full rounded-3xl px-5 py-3 text-sm shadow-[0_12px_30px_rgba(15,23,42,0.12)] transition-[transform,box-shadow] duration-200 hover:shadow-[0_18px_36px_rgba(15,23,42,0.12)]",
+                    message.role === "user"
+                      ? "rounded-br-md bg-gradient-to-br from-[rgba(var(--accent),0.85)] to-[rgba(var(--accent),0.6)] text-white"
+                      : "rounded-bl-md bg-surface-muted/90 text-foreground"
+                  )}
+                >
+                  {message.content.split("\n").map((line, index) => (
+                    <p key={`${message.id}-${index}`} className="whitespace-pre-wrap leading-relaxed">
+                      {line}
+                    </p>
+                  ))}
+                </div>
               </div>
             </div>
           ))
@@ -525,7 +530,7 @@ export function ChatBox({ apiBasePath }: ChatBoxProps) {
         />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-xs text-foreground/50">
-            Hệ thống không lưu hội thoại. Mỗi lần gửi, lịch sử 4 lượt gần nhất sẽ được truyền kèm để giữ ngữ cảnh.
+            Hệ thống không lưu hội thoại. Mỗi lần gửi, tối đa 4 lượt gần nhất sẽ được đính kèm để giữ ngữ cảnh.
           </p>
           <Button type="submit" size="lg" disabled={isLoading || !input.trim()}>
             {isLoading ? "Đang gửi..." : streamMode ? "Gửi & Stream" : "Gửi"}
@@ -535,3 +540,4 @@ export function ChatBox({ apiBasePath }: ChatBoxProps) {
     </Panel>
   );
 }
+

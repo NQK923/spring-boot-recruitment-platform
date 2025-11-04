@@ -37,6 +37,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
             "/api/internal/**",
             "/api/files/internal/**",
             "/api/jobs/public/**",
+            "/api/chat/**",
             "/actuator/**"
     };
 

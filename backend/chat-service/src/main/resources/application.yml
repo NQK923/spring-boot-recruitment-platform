@@ -6,6 +6,11 @@ spring:
     name: chat-service
   main:
     web-application-type: reactive
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
 eureka:
   client:
@@ -25,11 +30,11 @@ gemini:
   base-url: ${GEMINI_BASE:https://generativelanguage.googleapis.com/v1beta}
   temperature: ${GEMINI_TEMPERATURE:0.3}
   top-p: ${GEMINI_TOP_P:0.9}
-  max-tokens: ${GEMINI_MAX_TOKENS:400}
+  max-tokens: ${GEMINI_MAX_TOKENS:}
   system-prompt-path: classpath:prompts/system.txt
-  company-name: ${COMPANY_NAME:Your Company}
-  careers-url: ${CAREERS_URL:https://careers.example.com}
-  candidate-portal-url: ${CANDIDATE_PORTAL_URL:https://candidate.example.com}
-  policy-url: ${POLICY_URL:https://example.com/policy}
-  privacy-url: ${PRIVACY_URL:https://example.com/privacy}
-  public-hr-mailbox: ${PUBLIC_HR_MAILBOX:hr@example.com}
+  company-name: ${COMPANY_NAME:}
+  careers-url: ${CAREERS_URL:}
+  candidate-portal-url: ${CANDIDATE_PORTAL_URL:}
+  policy-url: ${POLICY_URL:}
+  privacy-url: ${PRIVACY_URL:}
+  public-hr-mailbox: ${PUBLIC_HR_MAILBOX:}
