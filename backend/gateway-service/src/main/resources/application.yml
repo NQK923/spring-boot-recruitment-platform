@@ -4,90 +4,94 @@ server:
 spring:
   application:
     name: gateway-service
+  main:
+    web-application-type: reactive
   cloud:
     gateway:
-      routes:
-        - id: auth-service
-          uri: lb://AUTH-SERVICE
-          predicates:
-            - Path=/api/auth/**
-        - id: company-service
-          uri: lb://COMPANY-SERVICE
-          predicates:
-            - Path=/api/companies/**
-        - id: application-service-job-applications
-          uri: lb://APPLICATION-SERVICE
-          predicates:
-            - Path=/api/jobs/*/applications
-        - id: job-service
-          uri: lb://JOB-SERVICE
-          predicates:
-            - Path=/api/jobs/**
-        - id: user-profile-service
-          uri: lb://USER-PROFILE-SERVICE
-          predicates:
-            - Path=/api/profiles/**
-        - id: application-service
-          uri: lb://APPLICATION-SERVICE
-          predicates:
-            - Path=/api/applications/**
-        - id: interview-service
-          uri: lb://INTERVIEW-SERVICE
-          predicates:
-            - Path=/api/interviews/**
-        # Internal routes - exposed for service-to-service communication via gateway
-        - id: user-profile-internal
-          uri: lb://USER-PROFILE-SERVICE
-          predicates:
-            - Path=/api/internal/profiles/**
-        - id: file-storage-internal
-          uri: lb://FILE-STORAGE-SERVICE
-          predicates:
-            - Path=/api/internal/files/**
-        - id: auth-internal-invites
-          uri: lb://AUTH-SERVICE
-          predicates:
-            - Path=/api/internal/auth/invites
-        - id: auth-internal-users-batch
-          uri: lb://AUTH-SERVICE
-          predicates:
-            - Path=/api/internal/auth/users/batch
-        - id: company-internal-users
-          uri: lb://COMPANY-SERVICE
-          predicates:
-            - Path=/api/internal/companies/users
-        - id: company-internal-users-company
-          uri: lb://COMPANY-SERVICE
-          predicates:
-            - Path=/api/internal/companies/users/{userId}/company
-        - id: company-internal-status
-          uri: lb://COMPANY-SERVICE
-          predicates:
-            - Path=/api/internal/companies/status/**
-        - id: application-internal
-          uri: lb://APPLICATION-SERVICE
-          predicates:
-            - Path=/api/internal/applications/**
-        - id: job-internal
-          uri: lb://JOB-SERVICE
-          predicates:
-            - Path=/api/internal/jobs/**
-        - id: interview-internal
-          uri: lb://INTERVIEW-SERVICE
-          predicates:
-            - Path=/api/internal/interviews/**
-        - id: files-upload # Route for file uploads
-          uri: lb://FILE-STORAGE-SERVICE
-          predicates:
-            - Path=/api/files/**
-      locator:
-        enabled: false
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
+      server:
+        webflux:
+          routes:
+            - id: auth-service
+              uri: lb://AUTH-SERVICE
+              predicates:
+                - Path=/api/auth/**
+            - id: company-service
+              uri: lb://COMPANY-SERVICE
+              predicates:
+                - Path=/api/companies/**
+            - id: application-service-job-applications
+              uri: lb://APPLICATION-SERVICE
+              predicates:
+                - Path=/api/jobs/*/applications
+            - id: job-service
+              uri: lb://JOB-SERVICE
+              predicates:
+                - Path=/api/jobs/**
+            - id: user-profile-service
+              uri: lb://USER-PROFILE-SERVICE
+              predicates:
+                - Path=/api/profiles/**
+            - id: application-service
+              uri: lb://APPLICATION-SERVICE
+              predicates:
+                - Path=/api/applications/**
+            - id: interview-service
+              uri: lb://INTERVIEW-SERVICE
+              predicates:
+                - Path=/api/interviews/**
+            # Internal routes - exposed for service-to-service communication via gateway
+            - id: user-profile-internal
+              uri: lb://USER-PROFILE-SERVICE
+              predicates:
+                - Path=/api/internal/profiles/**
+            - id: file-storage-internal
+              uri: lb://FILE-STORAGE-SERVICE
+              predicates:
+                - Path=/api/internal/files/**
+            - id: auth-internal-invites
+              uri: lb://AUTH-SERVICE
+              predicates:
+                - Path=/api/internal/auth/invites
+            - id: auth-internal-users-batch
+              uri: lb://AUTH-SERVICE
+              predicates:
+                - Path=/api/internal/auth/users/batch
+            - id: company-internal-users
+              uri: lb://COMPANY-SERVICE
+              predicates:
+                - Path=/api/internal/companies/users
+            - id: company-internal-users-company
+              uri: lb://COMPANY-SERVICE
+              predicates:
+                - Path=/api/internal/companies/users/{userId}/company
+            - id: company-internal-status
+              uri: lb://COMPANY-SERVICE
+              predicates:
+                - Path=/api/internal/companies/status/**
+            - id: application-internal
+              uri: lb://APPLICATION-SERVICE
+              predicates:
+                - Path=/api/internal/applications/**
+            - id: job-internal
+              uri: lb://JOB-SERVICE
+              predicates:
+                - Path=/api/internal/jobs/**
+            - id: interview-internal
+              uri: lb://INTERVIEW-SERVICE
+              predicates:
+                - Path=/api/internal/interviews/**
+            - id: files-upload # Route for file uploads
+              uri: lb://FILE-STORAGE-SERVICE
+              predicates:
+                - Path=/api/files/**
+          locator:
+            enabled: false
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origins: "*"
+                allowed-methods: "*"
+                allowed-headers: "*"
 
 eureka:
   client:
