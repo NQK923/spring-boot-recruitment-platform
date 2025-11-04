@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20241104-01-add-avatar-and-storage-columns" author="codex">
+        <addColumn tableName="profiles">
+            <column name="avatar_path" type="VARCHAR(512)"/>
+        </addColumn>
+
+        <addColumn tableName="cvs">
+            <column name="storage_path" type="VARCHAR(512)"/>
+            <column name="storage_bucket" type="VARCHAR(128)"/>
+            <column name="file_size" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
