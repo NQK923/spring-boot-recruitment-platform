@@ -69,7 +69,7 @@ public class StorageService {
         String extension = resolveExtension(originalFileName, file.getContentType(), "jpg");
         String objectPath = "user-" + uploaderId + "/avatars/avatar-" + UUID.randomUUID() + "." + extension;
 
-        uploadToSupabase(file, avatarBucket, objectPath, true);
+        SupabaseUploadResult uploadResult = uploadToSupabase(file, avatarBucket, objectPath, true);
 
         FileMetadata metadata = new FileMetadata();
         metadata.setId(UUID.randomUUID());

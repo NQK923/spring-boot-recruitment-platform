@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { AvatarUploader } from "@/components/profile/avatar-uploader";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
@@ -509,12 +509,12 @@ export default async function CandidatePortalPage() {
                 className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-foreground">
+                    <span className="font-medium text-foreground">
                     Application #{interview.applicationId}
-                  </span>
-                  <span className="text-xs text-foreground/60">
+                    </span>
+                    <span className="text-xs text-foreground/60">
                     {formatDateTime(interview.scheduleTime, interview.timezone)}
-                  </span>
+                    </span>
                 </div>
                 <p className="text-xs text-foreground/50">
                   {interview.format ?? "Format TBD"}
