@@ -88,6 +88,7 @@ export type Profile = {
   fullName: string | null;
   phoneNumber: string | null;
   summary: string | null;
+  avatarUrl: string | null;
   experiences: Experience[];
   education: Education[];
   skills: Skill[];
@@ -119,9 +120,11 @@ export type Skill = {
 export type Cv = {
   id: number;
   fileId: string | null;
+  downloadUrl: string | null;
   versionName: string;
   isDefault: boolean;
   createdAt: string;
+  fileSize: number | null;
 };
 
 export type MeResponse = {

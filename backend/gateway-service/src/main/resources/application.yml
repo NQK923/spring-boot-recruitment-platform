@@ -36,14 +36,14 @@ spring:
           predicates:
             - Path=/api/interviews/**
         # Internal routes - exposed for service-to-service communication via gateway
-        - id: user-profile-internal-batch
+        - id: user-profile-internal
           uri: lb://USER-PROFILE-SERVICE
           predicates:
-            - Path=/api/internal/profiles/batch
-        - id: user-profile-internal-metrics
-          uri: lb://USER-PROFILE-SERVICE
+            - Path=/api/internal/profiles/**
+        - id: file-storage-internal
+          uri: lb://FILE-STORAGE-SERVICE
           predicates:
-            - Path=/api/internal/profiles/metrics/**
+            - Path=/api/internal/files/**
         - id: auth-internal-invites
           uri: lb://AUTH-SERVICE
           predicates:
@@ -79,8 +79,7 @@ spring:
         - id: files-upload # Route for file uploads
           uri: lb://FILE-STORAGE-SERVICE
           predicates:
-            - Path=/api/files/upload
-      discovery:
+            - Path=/api/files/**
         locator:
           enabled: false
       globalcors:

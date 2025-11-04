@@ -7,7 +7,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.recruitment.platform.auth.client.CompanyServiceClient;
+import com.recruitment.platform.auth.client.UserProfileServiceClient;
 import com.recruitment.platform.auth.client.dto.AddUserToCompanyRequest;
+import com.recruitment.platform.auth.client.dto.AvatarSyncRequest;
 import com.recruitment.platform.auth.client.dto.UserInvitedEvent;
 import com.recruitment.platform.auth.dto.*;
 import com.recruitment.platform.auth.event.PasswordResetRequestedEvent;
@@ -64,6 +66,7 @@ public class AuthService {
     private final EmailVerificationTokenRepository emailVerificationTokenRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final CompanyServiceClient companyServiceClient;
+    private final UserProfileServiceClient userProfileServiceClient;
     private final StreamBridge streamBridge;
     private final GoogleIdTokenVerifier googleVerifier;
     private final JwtTokenProvider tokenProvider;
@@ -81,7 +84,18 @@ public class AuthService {
     @Value("${spring.security.oauth2.client.registration.github.client-secret}")
     private String githubClientSecret;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, InvitationRepository invitationRepository, RoleRepository roleRepository, EmailVerificationTokenRepository emailVerificationTokenRepository, PasswordResetTokenRepository passwordResetTokenRepository, CompanyServiceClient companyServiceClient, StreamBridge streamBridge, GoogleIdTokenVerifier googleVerifier, JwtTokenProvider tokenProvider, RestTemplate restTemplate) {
+    public AuthService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       InvitationRepository invitationRepository,
+                       RoleRepository roleRepository,
+                       EmailVerificationTokenRepository emailVerificationTokenRepository,
+                       PasswordResetTokenRepository passwordResetTokenRepository,
+                       CompanyServiceClient companyServiceClient,
+                       UserProfileServiceClient userProfileServiceClient,
+                       StreamBridge streamBridge,
+                       GoogleIdTokenVerifier googleVerifier,
+                       JwtTokenProvider tokenProvider,
+                       RestTemplate restTemplate) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.invitationRepository = invitationRepository;
@@ -89,6 +103,7 @@ public class AuthService {
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.companyServiceClient = companyServiceClient;
+        this.userProfileServiceClient = userProfileServiceClient;
         this.streamBridge = streamBridge;
         this.googleVerifier = googleVerifier;
         this.tokenProvider = tokenProvider;
@@ -262,12 +277,17 @@ public class AuthService {
         GoogleIdToken.Payload payload = idToken.getPayload();
         String email = payload.getEmail();
 
-        return loginOrCreateSocialUser(email, "google");
-    }
+        if (!StringUtils.hasText(email)) {
+            throw new IllegalArgumentException("Google account is missing an email address.");
+        }
 
-    private String loginOrCreateSocialUser(String email, String provider) {
         User user = userRepository.findByEmail(email)
-                .orElseGet(() -> createNewSocialUser(email, provider));
+                .orElseGet(() -> createNewSocialUser(email, "google"));
+
+        Object picture = payload.get("picture");
+        String avatarUrl = picture instanceof String ? (String) picture : null;
+        syncAvatarIfAvailable(user.getId(), avatarUrl);
+
         return issueSocialJwt(user);
     }
 
@@ -281,6 +301,17 @@ public class AuthService {
         );
 
         return tokenProvider.generateToken(authentication);
+    }
+
+    private void syncAvatarIfAvailable(Long userId, String avatarUrl) {
+        if (!StringUtils.hasText(avatarUrl)) {
+            return;
+        }
+        try {
+            userProfileServiceClient.syncAvatar(userId, new AvatarSyncRequest(avatarUrl));
+        } catch (Exception ex) {
+            log.warn("Unable to sync avatar for user {} using {}: {}", userId, avatarUrl, ex.getMessage());
+        }
     }
 
     @Transactional
@@ -299,6 +330,8 @@ public class AuthService {
         // 3. Find or create user in local DB
         User user = userRepository.findByEmail(githubUser.email())
                 .orElseGet(() -> createNewSocialUser(githubUser.email(), "github"));
+
+        syncAvatarIfAvailable(user.getId(), githubUser.avatarUrl());
 
         return issueSocialJwt(user);
     }

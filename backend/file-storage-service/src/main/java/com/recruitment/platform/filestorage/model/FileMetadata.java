@@ -20,6 +20,12 @@ public class FileMetadata {
     private Long size;
     private Long uploaderId;
     private String storagePath;
+    @Column(name = "storage_bucket")
+    private String storageBucket;
+    @Column(name = "public_file")
+    private Boolean publicFile = Boolean.FALSE;
+    @Column(name = "public_url")
+    private String publicUrl;
     private Instant createdAt = Instant.now();
 
 }

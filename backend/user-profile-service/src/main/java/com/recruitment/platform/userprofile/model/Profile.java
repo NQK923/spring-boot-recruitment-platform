@@ -17,6 +17,8 @@ public class Profile {
     private String fullName;
     private String phoneNumber;
     private String summary;
+    @Column(name = "avatar_path")
+    private String avatarPath;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_user_id")

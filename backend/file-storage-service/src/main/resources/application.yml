@@ -48,5 +48,11 @@ eureka:
 app:
   jwt:
     secret: ${APP_JWT_SECRET:}
+
+supabase:
+  project-url: ${SUPABASE_PROJECT_URL:https://npynwsukvsxrsmxssikx.supabase.co}
+  service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
   storage:
-    upload-dir: "C:/recruitment-uploads" # <-- IMPORTANT: Create this directory and ensure it's writable
+    avatar-bucket: ${SUPABASE_AVATAR_BUCKET:avatars}
+    cv-bucket: ${SUPABASE_CV_BUCKET:cvs}
+    signed-url-expiry-seconds: ${SUPABASE_STORAGE_SIGNED_URL_TTL:600}

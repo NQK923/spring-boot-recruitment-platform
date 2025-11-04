@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+import Link from "next/link";
+import { AvatarUploader } from "@/components/profile/avatar-uploader";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
@@ -145,6 +146,19 @@ export default async function CandidatePortalPage() {
     getProfile(),
   ]);
 
+  const profileData: Profile =
+    profile ?? {
+      userId: 0,
+      fullName: null,
+      avatarUrl: null,
+      phoneNumber: null,
+      summary: null,
+      experiences: [],
+      education: [],
+      skills: [],
+      cvs: [],
+    };
+
   const upcomingInterviews = interviews
     .slice()
     .sort((a, b) => {
@@ -154,84 +168,73 @@ export default async function CandidatePortalPage() {
     })
     .slice(0, 5);
 
-  const sortedExperiences = profile?.experiences
-    ? profile.experiences
-        .slice()
-        .sort((a, b) => {
-          const aTime = a.startDate ? new Date(a.startDate).getTime() : 0;
-          const bTime = b.startDate ? new Date(b.startDate).getTime() : 0;
-          return bTime - aTime;
-        })
-    : [];
-
-  const sortedEducation = profile?.education
-    ? profile.education
-        .slice()
-        .sort((a, b) => {
-          const aTime = a.startDate ? new Date(a.startDate).getTime() : 0;
-          const bTime = b.startDate ? new Date(b.startDate).getTime() : 0;
-          return bTime - aTime;
-        })
-    : [];
-
-  const displaySkills = profile?.skills
-    ? profile.skills.slice().sort((a, b) => {
-        const nameA = (a.skillName || "").toLowerCase();
-        const nameB = (b.skillName || "").toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      })
-    : [];
-
-  const nextInterview = upcomingInterviews[0] ?? null;
-  const cvs = profile?.cvs ?? [];
-  const sortedCvs = cvs
+  const sortedExperiences = profileData.experiences
     .slice()
     .sort((a, b) => {
-      const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return bDate - aDate;
+      const aTime = a.startDate ? new Date(a.startDate).getTime() : 0;
+      const bTime = b.startDate ? new Date(b.startDate).getTime() : 0;
+      return bTime - aTime;
+    });
+
+  const sortedEducation = profileData.education
+    .slice()
+    .sort((a, b) => {
+      const aTime = a.startDate ? new Date(a.startDate).getTime() : 0;
+      const bTime = b.startDate ? new Date(b.startDate).getTime() : 0;
+      return bTime - aTime;
+    });
+
+  const displaySkills = profileData.skills
+    .slice()
+    .sort((a, b) => {
+      const nameA = (a.skillName || "").toLowerCase();
+      const nameB = (b.skillName || "").toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
+
+  const sortedCvs = profileData.cvs
+    .slice()
+    .sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
     });
 
   return (
-    <Container className="max-w-5xl space-y-10">
-      <Panel variant="glass" padding="lg" className="space-y-6">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-              Candidate workspace
-            </span>
-            <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
-              Keep your applications and interviews on track.
-            </h1>
-            <p className="max-w-2xl text-sm text-foreground/70">
-              Track your applications, manage CV versions, and stay informed about interviews--all from one
-              streamlined workspace.
-            </p>
+    <Container className="space-y-8 py-10">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <h1 className="text-3xl font-semibold text-foreground">Candidate workspace</h1>
+          <p className="text-sm text-foreground/60">
+            Track your applications, keep your profile current, and stay ready for what&apos;s next.
+          </p>
+        </div>
+        <Button asChild variant="outline" className="self-start">
+          <Link href={ROUTES.candidateProfile}>Manage profile</Link>
+        </Button>
+      </div>
+
+      <Panel variant="surface" padding="lg" className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">Your progress</h2>
+            <p className="text-sm text-foreground/60">A quick snapshot across applications, CVs, and interviews.</p>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href={ROUTES.jobs}>
-              <Button size="sm" variant="secondary">
-                Browse roles
-              </Button>
-            </Link>
-            <Link href={ROUTES.candidateProfile}>
-              <Button size="sm">Manage profile</Button>
-            </Link>
-          </div>
+          <Link href={ROUTES.jobs} className="text-sm font-semibold text-foreground hover:underline">
+            Browse jobs
+          </Link>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-              Applications
-            </p>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Applications</p>
             <p className="mt-2 text-2xl font-semibold text-foreground">{applications.length}</p>
             <p className="text-xs text-foreground/60">Active submissions across companies</p>
           </div>
           <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">CV versions</p>
-            <p className="mt-2 text-2xl font-semibold text-foreground">{cvs.length}</p>
+            <p className="mt-2 text-2xl font-semibold text-foreground">{sortedCvs.length}</p>
             <p className="text-xs text-foreground/60">Tailored resumes ready to attach</p>
           </div>
           <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-4">
@@ -240,22 +243,22 @@ export default async function CandidatePortalPage() {
             <p className="text-xs text-foreground/60">Scheduled conversations ahead</p>
           </div>
         </div>
-        {nextInterview ? (
+        {upcomingInterviews[0] ? (
           <div className="flex flex-col gap-3 rounded-2xl border border-accent/20 bg-accent/10 px-5 py-4 text-sm text-accent sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.28em]">Next interview</p>
               <p className="mt-1 font-semibold text-foreground">
-                Application #{nextInterview.applicationId}
+                Application #{upcomingInterviews[0].applicationId}
               </p>
               <p className="text-xs text-foreground/60">
-                {formatDateTime(nextInterview.scheduleTime, nextInterview.timezone)}
+                {formatDateTime(upcomingInterviews[0].scheduleTime, upcomingInterviews[0].timezone)}
                 {" - "}
-                {nextInterview.format ?? "Format TBD"}
+                {upcomingInterviews[0].format ?? "Format TBD"}
               </p>
             </div>
             <p className="text-xs text-foreground/60">
-              {nextInterview.locationOrLink
-                ? nextInterview.locationOrLink
+              {upcomingInterviews[0].locationOrLink
+                ? upcomingInterviews[0].locationOrLink
                 : "We will share the location or link soon."}
             </p>
           </div>
@@ -270,120 +273,118 @@ export default async function CandidatePortalPage() {
           </p>
         </div>
 
-        {profile ? (
-          <div className="space-y-6 text-sm">
-            <div className="grid gap-4 md:grid-cols-3">
+        <div className="space-y-6 text-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <AvatarUploader avatarUrl={profileData.avatarUrl} fullName={profileData.fullName} />
+            <div className="grid w-full gap-4 md:grid-cols-2">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Full name</p>
                 <p className="mt-1 font-semibold text-foreground">
-                  {profile.fullName || "Add your name"}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Candidate ID</p>
-                <p className="mt-1 font-semibold text-foreground">
-                  {profile.userId ? `Candidate #${profile.userId}` : "Provided at sign-in"}
+                  {profileData.fullName || "Add your name"}
                 </p>
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Phone</p>
                 <p className="mt-1 font-semibold text-foreground">
-                  {profile.phoneNumber || "Add a contact number"}
+                  {profileData.phoneNumber || "Add a contact number"}
                 </p>
               </div>
             </div>
+          </div>
 
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Summary</p>
+            <p className="mt-2 whitespace-pre-wrap text-sm text-foreground/70">
+              {profileData.summary ||
+                "Keep recruiters informed by summarizing your background and goals."}
+            </p>
+          </div>
+
+          {displaySkills.length > 0 ? (
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Summary</p>
-              <p className="mt-2 whitespace-pre-wrap text-sm text-foreground/70">
-                {profile.summary || "Keep recruiters informed by summarizing your background and goals."}
-              </p>
-            </div>
-
-            {displaySkills.length > 0 ? (
-              <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Skills</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {displaySkills.map((skill) => (
-                    <span
-                      key={skill.id}
-                      className="rounded-full border border-foreground/10 px-3 py-1 text-xs font-medium text-foreground/70"
-                    >
-                      {skill.skillName || "Skill"}
-                    </span>
-                  ))}
-                </div>
+              <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Skills</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {displaySkills.map((skill) => (
+                  <span
+                    key={skill.id}
+                    className="rounded-full border border-foreground/10 px-3 py-1 text-xs font-medium text-foreground/70"
+                  >
+                    {skill.skillName || "Skill"}
+                  </span>
+                ))}
               </div>
-            ) : null}
+            </div>
+          ) : null}
 
-            {sortedExperiences.length > 0 ? (
+          {sortedExperiences.length > 0 ? (
+            <div className="space-y-3">
+              <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Experience</p>
               <div className="space-y-3">
-                <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Experience</p>
-                <div className="space-y-3">
-                  {sortedExperiences.map((experience) => (
-                    <div
-                      key={experience.id}
-                      className="rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3"
-                    >
-                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="font-semibold text-foreground">
-                            {experience.title || "Role title"}
-                          </p>
-                          <p className="text-xs text-foreground/50">
-                            {experience.companyName || "Company"}
-                          </p>
-                        </div>
-                        <p className="text-xs text-foreground/50">
-                          {formatProfileDate(experience.startDate, "Unknown")}
-                          {" - "}
-                          {formatProfileDate(experience.endDate, "Present")}
+                {sortedExperiences.map((experience) => (
+                  <div
+                    key={experience.id}
+                    className="rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3"
+                  >
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="font-semibold text-foreground">
+                          {experience.title || "Role pending details"}
+                        </p>
+                        <p className="text-xs text-foreground/60">
+                          {experience.companyName || "Company to be confirmed"}
                         </p>
                       </div>
-                      <p className="mt-2 text-xs text-foreground/60">
-                        {experience.description || "Add responsibilities or notable achievements."}
+                      <p className="text-xs text-foreground/50">
+                        {formatProfileDate(experience.startDate, "Unknown")}
+                        {" - "}
+                        {formatProfileDate(experience.endDate, "Present")}
                       </p>
                     </div>
-                  ))}
-                </div>
+                    {experience.description ? (
+                      <p className="mt-2 text-xs text-foreground/60">{experience.description}</p>
+                    ) : null}
+                  </div>
+                ))}
               </div>
-            ) : null}
+            </div>
+          ) : null}
 
-            {sortedEducation.length > 0 ? (
+          {sortedEducation.length > 0 ? (
+            <div className="space-y-3">
+              <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Education</p>
               <div className="space-y-3">
-                <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Education</p>
-                <div className="space-y-3">
-                  {sortedEducation.map((education) => (
-                    <div
-                      key={education.id}
-                      className="rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3"
-                    >
-                      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="font-semibold text-foreground">
-                            {education.school || "Institution"}
-                          </p>
-                          <p className="text-xs text-foreground/50">
-                            {education.degree || "Degree"}
-                          </p>
-                        </div>
-                        <p className="text-xs text-foreground/50">
-                          {formatProfileDate(education.startDate, "Start")}
-                          {" - "}
-                          {formatProfileDate(education.endDate, "Present")}
+                {sortedEducation.map((education) => (
+                  <div
+                    key={education.id}
+                    className="rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3"
+                  >
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="font-semibold text-foreground">
+                          {education.school || "Institution pending"}
+                        </p>
+                        <p className="text-xs text-foreground/60">
+                          {education.degree || "Program to be confirmed"}
                         </p>
                       </div>
+                      <p className="text-xs text-foreground/50">
+                        {formatProfileDate(education.startDate, "Start")}
+                        {" - "}
+                        {formatProfileDate(education.endDate, "Present")}
+                      </p>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            ) : null}
-          </div>
-        ) : (
+            </div>
+          ) : null}
+        </div>
+
+        {!profile ? (
           <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-5 py-6 text-sm text-foreground/60">
             Complete your profile to help recruiters understand your experience and preferences.
           </div>
-        )}
+        ) : null}
       </Panel>
 
       <Panel variant="surface" padding="lg" className="space-y-6">
@@ -442,30 +443,44 @@ export default async function CandidatePortalPage() {
 
         {sortedCvs.length > 0 ? (
           <div className="space-y-3 text-sm">
-            {sortedCvs.map((cv) => (
-              <div
-                key={cv.id}
-                className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4"
-              >
-                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="font-semibold text-foreground">{cv.versionName}</p>
-                    <p className="text-xs text-foreground/50">
-                      Added {formatDate(cv.createdAt)}
-                      {cv.isDefault ? " (Default)" : ""}
-                    </p>
+            {sortedCvs.map((cv) => {
+              const downloadHref =
+                cv.downloadUrl ??
+                (cv.fileId
+                  ? `${process.env.NEXT_PUBLIC_API_BASE_URL ?? ""}/api/files/${cv.fileId}`
+                  : null);
+
+              return (
+                <div
+                  key={cv.id}
+                  className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4"
+                >
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="font-semibold text-foreground">{cv.versionName}</p>
+                      <p className="text-xs text-foreground/50">
+                        Added {formatDate(cv.createdAt)}
+                        {cv.isDefault ? " (Default)" : ""}
+                      </p>
+                    </div>
+                    {downloadHref ? (
+                      <a
+                        href={downloadHref}
+                        className="text-xs font-semibold text-foreground hover:underline"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Download
+                      </a>
+                    ) : (
+                      <span className="text-xs text-foreground/50">
+                        Generated placeholder - upload an updated version when ready.
+                      </span>
+                    )}
                   </div>
-                  {cv.fileId ? (
-                    <a
-                      href={`${process.env.NEXT_PUBLIC_API_BASE_URL ?? ""}/api/files/${cv.fileId}`}
-                      className="text-xs font-semibold text-foreground hover:underline"
-                    >
-                      Download
-                    </a>
-                  ) : null}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-5 py-6 text-sm text-foreground/60">
@@ -514,5 +529,3 @@ export default async function CandidatePortalPage() {
     </Container>
   );
 }
-
-

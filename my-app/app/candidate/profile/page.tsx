@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import type { Profile } from "@/lib/types";
+import { AvatarUploader } from "@/components/profile/avatar-uploader";
 import { UpdateProfileForm } from "@/components/profile/update-profile-form";
 import { UploadCvForm } from "@/components/profile/upload-cv-form";
 import { GenerateCvForm } from "@/components/profile/generate-cv-form";
@@ -14,7 +15,7 @@ async function getProfile(): Promise<Profile | null> {
       return null;
     }
     const data = await response.json();
-    return (data && typeof data === "object") ? (data as Profile) : null;
+    return data && typeof data === "object" ? (data as Profile) : null;
   } catch {
     return null;
   }
@@ -39,6 +40,7 @@ export default async function CandidateProfilePage() {
     (await getProfile()) ?? {
       userId: 0,
       fullName: null,
+      avatarUrl: null,
       phoneNumber: null,
       summary: null,
       experiences: [],
@@ -98,6 +100,12 @@ export default async function CandidateProfilePage() {
             Update your basic profile attributes. These values populate recruiter-facing summaries.
           </p>
         </div>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <AvatarUploader avatarUrl={profile.avatarUrl} fullName={profile.fullName} />
+          <p className="text-xs text-foreground/50 md:max-w-sm">
+            This photo appears on your candidate dashboard and any recruiter-facing application cards.
+          </p>
+        </div>
         <UpdateProfileForm
           fullName={profile.fullName}
           phoneNumber={profile.phoneNumber}
@@ -124,32 +132,41 @@ export default async function CandidateProfilePage() {
             </p>
           ) : (
             <div className="space-y-3 text-sm">
-              {cvs.map((cv) => (
-                <div
-                  key={cv.id}
-                  className="flex flex-col gap-2 rounded-xl border border-foreground/10 bg-background/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div>
-                    <p className="font-semibold text-foreground">{cv.versionName}</p>
-                    <p className="text-xs text-foreground/50">
-                      Added {formatDate(cv.createdAt, "Unknown date")}{" "}
-                      {cv.isDefault ? "(default)" : ""}
-                    </p>
+              {cvs.map((cv) => {
+                const downloadHref =
+                  cv.downloadUrl ??
+                  (cv.fileId
+                    ? `${process.env.NEXT_PUBLIC_API_BASE_URL ?? ""}/api/files/${cv.fileId}`
+                    : null);
+
+                return (
+                  <div
+                    key={cv.id}
+                    className="flex flex-col gap-2 rounded-xl border border-foreground/10 bg-background/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div>
+                      <p className="font-semibold text-foreground">{cv.versionName}</p>
+                      <p className="text-xs text-foreground/50">
+                        Added {formatDate(cv.createdAt, "Unknown date")} {cv.isDefault ? "(default)" : ""}
+                      </p>
+                    </div>
+                    {downloadHref ? (
+                      <a
+                        href={downloadHref}
+                        className="text-xs font-semibold text-foreground hover:underline"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Download
+                      </a>
+                    ) : (
+                      <span className="text-xs text-foreground/50">
+                        Generated placeholder - upload an updated version when ready.
+                      </span>
+                    )}
                   </div>
-                  {cv.fileId ? (
-                    <a
-                      href={`${process.env.NEXT_PUBLIC_API_BASE_URL ?? ""}/api/files/${cv.fileId}`}
-                      className="text-xs font-semibold text-foreground hover:underline"
-                    >
-                      Download
-                    </a>
-                  ) : (
-                    <span className="text-xs text-foreground/50">
-                      Generated placeholder - upload an updated version when ready.
-                    </span>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

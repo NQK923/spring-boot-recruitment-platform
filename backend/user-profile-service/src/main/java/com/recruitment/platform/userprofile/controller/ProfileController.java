@@ -1,9 +1,9 @@
 package com.recruitment.platform.userprofile.controller;
 
+import com.recruitment.platform.userprofile.dto.CvResponse;
 import com.recruitment.platform.userprofile.dto.GenerateCvRequest;
+import com.recruitment.platform.userprofile.dto.ProfileResponse;
 import com.recruitment.platform.userprofile.dto.UpdateProfileRequest;
-import com.recruitment.platform.userprofile.model.Cv;
-import com.recruitment.platform.userprofile.model.Profile;
 import com.recruitment.platform.userprofile.service.ProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,62 +28,72 @@ public class ProfileController {
 
     @GetMapping("/me")
     @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
-    public ResponseEntity<Profile> getMyProfile(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<ProfileResponse> getMyProfile(@AuthenticationPrincipal Jwt jwt) {
         Long userId = Long.valueOf(jwt.getSubject());
-        Profile profile = profileService.getOrCreateProfile(userId);
+        ProfileResponse profile = profileService.getOrCreateProfileView(userId);
         return ResponseEntity.ok(profile);
     }
 
     @PutMapping("/me")
     @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
-    public ResponseEntity<Profile> updateMyProfile(@AuthenticationPrincipal Jwt jwt, @RequestBody UpdateProfileRequest request) {
+    public ResponseEntity<ProfileResponse> updateMyProfile(@AuthenticationPrincipal Jwt jwt,
+                                                           @RequestBody UpdateProfileRequest request) {
         Long userId = Long.valueOf(jwt.getSubject());
-        Profile updatedProfile = profileService.updateProfile(userId, request);
+        ProfileResponse updatedProfile = profileService.updateProfile(userId, request);
         return ResponseEntity.ok(updatedProfile);
+    }
+
+    @PostMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
+    public ResponseEntity<ProfileResponse> uploadAvatar(@AuthenticationPrincipal Jwt jwt,
+                                                        @RequestParam("file") MultipartFile file) {
+        Long userId = Long.valueOf(jwt.getSubject());
+        ProfileResponse profile = profileService.updateAvatar(userId, file);
+        return ResponseEntity.ok(profile);
     }
 
     @PostMapping(value = "/me/cvs/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
-    public ResponseEntity<Cv> uploadCv(@AuthenticationPrincipal Jwt jwt,
-                                       @RequestParam("versionName") String versionName,
-                                       @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<CvResponse> uploadCv(@AuthenticationPrincipal Jwt jwt,
+                                               @RequestParam("versionName") String versionName,
+                                               @RequestParam("file") MultipartFile file) {
         Long userId = Long.valueOf(jwt.getSubject());
-        Cv savedCv = profileService.uploadCv(userId, versionName, file);
+        CvResponse savedCv = profileService.uploadCv(userId, versionName, file);
         return new ResponseEntity<>(savedCv, HttpStatus.CREATED);
     }
 
     @GetMapping("/me/cvs")
     @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
-    public ResponseEntity<List<Cv>> getMyCvs(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<List<CvResponse>> getMyCvs(@AuthenticationPrincipal Jwt jwt) {
         Long userId = Long.valueOf(jwt.getSubject());
         return ResponseEntity.ok(profileService.listCvs(userId));
     }
 
     @PostMapping("/me/cvs/generate")
     @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
-    public ResponseEntity<Cv> generateCv(@AuthenticationPrincipal Jwt jwt,
-                                         @RequestBody GenerateCvRequest request) {
+    public ResponseEntity<CvResponse> generateCv(@AuthenticationPrincipal Jwt jwt,
+                                                 @RequestBody GenerateCvRequest request) {
         Long userId = Long.valueOf(jwt.getSubject());
-        Cv generatedCv = profileService.generateCv(userId, request.versionName());
+        CvResponse generatedCv = profileService.generateCv(userId, request.versionName());
         return new ResponseEntity<>(generatedCv, HttpStatus.CREATED);
     }
 
     @GetMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN')")
-    public ResponseEntity<Profile> getCandidateProfile(@PathVariable Long userId,
-                                                       @RequestHeader("X-Company-ID") Long companyId) {
+    public ResponseEntity<ProfileResponse> getCandidateProfile(@PathVariable Long userId,
+                                                               @RequestHeader("X-Company-ID") Long companyId) {
         if (!profileService.recruiterCanAccessCandidate(userId, companyId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return profileService.getProfile(userId)
+        return profileService.getProfileView(userId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/candidates/{userId}/profile")
     @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN')")
-    public ResponseEntity<Profile> getCandidateProfileByRecruiter(@PathVariable Long userId,
-                                                                  @RequestHeader("X-Company-ID") Long companyId) {
+    public ResponseEntity<ProfileResponse> getCandidateProfileByRecruiter(@PathVariable Long userId,
+                                                                          @RequestHeader("X-Company-ID") Long companyId) {
         return getCandidateProfile(userId, companyId);
     }
 }

@@ -253,6 +253,8 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
         return;
       }
 
+      handled = true;
+
       try {
         const response = await fetch("/api/auth/oauth/github", {
           method: "POST",
@@ -275,6 +277,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
         }
 
         cleanup(true);
+        setError(null);
         setLoadingProvider(null);
         window.location.href = redirectTarget;
       } catch (err) {
@@ -293,7 +296,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
           setError("GitHub sign-in window was closed before completing authentication.");
           cleanup();
         } else {
-          cleanup();
+          cleanup(true);
         }
       }
     }, 600);

@@ -1,4 +1,18 @@
 services:
+    driver: bridge
+      environment:
+        - SUPABASE_PROJECT_URL=${SUPABASE_PROJECT_URL}
+        - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+        - SUPABASE_AVATAR_BUCKET=${SUPABASE_AVATAR_BUCKET}
+        - SUPABASE_CV_BUCKET=${SUPABASE_CV_BUCKET}
+        - SUPABASE_STORAGE_SIGNED_URL_TTL=${SUPABASE_STORAGE_SIGNED_URL_TTL}
+        - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+        - SUPABASE_HOST=${SUPABASE_HOST}
+        - SUPABASE_PORT=${SUPABASE_PORT}
+        - SUPABASE_DB=${SUPABASE_DB}
+        - SUPABASE_USERNAME=${SUPABASE_USERNAME}
+        - SUPABASE_PASSWORD=${SUPABASE_PASSWORD}
+        - APP_JWT_SECRET=${APP_JWT_SECRET}
   # Infrastructure Services
 
   rabbitmq:
@@ -186,6 +200,11 @@ services:
     container_name: file-storage-service
     depends_on: [discovery-service]
     environment:
+      - SUPABASE_PROJECT_URL=${SUPABASE_PROJECT_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_AVATAR_BUCKET=${SUPABASE_AVATAR_BUCKET}
+      - SUPABASE_CV_BUCKET=${SUPABASE_CV_BUCKET}
+      - SUPABASE_STORAGE_SIGNED_URL_TTL=${SUPABASE_STORAGE_SIGNED_URL_TTL}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - SUPABASE_HOST=${SUPABASE_HOST}
       - SUPABASE_PORT=${SUPABASE_PORT}
@@ -193,7 +212,6 @@ services:
       - SUPABASE_USERNAME=${SUPABASE_USERNAME}
       - SUPABASE_PASSWORD=${SUPABASE_PASSWORD}
       - APP_JWT_SECRET=${APP_JWT_SECRET}
-      - app.storage.upload-dir=/uploads # Use a path inside the container
     volumes:
       - file_storage_data:/uploads
     networks: [recruitment-net]

@@ -22,6 +22,15 @@ public class Cv {
 
     private UUID fileId; // The ID returned by file-storage-service
 
+    @Column(name = "storage_path")
+    private String storagePath;
+
+    @Column(name = "storage_bucket")
+    private String storageBucket;
+
+    @Column(name = "file_size")
+    private Long fileSize;
+
     private String versionName;
 
     private boolean isDefault;

@@ -2,8 +2,13 @@ package com.recruitment.platform.userprofile.service;
 
 import com.recruitment.platform.userprofile.client.ApplicationServiceClient;
 import com.recruitment.platform.userprofile.client.FileStorageClient;
+import com.recruitment.platform.userprofile.client.dto.AvatarUploadResponse;
+import com.recruitment.platform.userprofile.client.dto.FileAvatarSyncRequest;
+import com.recruitment.platform.userprofile.client.dto.FileUploadResponse;
+import com.recruitment.platform.userprofile.dto.CvResponse;
 import com.recruitment.platform.userprofile.dto.EducationRequest;
 import com.recruitment.platform.userprofile.dto.ExperienceRequest;
+import com.recruitment.platform.userprofile.dto.ProfileResponse;
 import com.recruitment.platform.userprofile.dto.SkillRequest;
 import com.recruitment.platform.userprofile.dto.UpdateProfileRequest;
 import com.recruitment.platform.userprofile.event.UserRegisteredEvent;
@@ -14,14 +19,17 @@ import com.recruitment.platform.userprofile.model.Profile;
 import com.recruitment.platform.userprofile.model.Skill;
 import com.recruitment.platform.userprofile.repository.CvRepository;
 import com.recruitment.platform.userprofile.repository.ProfileRepository;
+import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,19 +38,20 @@ import java.util.UUID;
 public class ProfileService {
 
     private static final Logger log = LoggerFactory.getLogger(ProfileService.class);
+
     private final ProfileRepository profileRepository;
     private final CvRepository cvRepository;
-    private final FileStorageClient fileStorageClient;
     private final ApplicationServiceClient applicationServiceClient;
+    private final FileStorageClient fileStorageClient;
 
     public ProfileService(ProfileRepository profileRepository,
                           CvRepository cvRepository,
-                          FileStorageClient fileStorageClient,
-                          ApplicationServiceClient applicationServiceClient) {
+                          ApplicationServiceClient applicationServiceClient,
+                          FileStorageClient fileStorageClient) {
         this.profileRepository = profileRepository;
         this.cvRepository = cvRepository;
-        this.fileStorageClient = fileStorageClient;
         this.applicationServiceClient = applicationServiceClient;
+        this.fileStorageClient = fileStorageClient;
     }
 
     public void createProfileForNewUser(UserRegisteredEvent event) {
@@ -57,32 +66,18 @@ public class ProfileService {
         log.info("Created new profile for user ID: {}", event.userId());
     }
 
-    public Optional<Profile> getProfile(Long userId) {
-        return profileRepository.findById(userId);
+    public Optional<ProfileResponse> getProfileView(Long userId) {
+        return profileRepository.findById(userId).map(this::mapProfile);
+    }
+
+    @Transactional(readOnly = true)
+    public ProfileResponse getOrCreateProfileView(Long userId) {
+        return mapProfile(getOrCreateProfileEntity(userId));
     }
 
     @Transactional
-    public Profile getOrCreateProfile(Long userId) {
-        return profileRepository.findById(userId)
-                .orElseGet(() -> {
-                    Profile profile = new Profile();
-                    profile.setUserId(userId);
-                    return profileRepository.save(profile);
-                });
-    }
-
-    public List<Profile> getProfilesInBatch(List<Long> userIds) {
-        return profileRepository.findByUserIdIn(userIds);
-    }
-
-    @Transactional
-    public Profile updateProfile(Long userId, UpdateProfileRequest request) {
-        Profile profile = profileRepository.findById(userId)
-                .orElseGet(() -> {
-                    Profile newProfile = new Profile();
-                    newProfile.setUserId(userId);
-                    return newProfile;
-                });
+    public ProfileResponse updateProfile(Long userId, UpdateProfileRequest request) {
+        Profile profile = getOrCreateProfileEntity(userId);
 
         if (request.fullName() != null) {
             profile.setFullName(request.fullName());
@@ -109,45 +104,58 @@ public class ProfileService {
             profile.getSkills().addAll(mapSkills(request.skills()));
         }
 
-        return profileRepository.save(profile);
+        Profile saved = profileRepository.save(profile);
+        return mapProfile(saved);
     }
 
     @Transactional
-    public Cv uploadCv(Long userId, String versionName, MultipartFile file) {
-        Profile profile = profileRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException("Profile not found for user " + userId));
+    public CvResponse uploadCv(Long userId, String versionName, MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("CV file is required.");
+        }
+
+        Profile profile = getOrCreateProfileEntity(userId);
+        FileUploadResponse uploadResponse = fileStorageClient.uploadFile(file);
+        if (uploadResponse == null || uploadResponse.fileId() == null) {
+            throw new IllegalStateException("Unable to persist CV file.");
+        }
 
         List<Cv> existingCvs = cvRepository.findByProfile_UserId(userId);
         boolean shouldBeDefault = existingCvs.stream().noneMatch(Cv::isDefault);
 
-        log.info("Uploading file for user {}", userId);
-        UUID fileId = fileStorageClient.uploadFile(file);
-        log.info("File uploaded successfully with ID: {}", fileId);
-
         Cv cv = new Cv();
         cv.setProfile(profile);
-        cv.setFileId(fileId);
+        cv.setFileId(uploadResponse.fileId());
+        cv.setStoragePath(uploadResponse.storagePath());
+        cv.setStorageBucket(uploadResponse.storageBucket());
+        cv.setFileSize(uploadResponse.size());
         cv.setVersionName(versionName);
         cv.setDefault(shouldBeDefault);
 
-        return cvRepository.save(cv);
+        Cv saved = cvRepository.save(cv);
+        profile.getCvs().add(saved);
+        return mapCv(saved);
     }
 
-    public List<Cv> listCvs(Long userId) {
-        return cvRepository.findByProfile_UserId(userId);
+    public List<CvResponse> listCvs(Long userId) {
+        return cvRepository.findByProfile_UserId(userId).stream()
+                .sorted(Comparator.comparing(Cv::getCreatedAt).reversed())
+                .map(this::mapCv)
+                .toList();
     }
 
     @Transactional
-    public Cv generateCv(Long userId, String versionName) {
-        Profile profile = profileRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException("Profile not found for user " + userId));
+    public CvResponse generateCv(Long userId, String versionName) {
+        Profile profile = getOrCreateProfileEntity(userId);
 
         Cv cv = new Cv();
         cv.setProfile(profile);
         cv.setVersionName(versionName);
         cv.setDefault(false);
 
-        return cvRepository.save(cv);
+        Cv saved = cvRepository.save(cv);
+        profile.getCvs().add(saved);
+        return mapCv(saved);
     }
 
     public boolean recruiterCanAccessCandidate(Long candidateId, Long companyId) {
@@ -157,10 +165,90 @@ public class ProfileService {
         try {
             Boolean result = applicationServiceClient.candidateHasApplicationsForCompany(candidateId, companyId);
             return Boolean.TRUE.equals(result);
-        } catch (feign.FeignException ex) {
+        } catch (FeignException ex) {
             log.error("Failed to verify candidate {} access for company {}.", candidateId, companyId, ex);
             throw new IllegalStateException("Unable to verify recruiter access at this time.");
         }
+    }
+
+    @Transactional
+    public ProfileResponse updateAvatar(Long userId, MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Avatar file is required.");
+        }
+
+        Profile profile = getOrCreateProfileEntity(userId);
+        AvatarUploadResponse response = fileStorageClient.uploadAvatar(file);
+        if (response == null || !StringUtils.hasText(response.publicUrl())) {
+            throw new IllegalStateException("Unable to upload avatar.");
+        }
+        if (StringUtils.hasText(response.publicUrl())) {
+            profile.setAvatarPath(response.publicUrl());
+        }
+        Profile saved = profileRepository.save(profile);
+        return mapProfile(saved);
+    }
+
+    @Transactional
+    public void syncAvatarFromExternalIfEmpty(Long userId, String sourceUrl) {
+        if (!StringUtils.hasText(sourceUrl)) {
+            return;
+        }
+        Profile profile = getOrCreateProfileEntity(userId);
+        if (StringUtils.hasText(profile.getAvatarPath())) {
+            return;
+        }
+        try {
+            AvatarUploadResponse response = fileStorageClient.syncAvatar(new FileAvatarSyncRequest(userId, sourceUrl));
+            if (response != null && StringUtils.hasText(response.publicUrl())) {
+                profile.setAvatarPath(response.publicUrl());
+                profileRepository.save(profile);
+                log.info("Synced avatar for user {} from external provider.", userId);
+            }
+        } catch (Exception ex) {
+            log.warn("Failed to sync avatar from {} for user {}: {}", sourceUrl, userId, ex.getMessage());
+        }
+    }
+
+    private Profile getOrCreateProfileEntity(Long userId) {
+        return profileRepository.findById(userId)
+                .orElseGet(() -> {
+                    Profile profile = new Profile();
+                    profile.setUserId(userId);
+                    return profileRepository.save(profile);
+                });
+    }
+
+    private ProfileResponse mapProfile(Profile profile) {
+        List<CvResponse> cvResponses = profile.getCvs().stream()
+                .sorted(Comparator.comparing(Cv::getCreatedAt).reversed())
+                .map(this::mapCv)
+                .toList();
+        return new ProfileResponse(
+                profile.getUserId(),
+                profile.getFullName(),
+                profile.getPhoneNumber(),
+                profile.getSummary(),
+                profile.getAvatarPath(),
+                profile.getExperiences(),
+                profile.getEducation(),
+                profile.getSkills(),
+                cvResponses
+        );
+    }
+
+    private CvResponse mapCv(Cv cv) {
+        UUID fileId = cv.getFileId();
+        String fileIdString = fileId != null ? fileId.toString() : null;
+        return new CvResponse(
+                cv.getId(),
+                cv.getVersionName(),
+                cv.isDefault(),
+                cv.getCreatedAt(),
+                null,
+                fileIdString,
+                cv.getFileSize()
+        );
     }
 
     private List<Experience> mapExperiences(List<ExperienceRequest> requests) {
@@ -201,7 +289,7 @@ public class ProfileService {
     }
 
     private LocalDate parseDate(String value) {
-        if (value == null || value.isBlank()) {
+        if (!StringUtils.hasText(value)) {
             return null;
         }
         try {

@@ -1,5 +1,8 @@
 package com.recruitment.platform.filestorage.controller;
 
+import com.recruitment.platform.filestorage.dto.AvatarSyncRequest;
+import com.recruitment.platform.filestorage.dto.AvatarUploadResponse;
+import com.recruitment.platform.filestorage.dto.FileUploadResponse;
 import com.recruitment.platform.filestorage.model.FileMetadata;
 import com.recruitment.platform.filestorage.service.StorageService;
 import org.springframework.core.io.Resource;
@@ -13,7 +16,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Optional;
+import java.util.UUID;
 
+import java.util.UUID;
 import java.util.UUID;
 
 @RestController
@@ -28,10 +34,31 @@ public class FileController {
 
     @PostMapping("/upload")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UUID> uploadFile(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("file") MultipartFile file,
+                                                         @AuthenticationPrincipal Jwt jwt) {
         Long uploaderId = Long.valueOf(jwt.getSubject());
-        FileMetadata metadata = storageService.storeFile(file, uploaderId);
-        return ResponseEntity.ok(metadata.getId());
+        FileMetadata metadata = storageService.storePrivateFile(file, uploaderId);
+        return ResponseEntity.ok(FileUploadResponse.from(metadata));
+    }
+
+    @PostMapping("/avatar")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<AvatarUploadResponse> uploadAvatar(@RequestParam("file") MultipartFile file,
+                                                             @AuthenticationPrincipal Jwt jwt) {
+        Long uploaderId = Long.valueOf(jwt.getSubject());
+        FileMetadata metadata = storageService.storeAvatar(file, uploaderId);
+        return ResponseEntity.ok(AvatarUploadResponse.from(metadata));
+    }
+
+    @PostMapping("/internal/avatars/sync")
+    public ResponseEntity<AvatarUploadResponse> syncAvatar(@RequestBody AvatarSyncRequest request) {
+        if (request == null || request.userId() == null || !StringUtils.hasText(request.sourceUrl())) {
+            return ResponseEntity.badRequest().build();
+        }
+        Optional<FileMetadata> metadata = storageService.storeAvatarFromExternal(request.userId(), request.sourceUrl());
+        return metadata
+                .map(fileMetadata -> ResponseEntity.ok(AvatarUploadResponse.from(fileMetadata)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.ACCEPTED).build());
     }
 
     @GetMapping("/{id}")
@@ -50,10 +77,14 @@ public class FileController {
                 ? MediaType.parseMediaType(contentType)
                 : MediaType.APPLICATION_OCTET_STREAM;
 
-        return ResponseEntity.ok()
-                .contentType(mediaType)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + metadata.getOriginalName() + "\"")
-                .body(resource);
+        HttpHeaders headers = new HttpHeaders();
+        if (metadata.getSize() != null) {
+            headers.setContentLength(metadata.getSize());
+        }
+        headers.setContentType(mediaType);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + metadata.getOriginalName() + "\"");
+
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 
     private boolean canAccess(FileMetadata metadata, Jwt jwt) {
@@ -72,7 +103,9 @@ public class FileController {
                 }
             }
         } else if (rolesClaim instanceof String rolesString) {
-            return rolesString.contains("RECRUITER") || rolesString.contains("COMPANY_ADMIN") || rolesString.contains("SUPER_ADMIN");
+            return rolesString.contains("RECRUITER")
+                    || rolesString.contains("COMPANY_ADMIN")
+                    || rolesString.contains("SUPER_ADMIN");
         }
         return false;
     }
