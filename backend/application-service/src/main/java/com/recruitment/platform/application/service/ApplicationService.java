@@ -12,9 +12,10 @@ import com.recruitment.platform.application.model.Application;
 import com.recruitment.platform.application.model.ApplicationHistory;
 import com.recruitment.platform.application.model.ApplicationNote;
 import com.recruitment.platform.application.model.ApplicationStatus;
-import com.recruitment.platform.application.repository.ApplicationNoteRepository;
 import com.recruitment.platform.application.repository.ApplicationHistoryRepository;
+import com.recruitment.platform.application.repository.ApplicationNoteRepository;
 import com.recruitment.platform.application.repository.ApplicationRepository;
+import com.recruitment.platform.common.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -87,7 +88,7 @@ public class ApplicationService {
                                                Long changedByUserId,
                                                Long companyId) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+                .orElseThrow(() -> new NotFoundException("Application not found"));
 
         assertRecruiterAccessToJob(application.getJobPostingId(), companyId);
 
@@ -119,7 +120,7 @@ public class ApplicationService {
                                    Long requestedByUserId,
                                    Long companyId) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+                .orElseThrow(() -> new NotFoundException("Application not found"));
 
         assertRecruiterAccessToJob(application.getJobPostingId(), companyId);
 
@@ -159,7 +160,7 @@ public class ApplicationService {
     @Transactional
     public ApplicationNote addNote(Long applicationId, Long authorUserId, String content) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+                .orElseThrow(() -> new NotFoundException("Application not found"));
 
         ApplicationNote note = new ApplicationNote();
         note.setApplicationId(application.getId());
@@ -170,7 +171,7 @@ public class ApplicationService {
 
     public ApplicationDetailsDto getApplicationDetails(Long applicationId) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+                .orElseThrow(() -> new NotFoundException("Application not found"));
         Map<Long, String> candidateNames = fetchCandidateNames(List.of(application.getCandidateId()));
         return enrichWithCandidateName(ApplicationDetailsDto.fromApplication(application), candidateNames);
     }
@@ -187,7 +188,7 @@ public class ApplicationService {
 
     public void assertRecruiterAccessToApplication(Long applicationId, Long companyId) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new IllegalArgumentException("Application not found"));
+                .orElseThrow(() -> new NotFoundException("Application not found"));
         assertRecruiterAccessToJob(application.getJobPostingId(), companyId);
     }
 
@@ -231,7 +232,7 @@ public class ApplicationService {
     private JobSummaryDto getJobSummaryOrThrow(Long jobPostingId) {
         JobSummaryDto job = getJobSummaryOrNull(jobPostingId);
         if (job == null) {
-            throw new IllegalArgumentException("Job posting not found: " + jobPostingId);
+            throw new NotFoundException("Job posting not found: " + jobPostingId);
         }
         return job;
     }

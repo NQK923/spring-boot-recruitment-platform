@@ -1,5 +1,6 @@
 package com.recruitment.platform.company.service;
 
+import com.recruitment.platform.common.exception.NotFoundException;
 import com.recruitment.platform.company.client.ApplicationMetricsClient;
 import com.recruitment.platform.company.client.JobMetricsClient;
 import com.recruitment.platform.company.dto.CompanyDashboardResponse;
@@ -75,7 +76,7 @@ public class DashboardService {
     @Transactional(readOnly = true)
     public CompanyDashboardResponse getCompanyDashboard(Long companyId) {
         Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new IllegalArgumentException("Company not found: " + companyId));
+                .orElseThrow(() -> new NotFoundException("Company not found: " + companyId));
 
         JobMetricsClient.CompanyMetrics jobMetrics = jobMetricsClient.getCompanyMetrics(companyId);
         List<Long> jobIds = jobMetricsClient.getJobIdsForCompany(companyId);

@@ -1,5 +1,7 @@
 package com.recruitment.platform.job.service;
 
+import com.recruitment.platform.common.exception.ForbiddenException;
+import com.recruitment.platform.common.exception.NotFoundException;
 import com.recruitment.platform.job.client.CompanyServiceClient;
 import com.recruitment.platform.job.client.dto.CompanyStatusResponse;
 import com.recruitment.platform.job.dto.CreateJobPositionRequest;
@@ -72,10 +74,10 @@ public class JobPostingService {
     @Transactional
     public JobPosting updateJob(Long jobId, UpdateJobRequest request, Long companyId) {
         JobPosting job = jobPostingRepository.findById(jobId)
-                .orElseThrow(() -> new IllegalArgumentException("Job not found"));
+                .orElseThrow(() -> new NotFoundException("Job not found"));
 
         if (!job.getCompanyId().equals(companyId)) {
-            throw new IllegalStateException("Cannot modify a job that belongs to a different company.");
+            throw new ForbiddenException("Cannot modify a job that belongs to a different company.");
         }
 
         if (request.title() != null) {
@@ -187,9 +189,9 @@ public class JobPostingService {
 
     private JobPosition resolveJobPosition(Long positionId, Long companyId) {
         JobPosition position = jobPositionRepository.findById(positionId)
-                .orElseThrow(() -> new IllegalArgumentException("Job position not found"));
+                .orElseThrow(() -> new NotFoundException("Job position not found"));
         if (!position.getCompanyId().equals(companyId)) {
-            throw new IllegalStateException("Job position does not belong to this company.");
+            throw new ForbiddenException("Job position does not belong to this company.");
         }
         return position;
     }

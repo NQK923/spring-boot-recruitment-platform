@@ -1,5 +1,6 @@
 package com.recruitment.platform.interview.service;
 
+import com.recruitment.platform.common.exception.NotFoundException;
 import com.recruitment.platform.interview.dto.FeedbackRequest;
 import com.recruitment.platform.interview.dto.InterviewFeedbackResponse;
 import com.recruitment.platform.interview.dto.InterviewParticipantResponse;
@@ -11,8 +12,8 @@ import com.recruitment.platform.interview.event.InterviewScheduledEvent;
 import com.recruitment.platform.interview.model.Interview;
 import com.recruitment.platform.interview.model.InterviewParticipant;
 import com.recruitment.platform.interview.model.InterviewFeedback;
-import com.recruitment.platform.interview.repository.InterviewRepository;
 import com.recruitment.platform.interview.repository.InterviewFeedbackRepository;
+import com.recruitment.platform.interview.repository.InterviewRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
@@ -126,7 +127,7 @@ public class InterviewService {
     @Transactional
     public Interview rescheduleInterview(Long interviewId, UpdateInterviewRequest request) {
         Interview interview = interviewRepository.findById(interviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Interview not found"));
+                .orElseThrow(() -> new NotFoundException("Interview not found"));
 
         if (request.scheduleTime() != null) {
             interview.setScheduleTime(request.scheduleTime());
@@ -164,7 +165,7 @@ public class InterviewService {
     @Transactional
     public InterviewFeedback recordFeedback(Long interviewId, Long interviewerId, FeedbackRequest request) {
         Interview interview = interviewRepository.findById(interviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Interview not found"));
+                .orElseThrow(() -> new NotFoundException("Interview not found"));
 
         InterviewFeedback feedback = feedbackRepository.findByInterview_IdAndInterviewerId(interviewId, interviewerId)
                 .orElseGet(() -> {
@@ -186,7 +187,7 @@ public class InterviewService {
     @Transactional(readOnly = true)
     public String generateInterviewCalendar(Long interviewId, Long requesterUserId) {
         Interview interview = interviewRepository.findById(interviewId)
-                .orElseThrow(() -> new IllegalArgumentException("Interview not found"));
+                .orElseThrow(() -> new NotFoundException("Interview not found"));
 
         boolean isParticipant = interview.getParticipants().stream()
                 .anyMatch(participant -> participant.getUserId().equals(requesterUserId));

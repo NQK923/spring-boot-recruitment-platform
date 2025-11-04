@@ -1,5 +1,6 @@
 package com.recruitment.platform.userprofile.service;
 
+import com.recruitment.platform.common.exception.BadRequestException;
 import com.recruitment.platform.userprofile.client.ApplicationServiceClient;
 import com.recruitment.platform.userprofile.client.FileStorageClient;
 import com.recruitment.platform.userprofile.client.dto.AvatarUploadResponse;
@@ -71,6 +72,14 @@ public class ProfileService {
     }
 
     @Transactional(readOnly = true)
+    public List<Profile> getProfilesInBatch(List<Long> userIds) {
+        if (userIds == null || userIds.isEmpty()) {
+            return List.of();
+        }
+        return profileRepository.findByUserIdIn(userIds);
+    }
+
+    @Transactional(readOnly = true)
     public ProfileResponse getOrCreateProfileView(Long userId) {
         return mapProfile(getOrCreateProfileEntity(userId));
     }
@@ -111,7 +120,7 @@ public class ProfileService {
     @Transactional
     public CvResponse uploadCv(Long userId, String versionName, MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("CV file is required.");
+            throw new BadRequestException("CV file is required.");
         }
 
         Profile profile = getOrCreateProfileEntity(userId);
@@ -174,7 +183,7 @@ public class ProfileService {
     @Transactional
     public ProfileResponse updateAvatar(Long userId, MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("Avatar file is required.");
+            throw new BadRequestException("Avatar file is required.");
         }
 
         Profile profile = getOrCreateProfileEntity(userId);

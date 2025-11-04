@@ -1,5 +1,8 @@
 package com.recruitment.platform.company.service;
 
+import com.recruitment.platform.common.exception.BadRequestException;
+import com.recruitment.platform.common.exception.ForbiddenException;
+import com.recruitment.platform.common.exception.NotFoundException;
 import com.recruitment.platform.company.dto.CommunicationTemplateResponse;
 import com.recruitment.platform.company.dto.CreateCommunicationTemplateRequest;
 import com.recruitment.platform.company.dto.UpdateCommunicationTemplateRequest;
@@ -62,10 +65,10 @@ public class CommunicationTemplateService {
         TemplateCategory category = parseCategory(request.category());
 
         if (request.name() == null || request.name().isBlank()) {
-            throw new IllegalArgumentException("Template name is required");
+            throw new BadRequestException("Template name is required");
         }
         if (request.body() == null || request.body().isBlank()) {
-            throw new IllegalArgumentException("Template body is required");
+            throw new BadRequestException("Template body is required");
         }
 
         CommunicationTemplate template = new CommunicationTemplate();
@@ -89,17 +92,17 @@ public class CommunicationTemplateService {
                                                         UpdateCommunicationTemplateRequest request,
                                                         boolean superAdmin) {
         CommunicationTemplate template = repository.findById(templateId)
-                .orElseThrow(() -> new IllegalArgumentException("Template not found"));
+                .orElseThrow(() -> new NotFoundException("Template not found"));
 
         if (!superAdmin) {
             if (!Objects.equals(template.getCompanyId(), companyId)) {
-                throw new IllegalArgumentException("Template does not belong to this company");
+                throw new ForbiddenException("Template does not belong to this company");
             }
         }
 
         if (request.name() != null) {
             if (request.name().isBlank()) {
-                throw new IllegalArgumentException("Template name cannot be blank");
+                throw new BadRequestException("Template name cannot be blank");
             }
             template.setName(request.name().trim());
         }
@@ -111,7 +114,7 @@ public class CommunicationTemplateService {
         }
         if (request.body() != null) {
             if (request.body().isBlank()) {
-                throw new IllegalArgumentException("Template body cannot be blank");
+                throw new BadRequestException("Template body cannot be blank");
             }
             template.setBody(request.body());
         }
@@ -127,10 +130,10 @@ public class CommunicationTemplateService {
     @Transactional
     public void deleteTemplate(Long templateId, Long companyId, boolean superAdmin) {
         CommunicationTemplate template = repository.findById(templateId)
-                .orElseThrow(() -> new IllegalArgumentException("Template not found"));
+                .orElseThrow(() -> new NotFoundException("Template not found"));
 
         if (!superAdmin && !Objects.equals(template.getCompanyId(), companyId)) {
-            throw new IllegalArgumentException("Template does not belong to this company");
+            throw new ForbiddenException("Template does not belong to this company");
         }
         repository.delete(template);
     }
@@ -147,7 +150,7 @@ public class CommunicationTemplateService {
 
     private TemplateCategory parseCategory(String category) {
         if (category == null || category.isBlank()) {
-            throw new IllegalArgumentException("Template category is required");
+            throw new BadRequestException("Template category is required");
         }
         return TemplateCategory.valueOf(category.trim().toUpperCase(Locale.ROOT));
     }

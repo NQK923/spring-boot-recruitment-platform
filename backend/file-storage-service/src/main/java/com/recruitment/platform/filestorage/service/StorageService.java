@@ -1,5 +1,7 @@
 package com.recruitment.platform.filestorage.service;
 
+import com.recruitment.platform.common.exception.BadRequestException;
+import com.recruitment.platform.common.exception.NotFoundException;
 import com.recruitment.platform.filestorage.model.FileMetadata;
 import com.recruitment.platform.filestorage.repository.FileMetadataRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,7 +64,7 @@ public class StorageService {
     public FileMetadata storeAvatar(MultipartFile file, Long uploaderId) {
         validateFilePresent(file);
         if (file.getSize() > MAX_AVATAR_SIZE_BYTES) {
-            throw new IllegalArgumentException("Avatar file is too large. Maximum allowed size is 2MB.");
+            throw new BadRequestException("Avatar file is too large. Maximum allowed size is 2MB.");
         }
 
         String originalFileName = cleanFileName(file.getOriginalFilename());
@@ -119,7 +121,7 @@ public class StorageService {
 
     public FileMetadata findById(UUID fileId) {
         return metadataRepository.findById(fileId)
-                .orElseThrow(() -> new IllegalArgumentException("File not found with id " + fileId));
+                .orElseThrow(() -> new NotFoundException("File not found with id " + fileId));
     }
 
     public Resource loadFileAsResource(UUID fileId) {
@@ -140,14 +142,14 @@ public class StorageService {
 
     private void validateFilePresent(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("File must not be empty.");
+            throw new BadRequestException("File must not be empty.");
         }
     }
 
     private String cleanFileName(String originalFilename) {
         String cleaned = StringUtils.cleanPath(Objects.requireNonNullElse(originalFilename, ""));
         if (cleaned.contains("..")) {
-            throw new IllegalArgumentException("Filename contains invalid path sequence: " + cleaned);
+            throw new BadRequestException("Filename contains invalid path sequence: " + cleaned);
         }
         return cleaned;
     }

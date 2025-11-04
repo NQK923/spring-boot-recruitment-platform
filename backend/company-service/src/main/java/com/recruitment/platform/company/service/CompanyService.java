@@ -11,6 +11,7 @@ import com.recruitment.platform.company.model.Company;
 import com.recruitment.platform.company.model.CompanyStatus;
 import com.recruitment.platform.company.model.CompanyUser;
 import com.recruitment.platform.company.model.CompanyUserPK;
+import com.recruitment.platform.common.exception.NotFoundException;
 import com.recruitment.platform.company.repository.CompanyRepository;
 import com.recruitment.platform.company.repository.CompanyUserRepository;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,7 @@ public class CompanyService {
     @Transactional
     public Company updateCompany(Long companyId, UpdateCompanyRequest request) {
         Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new IllegalArgumentException("Company not found"));
+                .orElseThrow(() -> new NotFoundException("Company not found"));
 
         if (request.name() != null) {
             company.setName(request.name());
@@ -161,7 +162,7 @@ public class CompanyService {
         pk.setUserId(userId);
 
         CompanyUser companyUser = companyUserRepository.findById(pk)
-                .orElseThrow(() -> new IllegalArgumentException("Company user relationship not found"));
+                .orElseThrow(() -> new NotFoundException("Company user relationship not found"));
 
         if (role != null && !role.isBlank()) {
             companyUser.setRole(role);

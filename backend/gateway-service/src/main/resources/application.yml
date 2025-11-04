@@ -80,8 +80,8 @@ spring:
           uri: lb://FILE-STORAGE-SERVICE
           predicates:
             - Path=/api/files/**
-        locator:
-          enabled: false
+      locator:
+        enabled: false
       globalcors:
         cors-configurations:
           '[/**]':

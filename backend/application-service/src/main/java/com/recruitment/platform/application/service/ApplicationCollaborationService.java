@@ -5,6 +5,8 @@ import com.recruitment.platform.application.dto.UpdateApplicationTaskRequest;
 import com.recruitment.platform.application.model.ApplicationTask;
 import com.recruitment.platform.application.model.ApplicationTaskStatus;
 import com.recruitment.platform.application.repository.ApplicationTaskRepository;
+import com.recruitment.platform.common.exception.BadRequestException;
+import com.recruitment.platform.common.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +38,7 @@ public class ApplicationCollaborationService {
                                       CreateApplicationTaskRequest request) {
         applicationService.assertRecruiterAccessToApplication(applicationId, companyId);
         if (request.title() == null || request.title().isBlank()) {
-            throw new IllegalArgumentException("Task title is required");
+            throw new BadRequestException("Task title is required");
         }
         ApplicationTask task = new ApplicationTask();
         task.setApplicationId(applicationId);
@@ -56,14 +58,14 @@ public class ApplicationCollaborationService {
                                       UpdateApplicationTaskRequest request) {
         applicationService.assertRecruiterAccessToApplication(applicationId, companyId);
         ApplicationTask task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+                .orElseThrow(() -> new NotFoundException("Task not found"));
         if (!task.getApplicationId().equals(applicationId)) {
-            throw new IllegalArgumentException("Task does not belong to this application");
+            throw new BadRequestException("Task does not belong to this application");
         }
 
         if (request.title() != null) {
             if (request.title().isBlank()) {
-                throw new IllegalArgumentException("Task title cannot be blank");
+                throw new BadRequestException("Task title cannot be blank");
             }
             task.setTitle(request.title().trim());
         }

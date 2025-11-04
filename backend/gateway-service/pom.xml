@@ -14,6 +14,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.recruitment.platform</groupId>
+            <artifactId>common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>

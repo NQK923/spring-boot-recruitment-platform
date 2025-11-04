@@ -18,6 +18,7 @@ import com.recruitment.platform.auth.model.EmailVerificationToken;
 import com.recruitment.platform.auth.model.Invitation;
 import com.recruitment.platform.auth.model.PasswordResetToken;
 import com.recruitment.platform.auth.model.Role;
+import com.recruitment.platform.common.exception.BadRequestException;
 import com.recruitment.platform.auth.model.User;
 import com.recruitment.platform.auth.repository.EmailVerificationTokenRepository;
 import com.recruitment.platform.auth.repository.InvitationRepository;
@@ -271,14 +272,14 @@ public class AuthService {
     private String authenticateGoogleIdToken(String idTokenString) throws GeneralSecurityException, IOException {
         GoogleIdToken idToken = googleVerifier.verify(idTokenString);
         if (idToken == null) {
-            throw new IllegalArgumentException("Invalid ID token");
+            throw new BadRequestException("Invalid ID token");
         }
 
         GoogleIdToken.Payload payload = idToken.getPayload();
         String email = payload.getEmail();
 
         if (!StringUtils.hasText(email)) {
-            throw new IllegalArgumentException("Google account is missing an email address.");
+            throw new BadRequestException("Google account is missing an email address.");
         }
 
         User user = userRepository.findByEmail(email)
@@ -423,7 +424,7 @@ public class AuthService {
         }
 
         EmailVerificationToken token = emailVerificationTokenRepository.findByUserIdAndToken(user.getId(), request.otp())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid verification code."));
+                .orElseThrow(() -> new BadRequestException("Invalid verification code."));
 
         if (token.isUsed()) {
             throw new IllegalStateException("Verification code already used.");
@@ -482,7 +483,7 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalStateException("No user found with the provided email."));
 
         PasswordResetToken token = passwordResetTokenRepository.findByUserIdAndToken(user.getId(), request.otp())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid reset code."));
+                .orElseThrow(() -> new BadRequestException("Invalid reset code."));
 
         if (token.isUsed()) {
             throw new IllegalStateException("Reset code already used.");
