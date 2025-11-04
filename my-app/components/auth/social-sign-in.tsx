@@ -7,40 +7,9 @@ import type { OAuthConfig } from "@/lib/types";
 
 type Provider = "google" | "github";
 
-type GoogleCredentialResponse = {
-  credential?: string;
-};
-
-type GooglePromptNotification = {
-  isNotDisplayed?: () => boolean;
-  getNotDisplayedReason?: () => string | undefined;
-  isSkippedMoment?: () => boolean;
-  getSkippedReason?: () => string | undefined;
-  isDismissedMoment?: () => boolean;
-  getDismissedReason?: () => string | undefined;
-};
-
-type GoogleAccountsId = {
-  initialize: (options: {
-    client_id: string;
-    callback: (response: GoogleCredentialResponse) => void;
-    ux_mode?: "popup" | "redirect";
-  }) => void;
-  prompt: (momentListener?: (notification: GooglePromptNotification) => void) => void;
-  disableAutoSelect?: () => void;
-};
-
-declare global {
-  interface Window {
-    google?: {
-      accounts?: {
-        id?: GoogleAccountsId;
-      };
-    };
-  }
-}
-
-const GOOGLE_SCRIPT_URL = "https://accounts.google.com/gsi/client";
+const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+const GOOGLE_STATE_COOKIE = "google_oauth_state";
+const GOOGLE_STATE_MAX_AGE_SECONDS = 60 * 5;
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -82,6 +51,19 @@ function isSafeRelativePath(path: string | null | undefined) {
   return typeof path === "string" && path.startsWith("/") && !path.startsWith("//");
 }
 
+function encodeCookiePayload(value: unknown) {
+  try {
+    return encodeURIComponent(JSON.stringify(value));
+  } catch {
+    return "";
+  }
+}
+
+function persistGoogleStateCookie(state: string, nextPath: string) {
+  const payload = encodeCookiePayload({ state, nextPath });
+  document.cookie = `${GOOGLE_STATE_COOKIE}=${payload}; path=/; max-age=${GOOGLE_STATE_MAX_AGE_SECONDS}; SameSite=Lax`;
+}
+
 function generateState() {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return `web-${crypto.randomUUID()}`;
@@ -104,14 +86,13 @@ function parseErrorFromResponse(response: Response, fallback: string) {
 
 export type SocialSignInProps = {
   nextPath?: string | null;
+  initialError?: string | null;
 };
 
-export function SocialSignIn({ nextPath }: SocialSignInProps) {
+export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
   const [config, setConfig] = useState<OAuthConfig | null>(null);
   const [loadingProvider, setLoadingProvider] = useState<Provider | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [googleReady, setGoogleReady] = useState(false);
-  const googleInitializedRef = useRef(false);
   const githubPopupRef = useRef<Window | null>(null);
   const githubIntervalRef = useRef<number | null>(null);
 
@@ -119,6 +100,12 @@ export function SocialSignIn({ nextPath }: SocialSignInProps) {
     () => (isSafeRelativePath(nextPath) ? nextPath! : ROUTES.candidatePortal),
     [nextPath]
   );
+
+  useEffect(() => {
+    if (initialError && !error) {
+      setError(initialError);
+    }
+  }, [initialError, error]);
 
   useEffect(() => {
     let isMounted = true;
@@ -155,161 +142,31 @@ export function SocialSignIn({ nextPath }: SocialSignInProps) {
     };
   }, []);
 
-  useEffect(() => {
-    if (!config?.googleClientId) {
-      return;
-    }
-
-    if (window.google?.accounts?.id) {
-      setGoogleReady(true);
-      return;
-    }
-
-    const existingScript = document.querySelector<HTMLScriptElement>(
-      'script[data-google-identity="true"]'
-    );
-    if (existingScript) {
-      if (existingScript.dataset.loaded === "true") {
-        setGoogleReady(true);
-      } else {
-        const handleLoad = () => {
-          existingScript.dataset.loaded = "true";
-          setGoogleReady(true);
-        };
-        const handleError = () => {
-          setError("Unable to load Google sign-in. Please refresh and try again.");
-        };
-        existingScript.addEventListener("load", handleLoad);
-        existingScript.addEventListener("error", handleError);
-        return () => {
-          existingScript.removeEventListener("load", handleLoad);
-          existingScript.removeEventListener("error", handleError);
-        };
-      }
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = GOOGLE_SCRIPT_URL;
-    script.async = true;
-    script.defer = true;
-    script.dataset.googleIdentity = "true";
-
-    const handleLoad = () => {
-      script.dataset.loaded = "true";
-      setGoogleReady(true);
-    };
-    const handleError = () => {
-      setError("Unable to load Google sign-in. Please refresh and try again.");
-    };
-
-    script.addEventListener("load", handleLoad);
-    script.addEventListener("error", handleError);
-    document.head.appendChild(script);
-
-    return () => {
-      script.removeEventListener("load", handleLoad);
-      script.removeEventListener("error", handleError);
-    };
-  }, [config?.googleClientId]);
-
-  const handleGoogleCredential = useCallback(
-    async (response: GoogleCredentialResponse) => {
-      const credential = response?.credential;
-      if (!credential) {
-        setLoadingProvider(null);
-        setError("Google sign-in was cancelled. Please try again.");
-        return;
-      }
-
-      try {
-        const result = await fetch("/api/auth/oauth/google", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ idToken: credential }),
-        });
-
-        if (!result.ok) {
-          const message = await parseErrorFromResponse(
-            result,
-            "Unable to complete Google sign-in."
-          );
-          throw new Error(message);
-        }
-
-        const body = (await result.json()) as { success?: boolean; error?: string };
-        if (!body?.success) {
-          throw new Error(body?.error ?? "Google sign-in failed. Please try again.");
-        }
-
-        setLoadingProvider(null);
-        window.location.href = redirectTarget;
-      } catch (err) {
-        setLoadingProvider(null);
-        const message =
-          err instanceof Error ? err.message : "Unable to sign in with Google right now.";
-        setError(message);
-      }
-    },
-    [redirectTarget]
-  );
-
-  useEffect(() => {
-    if (
-      !config?.googleClientId ||
-      !googleReady ||
-      !window.google?.accounts?.id ||
-      googleInitializedRef.current
-    ) {
-      return;
-    }
-
-    window.google.accounts.id.initialize({
-      client_id: config.googleClientId,
-      callback: handleGoogleCredential,
-      ux_mode: "popup",
-    });
-    window.google.accounts.id.disableAutoSelect?.();
-    googleInitializedRef.current = true;
-  }, [config?.googleClientId, googleReady, handleGoogleCredential]);
-
   const handleGoogleLogin = useCallback(() => {
     if (!config?.googleClientId) {
       setError("Google sign-in is not configured for this environment.");
       return;
     }
-    if (!window.google?.accounts?.id) {
-      setError("Google sign-in is still loading. Please try again in a moment.");
-      return;
-    }
+
+    const state = generateState();
+    persistGoogleStateCookie(state, redirectTarget);
+
+    const authorizeUrl = new URL(GOOGLE_AUTH_URL);
+    authorizeUrl.searchParams.set("client_id", config.googleClientId);
+    authorizeUrl.searchParams.set(
+      "redirect_uri",
+      `${window.location.origin}/api/auth/oauth/google/redirect`
+    );
+    authorizeUrl.searchParams.set("response_type", "code");
+    authorizeUrl.searchParams.set("scope", "openid email profile");
+    authorizeUrl.searchParams.set("state", state);
+    authorizeUrl.searchParams.set("prompt", "select_account");
+    authorizeUrl.searchParams.set("access_type", "offline");
 
     setError(null);
     setLoadingProvider("google");
-
-    window.google.accounts.id.prompt((notification) => {
-      const notDisplayed = notification?.isNotDisplayed?.();
-      const skipped = notification?.isSkippedMoment?.();
-      const dismissed = notification?.isDismissedMoment?.();
-
-      if (notDisplayed) {
-        const reason = notification?.getNotDisplayedReason?.();
-        setError(
-          reason === "popup_closed_by_user"
-            ? "Google sign-in window was closed."
-            : "Google sign-in popup was blocked. Allow popups and try again."
-        );
-        setLoadingProvider(null);
-      } else if (skipped || dismissed) {
-        const reason =
-          notification?.getSkippedReason?.() ?? notification?.getDismissedReason?.();
-        setLoadingProvider(null);
-        if (reason) {
-          setError("Google sign-in was cancelled.");
-        }
-      }
-    });
-  }, [config?.googleClientId]);
+    window.location.href = authorizeUrl.toString();
+  }, [config?.googleClientId, redirectTarget]);
 
   const handleGitHubLogin = useCallback(() => {
     if (!config?.githubClientId || !config.githubAuthorizeRedirectUri) {
@@ -455,10 +312,7 @@ export function SocialSignIn({ nextPath }: SocialSignInProps) {
   );
 
   const googleDisabled =
-    loadingProvider === "github" ||
-    !config?.googleClientId ||
-    !googleReady ||
-    loadingProvider === "google";
+    loadingProvider === "github" || !config?.googleClientId || loadingProvider === "google";
 
   const githubDisabled =
     loadingProvider === "google" || !config?.githubClientId || loadingProvider === "github";

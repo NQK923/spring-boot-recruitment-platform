@@ -5,6 +5,7 @@ import com.recruitment.platform.auth.dto.*;
 import com.recruitment.platform.auth.service.AuthService;
 import com.recruitment.platform.auth.service.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -78,7 +80,18 @@ public class AuthController {
 
     @PostMapping("/oauth/google")
     public ResponseEntity<JwtAuthenticationResponse> googleLogin(@RequestBody GoogleLoginRequest loginRequest) throws GeneralSecurityException, IOException {
-        String jwt = authService.processGoogleLogin(loginRequest.idToken());
+        String jwt;
+        if (loginRequest.hasIdToken()) {
+            jwt = authService.processGoogleIdToken(loginRequest.idToken());
+        } else if (loginRequest.hasAuthorizationCode()) {
+            String redirectUri = loginRequest.normalizedRedirectUri();
+            if (redirectUri == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing redirect URI for Google authorization code.");
+            }
+            jwt = authService.processGoogleAuthorizationCode(loginRequest.code(), redirectUri);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Google credential is required.");
+        }
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 

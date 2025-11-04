@@ -8,6 +8,7 @@ type SignInSearchParams = {
   registered?: string;
   reset?: string;
   next?: string;
+  error?: string;
 };
 
 type SignInPageProps = {
@@ -19,6 +20,20 @@ function sanitizeNext(nextValue: string | undefined) {
     return null;
   }
   return nextValue.startsWith("/") && !nextValue.startsWith("//") ? nextValue : null;
+}
+
+function resolveSocialError(code: string | undefined): string | null {
+  if (!code) {
+    return null;
+  }
+  switch (code) {
+    case "google_sign_in_failed":
+      return "Unable to complete Google sign-in. Please try again.";
+    case "google_missing_credential":
+      return "Google sign-in did not return a credential. Please try again.";
+    default:
+      return null;
+  }
 }
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
@@ -34,6 +49,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   }
 
   const safeNext = requestedNext ?? ROUTES.recruiterDashboard;
+  const socialError = resolveSocialError(resolvedSearchParams?.error);
 
   return (
     <div className="space-y-6">
@@ -57,7 +73,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       ) : null}
 
       <div className="space-y-5">
-        <SocialSignIn nextPath={safeNext} />
+        <SocialSignIn nextPath={safeNext} initialError={socialError} />
         <div className="flex items-center gap-3 text-xs text-foreground/50">
           <span className="h-px flex-1 bg-foreground/15" />
           <span>Or continue with email</span>

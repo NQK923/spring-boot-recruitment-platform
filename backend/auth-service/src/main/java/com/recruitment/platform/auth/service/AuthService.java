@@ -1,7 +1,11 @@
 package com.recruitment.platform.auth.service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.recruitment.platform.auth.client.CompanyServiceClient;
 import com.recruitment.platform.auth.client.dto.AddUserToCompanyRequest;
 import com.recruitment.platform.auth.client.dto.UserInvitedEvent;
@@ -64,6 +68,12 @@ public class AuthService {
     private final GoogleIdTokenVerifier googleVerifier;
     private final JwtTokenProvider tokenProvider;
     private final RestTemplate restTemplate;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String googleClientId;
+
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String googleClientSecret;
 
     @Value("${spring.security.oauth2.client.registration.github.client-id}")
     private String githubClientId;
@@ -220,7 +230,30 @@ public class AuthService {
     }
 
     @Transactional
-    public String processGoogleLogin(String idTokenString) throws GeneralSecurityException, IOException {
+    public String processGoogleIdToken(String idTokenString) throws GeneralSecurityException, IOException {
+        return authenticateGoogleIdToken(idTokenString);
+    }
+
+    @Transactional
+    public String processGoogleAuthorizationCode(String authorizationCode, String redirectUri) throws GeneralSecurityException, IOException {
+        GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+                new NetHttpTransport(),
+                GsonFactory.getDefaultInstance(),
+                googleClientId,
+                googleClientSecret,
+                authorizationCode,
+                redirectUri
+        ).execute();
+
+        String idToken = tokenResponse == null ? null : tokenResponse.getIdToken();
+        if (!StringUtils.hasText(idToken)) {
+            throw new IllegalStateException("Google authorization response did not include a valid ID token.");
+        }
+
+        return authenticateGoogleIdToken(idToken);
+    }
+
+    private String authenticateGoogleIdToken(String idTokenString) throws GeneralSecurityException, IOException {
         GoogleIdToken idToken = googleVerifier.verify(idTokenString);
         if (idToken == null) {
             throw new IllegalArgumentException("Invalid ID token");
@@ -229,13 +262,19 @@ public class AuthService {
         GoogleIdToken.Payload payload = idToken.getPayload();
         String email = payload.getEmail();
 
-        User user = userRepository.findByEmail(email)
-                .orElseGet(() -> createNewSocialUser(email, "google"));
+        return loginOrCreateSocialUser(email, "google");
+    }
 
-        // Create an Authentication object for JWT generation
+    private String loginOrCreateSocialUser(String email, String provider) {
+        User user = userRepository.findByEmail(email)
+                .orElseGet(() -> createNewSocialUser(email, provider));
+        return issueSocialJwt(user);
+    }
+
+    private String issueSocialJwt(User user) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 user.getEmail(),
-                null, // No password for social login
+                null,
                 user.getRoles().stream()
                         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                         .collect(Collectors.toList())
@@ -261,16 +300,7 @@ public class AuthService {
         User user = userRepository.findByEmail(githubUser.email())
                 .orElseGet(() -> createNewSocialUser(githubUser.email(), "github"));
 
-        // 4. Generate JWT
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user.getEmail(),
-                null, // No password for social login
-                user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-                        .collect(Collectors.toList())
-        );
-
-        return tokenProvider.generateToken(authentication);
+        return issueSocialJwt(user);
     }
 
     private String getGitHubAccessToken(String code) {

@@ -11,21 +11,47 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing request body." }, { status: 400 });
   }
 
-  const idToken =
-    payload && typeof payload === "object" && "idToken" in payload
-      ? (payload as { idToken?: unknown }).idToken
-      : undefined;
+  const body = (payload && typeof payload === "object" ? payload : {}) as {
+    idToken?: unknown;
+    code?: unknown;
+    redirectUri?: unknown;
+  };
 
-  if (typeof idToken !== "string" || idToken.trim() === "") {
+  const idToken =
+    typeof body.idToken === "string" && body.idToken.trim() !== "" ? body.idToken.trim() : null;
+  const code =
+    typeof body.code === "string" && body.code.trim() !== "" ? body.code.trim() : null;
+  const redirectUri =
+    typeof body.redirectUri === "string" && body.redirectUri.trim() !== ""
+      ? body.redirectUri.trim()
+      : null;
+
+  if (!idToken && !code) {
     return NextResponse.json({ error: "Google credential is required." }, { status: 400 });
   }
 
+  if (code && !redirectUri) {
+    return NextResponse.json(
+      { error: "Missing redirect URI for Google authorization code." },
+      { status: 400 }
+    );
+  }
+
   try {
+    const requestPayload: Record<string, string> = {};
+    if (idToken) {
+      requestPayload.idToken = idToken;
+    }
+    if (code) {
+      requestPayload.code = code;
+      requestPayload.redirectUri = redirectUri!;
+    }
+
     const response = await apiFetch("/api/auth/oauth/google", {
       method: "POST",
       skipAuthHeaders: true,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken }),
+      body: JSON.stringify(requestPayload),
     });
 
     const data = (await response.json()) as Partial<AuthTokenResponse>;
