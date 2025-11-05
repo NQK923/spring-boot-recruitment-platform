@@ -16,7 +16,7 @@ export async function registerAction(
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
-    return { error: "Please provide both email and password." };
+    return { error: "Vui lòng nhập cả email và mật khẩu." };
   }
 
   try {
@@ -29,7 +29,7 @@ export async function registerAction(
     });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Unable to create your account.";
+      error instanceof Error ? error.message : "Không thể tạo tài khoản của bạn.";
     return { error: message };
   }
 

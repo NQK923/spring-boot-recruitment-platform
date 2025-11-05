@@ -28,9 +28,9 @@ function resolveSocialError(code: string | undefined): string | null {
   }
   switch (code) {
     case "google_sign_in_failed":
-      return "Unable to complete Google sign-in. Please try again.";
+      return "Không thể hoàn tất đăng nhập Google. Vui lòng thử lại.";
     case "google_missing_credential":
-      return "Google sign-in did not return a credential. Please try again.";
+      return "Đăng nhập Google không trả về thông tin xác thực. Vui lòng thử lại.";
     default:
       return null;
   }
@@ -54,21 +54,21 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   return (
     <div className="space-y-6">
       <header className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold text-foreground">Sign in</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Đăng nhập</h1>
         <p className="text-sm text-foreground/65">
-          Enter your details to access your recruitment workspace.
+          Nhập thông tin để truy cập workspace tuyển dụng của bạn.
         </p>
       </header>
 
       {justRegistered ? (
         <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          Account created successfully. Sign in with your new credentials to continue.
+          Tạo tài khoản thành công. Đăng nhập bằng thông tin vừa tạo để tiếp tục.
         </p>
       ) : null}
 
       {passwordReset ? (
         <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          Password updated. You can now sign in with your new password.
+          Mật khẩu đã được cập nhật. Bạn có thể đăng nhập bằng mật khẩu mới.
         </p>
       ) : null}
 
@@ -76,7 +76,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         <SocialSignIn nextPath={safeNext} initialError={socialError} />
         <div className="flex items-center gap-3 text-xs text-foreground/50">
           <span className="h-px flex-1 bg-foreground/15" />
-          <span>Or continue with email</span>
+          <span>Hoặc tiếp tục bằng email</span>
           <span className="h-px flex-1 bg-foreground/15" />
         </div>
         <SignInForm defaultNext={safeNext} />

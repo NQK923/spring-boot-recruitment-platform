@@ -50,7 +50,7 @@ export async function createJobAction(
   const benefits = normalizeString(formData.get("benefits"), true);
 
   if (!title) {
-    return { error: "Title is required." };
+    return { error: "Tiêu đề là bắt buộc." };
   }
 
   try {
@@ -68,12 +68,12 @@ export async function createJobAction(
       }),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to create job.";
+    const message = error instanceof Error ? error.message : "Không thể tạo việc làm.";
     return { error: message };
   }
 
   revalidateDashboards();
-  return { success: "Job created successfully." };
+  return { success: "Đã tạo việc làm thành công." };
 }
 
 export async function updateJobAction(
@@ -92,7 +92,7 @@ export async function updateJobAction(
   const benefits = normalizeString(formData.get("benefits"), true);
 
   if (!title) {
-    return { error: "Title cannot be empty." };
+    return { error: "Tiêu đề không được để trống." };
   }
 
   try {
@@ -111,10 +111,10 @@ export async function updateJobAction(
       }),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to update job.";
+    const message = error instanceof Error ? error.message : "Không thể cập nhật việc làm.";
     return { error: message };
   }
 
   revalidateDashboards();
-  return { success: "Job updated successfully." };
+  return { success: "Đã cập nhật việc làm." };
 }

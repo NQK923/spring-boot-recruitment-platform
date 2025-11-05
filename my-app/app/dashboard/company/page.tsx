@@ -178,7 +178,7 @@ function normalizeJobStatus(value?: string | null): JobPosting["status"] {
 }
 
 function formatDate(value?: string | null) {
-  if (!value) return "Unknown";
+  if (!value) return "Không rõ";
   try {
     return dateFormatter.format(new Date(value));
   } catch {
@@ -202,63 +202,63 @@ export default async function CompanyAdminDashboardPage() {
 
   const metrics = [
     {
-      label: "Team members",
+      label: "Thành viên đội ngũ",
       value: users.length,
-      helper: "Admins, recruiters, and collaborators with access.",
+      helper: "Quản trị viên, nhà tuyển dụng và cộng tác viên có quyền truy cập.",
       footnote: lockedUsers
-        ? `${lockedUsers} account${lockedUsers > 1 ? "s" : ""} need attention.`
+        ? `${lockedUsers} tài khoản cần được mở khóa.`
         : undefined,
     },
     {
-      label: "Active jobs",
+      label: "Việc làm đang hiển thị",
       value: dashboard?.activeJobs ?? publishedJobs.length,
-      helper: "Roles currently visible to candidates.",
-      footnote: publishedJobs.length === 0 ? "No published jobs yet." : undefined,
+      helper: "Các vị trí đang hiển thị với ứng viên.",
+      footnote: publishedJobs.length === 0 ? "Chưa có vị trí nào được đăng." : undefined,
     },
     {
-      label: "Pending invitations",
+      label: "Lời mời đang chờ",
       value: pendingInvitationCount,
-      helper: "Invites sent but not yet accepted.",
+      helper: "Lời mời đã gửi nhưng chưa được chấp nhận.",
     },
     {
-      label: "Unassigned jobs",
+      label: "Việc chưa có phụ trách",
       value: unassignedJobs,
-      helper: "Postings without an owner assigned.",
+      helper: "Bài đăng chưa có nhà tuyển dụng phụ trách.",
     },
   ];
 
   const quickActions = [
     {
-      label: "Invite teammate",
+      label: "Mời thành viên",
       href: "#team",
-      description: "Send a role-specific invitation in seconds.",
+      description: "Gửi lời mời theo vai trò trong vài giây.",
     },
     {
-      label: "Update company profile",
+      label: "Cập nhật hồ sơ công ty",
       href: "#company",
-      description: "Polish your brand details and public info.",
+      description: "Trau chuốt thông tin thương hiệu và dữ liệu hiển thị công khai.",
     },
     {
-      label: "Publish a job",
+      label: "Đăng việc làm",
       href: "#jobs",
-      description: "Launch a new role to the candidate marketplace.",
+      description: "Mở vị trí mới trên bảng việc làm cho ứng viên.",
     },
   ];
 
   const insights = [
     lockedUsers > 0
-      ? `Unlock ${lockedUsers} account${lockedUsers > 1 ? "s" : ""} so teammates can sign in.`
+      ? `Mở khóa ${lockedUsers} tài khoản để thành viên có thể đăng nhập.`
       : null,
     pendingInvitationCount > 0
-      ? `Follow up on ${pendingInvitationCount} pending invitation${pendingInvitationCount > 1 ? "s" : ""}.`
+      ? `Nhắc lại ${pendingInvitationCount} lời mời đang chờ phản hồi.`
       : null,
     unassignedJobs > 0
-      ? `${unassignedJobs} job${unassignedJobs > 1 ? "s" : ""} still need a recruiter owner.`
+      ? `${unassignedJobs} vị trí vẫn chưa có nhà tuyển dụng phụ trách.`
       : null,
   ].filter(Boolean) as string[];
 
   if (insights.length === 0) {
-    insights.push("Your workspace is looking great. Keep sharing updates to stay ahead of hiring demand.");
+    insights.push("Workspace của bạn đang hoạt động rất tốt. Tiếp tục cập nhật thường xuyên để đáp ứng nhu cầu tuyển dụng.");
   }
 
   const recentInvites = dashboard?.recentInvites ?? [];
@@ -278,13 +278,13 @@ export default async function CompanyAdminDashboardPage() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           <div className="space-y-4">
             <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-              Company admin console
+              Bảng điều khiển quản trị công ty
             </span>
             <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
-              Keep your workspace aligned and hiring-ready.
+              Giữ workspace đồng bộ và sẵn sàng tuyển dụng.
             </h1>
             <p className="max-w-2xl text-sm text-foreground/70">
-              Invite teammates, curate your brand presence, and monitor active roles from a single command centre.
+              Mời đồng đội, chăm chút hình ảnh thương hiệu và theo dõi các vị trí đang mở tại một trung tâm duy nhất.
             </p>
             <ul className="space-y-3 text-sm text-foreground/70">
               {insights.map((insight, index) => (
@@ -300,30 +300,30 @@ export default async function CompanyAdminDashboardPage() {
             <div className="pointer-events-none absolute -bottom-16 left-6 h-28 w-28 rounded-full bg-foreground/10 blur-3xl" />
             <div className="space-y-4">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
-                Workspace health
+                Tình trạng workspace
               </p>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs text-foreground/60">Team strength</p>
+                  <p className="text-xs text-foreground/60">Quy mô đội ngũ</p>
                   <p className="mt-1 text-2xl font-semibold text-foreground">{users.length}</p>
-                  <p className="text-xs text-foreground/60">Active teammates collaborating today.</p>
+                  <p className="text-xs text-foreground/60">Thành viên đang cộng tác trong hôm nay.</p>
                 </div>
                 <div>
-                  <p className="text-xs text-foreground/60">Published roles</p>
+                  <p className="text-xs text-foreground/60">Vị trí đã đăng</p>
                   <p className="mt-1 text-2xl font-semibold text-foreground">{publishedJobs.length}</p>
-                  <p className="text-xs text-foreground/60">Visible to candidates right now.</p>
+                  <p className="text-xs text-foreground/60">Đang hiển thị với ứng viên.</p>
                 </div>
               </div>
               <div className="rounded-2xl border border-foreground/10 bg-surface/85 px-4 py-3 text-xs text-foreground/70">
                 {profile?.companySize
-                  ? `Company size: ${profile.companySize}.`
-                  : "Share your company size so candidates know what to expect."}
+                  ? `Quy mô công ty: ${profile.companySize}.`
+                  : "Chia sẻ quy mô để ứng viên biết kỳ vọng."}
               </div>
             </div>
             <div className="mt-4 rounded-xl border border-foreground/10 bg-surface/80 px-4 py-3 text-xs text-foreground/60">
               {profile?.createdAt
-                ? `Onboarded ${formatDate(profile.createdAt)}.`
-                : "Finish your company profile to unlock richer analytics."}
+                ? `Đã tham gia từ ${formatDate(profile.createdAt)}.`
+                : "Hoàn thiện hồ sơ công ty để xem phân tích chi tiết hơn."}
             </div>
           </div>
         </div>
@@ -354,7 +354,7 @@ export default async function CompanyAdminDashboardPage() {
               <span className="text-sm font-semibold text-foreground">{action.label}</span>
               <p className="text-xs text-foreground/60">{action.description}</p>
               <span className="inline-flex items-center gap-2 text-xs font-semibold text-accent transition group-hover:translate-x-0.5">
-                Jump to section
+                Đi tới khu vực
                 <span aria-hidden>→</span>
               </span>
             </Link>
@@ -365,20 +365,20 @@ export default async function CompanyAdminDashboardPage() {
       <Panel id="company" variant="surface" padding="lg" className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Company snapshot</h2>
+            <h2 className="text-lg font-semibold text-foreground">Tổng quan công ty</h2>
             <p className="text-sm text-foreground/60">
-              Double-check branding details, hiring locations, and go-live timelines before inviting more users.
+              Kiểm tra lại thông tin thương hiệu, địa điểm tuyển dụng và lộ trình mở vị trí trước khi mời thêm thành viên.
             </p>
           </div>
           <Link href={ROUTES.docs} className="text-sm font-semibold text-foreground hover:underline">
-            Update guidelines
+            Hướng dẫn cập nhật
           </Link>
         </div>
         <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] text-sm text-foreground/70">
           <div className="space-y-4 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-muted">Company</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-muted">Thông tin công ty</p>
             <div className="space-y-1">
-              <p className="font-semibold text-foreground">{profile?.name ?? "Pending setup"}</p>
+              <p className="font-semibold text-foreground">{profile?.name ?? "Chưa cập nhật"}</p>
               {profile?.website ? (
                 <a
                   href={profile.website}
@@ -389,27 +389,27 @@ export default async function CompanyAdminDashboardPage() {
                   {profile.website}
                 </a>
               ) : (
-                <p className="text-xs text-foreground/50">Add your public website so candidates can learn more.</p>
+                <p className="text-xs text-foreground/50">Thêm website để ứng viên tìm hiểu thêm.</p>
               )}
             </div>
             <p className="text-xs text-foreground/60">
-              {profile?.description ?? "Add a description so recruiters have the right context."}
+              {profile?.description ?? "Thêm mô tả để nhà tuyển dụng có bối cảnh phù hợp."}
             </p>
             <p className="text-xs text-foreground/60">
-              <span className="font-semibold text-foreground">Company size:</span>{" "}
-              {profile?.companySize ?? "Share your headcount range to set expectations with candidates."}
+              <span className="font-semibold text-foreground">Quy mô công ty:</span>{" "}
+              {profile?.companySize ?? "Chia sẻ quy mô nhân sự để đặt kỳ vọng phù hợp với ứng viên."}
             </p>
           </div>
           <div className="space-y-4 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-muted">Headquarters</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-muted">Trụ sở</p>
             <p className="font-semibold text-foreground">
-              {profile?.companyAddress ?? "Add your primary office or headquarters address."}
+              {profile?.companyAddress ?? "Thêm địa chỉ văn phòng chính hoặc trụ sở."}
             </p>
-            <p className="text-xs text-foreground/60">Onboarded {formatDate(profile?.createdAt)}</p>
+            <p className="text-xs text-foreground/60">Gia nhập Talentflow từ {formatDate(profile?.createdAt)}</p>
             <div>
-              <h3 className="text-xs uppercase tracking-[0.28em] text-muted">Update details</h3>
+              <h3 className="text-xs uppercase tracking-[0.28em] text-muted">Cập nhật chi tiết</h3>
               <p className="text-xs text-foreground/60">
-                Keep branding and messaging fresh. Changes reflect instantly across job postings.
+                Giữ thông điệp thương hiệu luôn mới. Thay đổi sẽ áp dụng ngay cho mọi bài tuyển dụng.
               </p>
             </div>
           </div>
@@ -421,20 +421,20 @@ export default async function CompanyAdminDashboardPage() {
 
       <Panel id="team" variant="surface" padding="lg" className="space-y-6">
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Team roster</h2>
+          <h2 className="text-lg font-semibold text-foreground">Danh sách thành viên</h2>
           <p className="text-sm text-foreground/60">
-            Company admins oversee permissions, while recruiters manage individual jobs and pipelines.
+            Quản trị viên công ty phụ trách phân quyền, trong khi nhà tuyển dụng quản lý từng vị trí và pipeline.
           </p>
           <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/60">
             <span className="inline-flex items-center rounded-full border border-foreground/15 bg-surface px-3 py-1 font-semibold uppercase tracking-[0.2em] text-foreground/70">
-              {users.length} active
+              {users.length} đang hoạt động
             </span>
             <span className="inline-flex items-center rounded-full border border-foreground/15 bg-surface px-3 py-1 uppercase tracking-[0.2em]">
-              {pendingInvitationCount} pending invites
+              {pendingInvitationCount} lời mời chờ phản hồi
             </span>
             {lockedUsers > 0 ? (
               <span className="inline-flex items-center rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-semibold uppercase tracking-[0.2em] text-accent">
-                {lockedUsers} locked
+                {lockedUsers} bị khóa
               </span>
             ) : null}
           </div>
@@ -447,10 +447,9 @@ export default async function CompanyAdminDashboardPage() {
 
       <Panel id="jobs" variant="surface" padding="lg" className="space-y-6">
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Job portfolio</h2>
+          <h2 className="text-lg font-semibold text-foreground">Danh mục việc làm</h2>
           <p className="text-sm text-foreground/60">
-            Draft, publish, or pause roles directly from this workspace. Changes sync with the public job board
-            immediately.
+            Tạo nháp, đăng hoặc tạm dừng vị trí ngay tại workspace này. Thay đổi sẽ đồng bộ tức thì với bảng việc làm công khai.
           </p>
         </div>
 
@@ -458,7 +457,7 @@ export default async function CompanyAdminDashboardPage() {
 
         {jobs.length === 0 ? (
           <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
-            No jobs created yet. Draft a role to kick off your hiring pipeline.
+            Chưa có việc làm nào được tạo. Hãy tạo nháp để khởi động pipeline tuyển dụng.
           </div>
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
@@ -472,18 +471,18 @@ export default async function CompanyAdminDashboardPage() {
       <Panel id="invites" variant="surface" padding="lg" className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Invitations in progress</h2>
+            <h2 className="text-lg font-semibold text-foreground">Lời mời đang xử lý</h2>
             <p className="text-sm text-foreground/60">
-              Keep an eye on pending invitations so teammates do not miss their welcome email.
+              Theo dõi lời mời đang chờ để đồng đội không bỏ lỡ email chào mừng.
             </p>
           </div>
           <Link href="/docs/admin#reminders" className="text-sm font-semibold text-foreground hover:underline">
-            Reminder templates
+            Mẫu nhắc nhở
           </Link>
         </div>
         {recentInvites.length === 0 ? (
           <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
-            No outstanding invitations. Great job keeping your roster current!
+            Không có lời mời nào còn tồn đọng. Bạn đang quản lý đội ngũ rất tốt!
           </div>
         ) : (
           <div className="space-y-3 text-sm">
@@ -494,10 +493,10 @@ export default async function CompanyAdminDashboardPage() {
               >
                 <div>
                   <p className="font-semibold text-foreground">{invite.email ?? "pending@email.com"}</p>
-                  <p className="text-xs text-foreground/60">{invite.role ?? "Role pending"}</p>
+                  <p className="text-xs text-foreground/60">{invite.role ?? "Vai trò sẽ cập nhật"}</p>
                 </div>
                 <p className="text-xs text-foreground/50">
-                  Sent {invite.invitedAt ? formatDate(invite.invitedAt) : "recently"}
+                  Đã gửi {invite.invitedAt ? formatDate(invite.invitedAt) : "gần đây"}
                 </p>
               </div>
             ))}

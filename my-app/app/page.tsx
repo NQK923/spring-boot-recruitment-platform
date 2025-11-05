@@ -27,47 +27,47 @@ type JourneyTrack = {
 const JOURNEYS: JourneyTrack[] = [
   {
     id: "candidate",
-    label: "Candidate",
-    title: "Own every step of your job search",
-    caption: "Manage profiles, apply in minutes, and track progress with live updates.",
+    label: "Ứng viên",
+    title: "Làm chủ mọi bước trong hành trình tìm việc",
+    caption: "Quản lý hồ sơ, ứng tuyển trong vài phút và theo dõi tiến độ với cập nhật tức thời.",
     steps: [
       {
-        title: "Publish a standout profile",
+        title: "Hoàn thiện hồ sơ nổi bật",
         description:
-          "Sync your CV, experience, and skills so recruiters instantly see your strengths.",
+          "Đồng bộ CV, kinh nghiệm và kỹ năng để nhà tuyển dụng nhìn thấy thế mạnh của bạn ngay lập tức.",
       },
       {
-        title: "Apply without retyping",
+        title: "Ứng tuyển không cần nhập lại",
         description:
-          "Send applications in a few clicks; we reuse the information you already stored.",
+          "Gửi hồ sơ chỉ với vài cú nhấp chuột nhờ tận dụng dữ liệu bạn đã lưu trước đó.",
       },
       {
-        title: "Stay in the loop",
+        title: "Luôn nắm bắt tiến độ",
         description:
-          "Stage updates and interview invites arrive instantly, so you always know what is next.",
+          "Nhận thông báo thay đổi trạng thái và lịch phỏng vấn tức thì để biết bước tiếp theo là gì.",
       },
     ],
   },
   {
     id: "recruiter",
-    label: "Recruiter",
-    title: "Move fast with a single pipeline",
-    caption: "Coordinate hiring, interviews, and comms across the team with shared context.",
+    label: "Nhà tuyển dụng",
+    title: "Tăng tốc với một pipeline thống nhất",
+    caption: "Điều phối tuyển dụng, phỏng vấn và trao đổi nội bộ với đầy đủ bối cảnh chung.",
     steps: [
       {
-        title: "Launch a hiring campaign",
+        title: "Khởi động chiến dịch tuyển dụng",
         description:
-          "Publish jobs, invite teammates, and assign ownership for each company workspace.",
+          "Đăng tin tuyển dụng, mời đồng đội cùng tham gia và phân công phụ trách cho từng workspace.",
       },
       {
-        title: "Prioritize the right talent",
+        title: "Ưu tiên đúng ứng viên",
         description:
-          "Pipeline views highlight notes, tasks, and history to keep the team aligned.",
+          "Giao diện pipeline hiển thị ghi chú, nhiệm vụ và lịch sử để cả đội luôn đồng bộ.",
       },
       {
-        title: "Schedule and close with confidence",
+        title: "Lên lịch và chốt offer tự tin",
         description:
-          "Calendar feeds, ICS, and automated emails keep candidates cared for at every step.",
+          "Lịch ICS và email tự động giúp ứng viên được chăm sóc ở mọi giai đoạn.",
       },
     ],
   },
@@ -76,21 +76,21 @@ const JOURNEYS: JourneyTrack[] = [
 const TESTIMONIALS = [
   {
     quote:
-      "TalentFlow gives me a clear timeline. I can prepare for every interview without waiting on emails.",
+      "TalentFlow giúp tôi nắm rõ từng mốc thời gian nên có thể chuẩn bị cho mọi buổi phỏng vấn mà không phải chờ email.",
     author: "Minh Anh",
-    role: "Product Designer",
+    role: "Nhà thiết kế sản phẩm",
   },
   {
     quote:
-      "Our hiring squad finally works in one place. Notes, tasks, and status changes never get lost.",
-    author: "Phuong Nam",
-    role: "Recruitment Lead",
+      "Đội tuyển dụng của chúng tôi cuối cùng cũng làm việc trong một không gian. Ghi chú, nhiệm vụ và trạng thái không bao giờ bị thất lạc.",
+    author: "Phương Nam",
+    role: "Trưởng nhóm Tuyển dụng",
   },
   {
     quote:
-      "Rolling TalentFlow out to multiple companies was painless. Governance is tight while each team keeps its own view.",
-    author: "Lan Huong",
-    role: "HR Operations Manager",
+      "Triển khai TalentFlow cho nhiều công ty diễn ra nhẹ nhàng. Quản trị chặt chẽ mà mỗi team vẫn giữ được góc nhìn riêng.",
+    author: "Lan Hương",
+    role: "Quản lý Vận hành Nhân sự",
   },
 ];
 
@@ -127,7 +127,9 @@ async function getLatestJobs(): Promise<JobPostingPublic[]> {
 
 function formatJobSummary(job: JobPostingPublic) {
   const base =
-    job.description ?? job.requirements ?? "Recruiters will add more details shortly. Check back soon.";
+    job.description ??
+    job.requirements ??
+    "Nhà tuyển dụng sẽ sớm bổ sung mô tả chi tiết. Vui lòng quay lại sau.";
   return base.length > 160 ? `${base.slice(0, 157)}…` : base;
 }
 
@@ -136,11 +138,11 @@ function renderHeroActions(viewer: MeResponse | null): JSX.Element {
     return (
       <>
         <Link href={ROUTES.register}>
-          <Button size="lg">Create candidate profile</Button>
+          <Button size="lg">Tạo hồ sơ ứng viên</Button>
         </Link>
         <Link href={ROUTES.signIn}>
           <Button size="lg" variant="secondary">
-            Sign in as recruiter
+            Đăng nhập dành cho nhà tuyển dụng
           </Button>
         </Link>
       </>
@@ -153,11 +155,11 @@ function renderHeroActions(viewer: MeResponse | null): JSX.Element {
     return (
       <>
         <Link href={ROUTES.superAdminDashboard}>
-          <Button size="lg">Open super admin console</Button>
+          <Button size="lg">Mở bảng điều khiển Super Admin</Button>
         </Link>
         <Link href={ROUTES.docs}>
           <Button size="lg" variant="secondary">
-            Rollout checklist
+            Danh sách kiểm triển khai
           </Button>
         </Link>
       </>
@@ -168,11 +170,11 @@ function renderHeroActions(viewer: MeResponse | null): JSX.Element {
     return (
       <>
         <Link href={ROUTES.companyAdminDashboard}>
-          <Button size="lg">Enter company workspace</Button>
+          <Button size="lg">Vào workspace của công ty</Button>
         </Link>
         <Link href={ROUTES.recruiterDashboard}>
           <Button size="lg" variant="secondary">
-            View recruiting dashboard
+            Xem bảng điều khiển tuyển dụng
           </Button>
         </Link>
       </>
@@ -183,11 +185,11 @@ function renderHeroActions(viewer: MeResponse | null): JSX.Element {
     return (
       <>
         <Link href={ROUTES.recruiterDashboard}>
-          <Button size="lg">Open recruiting dashboard</Button>
+          <Button size="lg">Mở bảng điều khiển tuyển dụng</Button>
         </Link>
         <Link href={ROUTES.jobs}>
           <Button size="lg" variant="secondary">
-            Browse live jobs
+            Xem các vị trí đang tuyển
           </Button>
         </Link>
       </>
@@ -197,11 +199,11 @@ function renderHeroActions(viewer: MeResponse | null): JSX.Element {
   return (
     <>
       <Link href={ROUTES.candidateProfile}>
-        <Button size="lg">Go to my profile</Button>
+        <Button size="lg">Đến hồ sơ của tôi</Button>
       </Link>
       <Link href={ROUTES.jobs}>
         <Button size="lg" variant="secondary">
-          Browse open jobs
+          Xem việc làm đang mở
         </Button>
       </Link>
     </>
@@ -209,8 +211,8 @@ function renderHeroActions(viewer: MeResponse | null): JSX.Element {
 }
 
 function LatestJobCard({ job }: { job: JobPostingPublic }) {
-  const location = job.location?.trim() || "Remote or on-site";
-  const workType = job.workType?.trim() || "Full time";
+  const location = job.location?.trim() || "Làm việc từ xa hoặc tại văn phòng";
+  const workType = job.workType?.trim() || "Toàn thời gian";
   const department = job.department?.trim();
   const summary = formatJobSummary(job);
 
@@ -235,7 +237,7 @@ function LatestJobCard({ job }: { job: JobPostingPublic }) {
         </div>
         <Link href={`${ROUTES.jobs}/${job.id}`}>
           <Button size="sm" variant="secondary">
-            View details
+            Xem chi tiết
           </Button>
         </Link>
       </div>
@@ -256,51 +258,51 @@ export default async function Home() {
         <Container className="flex flex-col gap-16 py-20 text-white lg:flex-row lg:items-center">
           <div className="max-w-2xl space-y-6">
             <span className="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">
-              All-in-one recruiting
+              Giải pháp tuyển dụng toàn diện
             </span>
             <h1 className="text-4xl font-semibold sm:text-5xl">
-              Bring candidates and hiring teams together on one platform
+              Kết nối ứng viên và đội ngũ tuyển dụng trên cùng một nền tảng
             </h1>
             <p className="text-base leading-relaxed text-white/80">
-              TalentFlow centralizes job publishing, candidate communication, and interview
-              orchestration while the gateway keeps every call secure.
+              TalentFlow hợp nhất đăng tuyển, giao tiếp với ứng viên và điều phối phỏng vấn, trong khi
+              gateway đảm bảo mọi kết nối luôn an toàn.
             </p>
             <div className="flex flex-wrap gap-3">{renderHeroActions(viewer)}</div>
             <div className="flex flex-wrap gap-3 text-xs text-white/60">
               <span className="rounded-full border border-white/20 px-3 py-1">
-                End-to-end JWT protection
+                Bảo mật JWT end-to-end
               </span>
               <span className="rounded-full border border-white/20 px-3 py-1">
-                Ready for multi-company rollouts
+                Sẵn sàng triển khai đa doanh nghiệp
               </span>
               <span className="rounded-full border border-white/20 px-3 py-1">
-                Pipeline metrics in real time
+                Chỉ số pipeline theo thời gian thực
               </span>
             </div>
           </div>
           <Panel variant="glass" className="bg-white/10 text-left text-sm text-white/85 backdrop-blur-md">
             <div className="space-y-4">
-              <p className="text-lg font-semibold text-white">TalentFlow supports:</p>
+              <p className="text-lg font-semibold text-white">TalentFlow hỗ trợ:</p>
               <ul className="space-y-3">
                 <li className="flex gap-3">
                   <span className="mt-1 inline-flex h-2.5 w-2.5 flex-shrink-0 rounded-full bg-emerald-400" />
                   <span>
-                    <strong className="font-semibold text-white">Candidates</strong> manage CVs,
-                    applications, and notifications without losing context.
+                    <strong className="font-semibold text-white">Ứng viên</strong> quản lý CV, đơn ứng
+                    tuyển và thông báo mà không bỏ lỡ bối cảnh.
                   </span>
                 </li>
                 <li className="flex gap-3">
                   <span className="mt-1 inline-flex h-2.5 w-2.5 flex-shrink-0 rounded-full bg-sky-400" />
                   <span>
-                    <strong className="font-semibold text-white">Recruiters</strong> collaborate on a
-                    shared pipeline with tasks, notes, and interview plans.
+                    <strong className="font-semibold text-white">Nhà tuyển dụng</strong> phối hợp trên
+                    pipeline chung với nhiệm vụ, ghi chú và kế hoạch phỏng vấn.
                   </span>
                 </li>
                 <li className="flex gap-3">
                   <span className="mt-1 inline-flex h-2.5 w-2.5 flex-shrink-0 rounded-full bg-violet-400" />
                   <span>
-                    <strong className="font-semibold text-white">Admins</strong> govern multi-company
-                    deployments with dashboards and audit trails.
+                    <strong className="font-semibold text-white">Quản trị viên</strong> kiểm soát triển
+                    khai đa doanh nghiệp với bảng điều khiển và dấu vết kiểm soát.
                   </span>
                 </li>
               </ul>
@@ -314,19 +316,18 @@ export default async function Home() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-3">
               <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                Latest jobs
+                Việc làm mới nhất
               </span>
               <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
-                Fresh roles hiring right now
+                Những vị trí đang tuyển ngay lúc này
               </h2>
               <p className="max-w-2xl text-sm text-foreground/70">
-                Jump into the newest opportunities before anyone else. Sign in to apply instantly and
-                receive progress alerts.
+                Đón đầu cơ hội mới trước khi người khác kịp ứng tuyển. Đăng nhập để nộp hồ sơ ngay và nhận thông báo tiến độ.
               </p>
             </div>
             <Link href={ROUTES.jobs}>
               <Button variant="ghost" size="md">
-                View all jobs
+                Xem tất cả việc làm
               </Button>
             </Link>
           </div>
@@ -337,18 +338,17 @@ export default async function Home() {
             ) : (
               <Panel className="md:col-span-2 xl:col-span-3">
                 <div className="flex flex-col gap-4 text-center sm:text-left">
-                  <h3 className="text-xl font-semibold text-foreground">No jobs published yet</h3>
+                  <h3 className="text-xl font-semibold text-foreground">Chưa có việc làm nào được đăng</h3>
                   <p className="text-sm text-foreground/70">
-                    Once recruiters publish openings they will appear here immediately. Check back
-                    soon or sign in to create the first posting.
+                    Khi nhà tuyển dụng đăng tin, chúng sẽ xuất hiện tại đây ngay lập tức. Quay lại sau hoặc đăng nhập để là người tạo bài đăng đầu tiên.
                   </p>
                   <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
                     <Link href={ROUTES.recruiterDashboard}>
-                      <Button size="sm">Create a job</Button>
+                      <Button size="sm">Đăng việc làm mới</Button>
                     </Link>
                     <Link href={ROUTES.jobs}>
                       <Button size="sm" variant="secondary">
-                        Browse job board
+                        Xem bảng việc làm
                       </Button>
                     </Link>
                   </div>
@@ -363,14 +363,13 @@ export default async function Home() {
         <Container className="space-y-10">
           <div className="space-y-2 text-center">
             <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-              How it works
+              Cách thức vận hành
             </span>
             <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
-              Purpose-built journeys for every role
+              Lộ trình được thiết kế riêng cho từng vai trò
             </h2>
             <p className="mx-auto max-w-2xl text-sm text-foreground/70">
-              Each microservice shares context through the gateway so candidates, recruiters, and
-              admins always know what comes next.
+              Các microservice chia sẻ bối cảnh qua gateway để ứng viên, nhà tuyển dụng và quản trị viên luôn biết bước tiếp theo.
             </p>
           </div>
           <div className="grid gap-6 lg:grid-cols-2">
@@ -410,14 +409,13 @@ export default async function Home() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl space-y-2">
               <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                Social proof
+                Khách hàng tin dùng
               </span>
               <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
-                Teams scaling with TalentFlow
+                Những đội ngũ đang phát triển cùng TalentFlow
               </h2>
               <p className="text-sm text-foreground/70">
-                They automate email nudges, share dashboards with leadership, and keep candidates
-                informed every step of the way.
+                Họ tự động hóa email nhắc nhở, chia sẻ dashboard với lãnh đạo và giữ cho ứng viên được cập nhật ở từng giai đoạn.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 text-xs text-foreground/60">
@@ -451,22 +449,21 @@ export default async function Home() {
         <Container>
           <Panel className="flex flex-col items-center gap-6 bg-gradient-to-r from-[rgba(var(--accent),0.12)] to-transparent text-center">
             <span className="text-xs font-semibold uppercase tracking-[0.32em] text-accent/70">
-              Ready to get started
+              Sẵn sàng bắt đầu
             </span>
             <h2 className="max-w-2xl text-3xl font-semibold text-foreground sm:text-4xl">
-              Launch a modern recruiting workflow today
+              Khởi động quy trình tuyển dụng hiện đại ngay hôm nay
             </h2>
             <p className="max-w-xl text-sm text-foreground/70">
-              Connect to the gateway, plug in your services, and move from job posting to offer
-              without losing context.
+              Kết nối với gateway, tích hợp dịch vụ của bạn và tiến từ đăng tuyển đến chốt offer mà không mất bối cảnh.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Link href={ROUTES.register}>
-                <Button size="lg">Start as candidate</Button>
+                <Button size="lg">Bắt đầu với vai trò ứng viên</Button>
               </Link>
               <Link href={ROUTES.signIn}>
                 <Button size="lg" variant="secondary">
-                  Talk to recruiting team
+                  Liên hệ đội tuyển dụng
                 </Button>
               </Link>
             </div>

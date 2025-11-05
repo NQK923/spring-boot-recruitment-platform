@@ -16,19 +16,19 @@ export async function acceptInviteAction(
   const confirmPassword = formData.get("confirmPassword");
 
   if (typeof token !== "string" || token.trim().length === 0) {
-    return { error: "Invitation token is missing. Refresh the page and try again." };
+    return { error: "Thiếu mã lời mời. Hãy tải lại trang và thử lại." };
   }
 
   if (typeof password !== "string" || typeof confirmPassword !== "string") {
-    return { error: "Password and confirmation are required." };
+    return { error: "Bạn cần nhập mật khẩu và xác nhận mật khẩu." };
   }
 
   if (password !== confirmPassword) {
-    return { error: "Passwords do not match. Please re-enter them." };
+    return { error: "Hai mật khẩu không trùng khớp. Vui lòng nhập lại." };
   }
 
   if (password.length < 8) {
-    return { error: "Password must be at least 8 characters long." };
+    return { error: "Mật khẩu phải có ít nhất 8 ký tự." };
   }
 
   try {
@@ -40,7 +40,7 @@ export async function acceptInviteAction(
     return { success: true };
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : "Unable to accept invitation right now.",
+      error: error instanceof Error ? error.message : "Hiện không thể chấp nhận lời mời.",
     };
   }
 }

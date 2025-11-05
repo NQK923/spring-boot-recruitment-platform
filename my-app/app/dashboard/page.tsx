@@ -44,7 +44,26 @@ async function getRecruiterInterviews(): Promise<Interview[]> {
   }
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  DRAFT: "Nháp",
+  PUBLISHED: "Đang hiển thị",
+  CLOSED: "Đã đóng",
+  APPLIED: "Đã nộp",
+  SCREENING: "Đang sàng lọc",
+  INTERVIEW: "Phỏng vấn",
+  INTERVIEW_SCHEDULED: "Đã lên lịch phỏng vấn",
+  OFFERED: "Đề nghị",
+  HIRED: "Đã nhận việc",
+  REJECTED: "Bị từ chối",
+  WITHDRAWN: "Đã rút",
+  ON_HOLD: "Tạm dừng",
+};
+
 function formatStatus(status: string) {
+  const normalized = status.toUpperCase();
+  if (STATUS_LABELS[normalized]) {
+    return STATUS_LABELS[normalized];
+  }
   return status
     .toLowerCase()
     .split("_")
@@ -54,7 +73,7 @@ function formatStatus(status: string) {
 
 function formatDate(value?: string | null) {
   if (!value) {
-    return "Unknown";
+    return "Không rõ";
   }
   try {
     return dateFormatter.format(new Date(value));
@@ -65,7 +84,7 @@ function formatDate(value?: string | null) {
 
 function formatDateTime(value?: string | null, timezone?: string | null) {
   if (!value) {
-    return "Scheduled soon";
+    return "Sẽ được lên lịch sớm";
   }
   try {
     const date = new Date(value);
@@ -141,54 +160,54 @@ export default async function DashboardPage() {
 
   const summaryMetrics = [
     {
-      label: "Active openings",
+      label: "Vị trí đang mở",
       value: openJobs.length,
-      helper: "Roles currently visible to candidates.",
+      helper: "Các vị trí hiện đang hiển thị cho ứng viên.",
     },
     {
-      label: "Pipeline candidates",
+      label: "Ứng viên trong pipeline",
       value: activeCandidateIds.size,
-      helper: "Applications you are actively tracking.",
+      helper: "Hồ sơ bạn đang theo dõi và chăm sóc.",
     },
     {
-      label: "Awaiting review",
+      label: "Đang chờ xử lý",
       value: awaitingReview,
-      helper: "Applicants waiting for the next touchpoint.",
+      helper: "Ứng viên cần được phản hồi tiếp theo.",
     },
     {
-      label: "Upcoming interviews",
+      label: "Phỏng vấn sắp diễn ra",
       value: upcomingInterviews.length,
-      helper: "Scheduled conversations in the next few days.",
+      helper: "Cuộc phỏng vấn đã lên lịch trong vài ngày tới.",
     },
   ];
 
   const quickActions = [
     {
-      label: "Review new applicants",
+      label: "Xem hồ sơ mới",
       href: "#applications",
-      description: "Skim the latest submissions and leave notes for hiring managers.",
+      description: "Duyệt các hồ sơ vừa nộp và ghi chú cho quản lý tuyển dụng.",
     },
     {
-      label: "Diagnose pipeline stalls",
+      label: "Xử lý điểm tắc pipeline",
       href: "#pipeline",
-      description: "Spot bottlenecks across stages and rebalance workloads quickly.",
+      description: "Phát hiện nút thắt giữa các giai đoạn và phân bổ lại công việc.",
     },
     {
-      label: "Prepare for interviews",
+      label: "Chuẩn bị phỏng vấn",
       href: "#interviews",
-      description: "Confirm schedules, share agendas, and ensure follow-up owners are ready.",
+      description: "Xác nhận lịch, chia sẻ agenda và phân công người theo dõi.",
     },
     {
-      label: "Track job performance",
+      label: "Theo dõi hiệu quả tuyển dụng",
       href: "#job-health",
-      description: "See which openings need fresh sourcing or faster feedback loops.",
+      description: "Xem vị trí nào cần bổ sung nguồn ứng viên hoặc phản hồi nhanh hơn.",
     },
   ];
 
   const heroHighlights = [
-    `${allApplications.length} application${allApplications.length === 1 ? "" : "s"} in your pipeline.`,
-    `${awaitingReview} candidate${awaitingReview === 1 ? "" : "s"} waiting for a response.`,
-    `${upcomingInterviews.length} upcoming interview${upcomingInterviews.length === 1 ? "" : "s"} to prepare.`,
+    `Có ${allApplications.length} hồ sơ trong pipeline của bạn.`,
+    `${awaitingReview} ứng viên đang chờ phản hồi.`,
+    `${upcomingInterviews.length} buổi phỏng vấn sắp diễn ra cần chuẩn bị.`,
   ];
 
   return (
@@ -197,13 +216,13 @@ export default async function DashboardPage() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           <div className="space-y-4">
             <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-              Recruiter workspace
+              Không gian nhà tuyển dụng
             </span>
             <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
-              Coordinate jobs, candidates, and interviews in one place.
+              Điều phối việc làm, ứng viên và phỏng vấn trên cùng một nền tảng.
             </h1>
             <p className="max-w-2xl text-sm text-foreground/70">
-              Stay on top of the hiring pipeline with clear priorities, context from recent activity, and the quickest path to action.
+              Theo sát pipeline tuyển dụng với ưu tiên rõ ràng, bối cảnh từ hoạt động gần nhất và đường dẫn hành động nhanh nhất.
             </p>
             <ul className="space-y-2 text-sm text-foreground/70">
               {heroHighlights.map((highlight) => (
@@ -216,13 +235,13 @@ export default async function DashboardPage() {
           </div>
           <div className="space-y-3 rounded-3xl border border-foreground/10 bg-surface/90 p-6 shadow-[0_18px_32px_rgba(15,23,42,0.14)]">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-              Today&apos;s focus
+              Trọng tâm hôm nay
             </p>
             <p className="text-sm text-foreground/70">
-              Start with candidates awaiting outreach, then review interviews to confirm prep and follow-up owners.
+              Bắt đầu với các ứng viên đang chờ liên hệ, sau đó rà soát lịch phỏng vấn để đảm bảo chuẩn bị và người theo dõi.
             </p>
             <div className="rounded-2xl border border-accent/20 bg-accent/10 px-4 py-3 text-xs text-accent">
-              Keep your response times tight: aim to acknowledge every new applicant within 24 hours.
+              Duy trì tốc độ phản hồi: hãy xác nhận mọi hồ sơ mới trong vòng 24 giờ.
             </div>
           </div>
         </div>
@@ -244,9 +263,9 @@ export default async function DashboardPage() {
 
       <Panel variant="surface" padding="lg" className="space-y-6">
         <header className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Quick actions</h2>
+          <h2 className="text-lg font-semibold text-foreground">Hành động nhanh</h2>
           <p className="text-sm text-foreground/60">
-            Jump straight into the areas that keep the pipeline healthy and candidates moving forward.
+            Truy cập ngay các khu vực giữ pipeline luôn thông suốt và thúc đẩy ứng viên tiến bước.
           </p>
         </header>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -259,7 +278,7 @@ export default async function DashboardPage() {
               <span className="text-sm font-semibold text-foreground">{action.label}</span>
               <span className="text-xs">{action.description}</span>
               <span className="inline-flex items-center gap-2 text-xs font-semibold text-accent transition group-hover:translate-x-0.5">
-                Go now
+                Thực hiện ngay
                 <span aria-hidden>&gt;</span>
               </span>
             </Link>
@@ -269,22 +288,22 @@ export default async function DashboardPage() {
 
       <Panel id="jobs" variant="surface" padding="lg" className="space-y-6">
         <header className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Job catalog</h2>
+          <h2 className="text-lg font-semibold text-foreground">Danh mục việc làm</h2>
           <p className="text-sm text-foreground/60">
-            Review the roles you are helping to staff. {canAdminJobs
-              ? "Switch to the company admin workspace whenever you need to publish, pause, or edit postings."
-              : "Only company admins can create or edit postings. Reach out to your admin when changes are needed."}
+            Rà soát các vị trí bạn đang hỗ trợ tuyển dụng. {canAdminJobs
+              ? "Chuyển sang workspace quản trị công ty khi cần đăng, tạm dừng hoặc chỉnh sửa bài tuyển dụng."
+              : "Chỉ quản trị viên công ty mới có thể tạo hoặc chỉnh sửa bài đăng. Hãy liên hệ quản trị khi cần thay đổi."}
           </p>
           {canAdminJobs ? (
             <div className="flex flex-wrap items-center gap-2">
               <Link href={`${ROUTES.companyAdminDashboard}#jobs`}>
                 <Button size="sm" variant="secondary">
-                  Open company admin jobs
+                  Mở trang quản trị việc làm
                 </Button>
               </Link>
               <Link href={`${ROUTES.companyAdminDashboard}#team`}>
                 <Button size="sm" variant="ghost">
-                  Manage team access
+                  Quản lý quyền truy cập
                 </Button>
               </Link>
             </div>
@@ -292,7 +311,7 @@ export default async function DashboardPage() {
         </header>
         {jobs.length === 0 ? (
           <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
-            No postings yet. Contact your company admin to launch the first role.
+            Chưa có bài đăng. Liên hệ quản trị công ty để mở vị trí đầu tiên.
           </div>
         ) : (
           <div className="space-y-3">
@@ -305,14 +324,14 @@ export default async function DashboardPage() {
                   <div className="space-y-1">
                     <p className="font-semibold text-foreground">{job.title}</p>
                     <p className="text-xs text-foreground/60">
-                      Status {formatStatus(job.status)} � Updated {formatDate(job.updatedAt)}
+                      Trạng thái {formatStatus(job.status)} • Cập nhật {formatDate(job.updatedAt)}
                     </p>
                   </div>
                   <Link
                     href={`${ROUTES.jobs}/${job.id}`}
                     className="inline-flex items-center gap-1 text-xs font-semibold text-accent transition hover:text-foreground"
                   >
-                    Preview posting
+                    Xem bài tuyển dụng
                     <span aria-hidden>&gt;</span>
                   </Link>
                 </div>
@@ -331,8 +350,8 @@ export default async function DashboardPage() {
                 </div>
                 <p className="text-xs text-foreground/50">
                   {canAdminJobs
-                    ? "Need to make changes? Head to the company admin workspace to edit this posting."
-                    : "Need an update? Ask your company admin to adjust the posting."}
+                    ? "Cần chỉnh sửa? Vào workspace quản trị công ty để cập nhật bài tuyển dụng."
+                    : "Cần cập nhật? Hãy nhờ quản trị công ty điều chỉnh nội dung."}
                 </p>
               </div>
             ))}
@@ -343,14 +362,14 @@ export default async function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Panel id="pipeline" variant="surface" padding="lg" className="space-y-4">
           <header>
-            <h2 className="text-lg font-semibold text-foreground">Pipeline snapshot</h2>
+            <h2 className="text-lg font-semibold text-foreground">Tổng quan pipeline</h2>
             <p className="text-sm text-foreground/60">
-              Aggregated from company applications. Adjust statuses from any candidate profile and the totals update automatically.
+              Tổng hợp từ toàn bộ hồ sơ của công ty. Cập nhật trạng thái ở bất kỳ hồ sơ nào, số liệu sẽ tự động thay đổi.
             </p>
           </header>
           {allApplications.length === 0 ? (
             <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-4 py-6 text-sm text-foreground/60">
-              No applications yet. Invite candidates or post new jobs to start building your pipeline.
+              Chưa có hồ sơ nào. Mời ứng viên hoặc đăng tuyển vị trí mới để bắt đầu xây dựng pipeline.
             </div>
           ) : (
             <div className="space-y-3">
@@ -369,15 +388,15 @@ export default async function DashboardPage() {
 
         <Panel id="interviews" variant="surface" padding="lg" className="space-y-4">
           <header>
-            <h2 className="text-lg font-semibold text-foreground">Upcoming interviews</h2>
+            <h2 className="text-lg font-semibold text-foreground">Phỏng vấn sắp diễn ra</h2>
             <p className="text-sm text-foreground/60">
-              View the next five conversations on your calendar. Reschedule or log feedback directly from the interviews area.
+              Xem năm cuộc trao đổi tiếp theo trên lịch của bạn. Có thể đổi lịch hoặc ghi nhận phản hồi ngay tại khu vực phỏng vấn.
             </p>
           </header>
 
           {upcomingInterviews.length === 0 ? (
             <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-4 py-6 text-sm text-foreground/60">
-              No interviews scheduled. Coordinate with candidates to move them forward.
+              Chưa có phỏng vấn nào. Hãy phối hợp với ứng viên để đưa họ tiến lên.
             </div>
           ) : (
             <div className="space-y-3 text-sm">
@@ -387,15 +406,14 @@ export default async function DashboardPage() {
                   className="rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3 shadow-[0_10px_20px_rgba(15,23,42,0.08)]"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-foreground">Application #{interview.applicationId}</span>
+                    <span className="font-semibold text-foreground">Đơn ứng tuyển #{interview.applicationId}</span>
                     <span className="text-xs text-foreground/60">
                       {formatDateTime(interview.scheduleTime, interview.timezone)}
                     </span>
                   </div>
                   <p className="text-xs text-foreground/55">
-                    {interview.format ?? "Format TBD"}
-                     - 
-                    {interview.locationOrLink ? interview.locationOrLink : "Location to be shared"}
+                    {interview.format ?? "Hình thức cập nhật sau"} -{" "}
+                    {interview.locationOrLink ? interview.locationOrLink : "Địa điểm sẽ được thông báo"}
                   </p>
                 </div>
               ))}
@@ -406,15 +424,15 @@ export default async function DashboardPage() {
 
       <Panel id="applications" variant="surface" padding="lg" className="space-y-4">
         <header>
-          <h2 className="text-lg font-semibold text-foreground">Recent applications</h2>
+          <h2 className="text-lg font-semibold text-foreground">Hồ sơ mới nhất</h2>
           <p className="text-sm text-foreground/60">
-            Latest activity across your pipeline. Click through to view notes, update status, or add feedback.
+            Hoạt động gần đây trong pipeline. Nhấp để xem ghi chú, cập nhật trạng thái hoặc thêm phản hồi.
           </p>
         </header>
 
         {recentApplications.length === 0 ? (
           <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-4 py-6 text-sm text-foreground/60">
-            Nothing to show yet. Applications will appear here as soon as candidates submit them.
+            Chưa có dữ liệu. Hồ sơ sẽ xuất hiện tại đây ngay khi ứng viên nộp.
           </div>
         ) : (
           <div className="space-y-3 text-sm">
@@ -425,12 +443,12 @@ export default async function DashboardPage() {
                 className="flex items-center justify-between rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 transition hover:border-accent/30 hover:bg-surface/80"
               >
                 <div>
-                  <p className="font-semibold text-foreground">Application #{application.id}</p>
+                  <p className="font-semibold text-foreground">Hồ sơ #{application.id}</p>
                   <p className="text-xs text-foreground/50">
-                    Job #{application.jobPostingId} Applied {formatDate(application.appliedAt)}
+                    Vị trí #{application.jobPostingId} • Nộp ngày {formatDate(application.appliedAt)}
                   </p>
                   <p className="text-xs text-foreground/50">
-                    Candidate {application.candidateName ?? `#${application.candidateId}`}
+                    Ứng viên {application.candidateName ?? `#${application.candidateId}`}
                   </p>
                 </div>
                 <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
@@ -444,24 +462,24 @@ export default async function DashboardPage() {
 
       <Panel id="job-health" variant="surface" padding="lg" className="space-y-4">
         <header>
-          <h2 className="text-lg font-semibold text-foreground">Job health</h2>
+          <h2 className="text-lg font-semibold text-foreground">Sức khỏe tuyển dụng</h2>
           <p className="text-sm text-foreground/60">
-            Track application volume per job and spot roles that need more sourcing or faster follow-up.
+            Theo dõi số lượng hồ sơ theo từng vị trí và nhận diện các vai trò cần thêm nguồn ứng viên hoặc phản hồi nhanh hơn.
           </p>
         </header>
 
         {jobs.length === 0 ? (
           <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-4 py-6 text-sm text-foreground/60">
-            No jobs found for your company. Create a job posting to populate this table.
+            Chưa có vị trí nào cho công ty của bạn. Tạo bài đăng tuyển dụng để hiển thị dữ liệu.
           </div>
         ) : (
           <div className="overflow-x-auto rounded-2xl border border-foreground/10 bg-surface/95 shadow-[0_12px_24px_rgba(15,23,42,0.08)]">
             <table className="min-w-full divide-y divide-foreground/10 text-sm">
               <thead className="text-left text-xs uppercase tracking-[0.28em] text-foreground/50">
                 <tr>
-                  <th className="px-4 py-3">Job</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Applications</th>
+                  <th className="px-4 py-3">Vị trí</th>
+                  <th className="px-4 py-3">Trạng thái</th>
+                  <th className="px-4 py-3 text-right">Số hồ sơ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-foreground/10">

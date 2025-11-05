@@ -115,7 +115,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
         if (!response.ok) {
           const message = await parseErrorFromResponse(
             response,
-            "Unable to load social sign-in configuration."
+            "Không thể tải cấu hình đăng nhập mạng xã hội."
           );
           throw new Error(message);
         }
@@ -132,7 +132,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
         const message =
           err instanceof Error
             ? err.message
-            : "Social sign-in is temporarily unavailable. Please try again later.";
+            : "Tính năng đăng nhập mạng xã hội tạm thời không khả dụng. Vui lòng thử lại sau.";
         setError(message);
       }
     }
@@ -144,7 +144,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
 
   const handleGoogleLogin = useCallback(() => {
     if (!config?.googleClientId) {
-      setError("Google sign-in is not configured for this environment.");
+      setError("Đăng nhập Google chưa được cấu hình cho môi trường này.");
       return;
     }
 
@@ -170,7 +170,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
 
   const handleGitHubLogin = useCallback(() => {
     if (!config?.githubClientId || !config.githubAuthorizeRedirectUri) {
-      setError("GitHub sign-in is not configured for this environment.");
+      setError("Đăng nhập GitHub chưa được cấu hình cho môi trường này.");
       return;
     }
 
@@ -195,7 +195,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
     );
 
     if (!popup) {
-      setError("Unable to open the GitHub sign-in window. Please allow popups and try again.");
+      setError("Không thể mở cửa sổ đăng nhập GitHub. Vui lòng cho phép cửa sổ bật lên và thử lại.");
       return;
     }
 
@@ -240,7 +240,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
         setError(
           typeof description === "string" && description.length > 0
             ? description
-            : "GitHub sign-in was cancelled."
+            : "Đăng nhập GitHub đã bị hủy."
         );
         cleanup();
         return;
@@ -248,7 +248,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
 
       const codeValue = (data as { code?: unknown }).code;
       if (typeof codeValue !== "string" || codeValue.length === 0) {
-        setError("GitHub sign-in did not return an authorization code.");
+        setError("Đăng nhập GitHub không trả về mã xác thực.");
         cleanup();
         return;
       }
@@ -266,14 +266,14 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
         if (!response.ok) {
           const message = await parseErrorFromResponse(
             response,
-            "Unable to complete GitHub sign-in."
+            "Không thể hoàn tất đăng nhập GitHub."
           );
           throw new Error(message);
         }
 
         const body = (await response.json()) as { success?: boolean; error?: string };
         if (!body?.success) {
-          throw new Error(body?.error ?? "GitHub sign-in failed. Please try again.");
+          throw new Error(body?.error ?? "Đăng nhập GitHub không thành công. Vui lòng thử lại.");
         }
 
         cleanup(true);
@@ -282,7 +282,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
         window.location.href = redirectTarget;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : "Unable to sign in with GitHub right now.";
+          err instanceof Error ? err.message : "Hiện không thể đăng nhập bằng GitHub.";
         setError(message);
         cleanup();
       }
@@ -293,7 +293,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
     githubIntervalRef.current = window.setInterval(() => {
       if (!githubPopupRef.current || githubPopupRef.current.closed) {
         if (!handled) {
-          setError("GitHub sign-in window was closed before completing authentication.");
+          setError("Cửa sổ đăng nhập GitHub đã bị đóng trước khi hoàn tất xác thực.");
           cleanup();
         } else {
           cleanup(true);
@@ -323,9 +323,9 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
   return (
     <div className="space-y-4">
       <div className="space-y-1 text-sm text-foreground/70">
-        <p>Sign in as a candidate using a social account.</p>
+        <p>Đăng nhập với vai trò ứng viên bằng tài khoản mạng xã hội.</p>
         <p className="text-foreground/50">
-          We&apos;ll create a candidate profile if you&apos;re new here.
+          Chúng tôi sẽ tạo hồ sơ ứng viên nếu bạn là người dùng mới.
         </p>
       </div>
 
@@ -344,11 +344,11 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
           disabled={googleDisabled}
         >
           {loadingProvider === "google" ? (
-            "Connecting to Google..."
+            "Đang kết nối tới Google..."
           ) : (
             <>
               <GoogleIcon className="h-5 w-5" />
-              Continue with Google
+              Tiếp tục với Google
             </>
           )}
         </Button>
@@ -360,11 +360,11 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
           disabled={githubDisabled}
         >
           {loadingProvider === "github" ? (
-            "Connecting to GitHub..."
+            "Đang kết nối tới GitHub..."
           ) : (
             <>
               <GitHubIcon className="h-5 w-5" />
-              Continue with GitHub
+              Tiếp tục với GitHub
             </>
           )}
         </Button>

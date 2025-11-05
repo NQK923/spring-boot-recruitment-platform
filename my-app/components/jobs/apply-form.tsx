@@ -20,33 +20,33 @@ export function ApplyForm({ jobPostingId }: Props) {
   return (
     <form action={formAction} className="flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-background/70 p-6 shadow-sm">
       <div>
-        <h2 className="text-lg font-semibold text-foreground">Apply for this role</h2>
+        <h2 className="text-lg font-semibold text-foreground">Ứng tuyển vị trí này</h2>
         <p className="text-sm text-foreground/60">
-          Submit with your latest CV. You can update it later from the candidate portal.
+          Gửi hồ sơ cùng CV mới nhất. Bạn có thể cập nhật lại trong portal ứng viên.
         </p>
       </div>
       <label className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
-        CV ID (optional)
+        Mã CV (không bắt buộc)
         <Input
           name="cvId"
           type="number"
           min={0}
-          placeholder="Enter CV identifier"
+          placeholder="Nhập mã nhận diện CV"
           disabled={pending}
           className="mt-1"
         />
       </label>
       <label className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
-        Source (optional)
+        Nguồn (không bắt buộc)
         <Input
           name="source"
-          placeholder="e.g. Career site, LinkedIn"
+          placeholder="Ví dụ: Career site, LinkedIn"
           disabled={pending}
           className="mt-1"
         />
       </label>
       <Button type="submit" size="lg" disabled={pending}>
-        {pending ? "Submitting..." : "Submit application"}
+        {pending ? "Đang gửi..." : "Gửi hồ sơ"}
       </Button>
       {state?.error ? (
         <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">

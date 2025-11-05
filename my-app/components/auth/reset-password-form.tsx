@@ -16,20 +16,20 @@ export function ResetPasswordForm() {
     <form className="space-y-5" action={formAction}>
       <div className="space-y-2">
         <label className="text-sm font-semibold text-foreground" htmlFor="email">
-          Email address
+          Địa chỉ email
         </label>
         <Input
           id="email"
           name="email"
           type="email"
-          placeholder="you@example.com"
+          placeholder="ban@example.com"
           autoComplete="email"
           required
         />
       </div>
       <div className="space-y-2">
         <label className="text-sm font-semibold text-foreground" htmlFor="otp">
-          Reset code
+          Mã đặt lại
         </label>
         <Input
           id="otp"
@@ -42,18 +42,18 @@ export function ResetPasswordForm() {
           required
         />
         <p className="text-xs text-foreground/55">
-          Enter the six-digit code from your email. Reset codes expire 10 minutes after they are issued.
+          Nhập mã sáu chữ số từ email. Mỗi mã sẽ hết hạn sau 10 phút kể từ khi cấp.
         </p>
       </div>
       <div className="space-y-2">
         <label className="text-sm font-semibold text-foreground" htmlFor="newPassword">
-          New password
+          Mật khẩu mới
         </label>
         <Input
           id="newPassword"
           name="newPassword"
           type="password"
-          placeholder="At least 8 characters"
+          placeholder="Tối thiểu 8 ký tự"
           autoComplete="new-password"
           required
         />
@@ -64,12 +64,12 @@ export function ResetPasswordForm() {
         </p>
       ) : null}
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
-        {pending ? "Updating password..." : "Reset password"}
+        {pending ? "Đang cập nhật mật khẩu..." : "Đặt lại mật khẩu"}
       </Button>
       <p className="text-center text-sm text-foreground/60">
-        Remembered your password?{" "}
+        Đã nhớ mật khẩu?{" "}
         <Link className="font-medium text-foreground hover:underline" href={ROUTES.signIn}>
-          Back to sign in
+          Quay lại đăng nhập
         </Link>
       </p>
     </form>

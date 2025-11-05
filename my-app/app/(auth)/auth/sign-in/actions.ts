@@ -26,7 +26,7 @@ export async function signInAction(
   const nextValue = formData.get("next");
 
   if (!email || !password) {
-    return { error: "Email and password are required." };
+    return { error: "Email và mật khẩu là bắt buộc." };
   }
 
   try {
@@ -37,12 +37,12 @@ export async function signInAction(
     const data = (await response.json()) as Partial<AuthTokenResponse>;
 
     if (!data?.accessToken) {
-      return { error: "Received an invalid response from the authentication service." };
+      return { error: "Nhận được phản hồi không hợp lệ từ dịch vụ xác thực." };
     }
 
     await setAccessToken(data.accessToken);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to sign in.";
+    const message = error instanceof Error ? error.message : "Không thể đăng nhập.";
     return { error: message };
   }
 

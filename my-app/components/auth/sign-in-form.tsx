@@ -44,13 +44,13 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
       <input type="hidden" name="next" value={resolvedNext} />
       <div className="space-y-2">
         <label className="text-sm font-semibold text-foreground" htmlFor="email">
-          Email address
+          Địa chỉ email
         </label>
         <Input
           id="email"
           name="email"
           type="email"
-          placeholder="you@example.com"
+          placeholder="ban@example.com"
           autoComplete="email"
           required
         />
@@ -58,13 +58,13 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-sm font-semibold text-foreground" htmlFor="password">
-            Password
+            Mật khẩu
           </label>
           <Link
             className="text-xs font-medium text-accent hover:underline"
             href={ROUTES.forgotPassword}
           >
-            Forgot password?
+            Quên mật khẩu?
           </Link>
         </div>
         <Input
@@ -82,12 +82,12 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
         </p>
       ) : null}
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
-        {pending ? "Signing in..." : "Sign in"}
+        {pending ? "Đang đăng nhập..." : "Đăng nhập"}
       </Button>
       <div className="text-center text-sm text-foreground/60">
-        Don&apos;t have an account?{" "}
+        Chưa có tài khoản?{" "}
         <Link className="font-medium text-foreground hover:underline" href={ROUTES.register}>
-          Create one
+          Tạo ngay
         </Link>
       </div>
     </form>

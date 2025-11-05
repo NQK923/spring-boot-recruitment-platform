@@ -14,18 +14,18 @@ export function ForgotPasswordForm() {
     <form className="space-y-5" action={formAction}>
       <div className="space-y-2">
         <label className="text-sm font-semibold text-foreground" htmlFor="email">
-          Email address
+          Địa chỉ email
         </label>
         <Input
           id="email"
           name="email"
           type="email"
-          placeholder="you@example.com"
+          placeholder="ban@example.com"
           autoComplete="email"
           required
         />
         <p className="text-xs text-foreground/55">
-          We&apos;ll send a six-digit code to this email if it&apos;s associated with a verified account.
+          Chúng tôi sẽ gửi mã gồm sáu chữ số tới email này nếu tài khoản được xác minh.
         </p>
       </div>
       {state?.error ? (
@@ -39,7 +39,7 @@ export function ForgotPasswordForm() {
         </p>
       ) : null}
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
-        {pending ? "Sending reset code..." : "Send reset code"}
+        {pending ? "Đang gửi mã đặt lại..." : "Gửi mã đặt lại"}
       </Button>
     </form>
   );

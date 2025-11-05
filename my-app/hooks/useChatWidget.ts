@@ -1,13 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { type ChatStatus, useChatWidgetStore } from "@/app/providers/chat-widget-provider";
-import {
-  buildPayloadFromHistory,
-  generateMessageId,
-  type ChatMessage,
-  type ChatRole,
-} from "@/lib/chat";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {type ChatStatus, useChatWidgetStore} from "@/app/providers/chat-widget-provider";
+import {buildPayloadFromHistory, type ChatMessage, type ChatRole, generateMessageId,} from "@/lib/chat";
 
 type SendMessageOptions = {
   stream?: boolean;
@@ -294,7 +289,7 @@ export function useChatWidget() {
   );
 
   const sendMessageNonStream = useCallback(
-    async ({ prompt, history, language, assistantId }: NonStreamContext) => {
+    async ({history, language, assistantId }: NonStreamContext) => {
       setStatus("loading");
       updateMessageContent(assistantId, () => "");
       try {
@@ -484,41 +479,38 @@ export function useChatWidget() {
     updateMessageContent,
   ]);
 
-  const value = useMemo(
-    () => ({
-      ...state,
-      storageHydrated,
-      open,
-      close,
-      toggle,
-      clear,
-      setLanguage,
-      setStreamingPreferred,
-      sendMessage,
-      sendMessageStream: (text: string) => sendMessage(text, { stream: true }),
-      sendMessageNonStream,
-      appendMessage,
-      retryAvailable,
-      retryLastAttempt,
-    }),
-    [
-      appendMessage,
-      clear,
-      close,
-      open,
-      sendMessage,
-      sendMessageNonStream,
-      setLanguage,
-      setStreamingPreferred,
-      state,
-      storageHydrated,
-      toggle,
-      retryAvailable,
-      retryLastAttempt,
-    ]
+  return useMemo(
+      () => ({
+          ...state,
+          storageHydrated,
+          open,
+          close,
+          toggle,
+          clear,
+          setLanguage,
+          setStreamingPreferred,
+          sendMessage,
+          sendMessageNonStream,
+          appendMessage,
+          retryAvailable,
+          retryLastAttempt,
+      }),
+      [
+          appendMessage,
+          clear,
+          close,
+          open,
+          sendMessage,
+          sendMessageNonStream,
+          setLanguage,
+          setStreamingPreferred,
+          state,
+          storageHydrated,
+          toggle,
+          retryAvailable,
+          retryLastAttempt,
+      ]
   );
-
-  return value;
 }
 
 function processSseBuffer(

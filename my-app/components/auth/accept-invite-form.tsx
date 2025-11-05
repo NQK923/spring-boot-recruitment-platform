@@ -12,10 +12,10 @@ import { ROUTES } from "@/lib/routes";
 const initialState: AcceptInviteFormState = {};
 
 const ROLE_LABELS: Record<Role, string> = {
-  SUPER_ADMIN: "Super Admin",
-  COMPANY_ADMIN: "Company Admin",
-  RECRUITER: "Recruiter",
-  CANDIDATE: "Candidate",
+  SUPER_ADMIN: "Quản trị cấp cao",
+  COMPANY_ADMIN: "Quản trị viên công ty",
+  RECRUITER: "Nhà tuyển dụng",
+  CANDIDATE: "Ứng viên",
 };
 
 type AcceptInviteFormProps = {
@@ -44,10 +44,9 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
     return (
       <div className="space-y-6">
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          <p className="font-semibold">Invitation accepted</p>
+          <p className="font-semibold">Đã chấp nhận lời mời</p>
           <p className="mt-2">
-            Your account for <span className="font-medium">{email}</span> is ready. Sign in to start
-            collaborating with your team.
+            Tài khoản <span className="font-medium">{email}</span> đã sẵn sàng. Đăng nhập để bắt đầu phối hợp cùng đội ngũ.
           </p>
         </div>
         <Button
@@ -56,7 +55,7 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
           type="button"
           onClick={() => router.push(ROUTES.signIn)}
         >
-          Continue to sign in
+          Tiếp tục đăng nhập
         </Button>
       </div>
     );
@@ -70,24 +69,24 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
       <input type="hidden" name="token" value={token} />
       <div className="rounded-2xl border border-border/70 bg-surface-muted/60 px-4 py-4 text-sm text-foreground/75">
         <p>
-          You&apos;re joining Talentflow as{" "}
-          <span className="font-semibold text-foreground">{roleLabel}</span> using{" "}
+          Bạn sẽ tham gia Talentflow với vai trò{" "}
+          <span className="font-semibold text-foreground">{roleLabel}</span> bằng email{" "}
           <span className="font-semibold text-foreground">{email}</span>.
         </p>
         {formattedExpiry ? (
-          <p className="mt-2 text-foreground/60">This invite expires on {formattedExpiry}.</p>
+          <p className="mt-2 text-foreground/60">Lời mời sẽ hết hạn vào {formattedExpiry}.</p>
         ) : null}
       </div>
 
       <div className="space-y-2">
         <label className="text-sm font-semibold text-foreground" htmlFor="password">
-          Create password
+          Tạo mật khẩu
         </label>
         <Input
           id="password"
           name="password"
           type="password"
-          placeholder="At least 8 characters"
+          placeholder="Tối thiểu 8 ký tự"
           autoComplete="new-password"
           minLength={8}
           required
@@ -96,13 +95,13 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
 
       <div className="space-y-2">
         <label className="text-sm font-semibold text-foreground" htmlFor="confirmPassword">
-          Confirm password
+          Xác nhận mật khẩu
         </label>
         <Input
           id="confirmPassword"
           name="confirmPassword"
           type="password"
-          placeholder="Re-enter your password"
+          placeholder="Nhập lại mật khẩu"
           autoComplete="new-password"
           minLength={8}
           required
@@ -116,15 +115,15 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
       ) : null}
 
       <Button className="w-full" disabled={pending} size="lg" type="submit">
-        {pending ? "Activating account..." : "Activate account"}
+        {pending ? "Đang kích hoạt tài khoản..." : "Kích hoạt tài khoản"}
       </Button>
 
       <p className="text-center text-xs text-foreground/50">
-        Need help? Contact{" "}
+        Cần hỗ trợ? Liên hệ{" "}
         <Link className="font-medium text-foreground hover:underline" href="mailto:support@talentflow.app">
           support@talentflow.app
         </Link>{" "}
-        or your company admin.
+        hoặc quản trị viên công ty của bạn.
       </p>
     </form>
   );

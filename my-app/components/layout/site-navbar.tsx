@@ -12,11 +12,11 @@ export type NavItem = {
 };
 
 const defaultNavigation: NavItem[] = [
-  { href: ROUTES.home, label: "Home" },
-  { href: ROUTES.jobs, label: "Jobs" },
-  { href: ROUTES.candidatePortal, label: "Candidate", badge: "new" },
-  { href: ROUTES.recruiterDashboard, label: "Recruiter" },
-  { href: ROUTES.docs, label: "Docs" },
+  { href: ROUTES.home, label: "Trang chủ" },
+  { href: ROUTES.jobs, label: "Việc làm" },
+  { href: ROUTES.candidatePortal, label: "Ứng viên", badge: "mới" },
+  { href: ROUTES.recruiterDashboard, label: "Nhà tuyển dụng" },
+  { href: ROUTES.docs, label: "Tài liệu" },
 ];
 
 type SiteNavbarProps = {

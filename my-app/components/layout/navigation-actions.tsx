@@ -8,10 +8,10 @@ function describePrimaryRole(roles: string[] | undefined) {
   if (!roles || roles.length === 0) {
     return null;
   }
-  if (roles.includes("SUPER_ADMIN")) return "Super Admin";
-  if (roles.includes("COMPANY_ADMIN")) return "Company Admin";
-  if (roles.includes("RECRUITER")) return "Recruiter";
-  if (roles.includes("CANDIDATE")) return "Candidate";
+  if (roles.includes("SUPER_ADMIN")) return "Quản trị cấp cao";
+  if (roles.includes("COMPANY_ADMIN")) return "Quản trị viên công ty";
+  if (roles.includes("RECRUITER")) return "Nhà tuyển dụng";
+  if (roles.includes("CANDIDATE")) return "Ứng viên";
   return roles[0];
 }
 
@@ -23,18 +23,18 @@ export async function NavigationActions() {
       <div className="flex items-center gap-3">
         <Link href={ROUTES.signIn} className="hidden sm:inline-flex">
           <Button variant="ghost" size="sm">
-            Sign in
+            Đăng nhập
           </Button>
         </Link>
         <Link href={ROUTES.register}>
-          <Button size="sm">Get started</Button>
+          <Button size="sm">Bắt đầu ngay</Button>
         </Link>
       </div>
     );
   }
 
   const roleLabel = describePrimaryRole(currentUser.roles);
-  const emailLabel = currentUser.email || "Authenticated user";
+  const emailLabel = currentUser.email || "Người dùng đã xác thực";
 
   return (
     <div className="flex items-center gap-3 text-sm">

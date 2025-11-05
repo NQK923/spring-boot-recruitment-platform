@@ -92,7 +92,23 @@ async function getProfile(): Promise<Profile | null> {
   }
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  APPLIED: "Đã nộp",
+  IN_REVIEW: "Đang xem xét",
+  INTERVIEW_SCHEDULED: "Đã lên lịch phỏng vấn",
+  INTERVIEW: "Phỏng vấn",
+  OFFERED: "Nhận đề nghị",
+  HIRED: "Đã nhận việc",
+  REJECTED: "Bị từ chối",
+  WITHDRAWN: "Đã rút đơn",
+  ON_HOLD: "Tạm dừng",
+};
+
 function formatStatus(status: string) {
+  const normalized = status.toUpperCase();
+  if (STATUS_LABELS[normalized]) {
+    return STATUS_LABELS[normalized];
+  }
   return status
     .toLowerCase()
     .split("_")
@@ -102,7 +118,7 @@ function formatStatus(status: string) {
 
 function formatDate(value: string | null | undefined) {
   if (!value) {
-    return "recently";
+    return "vừa cập nhật";
   }
   try {
     return dateFormatter.format(new Date(value));
@@ -113,7 +129,7 @@ function formatDate(value: string | null | undefined) {
 
 function formatDateTime(value: string | null | undefined, timezone?: string | null) {
   if (!value) {
-    return "Scheduled soon";
+    return "Sẽ lên lịch sớm";
   }
   try {
     const date = new Date(value);
@@ -244,8 +260,8 @@ export default async function CandidatePortalPage() {
 
   const profileCompletionLabel =
     profileCompletion >= 100
-      ? "Profile is ready to share with recruiters"
-      : `You're ${Math.max(0, 100 - profileCompletion)}% away from a complete profile.`;
+      ? "Hồ sơ của bạn đã sẵn sàng chia sẻ với nhà tuyển dụng"
+      : `Bạn còn thiếu ${Math.max(0, 100 - profileCompletion)}% để hoàn thiện hồ sơ.`;
 
   const nextSteps: NextStep[] = [];
   const addNextStep = (step: NextStep) => {
@@ -256,46 +272,46 @@ export default async function CandidatePortalPage() {
 
   if (!profileData.summary) {
     addNextStep({
-      title: "Add a short profile summary",
-      description: "Summaries help recruiters understand your focus and open the conversation faster.",
+      title: "Thêm bản tóm tắt ngắn",
+      description: "Tóm tắt giúp nhà tuyển dụng hiểu nhanh trọng tâm và mở đầu cuộc trao đổi thuận lợi hơn.",
       href: ROUTES.candidateProfile,
-      actionLabel: "Update profile",
+      actionLabel: "Cập nhật hồ sơ",
     });
   }
 
   if (!sortedCvs.length) {
     addNextStep({
-      title: "Upload your first CV",
-      description: "Keep a polished resume on file so you can attach it to applications with one click.",
+      title: "Tải lên CV đầu tiên",
+      description: "Giữ sẵn bản CV chỉn chu để đính kèm vào hồ sơ ứng tuyển chỉ với một cú nhấp chuột.",
       href: ROUTES.candidateProfile,
-      actionLabel: "Open CV manager",
+      actionLabel: "Mở quản lý CV",
     });
   }
 
   if (!applications.length) {
     addNextStep({
-      title: "Discover open roles",
-      description: "Browse job listings tailored to your interests and submit your first application.",
+      title: "Khám phá vị trí đang tuyển",
+      description: "Duyệt các tin tuyển dụng phù hợp với bạn và gửi hồ sơ đầu tiên.",
       href: ROUTES.jobs,
-      actionLabel: "Find jobs",
+      actionLabel: "Tìm việc",
     });
   }
 
   if (profileCompletion < 80) {
     addNextStep({
-      title: "Complete your profile",
-      description: "Add experience, education, and skills to highlight your strengths to recruiters.",
+      title: "Hoàn thiện hồ sơ",
+      description: "Bổ sung kinh nghiệm, học vấn và kỹ năng để làm nổi bật thế mạnh trước nhà tuyển dụng.",
       href: ROUTES.candidateProfile,
-      actionLabel: "Fill in details",
+      actionLabel: "Bổ sung thông tin",
     });
   }
 
   if (nextInterview) {
     addNextStep({
-      title: "Prepare for your next interview",
-      description: `Review the plan and join details for application #${nextInterview.applicationId}.`,
+      title: "Chuẩn bị cho buổi phỏng vấn tiếp theo",
+      description: `Xem lại kế hoạch và thông tin tham gia của đơn ứng tuyển #${nextInterview.applicationId}.`,
       href: `${ROUTES.candidateApplications}/${nextInterview.applicationId}`,
-      actionLabel: "Review interview",
+      actionLabel: "Xem chi tiết phỏng vấn",
     });
   }
 
@@ -310,32 +326,32 @@ export default async function CandidatePortalPage() {
         />
         <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="max-w-2xl space-y-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-foreground/50">Welcome back</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-foreground/50">Chào mừng bạn trở lại</p>
             <h1 className="text-3xl font-semibold text-foreground">
               {profileData.fullName
-                ? `${profileData.fullName}, keep building your momentum`
-                : "Ready for your next opportunity?"}
+                ? `${profileData.fullName}, tiếp tục duy trì đà tiến nhé`
+                : "Sẵn sàng cho cơ hội tiếp theo?"}
             </h1>
             <p className="text-sm text-foreground/70">
               {profileData.summary ??
-                "Share a quick summary so hiring teams can understand your focus and experience at a glance."}
+                "Hãy chia sẻ đôi nét để đội ngũ tuyển dụng nắm được trọng tâm và kinh nghiệm của bạn trong nháy mắt."}
             </p>
             <div className="flex flex-wrap gap-3 pt-1">
               <Button asChild size="sm">
-                <Link href={ROUTES.candidateProfile}>Update profile</Link>
+                <Link href={ROUTES.candidateProfile}>Cập nhật hồ sơ</Link>
               </Button>
               <Button asChild size="sm" variant="secondary">
-                <Link href={`${ROUTES.candidateProfile}#cvs`}>Manage CVs</Link>
+                <Link href={`${ROUTES.candidateProfile}#cvs`}>Quản lý CV</Link>
               </Button>
               <Button asChild size="sm" variant="ghost">
-                <Link href={ROUTES.jobs}>Browse roles</Link>
+                <Link href={ROUTES.jobs}>Xem vị trí tuyển dụng</Link>
               </Button>
             </div>
           </div>
           <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-2xl border border-border/60 bg-surface/60 p-4 text-center backdrop-blur md:w-auto">
             <AvatarUploader avatarUrl={profileData.avatarUrl} fullName={profileData.fullName} />
             <p className="text-xs text-foreground/60">
-              A refreshed photo gives hiring managers more confidence in your application.
+              Một bức ảnh cập nhật giúp nhà tuyển dụng thêm tin tưởng vào hồ sơ của bạn.
             </p>
           </div>
         </div>
@@ -343,35 +359,35 @@ export default async function CandidatePortalPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-foreground/60">Active applications</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-foreground/60">Đơn đang xử lý</p>
           <p className="mt-3 text-3xl font-semibold text-foreground">{activeApplications.length}</p>
           <p className="text-xs text-foreground/60">
             {lastAppliedAt
-              ? `Last updated ${formatDate(lastAppliedAt)}`
-              : "Submit your first application to get started."}
+              ? `Cập nhật gần nhất ${formatDate(lastAppliedAt)}`
+              : "Gửi hồ sơ đầu tiên để bắt đầu hành trình."}
           </p>
         </div>
         <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-foreground/60">Profile completion</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-foreground/60">Mức độ hoàn thiện hồ sơ</p>
           <p className="mt-3 text-3xl font-semibold text-foreground">{profileCompletion}%</p>
           <p className="text-xs text-foreground/60">{profileCompletionLabel}</p>
         </div>
         <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-foreground/60">CV library</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-foreground/60">Thư viện CV</p>
           <p className="mt-3 text-3xl font-semibold text-foreground">{sortedCvs.length}</p>
           <p className="text-xs text-foreground/60">
-            {defaultCv ? `Default: ${defaultCv.versionName}` : "Upload a tailored CV to keep it handy."}
+            {defaultCv ? `Mặc định: ${defaultCv.versionName}` : "Tải lên CV phù hợp để sẵn sàng sử dụng."}
           </p>
         </div>
         <div className="rounded-2xl border border-foreground/10 bg-surface/90 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-foreground/60">Next interview</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-foreground/60">Phỏng vấn tiếp theo</p>
           <p className="mt-3 text-lg font-semibold text-foreground">
-            {nextInterview ? formatDateTime(nextInterview.scheduleTime, nextInterview.timezone) : "Not scheduled"}
+            {nextInterview ? formatDateTime(nextInterview.scheduleTime, nextInterview.timezone) : "Chưa lên lịch"}
           </p>
           <p className="text-xs text-foreground/60">
             {nextInterview
-              ? `Application #${nextInterview.applicationId} - ${nextInterview.format ?? "Format TBD"}`
-              : "You'll see upcoming interviews here as soon as they are confirmed."}
+              ? `Đơn ứng tuyển #${nextInterview.applicationId} - ${nextInterview.format ?? "Đang cập nhật hình thức"}`
+              : "Phỏng vấn sắp tới sẽ xuất hiện tại đây ngay khi được xác nhận."}
           </p>
         </div>
       </div>
@@ -380,11 +396,11 @@ export default async function CandidatePortalPage() {
         <Panel variant="surface" padding="lg" className="space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Recent applications</h2>
-              <p className="text-sm text-foreground/60">Stay on top of where you are in each process.</p>
+              <h2 className="text-lg font-semibold text-foreground">Đơn ứng tuyển gần đây</h2>
+              <p className="text-sm text-foreground/60">Theo dõi bạn đang ở giai đoạn nào trong từng quy trình.</p>
             </div>
             <Button asChild size="sm" variant="outline">
-              <Link href={ROUTES.candidateApplications}>View all</Link>
+              <Link href={ROUTES.candidateApplications}>Xem tất cả</Link>
             </Button>
           </div>
           {recentApplications.length ? (
@@ -401,8 +417,8 @@ export default async function CandidatePortalPage() {
                         {application.jobTitle}
                       </p>
                       <div className="flex flex-wrap gap-3 text-xs text-foreground/60">
-                        <span>Applied {formatDate(application.appliedAt)}</span>
-                        {application.source ? <span>Source: {application.source}</span> : null}
+                        <span>Nộp ngày {formatDate(application.appliedAt)}</span>
+                        {application.source ? <span>Nguồn: {application.source}</span> : null}
                       </div>
                     </div>
                     <span className="self-start rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
@@ -411,14 +427,14 @@ export default async function CandidatePortalPage() {
                   </div>
                   <p className="text-xs text-foreground/60 line-clamp-2">
                     {application.jobDescription ??
-                      "We’ll surface the job description as soon as the company publishes it."}
+                      "Chúng tôi sẽ hiển thị mô tả công việc ngay khi công ty cập nhật."}
                   </p>
                 </Link>
               ))}
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-foreground/20 bg-surface/80 px-6 py-10 text-sm text-foreground/60">
-              You haven&apos;t applied to any roles yet. Explore open positions and submit your first application.
+              Bạn chưa ứng tuyển vị trí nào. Khám phá các vị trí đang mở và gửi hồ sơ đầu tiên của bạn.
             </div>
           )}
         </Panel>
@@ -426,9 +442,9 @@ export default async function CandidatePortalPage() {
         <div className="space-y-6">
           <Panel variant="surface" padding="lg" className="space-y-6">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Next steps</h2>
+              <h2 className="text-lg font-semibold text-foreground">Bước tiếp theo</h2>
               <p className="text-sm text-foreground/60">
-                Personalized suggestions to keep your search moving in the right direction.
+                Những gợi ý được cá nhân hóa giúp bạn tiếp tục tìm kiếm đúng hướng.
               </p>
             </div>
             {prioritizedNextSteps.length ? (
@@ -445,7 +461,7 @@ export default async function CandidatePortalPage() {
                         href={step.href}
                         className="mt-3 inline-flex text-xs font-semibold text-accent hover:underline"
                       >
-                        {step.actionLabel ?? "Open"}
+                        {step.actionLabel ?? "Mở"}
                       </Link>
                     ) : null}
                   </li>
@@ -453,7 +469,7 @@ export default async function CandidatePortalPage() {
               </ul>
             ) : (
               <div className="rounded-xl border border-foreground/10 bg-surface/90 px-4 py-6 text-sm text-foreground/60">
-                You&apos;re all set for now. We&apos;ll flag new suggestions here as soon as something changes.
+                Hiện bạn đã hoàn tất. Chúng tôi sẽ hiển thị gợi ý mới ngay khi có thay đổi.
               </div>
             )}
           </Panel>
@@ -461,13 +477,13 @@ export default async function CandidatePortalPage() {
           <Panel variant="surface" padding="lg" className="space-y-6">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-semibold text-foreground">CV library</h2>
+                <h2 className="text-lg font-semibold text-foreground">Thư viện CV</h2>
                 <p className="text-sm text-foreground/60">
-                  Keep polished versions on file so you can attach the right resume to each application.
+                  Lưu trữ các phiên bản CV chỉn chu để đính kèm phù hợp cho từng đơn ứng tuyển.
                 </p>
               </div>
               <Button asChild size="sm" variant="ghost">
-                <Link href={`${ROUTES.candidateProfile}#cvs`}>Manage</Link>
+                <Link href={`${ROUTES.candidateProfile}#cvs`}>Quản lý</Link>
               </Button>
             </div>
             {sortedCvs.length ? (
@@ -483,7 +499,7 @@ export default async function CandidatePortalPage() {
                       <div>
                         <p className="font-semibold text-foreground">
                           {cv.versionName}
-                          {cv.isDefault ? " - Default" : ""}
+                          {cv.isDefault ? " - Mặc định" : ""}
                         </p>
                         <p className="text-xs text-foreground/60">Added {formatDate(cv.createdAt)}</p>
                       </div>
@@ -494,11 +510,11 @@ export default async function CandidatePortalPage() {
                           target="_blank"
                           rel="noreferrer"
                         >
-                          Download
+                          Tải xuống
                         </a>
                       ) : (
                         <span className="text-xs text-foreground/50">
-                          Generated placeholder — upload an updated version when ready.
+                          Đây là bản tạm — hãy tải lên phiên bản cập nhật khi bạn đã sẵn sàng.
                         </span>
                       )}
                     </div>
@@ -506,13 +522,13 @@ export default async function CandidatePortalPage() {
                 })}
                 {sortedCvs.length > 5 ? (
                   <p className="text-xs text-foreground/50">
-                    Showing the five most recent versions. Visit the manager to view the rest.
+                    Hiển thị 5 phiên bản gần nhất. Vào trang quản lý để xem thêm.
                   </p>
                 ) : null}
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed border-foreground/20 bg-surface/80 px-5 py-8 text-sm text-foreground/60">
-                No CVs yet. Upload a tailored resume to pair with your applications.
+                Chưa có CV nào. Tải lên CV phù hợp để đính kèm cùng hồ sơ ứng tuyển.
               </div>
             )}
           </Panel>
@@ -523,15 +539,15 @@ export default async function CandidatePortalPage() {
         <Panel variant="surface" padding="lg" className="space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Upcoming interviews</h2>
+              <h2 className="text-lg font-semibold text-foreground">Phỏng vấn sắp diễn ra</h2>
               <p className="text-sm text-foreground/60">
-                Details sync instantly when recruiters schedule or reschedule sessions.
+                Thông tin sẽ được đồng bộ ngay khi nhà tuyển dụng lên lịch hoặc thay đổi phiên phỏng vấn.
               </p>
             </div>
             {nextInterview ? (
               <Button asChild size="sm" variant="outline">
                 <Link href={`${ROUTES.candidateApplications}/${nextInterview.applicationId}`}>
-                  View interview
+                  Xem lịch phỏng vấn
                 </Link>
               </Button>
             ) : null}
@@ -549,11 +565,11 @@ export default async function CandidatePortalPage() {
                         {formatDateTime(interview.scheduleTime, interview.timezone)}
                       </p>
                       <p className="text-xs text-foreground/60">
-                        Application #{interview.applicationId} - {interview.format ?? "Format TBD"}
+                        Đơn ứng tuyển #{interview.applicationId} - {interview.format ?? "Hình thức chưa xác định"}
                       </p>
                     </div>
                     <span className="text-xs text-foreground/50">
-                      {interview.locationOrLink ?? "Location or link to be shared"}
+                      {interview.locationOrLink ?? "Địa điểm hoặc đường dẫn sẽ được cập nhật"}
                     </span>
                   </div>
                 </li>
@@ -561,100 +577,100 @@ export default async function CandidatePortalPage() {
             </ol>
           ) : (
             <div className="rounded-2xl border border-dashed border-foreground/20 bg-surface/80 px-6 py-10 text-sm text-foreground/60">
-              No interviews scheduled yet. We&apos;ll notify you here the moment a recruiter books time.
+              Chưa có buổi phỏng vấn nào được lên lịch. Chúng tôi sẽ thông báo tại đây ngay khi có lịch mới.
             </div>
           )}
         </Panel>
 
-        <Panel variant="surface" padding="lg" className="space-y-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">Profile snapshot</h2>
-              <p className="text-sm text-foreground/60">
-                Quickly confirm the essentials recruiters see before diving into your full profile.
-              </p>
+          <Panel variant="surface" padding="lg" className="space-y-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">Tổng quan hồ sơ</h2>
+                <p className="text-sm text-foreground/60">
+                  Xác nhận nhanh các thông tin chính mà nhà tuyển dụng sẽ nhìn thấy trước khi xem chi tiết.
+                </p>
+              </div>
+              <Button asChild size="sm" variant="ghost">
+                <Link href={ROUTES.candidateProfile}>Chỉnh sửa</Link>
+              </Button>
             </div>
-            <Button asChild size="sm" variant="ghost">
-              <Link href={ROUTES.candidateProfile}>Edit</Link>
-            </Button>
-          </div>
 
           <div className="space-y-6 text-sm">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Full name</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Họ và tên</p>
                 <p className="mt-1 font-semibold text-foreground">
-                  {profileData.fullName || "Add your name"}
+                  {profileData.fullName || "Thêm họ tên"}
                 </p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Phone</p>
+                <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Điện thoại</p>
                 <p className="mt-1 font-semibold text-foreground">
-                  {profileData.phoneNumber || "Add a contact number"}
+                  {profileData.phoneNumber || "Thêm số liên hệ"}
                 </p>
               </div>
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Experience highlights</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Kinh nghiệm nổi bật</p>
               {sortedExperiences.length ? (
                 <div className="mt-3 space-y-3">
                   {sortedExperiences.slice(0, 2).map((experience) => (
                     <div
                       key={experience.id}
                       className="rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3"
-                    >
+                      >
                       <p className="font-semibold text-foreground">
-                        {experience.title || "Role to be confirmed"}
+                        {experience.title || "Chức danh sẽ cập nhật"}
                       </p>
                       <p className="text-xs text-foreground/60">
-                        {experience.companyName || "Company to be confirmed"}
+                        {experience.companyName || "Công ty sẽ cập nhật"}
                       </p>
                       <p className="text-xs text-foreground/50">
-                        {formatProfileDate(experience.startDate, "Unknown")}
+                        {formatProfileDate(experience.startDate, "Không rõ")}
                         {" - "}
-                        {formatProfileDate(experience.endDate, "Present")}
+                        {formatProfileDate(experience.endDate, "Hiện tại")}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="mt-3 text-xs text-foreground/50">Add your recent roles to highlight your impact.</p>
+                <p className="mt-3 text-xs text-foreground/50">Thêm các vị trí gần đây để làm nổi bật đóng góp của bạn.</p>
               )}
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Education</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Học vấn</p>
               {sortedEducation.length ? (
                 <div className="mt-3 space-y-3">
                   {sortedEducation.slice(0, 2).map((education) => (
                     <div
                       key={education.id}
                       className="rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3"
-                    >
+                      >
                       <p className="font-semibold text-foreground">
-                        {education.school || "Institution pending"}
+                        {education.school || "Trường sẽ cập nhật"}
                       </p>
                       <p className="text-xs text-foreground/60">
-                        {education.degree || "Program to be confirmed"}
+                        {education.degree || "Ngành học sẽ cập nhật"}
                       </p>
                       <p className="text-xs text-foreground/50">
-                        {formatProfileDate(education.startDate, "Start")}
+                        {formatProfileDate(education.startDate, "Bắt đầu")}
                         {" - "}
-                        {formatProfileDate(education.endDate, "Present")}
+                        {formatProfileDate(education.endDate, "Hiện tại")}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
                 <p className="mt-3 text-xs text-foreground/50">
-                  Document your education to round out your profile.
+                  Ghi lại quá trình học tập để hoàn thiện hồ sơ.
                 </p>
               )}
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Skills</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-foreground/60">Kỹ năng</p>
               {displaySkills.length ? (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {displaySkills.slice(0, 8).map((skill) =>
@@ -668,12 +684,12 @@ export default async function CandidatePortalPage() {
                     ) : null
                   )}
                   {displaySkills.length > 8 ? (
-                    <span className="text-xs text-foreground/50">+{displaySkills.length - 8} more</span>
+                    <span className="text-xs text-foreground/50">+{displaySkills.length - 8} kỹ năng khác</span>
                   ) : null}
                 </div>
               ) : (
                 <p className="mt-3 text-xs text-foreground/50">
-                  List your core skills so recruiters can match you faster.
+                  Liệt kê kỹ năng cốt lõi để nhà tuyển dụng kết nối với bạn nhanh hơn.
                 </p>
               )}
             </div>

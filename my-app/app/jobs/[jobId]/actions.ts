@@ -21,7 +21,7 @@ export async function applyToJobAction(
   if (cvIdRaw) {
     const parsed = Number(cvIdRaw);
     if (Number.isNaN(parsed)) {
-      return { error: "CV ID must be a number." };
+      return { error: "Mã CV phải là số." };
     }
     cvId = parsed;
   }
@@ -37,11 +37,11 @@ export async function applyToJobAction(
     });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Unable to submit application.";
+      error instanceof Error ? error.message : "Không thể gửi hồ sơ ứng tuyển.";
     return { error: message };
   }
 
   revalidatePath(`${ROUTES.jobs}/${jobPostingId}`);
   revalidatePath(ROUTES.candidatePortal);
-  return { success: "Application submitted successfully." };
+  return { success: "Gửi hồ sơ thành công." };
 }

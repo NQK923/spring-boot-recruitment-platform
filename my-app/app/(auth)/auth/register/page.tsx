@@ -11,9 +11,9 @@ export default async function RegisterPage() {
   return (
     <div className="space-y-6">
       <header className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold text-foreground">Create an account</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Tạo tài khoản mới</h1>
         <p className="text-sm text-foreground/65">
-          Register as a candidate to manage your profile, CVs, and application updates.
+          Đăng ký với vai trò ứng viên để quản lý hồ sơ, CV và theo dõi trạng thái ứng tuyển.
         </p>
       </header>
 

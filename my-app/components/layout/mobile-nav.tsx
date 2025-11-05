@@ -29,11 +29,11 @@ export function MobileNav({ items }: MobileNavProps) {
   const toggleButton = (
     <button
       type="button"
-      aria-label="Toggle navigation"
+      aria-label="Mở hoặc đóng thanh điều hướng"
       className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-foreground shadow-sm transition hover:border-border/80 hover:shadow-md sm:hidden"
       onClick={() => setOpen((prev) => !prev)}
     >
-      {open ? "Close" : "Menu"}
+      {open ? "Đóng" : "Mở"}
     </button>
   );
 
@@ -50,15 +50,15 @@ export function MobileNav({ items }: MobileNavProps) {
               <div className="absolute inset-x-4 top-4 rounded-2xl border border-foreground/10 bg-surface px-5 py-6 shadow-lg">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
-                    Navigation
+                    Điều hướng
                   </span>
                   <button
                     type="button"
-                    aria-label="Close navigation"
+                    aria-label="Đóng thanh điều hướng"
                     className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-foreground transition hover:border-border/80 hover:shadow-md"
                     onClick={() => setOpen(false)}
                   >
-                    Close
+                    Đóng
                   </button>
                 </div>
                 <div className="mt-6">

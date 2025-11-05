@@ -82,13 +82,13 @@ export function JobsSearchForm({ initialQuery = "", className }: JobsSearchFormP
       <Input
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search by title or location"
-        aria-label="Search open roles"
+        placeholder="Tìm theo chức danh hoặc địa điểm"
+        aria-label="Tìm vị trí tuyển dụng"
         autoComplete="off"
       />
       <div className="flex gap-2 sm:w-auto">
         <Button type="submit" size="lg" disabled={isPending}>
-          {isPending ? "Searching..." : "Search"}
+          {isPending ? "Đang tìm..." : "Tìm kiếm"}
         </Button>
         <Button
           type="button"
@@ -98,7 +98,7 @@ export function JobsSearchForm({ initialQuery = "", className }: JobsSearchFormP
           disabled={isPending || query.length === 0}
           onClick={handleClear}
         >
-          Clear
+          Xóa
         </Button>
       </div>
     </form>

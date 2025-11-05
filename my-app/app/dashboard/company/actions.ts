@@ -20,7 +20,7 @@ export async function updateCompanyAction(
   const companyAddress = String(formData.get("companyAddress") ?? "").trim();
 
   if (!name) {
-    return { error: "Company name is required." };
+    return { error: "Tên công ty là bắt buộc." };
   }
 
   try {
@@ -36,12 +36,12 @@ export async function updateCompanyAction(
       }),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to update company.";
+    const message = error instanceof Error ? error.message : "Không thể cập nhật thông tin công ty.";
     return { error: message };
   }
 
   revalidatePath("/dashboard/company");
-  return { success: "Company details updated." };
+  return { success: "Đã cập nhật thông tin công ty." };
 }
 
 export type InviteMemberState = {
@@ -57,10 +57,10 @@ export async function inviteCompanyMemberAction(
   const role = String(formData.get("role") ?? "").trim();
 
   if (!email) {
-    return { error: "Email address is required." };
+    return { error: "Email là bắt buộc." };
   }
   if (!role) {
-    return { error: "Choose a role for the invite." };
+    return { error: "Hãy chọn vai trò cho lời mời." };
   }
 
   try {
@@ -69,12 +69,12 @@ export async function inviteCompanyMemberAction(
       body: JSON.stringify({ email, role }),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to send invitation.";
+    const message = error instanceof Error ? error.message : "Không thể gửi lời mời.";
     return { error: message };
   }
 
   revalidatePath("/dashboard/company");
-  return { success: "Invitation sent successfully." };
+  return { success: "Đã gửi lời mời thành công." };
 }
 
 export type UpdateCompanyUserState = {
@@ -95,7 +95,7 @@ export async function updateCompanyUserAction(
   if (input.role !== undefined) {
     const normalizedRole = input.role?.trim() ?? null;
     if (normalizedRole && !["RECRUITER", "COMPANY_ADMIN"].includes(normalizedRole)) {
-      return { error: "Unsupported role." };
+      return { error: "Vai trò không được hỗ trợ." };
     }
     payload.role = normalizedRole;
   }
@@ -104,7 +104,7 @@ export async function updateCompanyUserAction(
   }
 
   if (Object.keys(payload).length === 0) {
-    return { error: "Nothing to update." };
+    return { error: "Không có thay đổi nào." };
   }
 
   try {
@@ -113,10 +113,10 @@ export async function updateCompanyUserAction(
       body: JSON.stringify(payload),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to update team member.";
+    const message = error instanceof Error ? error.message : "Không thể cập nhật thành viên.";
     return { error: message };
   }
 
   revalidatePath("/dashboard/company");
-  return { success: "Team member updated." };
+  return { success: "Đã cập nhật thông tin thành viên." };
 }

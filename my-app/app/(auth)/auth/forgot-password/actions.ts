@@ -14,7 +14,7 @@ export async function forgotPasswordAction(
   const email = String(formData.get("email") ?? "").trim();
 
   if (!email) {
-    return { error: "Enter the email associated with your account." };
+    return { error: "Vui lòng nhập email gắn với tài khoản của bạn." };
   }
 
   try {
@@ -26,12 +26,12 @@ export async function forgotPasswordAction(
     await response.text();
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Unable to start the password reset flow.";
+      error instanceof Error ? error.message : "Không thể bắt đầu quy trình đặt lại mật khẩu.";
     return { error: message };
   }
 
   return {
     success:
-      "If the email exists and is verified, we sent a six-digit reset code. It expires in 10 minutes.",
+      "Nếu email tồn tại và đã được xác minh, mã đặt lại gồm sáu chữ số đã được gửi. Mã sẽ hết hạn sau 10 phút.",
   };
 }

@@ -16,8 +16,8 @@ function buildNavigation({
   isAuthenticated: boolean;
 }): NavItem[] {
   const items: NavItem[] = [
-    { href: ROUTES.home, label: "Home" },
-    { href: ROUTES.jobs, label: "Jobs" },
+    { href: ROUTES.home, label: "Trang chủ" },
+    { href: ROUTES.jobs, label: "Việc làm" },
   ];
 
   const ensureItem = (item: NavItem) => {
@@ -27,14 +27,14 @@ function buildNavigation({
   };
 
   if (!isAuthenticated || roles.includes("CANDIDATE")) {
-    ensureItem({ href: ROUTES.candidatePortal, label: "Candidate" });
+    ensureItem({ href: ROUTES.candidatePortal, label: "Ứng viên" });
   }
 
   if (roles.includes("RECRUITER")) {
-    ensureItem({ href: ROUTES.recruiterDashboard, label: "Recruiter" });
+    ensureItem({ href: ROUTES.recruiterDashboard, label: "Nhà tuyển dụng" });
   }
 
-  ensureItem({ href: ROUTES.docs, label: "Docs" });
+  ensureItem({ href: ROUTES.docs, label: "Tài liệu" });
 
   return items;
 }
@@ -66,7 +66,7 @@ export async function SiteHeader() {
               Talentflow
             </span>
             <span className="hidden text-[11px] font-medium uppercase tracking-[0.32em] text-muted sm:block">
-              Recruitment platform
+              Nền tảng tuyển dụng
             </span>
           </div>
         </Link>

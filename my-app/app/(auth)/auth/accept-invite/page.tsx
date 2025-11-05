@@ -42,10 +42,9 @@ export default async function AcceptInvitePage({ searchParams }: AcceptInvitePag
     return (
       <div className="space-y-6">
         <header className="space-y-2">
-          <h1 className="text-2xl font-semibold text-foreground">Invalid invitation link</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Liên kết mời không hợp lệ</h1>
           <p className="text-sm text-foreground/65">
-            We couldn&apos;t find an invitation token in this link. Request a new invite from your company
-            admin.
+            Không tìm thấy mã lời mời trong liên kết này. Vui lòng yêu cầu quản trị công ty gửi lại lời mời.
           </p>
         </header>
       </div>
@@ -58,24 +57,24 @@ export default async function AcceptInvitePage({ searchParams }: AcceptInvitePag
   try {
     invitation = await fetchInvitation(tokenParam.trim());
   } catch (err) {
-    error = err instanceof Error ? err.message : "Unable to verify invitation right now.";
+    error = err instanceof Error ? err.message : "Hiện không thể xác minh lời mời.";
   }
 
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold text-foreground">Accept your invitation</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Chấp nhận lời mời</h1>
         <p className="text-sm text-foreground/65">
-          Create a password to activate your account and join your company workspace.
+          Tạo mật khẩu để kích hoạt tài khoản và tham gia workspace của công ty.
         </p>
       </header>
 
       {error ? (
         <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          <p className="font-semibold">Invitation unavailable</p>
+          <p className="font-semibold">Không thể sử dụng lời mời</p>
           <p className="mt-1">{error}</p>
           <p className="mt-2 text-xs text-red-600/80">
-            If this keeps happening, ask your admin to resend the invitation.
+            Nếu vấn đề tiếp tục, hãy nhờ quản trị viên gửi lại lời mời.
           </p>
         </div>
       ) : null}

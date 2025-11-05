@@ -66,34 +66,34 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
   const searchSummary =
     totalItems > 0
       ? hasQuery
-        ? `Found ${totalItems} role${pluralize(totalItems)} matching "${searchLabel}".`
-        : `Found ${totalItems} open role${pluralize(totalItems)}.`
+        ? `Đã tìm thấy ${totalItems} vị trí phù hợp với "${searchLabel}".`
+        : `Đã tìm thấy ${totalItems} vị trí đang mở.`
       : hasQuery
-        ? `No roles match "${searchLabel}".`
-        : "No open roles are available right now.";
+        ? `Không có vị trí nào khớp với "${searchLabel}".`
+        : "Hiện chưa có vị trí tuyển dụng nào.";
 
   const basePageLabel =
     totalItems === 0
       ? ""
       : hasPageResults
-        ? `Viewing ${pageStart}-${pageEnd} of ${totalItems} role${pluralize(totalItems)}.`
-        : "No roles on this page. Try a different page number.";
+        ? `Đang hiển thị ${pageStart}-${pageEnd} trong tổng số ${totalItems} vị trí.`
+        : "Trang này chưa có vị trí nào. Hãy thử số trang khác.";
 
   const filteredLabel = hasClientFilters
     ? filteredJobs.length === 0
-      ? "Quick filters removed all roles on this page. Clear filters to see every match."
-      : `After filters, ${filteredJobs.length} role${pluralize(filteredJobs.length)} remain on this page.`
+      ? "Các bộ lọc đã loại bỏ toàn bộ vị trí trên trang này. Hãy xóa bộ lọc để xem lại tất cả."
+      : `Sau khi áp dụng bộ lọc, còn ${filteredJobs.length} vị trí trên trang này.`
     : "";
 
   const resultsLabel = [basePageLabel, filteredLabel].filter(Boolean).join(" ");
 
   const emptyStateMessage = hasClientFilters
-    ? "Nothing matches those filters. Clear them to view every opening again."
+    ? "Không có vị trí nào khớp với bộ lọc hiện tại. Gỡ bỏ bộ lọc để xem lại tất cả."
     : totalItems === 0
       ? hasQuery
-        ? "No roles match that search. Try broader keywords or reset the search above."
-        : "No jobs are available right now. Check back soon or sign in to receive tailored recommendations."
-      : "No roles appear on this page. Try a different page number.";
+        ? "Không có vị trí nào khớp với từ khóa đó. Thử mở rộng từ khóa hoặc đặt lại tìm kiếm."
+        : "Chưa có việc làm nào vào lúc này. Hãy quay lại sau hoặc đăng nhập để nhận gợi ý phù hợp."
+      : "Trang này chưa có vị trí nào. Hãy thử số trang khác.";
 
   const handlePageChange = useCallback(
     (targetPage: number) => {
@@ -152,7 +152,7 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
     <div className="space-y-6">
       <Panel padding="lg" className="space-y-6">
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-foreground">Search open roles</p>
+          <p className="text-sm font-semibold text-foreground">Tìm kiếm vị trí tuyển dụng</p>
           <p className="text-xs text-foreground/60">{searchSummary}</p>
         </div>
 
@@ -163,7 +163,7 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
             <div className="space-y-4">
               {workTypeOptions.length > 0 && (
                 <FilterRow
-                  title="Work style"
+                  title="Hình thức làm việc"
                   options={workTypeOptions}
                   activeValue={workTypeFilter}
                   onToggle={(value) => setWorkTypeFilter((prev) => (prev === value ? null : value))}
@@ -172,7 +172,7 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
 
               {locationOptions.length > 0 && (
                 <FilterRow
-                  title="Location"
+                  title="Khu vực"
                   options={locationOptions}
                   activeValue={locationFilter}
                   onToggle={(value) => setLocationFilter((prev) => (prev === value ? null : value))}
@@ -181,13 +181,13 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
 
               {hasClientFilters && (
                 <Button variant="ghost" size="sm" className="whitespace-nowrap" onClick={clearFilters}>
-                  Clear quick filters
+                  Xóa bộ lọc nhanh
                 </Button>
               )}
             </div>
           ) : (
             <p className="text-xs text-foreground/60">
-              Quick filters will surface once recruiters add work style or location metadata to their postings.
+              Bộ lọc nhanh sẽ hiển thị khi nhà tuyển dụng bổ sung thông tin hình thức làm việc hoặc địa điểm cho bài đăng.
             </p>
           )}
 
@@ -211,7 +211,7 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
                 onClick={() => navigateToJob(job.id)}
                 onKeyDown={createCardKeyDownHandler(job.id)}
                 className="group flex h-full cursor-pointer flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
-                aria-label={`View details for ${job.title}`}
+                aria-label={`Xem chi tiết cho ${job.title}`}
               >
                 <Panel
                   padding="lg"
@@ -244,8 +244,8 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
                   <div className="mt-auto flex flex-col gap-3 pt-4 text-sm sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs text-foreground/60">
                       {isRemoteFriendly(job.workType)
-                        ? "Remote-friendly team with async collaboration."
-                        : "Collaborative team with on-site rituals."}
+                        ? "Đội ngũ làm việc linh hoạt, hỗ trợ làm việc từ xa."
+                        : "Đội ngũ phối hợp chặt chẽ với các hoạt động tại văn phòng."}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       <Link
@@ -253,7 +253,7 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
                         className="inline-flex items-center justify-center rounded-lg border border-border/80 px-4 py-2 text-xs font-semibold text-foreground transition hover:border-foreground"
                         onClick={handleApplyClick}
                       >
-                        Apply to this role
+                        Ứng tuyển vị trí này
                       </Link>
                     </div>
                   </div>
@@ -315,7 +315,7 @@ function PaginationControls({
 
   const disablePrev = isPending || (!hasPrevious && page <= 1);
   const disableNext = isPending || (!hasNext && page >= effectiveTotalPages);
-  const summary = `Page ${page} of ${effectiveTotalPages} (${totalItems} role${pluralize(totalItems)} total)`;
+  const summary = `Trang ${page}/${effectiveTotalPages} (tổng cộng ${totalItems} vị trí)`;
 
   return (
     <div className="flex flex-col gap-3 border-t border-border/40 pt-4 sm:flex-row sm:items-center sm:justify-between">
@@ -327,9 +327,9 @@ function PaginationControls({
           size="sm"
           onClick={() => onPageChange(page - 1)}
           disabled={disablePrev}
-          aria-label="Go to previous page"
+          aria-label="Trang trước"
         >
-          Previous
+          Trước
         </Button>
         <Button
           type="button"
@@ -337,9 +337,9 @@ function PaginationControls({
           size="sm"
           onClick={() => onPageChange(page + 1)}
           disabled={disableNext}
-          aria-label="Go to next page"
+          aria-label="Trang tiếp theo"
         >
-          Next
+          Tiếp
         </Button>
       </div>
     </div>

@@ -14,13 +14,26 @@ const JOB_STATUS_PILLS: Record<JobPosting["status"], string> = {
   CLOSED: "border border-foreground/20 bg-foreground/5 text-foreground/60",
 };
 
+const STATUS_LABELS: Record<JobPosting["status"], string> = {
+  DRAFT: "Nháp",
+  PUBLISHED: "Đang hiển thị",
+  PAUSED: "Tạm dừng",
+  CLOSED: "Đã đóng",
+};
+
+const WORK_TYPE_LABELS: Record<string, string> = {
+  REMOTE: "Làm việc từ xa",
+  HYBRID: "Hybrid",
+  ONSITE: "Tại văn phòng",
+};
+
 type CompanyJobCardProps = {
   job: JobPosting;
   positions: JobPosition[];
 };
 
 function formatTimestamp(value?: string | null) {
-  if (!value) return "Unknown";
+  if (!value) return "Không rõ";
   try {
     return new Intl.DateTimeFormat(undefined, {
       dateStyle: "medium",
@@ -29,6 +42,10 @@ function formatTimestamp(value?: string | null) {
   } catch {
     return value;
   }
+}
+
+function formatStatusLabel(status: JobPosting["status"]) {
+  return STATUS_LABELS[status] ?? status.charAt(0) + status.slice(1).toLowerCase();
 }
 
 export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
@@ -42,7 +59,7 @@ export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm font-semibold text-foreground sm:text-base">{job.title}</p>
             <span className={["inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize", pillClass].join(" ")}>
-              {(job.status ?? "DRAFT").toLowerCase()}
+              {formatStatusLabel(job.status ?? "DRAFT")}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/60">
@@ -54,12 +71,12 @@ export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
             ) : null}
             {job.workType ? (
               <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-foreground/40">
-                {(job.workType ?? "").toLowerCase()}
+                {WORK_TYPE_LABELS[job.workType.toUpperCase()] ?? job.workType}
               </span>
             ) : null}
           </div>
           <p className="text-xs text-foreground/60">
-            Created {formatTimestamp(job.createdAt)} · Updated {formatTimestamp(job.updatedAt)}
+            Tạo lúc {formatTimestamp(job.createdAt)} · Cập nhật {formatTimestamp(job.updatedAt)}
           </p>
         </div>
         <div className="flex flex-col items-end gap-2 text-xs">
@@ -67,16 +84,16 @@ export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
             href={`${ROUTES.jobs}/${job.id}`}
             className="inline-flex items-center gap-1 text-xs font-semibold text-accent transition hover:text-foreground"
           >
-            Preview posting
+            Xem bài tuyển dụng
             <span aria-hidden>↗</span>
           </Link>
           {job.recruiterId ? (
             <span className="rounded-full border border-foreground/10 bg-surface px-2 py-1 text-[11px] uppercase tracking-[0.2em] text-foreground/60">
-              Owner #{job.recruiterId}
+              Phụ trách #{job.recruiterId}
             </span>
           ) : (
             <span className="rounded-full border border-accent/25 bg-accent/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">
-              Assign owner
+              Chưa có phụ trách
             </span>
           )}
         </div>
@@ -101,7 +118,7 @@ export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
           size="sm"
           onClick={() => setEditing((prev) => !prev)}
         >
-          {editing ? "Close editor" : "Edit job"}
+          {editing ? "Đóng chỉnh sửa" : "Chỉnh sửa vị trí"}
         </Button>
       </div>
 

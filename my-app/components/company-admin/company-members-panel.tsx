@@ -40,7 +40,7 @@ export function CompanyMembersPanel({ users }: Props) {
   const formatJoinedAt = useCallback(
     (value?: string | null) => {
       if (!value) {
-        return "Recently added";
+        return "Mới được thêm";
       }
       try {
         return dateFormatter.format(new Date(value));
@@ -77,7 +77,7 @@ export function CompanyMembersPanel({ users }: Props) {
   if (users.length === 0) {
     return (
       <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
-        No team members yet. Send invites so recruiters can start collaborating.
+        Chưa có thành viên nào. Gửi lời mời để nhà tuyển dụng bắt đầu cộng tác.
       </div>
     );
   }
@@ -98,8 +98,7 @@ export function CompanyMembersPanel({ users }: Props) {
       ) : null}
 
       <p className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 text-xs text-foreground/60">
-        Roles are now fixed once a teammate joins. Remove the member and send a new invitation if you need them to
-        take on a different role.
+        Vai trò sẽ cố định khi thành viên tham gia. Nếu cần đổi vai trò, hãy gỡ thành viên và gửi lời mời mới.
       </p>
 
       {users.map((user) => {
@@ -114,25 +113,25 @@ export function CompanyMembersPanel({ users }: Props) {
           >
             <div className="space-y-1">
               <p className="font-semibold text-foreground">{user.email}</p>
-              <p className="text-xs text-foreground/60">Joined {formatJoinedAt(user.joinedAt)}</p>
+              <p className="text-xs text-foreground/60">Tham gia {formatJoinedAt(user.joinedAt)}</p>
               <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em]">
-                <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">{user.role}</span>
+                <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">{formatRole(user.role)}</span>
                 <span
                   className={cx(
                     "rounded-full px-2 py-1",
                     user.locked ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-600"
                   )}
                 >
-                  {user.locked ? "Locked" : "Active"}
+                  {user.locked ? "Đã khóa" : "Đang hoạt động"}
                 </span>
               </div>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50">
-                <span>Role</span>
+                <span>Vai trò</span>
                 <span className="rounded-lg bg-foreground/5 px-3 py-1 text-foreground/70">
-                  {user.role.replace("_", " ")}
+                  {formatRole(user.role)}
                 </span>
               </div>
 
@@ -150,7 +149,7 @@ export function CompanyMembersPanel({ users }: Props) {
                   )}
                   onClick={() => handleLockToggle(user.id, !user.locked)}
                 >
-                  {user.locked ? "Unlock recruiter" : "Lock recruiter"}
+                  {user.locked ? "Mở khóa nhà tuyển dụng" : "Khóa nhà tuyển dụng"}
                 </Button>
               ) : (
                 <Button
@@ -160,7 +159,7 @@ export function CompanyMembersPanel({ users }: Props) {
                   disabled
                   className="text-foreground/60"
                 >
-                  {isCompanyAdmin ? "Company admin" : "Managed externally"}
+                  {isCompanyAdmin ? "Quản trị viên công ty" : "Quản lý bên ngoài"}
                 </Button>
               )}
             </div>
@@ -169,4 +168,13 @@ export function CompanyMembersPanel({ users }: Props) {
       })}
     </div>
   );
+}
+
+function formatRole(role: string) {
+  const normalized = role.toUpperCase();
+  if (normalized === "COMPANY_ADMIN") return "Quản trị viên công ty";
+  if (normalized === "RECRUITER") return "Nhà tuyển dụng";
+  if (normalized === "SUPER_ADMIN") return "Quản trị cấp cao";
+  if (normalized === "MANAGED_EXTERNALLY") return "Quản lý bên ngoài";
+  return role.replace(/_/g, " ");
 }

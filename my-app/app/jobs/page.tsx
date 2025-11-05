@@ -100,29 +100,28 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-              Discover opportunities
+              Khám phá cơ hội mới
             </span>
-            <h1 className="mt-2 text-3xl font-semibold text-foreground sm:text-4xl">Open roles</h1>
+            <h1 className="mt-2 text-3xl font-semibold text-foreground sm:text-4xl">Các vị trí đang tuyển</h1>
             <p className="mt-2 max-w-2xl text-sm text-foreground/70">
-              Browse open opportunities from hiring teams using Talentflow. Listings refresh as recruiters update
-              requirements, locations, or salary ranges so you always see the latest details.
+              Duyệt các cơ hội tuyển dụng từ những đội ngũ đang sử dụng Talentflow. Bản tin được cập nhật liên tục khi nhà tuyển dụng thay đổi yêu cầu, địa điểm hay mức lương, giúp bạn luôn thấy thông tin mới nhất.
             </p>
           </div>
           <Link href={ROUTES.register}>
             <Button variant="secondary" size="md">
-              Create candidate profile
+              Tạo hồ sơ ứng viên
             </Button>
           </Link>
         </div>
         <div className="flex flex-wrap gap-3 text-xs text-foreground/60">
           <span className="rounded-full border border-foreground/10 px-3 py-1">
-            New roles added every week
+            Vị trí mới được bổ sung hằng tuần
           </span>
           <span className="rounded-full border border-foreground/10 px-3 py-1">
-            Recruiter notes shared transparently
+            Ghi chú từ nhà tuyển dụng được chia sẻ minh bạch
           </span>
           <span className="rounded-full border border-foreground/10 px-3 py-1">
-            Track your application with status alerts
+            Theo dõi đơn ứng tuyển với cảnh báo trạng thái
           </span>
         </div>
       </header>

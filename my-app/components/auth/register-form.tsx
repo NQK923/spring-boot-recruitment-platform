@@ -16,26 +16,26 @@ export function RegisterForm() {
     <form className="space-y-5" action={formAction}>
       <div className="space-y-2">
         <label className="text-sm font-semibold text-foreground" htmlFor="email">
-          Email address
+          Địa chỉ email
         </label>
         <Input
           id="email"
           name="email"
           type="email"
-          placeholder="you@example.com"
+          placeholder="ban@example.com"
           autoComplete="email"
           required
         />
       </div>
       <div className="space-y-2">
         <label className="text-sm font-semibold text-foreground" htmlFor="password">
-          Password
+          Mật khẩu
         </label>
         <Input
           id="password"
           name="password"
           type="password"
-          placeholder="At least 8 characters"
+          placeholder="Tối thiểu 8 ký tự"
           autoComplete="new-password"
           required
         />
@@ -46,12 +46,12 @@ export function RegisterForm() {
         </p>
       ) : null}
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
-        {pending ? "Creating account..." : "Create account"}
+        {pending ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
       </Button>
       <div className="text-center text-sm text-foreground/60">
-        Already have an account?{" "}
+        Đã có tài khoản?{" "}
         <Link className="font-medium text-foreground hover:underline" href={ROUTES.signIn}>
-          Sign in
+          Đăng nhập
         </Link>
       </div>
     </form>
