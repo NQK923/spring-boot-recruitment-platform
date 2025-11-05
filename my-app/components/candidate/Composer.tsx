@@ -14,16 +14,11 @@ type ComposerProps = {
 
 const PLACEHOLDER = {
   vi: "Đặt câu hỏi về tuyển dụng, JD hoặc tiến trình ứng tuyển...",
-  en: "Ask about hiring stages, job details, or your application status...",
+  en: "Đặt câu hỏi về tuyển dụng, JD hoặc tiến trình ứng tuyển...",
 } as const;
 
-const HINT_TEXT = {
-  vi: "Nhấn Enter để gửi, Shift + Enter để xuống dòng.",
-  en: "Press Enter to send, Shift + Enter for a new line.",
-} as const;
-
-const SEND_LABEL = { vi: "Gửi", en: "Send" } as const;
-const RETRY_LABEL = { vi: "Thử lại", en: "Retry" } as const;
+const SEND_LABEL = { vi: "Gửi", en: "Gửi" } as const;
+const RETRY_LABEL = { vi: "Thử lại", en: "Thử lại" } as const;
 
 export function Composer({ status, language, sendMessage, retryAvailable, onRetry }: ComposerProps) {
   const [value, setValue] = useState("");
@@ -70,17 +65,15 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
     [submitCurrentValue]
   );
 
-  const hint = useMemo(() => HINT_TEXT[language], [language]);
-
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-2 border-border/60 bg-surface px-4 py-3"
+      className="flex flex-col gap-3 px-4 py-4 sm:px-5 sm:py-5"
     >
       <div className="flex items-end gap-3">
         <div className="flex-1">
           <label htmlFor="chat-widget-input" className="sr-only">
-            {language === "vi" ? "Nhập tin nhắn" : "Type a message"}
+            Nhập tin nhắn
           </label>
           <textarea
             id="chat-widget-input"
@@ -97,8 +90,8 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
             disabled={disabled}
             rows={1}
             className={cx(
-              "w-full resize-none rounded-2xl border border-border/60 bg-background px-4 py-3 text-sm text-foreground outline-none transition",
-              "focus:border-[rgb(var(--accent))] focus:ring-2 focus:ring-[rgb(var(--accent))]/20",
+              "w-full resize-none overflow-hidden rounded-2xl border border-transparent bg-background/90 px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-foreground/50",
+              "shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] focus:border-[rgb(var(--accent))] focus:ring-2 focus:ring-[rgb(var(--accent))]/25",
               disabled && "opacity-60"
             )}
             aria-disabled={disabled}
@@ -111,7 +104,7 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
             <button
               type="button"
               onClick={onRetry}
-              className="rounded-full border border-border/70 px-3 py-1 text-xs font-medium text-foreground transition hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--accent))]"
+              className="cursor-pointer rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-[rgba(var(--accent),0.6)] hover:bg-[rgba(var(--accent),0.08)] hover:text-[rgb(var(--accent))]"
             >
               {RETRY_LABEL[language]}
             </button>
@@ -121,22 +114,17 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
             disabled={!canSend}
             aria-label={SEND_LABEL[language]}
             className={cx(
-              "flex h-10 w-10 items-center justify-center rounded-full bg-[rgb(var(--accent))] text-white shadow-sm transition",
-              canSend ? "hover:bg-[rgba(var(--accent),0.85)]" : "opacity-50"
+              "flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-[rgb(var(--accent))] to-[rgba(var(--accent),0.85)] text-white shadow-[0_12px_24px_rgba(var(--accent),0.3)] transition-transform duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent))]/35",
+              canSend ? "hover:scale-105 focus-visible:scale-105" : "opacity-50"
             )}
           >
             {disabled ? <SpinnerIcon /> : <SendIcon />}
           </button>
         </div>
       </div>
-      <div className="flex items-center justify-between text-[11px] text-foreground/60">
-        <span>{hint}</span>
+      <div className="flex items-center justify-end text-[11px] text-foreground/60">
         <span aria-live="polite">
-          {disabled
-            ? language === "vi"
-              ? "Đang xử lý..."
-              : "Processing..."
-            : "\u00A0"}
+          {disabled ? "Đang xử lý..." : "\u00A0"}
         </span>
       </div>
     </form>

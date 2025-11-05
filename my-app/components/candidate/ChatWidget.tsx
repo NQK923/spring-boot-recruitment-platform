@@ -8,7 +8,7 @@ import { useChatWidget } from "@/hooks/useChatWidget";
 import { MessageList } from "@/components/candidate/MessageList";
 import { Composer } from "@/components/candidate/Composer";
 
-const PANEL_WIDTH = 360;
+const PANEL_WIDTH = 420;
 const PANEL_HEIGHT = 520;
 const EDGE_PADDING = 16;
 const BOTTOM_SHEET_HEIGHT_PERCENT = 70;
@@ -253,10 +253,10 @@ function ChatWidgetInner() {
           tabIndex={-1}
           style={panelStyles}
           className={cx(
-            "chat-widget-panel fixed z-[9999] flex flex-col overflow-hidden rounded-2xl border border-border/80 bg-surface text-foreground shadow-[0_24px_48px_rgba(15,23,42,0.18)] transition duration-200",
+            "chat-widget-panel fixed z-[9999] flex flex-col overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-background/98 via-surface/95 to-background/98 text-foreground shadow-[0_28px_56px_rgba(15,23,42,0.28)] backdrop-blur-xl transition duration-200",
             isMobile
-              ? "mx-auto w-full max-w-none rounded-t-3xl border-t border-border bg-background"
-              : "w-[360px]"
+              ? "mx-auto w-full max-w-none rounded-t-[36px] border-t border-border/60"
+              : "w-[420px]"
           )}
         >
           <WidgetPanelHeader
@@ -268,26 +268,28 @@ function ChatWidgetInner() {
             clear={clear}
             close={close}
           />
-          <div className="flex flex-1 flex-col gap-3 overflow-hidden bg-surface/95">
-            <div className="relative flex-1 overflow-hidden">
-              <MessageList
-                messages={messages}
-                status={status}
-                error={error}
-                retryAvailable={retryAvailable}
-                onRetry={retryLastAttempt}
-                sendMessage={sendMessage}
-              />
+          <div className="flex flex-1 min-h-0 flex-col px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4">
+            <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[32px] border border-border/40 bg-gradient-to-br from-background/99 via-background/95 to-background/98 shadow-[0_24px_52px_rgba(15,23,42,0.22)]">
+              <div className="flex-1 min-h-0">
+                <MessageList
+                  messages={messages}
+                  status={status}
+                  error={error}
+                  retryAvailable={retryAvailable}
+                  onRetry={retryLastAttempt}
+                  sendMessage={sendMessage}
+                />
+              </div>
               {info ? <Toast message={info} /> : null}
-            </div>
-            <div className="border-t border-border/60 bg-surface">
-              <Composer
-                status={status}
-                language={language}
-                sendMessage={sendMessage}
-                retryAvailable={retryAvailable}
-                onRetry={retryLastAttempt}
-              />
+              <div className="border-t border-border/50 bg-background/94">
+                <Composer
+                  status={status}
+                  language={language}
+                  sendMessage={sendMessage}
+                  retryAvailable={retryAvailable}
+                  onRetry={retryLastAttempt}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -310,15 +312,15 @@ function FloatingLauncher({
       type="button"
       aria-label={isOpen ? "Thu nhỏ trợ lý tuyển dụng" : "Mở trợ lý tuyển dụng"}
       onClick={toggle}
-      className={cx(
-        "fixed bottom-5 right-5 z-[9998] flex h-14 w-14 items-center justify-center rounded-full bg-[rgb(var(--accent))] text-white shadow-[0_18px_32px_rgba(15,23,42,0.22)] transition hover:bg-[rgba(var(--accent),0.9)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgb(var(--accent))] sm:bottom-6 sm:right-6",
-        isOpen ? "scale-95 bg-[rgba(var(--accent),0.85)]" : "scale-100"
-      )}
+          className={cx(
+            "fixed bottom-5 right-5 z-[9998] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-[rgb(var(--accent))] via-[rgba(var(--accent),0.88)] to-[rgba(var(--accent),0.66)] text-white shadow-[0_20px_38px_rgba(15,23,42,0.28)] transition duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(var(--accent),0.85)] sm:bottom-6 sm:right-6",
+            isOpen ? "scale-95 opacity-80" : "scale-100"
+          )}
     >
       <ChatBubbleIcon />
       {hasUnread ? (
-        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-semibold text-[rgb(var(--accent))] shadow">
-          •
+        <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-white/60 bg-white text-[9px] font-semibold text-[rgb(var(--accent))] shadow-[0_6px_12px_rgba(15,23,42,0.2)]">
+          ●
         </span>
       ) : null}
     </button>
@@ -345,68 +347,77 @@ function WidgetPanelHeader({
   return (
     <div
       onPointerDown={onPointerDown}
-      className="flex cursor-grab select-none items-center justify-between border-b border-border/60 bg-gradient-to-r from-surface to-surface/80 px-5 py-3"
+      className="cursor-grab select-none border-b border-border/50 bg-gradient-to-br from-[rgba(var(--accent),0.14)] via-background/98 to-background/96 px-6 py-4"
     >
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[rgb(var(--accent))]/10 text-[rgb(var(--accent))]">
-          <ChatBubbleIcon />
-        </div>
-        <div className="flex flex-col">
-          <span className="text-sm font-semibold">Trợ lý tuyển dụng</span>
-          <span className="text-xs text-foreground/60">Sẵn sàng hỗ trợ mọi bước trong quy trình tuyển dụng</span>
-        </div>
-      </div>
-      <div className="flex items-center gap-2 text-xs font-medium">
-        <div className="flex items-center gap-1" data-no-drag="true">
-          <label htmlFor="chat-lang" className="sr-only">
-            Ngôn ngữ
-          </label>
-          <select
-            id="chat-lang"
-            value={language}
-            onChange={(event) => setLanguage(event.target.value === "en" ? "en" : "vi")}
-            className="rounded-md border border-border/70 bg-surface px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40"
+      <div className="flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-1 items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(var(--accent),0.16)] text-[rgb(var(--accent))] shadow-[0_10px_20px_rgba(var(--accent),0.18)]">
+              <ChatBubbleIcon />
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-[15px] font-semibold tracking-wide text-foreground">Trợ lý tuyển dụng</span>
+              <div className="flex flex-wrap items-center gap-2 text-[11px] text-foreground/60">
+                <span>Hỗ trợ tức thì cho mọi câu hỏi tuyển dụng</span>
+                <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-500">
+                  <span aria-hidden="true">●</span>
+                  <span>Trực tuyến</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={close}
+            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border/60 bg-background/80 text-foreground/60 transition hover:border-[rgba(var(--accent),0.6)] hover:bg-[rgba(var(--accent),0.08)] hover:text-foreground"
+            aria-label="Đóng trợ lý"
+            data-no-drag="true"
           >
-            <option value="vi">VI</option>
-            <option value="en">EN</option>
-          </select>
+            <CloseIcon />
+          </button>
         </div>
-        <div
-          className="flex items-center gap-1 rounded-full border border-border/70 bg-surface px-2 py-1"
-          data-no-drag="true"
-        >
-          <span className="text-[11px] text-foreground/60">Streaming</span>
-          <input
-            id="chat-streaming-switch"
-            type="checkbox"
-            className="peer sr-only"
-            checked={isStreamingPreferred}
-            onChange={(event) => setStreamingPreferred(event.target.checked)}
-          />
-          <label
-            htmlFor="chat-streaming-switch"
-            className="relative block h-4 w-7 cursor-pointer rounded-full bg-border transition peer-checked:bg-[rgb(var(--accent))]"
+        <div className="flex flex-wrap items-center gap-2 text-xs font-medium" data-no-drag="true">
+          <div className="relative flex items-center gap-1.5 rounded-full border border-border/60 bg-background/85 px-3 py-1.5">
+            <label htmlFor="chat-lang" className="sr-only">
+              Ngôn ngữ
+            </label>
+            <select
+              id="chat-lang"
+              value={language}
+              onChange={(event) => setLanguage(event.target.value === "en" ? "en" : "vi")}
+              className="peer cursor-pointer appearance-none rounded-full border border-border/60 bg-background/95 px-3 py-1 text-xs font-medium text-foreground outline-none transition focus:border-[rgb(var(--accent))] focus:ring-2 focus:ring-[rgb(var(--accent))]/30"
+            >
+              <option value="vi">Tiếng Việt</option>
+              <option value="en">Tiếng Anh</option>
+            </select>
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-foreground/60">
+              ▾
+            </span>
+          </div>
+          <div className="flex cursor-pointer items-center gap-2 rounded-full border border-border/60 bg-background/85 px-3 py-1.5">
+            <span className="text-[11px] text-foreground/60">Trả lời trực tiếp</span>
+            <input
+              id="chat-streaming-switch"
+              type="checkbox"
+              className="peer sr-only"
+              checked={isStreamingPreferred}
+              onChange={(event) => setStreamingPreferred(event.target.checked)}
+            />
+            <label
+              htmlFor="chat-streaming-switch"
+              className="relative block h-5 w-9 cursor-pointer rounded-full bg-border transition peer-checked:bg-[rgb(var(--accent))]"
+            >
+              <span className="absolute left-1 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-white transition peer-checked:translate-x-3.5" />
+            </label>
+          </div>
+          <button
+            type="button"
+            onClick={clear}
+            className="cursor-pointer rounded-full border border-border/60 bg-background/85 px-3 py-1.5 text-[11px] text-foreground/70 transition hover:border-[rgba(var(--accent),0.6)] hover:bg-[rgba(var(--accent),0.08)] hover:text-[rgb(var(--accent))]"
           >
-            <span className="absolute left-1 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-white transition peer-checked:translate-x-3" />
-          </label>
+            Xóa hội thoại
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={clear}
-          className="rounded-full border border-border/70 bg-surface px-2 py-1 text-[11px] text-foreground/70 transition hover:bg-border/40"
-          data-no-drag="true"
-        >
-          Xóa
-        </button>
-        <button
-          type="button"
-          onClick={close}
-          className="ml-1 rounded-full border border-transparent p-2 text-foreground/60 transition hover:bg-border/40 hover:text-foreground"
-          aria-label="Đóng trợ lý"
-          data-no-drag="true"
-        >
-          <CloseIcon />
-        </button>
       </div>
     </div>
   );

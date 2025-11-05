@@ -34,6 +34,16 @@ const QUICK_PROMPTS: Array<{ label: string; prompt: string }> = [
   },
 ];
 
+const SYSTEM_TEXT_OVERRIDES: Record<string, string> = {
+  "Missing chat action.": "Không tìm thấy hành động trò chuyện.",
+  "Missing chat action": "Không tìm thấy hành động trò chuyện.",
+};
+
+function translateSystemText(text: string) {
+  const trimmed = text.trim();
+  return SYSTEM_TEXT_OVERRIDES[trimmed] ?? text;
+}
+
 export function MessageList({
   messages,
   status,
@@ -93,17 +103,15 @@ export function MessageList({
   return (
     <div
       ref={scrollRef}
-      className="h-full overflow-y-auto px-4 py-6"
+      className="h-full overflow-y-auto px-5 py-6 sm:px-6 sm:py-7"
       aria-live="polite"
       aria-label="Lịch sử trò chuyện với trợ lý tuyển dụng"
     >
       {showQuickPrompts ? (
         <div className="flex h-full flex-col items-center justify-center gap-4 text-center text-sm text-foreground/70">
-          <div className="max-w-xs space-y-1">
-            <p className="font-semibold text-foreground">
-              Chào bạn! Trợ lý tuyển dụng luôn sẵn sàng hỗ trợ.
-            </p>
-            <p>Chọn nhanh một chủ đề bên dưới hoặc đặt câu hỏi của riêng bạn.</p>
+          <div className="max-w-xs space-y-1.5">
+            <p className="font-semibold text-foreground">Xin chào! Trợ lý tuyển dụng luôn sẵn sàng.</p>
+            <p>Chọn nhanh một chủ đề bên dưới hoặc đặt câu hỏi riêng của bạn để bắt đầu đối thoại.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
             {QUICK_PROMPTS.map((item) => (
@@ -113,8 +121,8 @@ export function MessageList({
                 onClick={() => sendMessage(item.prompt)}
                 disabled={status === "loading" || status === "streaming"}
                 className={cx(
-                  "rounded-full border border-border/70 px-4 py-2 text-xs font-medium text-foreground transition",
-                  "hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--accent))]",
+                  "cursor-pointer rounded-full border border-border/60 bg-background/80 px-4 py-2 text-xs font-medium text-foreground shadow-sm transition",
+                  "hover:border-[rgb(var(--accent))] hover:bg-[rgba(var(--accent),0.08)] hover:text-[rgb(var(--accent))]",
                   (status === "loading" || status === "streaming") && "opacity-60"
                 )}
               >
@@ -124,26 +132,26 @@ export function MessageList({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           {visibleMessages.map((message) => (
             <MessageBubble key={message.id} message={message} />
           ))}
           {showTypingDots ? (
             <div className="flex justify-start">
-              <div className="max-w-[75%] rounded-2xl border border-border/60 bg-background px-4 py-2 shadow-sm">
+              <div className="max-w-[75%] rounded-2xl border border-border/60 bg-background/90 px-4 py-2 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur-sm">
                 <TypingDots />
               </div>
             </div>
           ) : null}
           {status === "error" && error ? (
-            <p className="text-center text-xs text-red-500">{error}</p>
+            <p className="text-center text-xs text-red-500">{translateSystemText(error)}</p>
           ) : null}
           {status === "error" && retryAvailable ? (
             <div className="flex justify-center pt-2">
               <button
                 type="button"
                 onClick={onRetry}
-                className="rounded-full border border-border/60 px-3 py-1 text-xs font-medium text-foreground transition hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--accent))]"
+                className="cursor-pointer rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-[rgba(var(--accent),0.6)] hover:bg-[rgba(var(--accent),0.08)] hover:text-[rgb(var(--accent))]"
               >
                 Thử lại
               </button>
@@ -157,18 +165,19 @@ export function MessageList({
 
 function MessageBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === "user";
+  const content = isUser ? message.content : translateSystemText(message.content);
 
   return (
     <div className={cx("flex", isUser ? "justify-end" : "justify-start")}>
       <div
         className={cx(
-          "max-w-[80%] rounded-2xl px-4 py-2 text-sm leading-relaxed shadow-sm",
+          "max-w-[78%] rounded-2xl px-4 py-2 text-sm leading-relaxed shadow-[0_10px_24px_rgba(15,23,42,0.12)]",
           isUser
-            ? "bg-[rgb(var(--accent))] text-white"
-            : "border border-border/70 bg-surface text-foreground"
+            ? "bg-gradient-to-br from-[rgb(var(--accent))] to-[rgba(var(--accent),0.85)] text-white"
+            : "border border-border/60 bg-background/90 backdrop-blur-sm text-foreground"
         )}
       >
-        <p className="whitespace-pre-wrap break-words">{message.content}</p>
+        <p className="whitespace-pre-wrap break-words">{content}</p>
       </div>
     </div>
   );
