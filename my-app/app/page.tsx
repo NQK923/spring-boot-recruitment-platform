@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
-import { ChatBox } from "@/components/candidate/ChatBox";
 import { apiFetch } from "@/lib/api";
 import { getCurrentUser } from "@/lib/current-user";
 import { ROUTES } from "@/lib/routes";
@@ -310,42 +309,24 @@ export default async function Home() {
         </Container>
       </section>
 
-      <section className="bg-surface-muted/40 py-16">
+      <section className="py-16">
         <Container className="space-y-8">
-          <div className="space-y-3 text-center sm:text-left">
-            <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-              Ask our assistant
-            </span>
-            <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
-              Trợ lý ứng viên luôn sẵn sàng hỗ trợ
-            </h2>
-            <p className="mx-auto max-w-2xl text-sm text-foreground/70 sm:mx-0">
-              Không cần đăng nhập. Đặt câu hỏi về JD, quy trình tuyển dụng, trạng thái hồ sơ hoặc cách
-              chuẩn bị phỏng vấn và nhận gợi ý ngay lập tức.
-            </p>
-          </div>
-          <ChatBox apiBasePath="/api/chat" />
-        </Container>
-      </section>
-
-      <section>
-        <Container className="space-y-10">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="max-w-2xl space-y-2">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-3">
               <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                Latest openings
+                Latest jobs
               </span>
               <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
                 Fresh roles hiring right now
               </h2>
-              <p className="text-sm text-foreground/70">
+              <p className="max-w-2xl text-sm text-foreground/70">
                 Jump into the newest opportunities before anyone else. Sign in to apply instantly and
                 receive progress alerts.
               </p>
             </div>
             <Link href={ROUTES.jobs}>
               <Button variant="ghost" size="md">
-                Xem t&#x1EA5;t c&#x1EA3;
+                View all jobs
               </Button>
             </Link>
           </div>
@@ -356,9 +337,7 @@ export default async function Home() {
             ) : (
               <Panel className="md:col-span-2 xl:col-span-3">
                 <div className="flex flex-col gap-4 text-center sm:text-left">
-                  <h3 className="text-xl font-semibold text-foreground">
-                    No jobs published yet
-                  </h3>
+                  <h3 className="text-xl font-semibold text-foreground">No jobs published yet</h3>
                   <p className="text-sm text-foreground/70">
                     Once recruiters publish openings they will appear here immediately. Check back
                     soon or sign in to create the first posting.
