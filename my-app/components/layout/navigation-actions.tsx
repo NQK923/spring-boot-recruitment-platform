@@ -40,12 +40,9 @@ export async function NavigationActions() {
     <div className="flex items-center gap-3 text-sm">
       <div className="hidden flex-col text-right sm:flex">
         <span className="font-medium text-foreground">{emailLabel}</span>
-        {roleLabel ? (
-          <span className="text-xs text-foreground/60">{roleLabel}</span>
-        ) : null}
+        {roleLabel ? <span className="text-xs text-foreground/60">{roleLabel}</span> : null}
       </div>
       <AccountMenu />
     </div>
   );
 }
-

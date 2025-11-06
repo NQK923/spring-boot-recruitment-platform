@@ -6,27 +6,27 @@ import { ROUTES } from "@/lib/routes";
 
 const checklist = [
   {
-    title: "Workspace preparation",
+    title: "Chuẩn bị workspace",
     items: [
-      "Confirm company branding, locations, and default hiring stages.",
-      "Create starter job templates and interview scorecards for recruiters.",
-      "Document hiring policies (offer approvals, compensation ranges) before launch.",
+      "Xác nhận bộ nhận diện doanh nghiệp, địa điểm và các giai đoạn tuyển dụng mặc định.",
+      "Tạo mẫu tin tuyển dụng và phiếu chấm điểm phỏng vấn để đội ngũ sử dụng ngay.",
+      "Tài liệu hóa chính sách tuyển dụng (phê duyệt offer, khung lương) trước khi triển khai.",
     ],
   },
   {
-    title: "User provisioning",
+    title: "Cấp quyền người dùng",
     items: [
-      "Invite COMPANY_ADMIN and RECRUITER accounts from the company dashboard.",
-      "Send a welcome packet covering workflows, SLAs, and communication channels.",
-      "Review role assignments weekly to ensure access aligns with responsibilities.",
+      "Mời tài khoản COMPANY_ADMIN và RECRUITER từ bảng điều khiển công ty.",
+      "Gửi gói chào mừng bao gồm quy trình làm việc, SLA và kênh trao đổi chính.",
+      "Rà soát phân quyền mỗi tuần để bảo đảm quyền truy cập đúng với trách nhiệm.",
     ],
   },
   {
-    title: "Environment hygiene",
+    title: "Giữ môi trường sạch",
     items: [
-      "Review security settings (password policy, SSO, MFA) every quarter.",
-      "Archive inactive jobs and anonymise candidate data according to policy.",
-      "Track platform announcements and roll out new features to your team.",
+      "Đánh giá cài đặt bảo mật (mật khẩu, SSO, MFA) mỗi quý một lần.",
+      "Lưu trữ tin tuyển dụng không hoạt động và ẩn danh dữ liệu ứng viên theo chính sách.",
+      "Theo dõi thông báo nền tảng và phổ biến tính năng mới cho đội ngũ.",
     ],
   },
 ];
@@ -34,17 +34,17 @@ const checklist = [
 const escalations = [
   {
     label: "Onboarding",
-    description: "Tenant activation, invitation flow validation, initial job imports.",
+    description: "Kích hoạt tenant, kiểm tra luồng mời tham gia, nhập dữ liệu tin tuyển dụng ban đầu.",
     contact: "talentflow-onboarding@company.com",
   },
   {
-    label: "Security & infra",
-    description: "Access policies, suspicious login activity, or compliance questions.",
+    label: "Bảo mật & hạ tầng",
+    description: "Chính sách truy cập, hoạt động đăng nhập bất thường, câu hỏi tuân thủ.",
     contact: "platform-security@company.com",
   },
   {
-    label: "Integrations",
-    description: "Webhook failures, third-party SSO, analytics data exports.",
+    label: "Tích hợp",
+    description: "Sự cố webhook, đăng nhập SSO bên thứ ba, xuất dữ liệu phân tích.",
     contact: "integrations@company.com",
   },
 ];
@@ -55,24 +55,24 @@ export default function AdminDocsPage() {
       <Panel variant="glass" padding="lg" className="space-y-5">
         <div className="space-y-3">
           <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-            Admin handbook
+            Sổ tay quản trị viên
           </span>
           <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
-            Operate Talentflow safely and at scale.
+            Vận hành Talentflow an toàn và ở quy mô lớn.
           </h1>
           <p className="max-w-3xl text-sm text-foreground/70">
-            Admins own tenant governance, onboarding, and platform hygiene. Use this guide as your daily
-            companion and update it as operational processes evolve.
+            Quản trị viên chịu trách nhiệm quản lý tenant, onboarding và giữ môi trường vận hành sạch. Hãy sử dụng sổ
+            tay này mỗi ngày và cập nhật khi quy trình nội bộ thay đổi.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href={ROUTES.recruiterDashboard}>
             <Button size="sm" variant="secondary">
-              Back to workspace
+              Quay lại workspace
             </Button>
           </Link>
           <Link href="/docs/candidate">
-            <Button size="sm">Share candidate guide</Button>
+            <Button size="sm">Chia sẻ cẩm nang ứng viên</Button>
           </Link>
         </div>
       </Panel>
@@ -80,9 +80,9 @@ export default function AdminDocsPage() {
       <section id="workspace-preparation">
         <Panel padding="lg" className="space-y-6">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Onboarding checklist</h2>
+            <h2 className="text-lg font-semibold text-foreground">Checklist triển khai</h2>
             <p className="text-sm text-foreground/60">
-              Complete these steps before inviting recruiters or candidates into the platform.
+              Hoàn thành những bước này trước khi mời nhà tuyển dụng hoặc ứng viên vào nền tảng.
             </p>
           </div>
           <div className="space-y-6">
@@ -106,31 +106,30 @@ export default function AdminDocsPage() {
       <section id="access">
         <Panel padding="lg" className="space-y-5">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Access & compliance</h2>
+            <h2 className="text-lg font-semibold text-foreground">Truy cập & tuân thủ</h2>
             <p className="text-sm text-foreground/60">
-              Regular reviews ensure every person retains the right access and that audit logs stay clean.
+              Rà soát định kỳ để đảm bảo mọi người giữ đúng quyền truy cập và nhật ký luôn sạch.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Role hygiene (weekly)</h3>
+              <h3 className="text-sm font-semibold text-foreground">Vệ sinh phân quyền (hằng tuần)</h3>
               <p className="text-sm text-foreground/70">
-                Export the user list from admin settings. Remove access for teammates who have left or changed
-                responsibilities.
+                Xuất danh sách người dùng trong phần quản trị. Thu hồi quyền với các thành viên đã nghỉ việc hoặc đổi
+                nhiệm vụ.
               </p>
             </div>
             <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Audit trail (monthly)</h3>
+              <h3 className="text-sm font-semibold text-foreground">Theo dõi nhật ký (hằng tháng)</h3>
               <p className="text-sm text-foreground/70">
-                Review recent application status changes and ensure notes capture decisions and approvals.
+                Rà soát các lần đổi trạng thái ứng tuyển và chắc chắn rằng ghi chú thể hiện rõ quyết định và phê duyệt.
               </p>
             </div>
           </div>
           <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-            <h3 className="text-sm font-semibold text-foreground">Data retention</h3>
+            <h3 className="text-sm font-semibold text-foreground">Lưu trữ dữ liệu</h3>
             <p className="text-sm text-foreground/70">
-              Configure automated clean-up for expired invitations, reset codes, and archived applications in line with
-              your company policy.
+              Thiết lập tự động xóa lời mời hết hạn, mã đặt lại mật khẩu và hồ sơ đã lưu trữ theo chính sách công ty.
             </p>
           </div>
         </Panel>
@@ -139,9 +138,9 @@ export default function AdminDocsPage() {
       <section id="support">
         <Panel padding="lg" className="space-y-5">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Escalation matrix</h2>
+            <h2 className="text-lg font-semibold text-foreground">Ma trận hỗ trợ</h2>
             <p className="text-sm text-foreground/60">
-              Use the matrix below when you encounter platform issues or need cross-team support.
+              Sử dụng bảng sau khi bạn gặp sự cố nền tảng hoặc cần phối hợp cùng đội khác.
             </p>
           </div>
           <div className="space-y-4">
@@ -169,28 +168,28 @@ export default function AdminDocsPage() {
       <section id="templates">
         <Panel padding="lg" className="space-y-6">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Communication templates</h2>
+            <h2 className="text-lg font-semibold text-foreground">Mẫu liên lạc</h2>
             <p className="text-sm text-foreground/60">
-              Ready-to-send snippets for your most common invitation and reminder workflows.
+              Những đoạn văn bản sẵn sàng gửi cho các tình huống mời tham gia và nhắc nhở phổ biến nhất.
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div id="invites" className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Invite email</h3>
+              <h3 className="text-sm font-semibold text-foreground">Email mời tham gia</h3>
               <ul className="space-y-2 text-sm text-foreground/70">
-                <li>- Subject: &#34;You&#39;re invited to Talentflow&#34;</li>
-                <li>- Mention who invited them and why.</li>
-                <li>- One sentence on what happens after acceptance.</li>
-                <li>- Button linking to the invitation URL plus expiry date.</li>
+                <li>- Tiêu đề: &#34;Mời bạn tham gia Talentflow&#34;</li>
+                <li>- Nhắc lại ai đã mời và lý do cụ thể.</li>
+                <li>- Một câu giải thích điều gì xảy ra sau khi chấp nhận.</li>
+                <li>- Nút liên kết tới URL lời mời kèm ngày hết hạn.</li>
               </ul>
             </div>
             <div id="reminders" className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Reminder nudges</h3>
+              <h3 className="text-sm font-semibold text-foreground">Thông báo nhắc nhở</h3>
               <ul className="space-y-2 text-sm text-foreground/70">
-                <li>- Send a friendly reminder 48 hours before expiry.</li>
-                <li>- Include contact info if they need help logging in.</li>
-                <li>- Offer to resend the invite if the link has expired.</li>
-                <li>- Reiterate the benefits of activating now.</li>
+                <li>- Gửi lời nhắc thân thiện trước 48 giờ khi lời mời sắp hết hạn.</li>
+                <li>- Đính kèm thông tin liên hệ nếu họ cần hỗ trợ đăng nhập.</li>
+                <li>- Đề nghị gửi lại lời mời nếu liên kết đã hết hạn.</li>
+                <li>- Nhắc lại lợi ích của việc kích hoạt ngay hôm nay.</li>
               </ul>
             </div>
           </div>
@@ -200,23 +199,23 @@ export default function AdminDocsPage() {
       <section id="troubleshooting">
         <Panel padding="lg" className="space-y-5">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Troubleshooting quick tips</h2>
+            <h2 className="text-lg font-semibold text-foreground">Mẹo xử lý nhanh</h2>
             <p className="text-sm text-foreground/60">
-              Start with these diagnostics before escalating to engineering.
+              Bắt đầu với những bước này trước khi nhờ tới đội kỹ thuật.
             </p>
           </div>
           <ul className="space-y-3 text-sm text-foreground/70">
             <li>
-              - <strong className="text-foreground">Sign-in issues</strong>: confirm the teammate accepted their invite or
-              reset their password from the sign-in page.
+              - <strong className="text-foreground">Sự cố đăng nhập</strong>: kiểm tra thành viên đã chấp nhận lời mời
+              hay chưa hoặc gửi yêu cầu đặt lại mật khẩu từ trang đăng nhập.
             </li>
             <li>
-              - <strong className="text-foreground">Missing company context</strong>: make sure the teammate is assigned to
-              the correct company and role in the admin area.
+              - <strong className="text-foreground">Thiếu bối cảnh công ty</strong>: đảm bảo thành viên đã được gán vào
+              đúng công ty và vai trò trong mục quản trị.
             </li>
             <li>
-              - <strong className="text-foreground">Delayed notifications</strong>: confirm sender addresses are verified
-              and ask teammates to check spam folders before escalating.
+              - <strong className="text-foreground">Thông báo đến chậm</strong>: xác nhận địa chỉ người gửi đã được
+              xác thực và nhắc thành viên kiểm tra thư mục spam trước khi leo thang.
             </li>
           </ul>
         </Panel>

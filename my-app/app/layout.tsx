@@ -19,9 +19,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Talentflow | Recruitment Platform",
+  title: "Talentflow | Nền tảng tuyển dụng",
   description:
-    "Manage companies, jobs, applications, and interviews with a unified recruitment platform.",
+    "Quản lý doanh nghiệp, bài đăng tuyển dụng, hồ sơ ứng tuyển và lịch phỏng vấn trên một nền tảng duy nhất.",
 };
 
 export default function RootLayout({
@@ -30,14 +30,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="vi">
       <body className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}>
         <ChatWidgetProvider>
           <div className="flex min-h-screen flex-col">
             <SiteHeader />
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
             <SiteFooter />
           </div>
           <ChatWidget />

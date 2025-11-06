@@ -7,18 +7,18 @@ import { getCurrentUser, resolveDefaultRoute } from "@/lib/current-user";
 
 const guides = [
   {
-    title: "Admin handbook",
+    title: "Sổ tay quản trị viên",
     description:
-      "Provision companies, configure entry flows, and coordinate invitations for new tenant teams.",
+      "Thiết lập doanh nghiệp, cấu hình luồng khởi tạo và phối hợp gửi lời mời cho những đội tenants mới.",
     href: "/docs/admin",
-    cta: "Open admin guide",
+    cta: "Mở sổ tay quản trị",
   },
   {
-    title: "Candidate playbook",
+    title: "Cẩm nang ứng viên",
     description:
-      "Share best practices with applicants: profile completeness, CV management, interview tips.",
+      "Chia sẻ kinh nghiệm cho ứng viên: hoàn thiện hồ sơ, quản lý CV, chuẩn bị phỏng vấn và theo dõi tiến độ.",
     href: "/docs/candidate",
-    cta: "Open candidate guide",
+    cta: "Mở cẩm nang ứng viên",
   },
 ];
 
@@ -31,14 +31,14 @@ export default async function DocsPage() {
       <Panel variant="glass" padding="lg" className="space-y-5">
         <header className="space-y-3">
           <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-            Documentation hub
+            Trung tâm tài liệu
           </span>
           <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
-            Everything your team needs to run Talentflow.
+            Mọi thứ đội ngũ bạn cần để vận hành Talentflow.
           </h1>
           <p className="max-w-3xl text-sm text-foreground/70">
-            Explore role-specific guides, rollout steps, and integration references. Keep these pages in
-            sync with your Confluence/Notion space or publish them during onboarding.
+            Khám phá tài liệu cho từng vai trò, các bước triển khai và hướng dẫn tích hợp. Hãy đồng bộ những trang này
+            với không gian Confluence/Notion của bạn hoặc gửi cho thành viên mới trong quá trình onboarding.
           </p>
         </header>
         <div className="flex flex-wrap gap-3">
@@ -46,22 +46,22 @@ export default async function DocsPage() {
             <>
               <Link href={defaultRoute}>
                 <Button size="sm" variant="secondary">
-                  Return to workspace
+                  Quay lại workspace
                 </Button>
               </Link>
               <Link href="/docs/admin">
-                <Button size="sm">Implementation checklist</Button>
+                <Button size="sm">Checklist triển khai</Button>
               </Link>
             </>
           ) : (
             <>
               <Link href={ROUTES.signIn}>
                 <Button size="sm" variant="secondary">
-                  Sign in
+                  Đăng nhập
                 </Button>
               </Link>
               <Link href={ROUTES.register}>
-                <Button size="sm">Create candidate account</Button>
+                <Button size="sm">Tạo tài khoản ứng viên</Button>
               </Link>
             </>
           )}
@@ -76,7 +76,9 @@ export default async function DocsPage() {
             className="flex flex-col justify-between space-y-4 border border-border/60 bg-gradient-to-br from-surface to-slate-900/30"
           >
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted/80">Featured guide</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted/80">
+                Tài liệu nổi bật
+              </p>
               <h2 className="text-2xl font-semibold text-foreground">{guide.title}</h2>
               <p className="text-sm text-foreground/70">{guide.description}</p>
             </div>

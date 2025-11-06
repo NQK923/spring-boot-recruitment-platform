@@ -6,45 +6,45 @@ import { ROUTES } from "@/lib/routes";
 
 const milestones = [
   {
-    title: "Create your profile",
+    title: "Tạo hồ sơ cá nhân",
     steps: [
-      "Complete your summary and contact details so recruiters can reach you.",
-      "Add at least one experience and one education entry for context.",
-      "Upload or generate a CV version tailored to your target roles.",
+      "Hoàn thiện phần giới thiệu và thông tin liên hệ để nhà tuyển dụng dễ dàng kết nối.",
+      "Thêm ít nhất một kinh nghiệm làm việc và một học vấn để cung cấp bối cảnh đầy đủ.",
+      "Tải lên hoặc tạo bản CV phù hợp với vị trí mục tiêu.",
     ],
   },
   {
-    title: "Apply with confidence",
+    title: "Ứng tuyển tự tin",
     steps: [
-      "Bookmark promising roles in the jobs section.",
-      "Apply from the job detail page once signed in to the portal.",
-      "Track application status changes directly from your dashboard.",
+      "Đánh dấu những tin hấp dẫn trong danh sách việc làm.",
+      "Đăng nhập cổng ứng viên và nộp hồ sơ từ trang chi tiết việc làm.",
+      "Theo dõi thay đổi trạng thái ứng tuyển trực tiếp trong bảng điều khiển.",
     ],
   },
   {
-    title: "Stay interview-ready",
+    title: "Luôn sẵn sàng phỏng vấn",
     steps: [
-      "Enable email notifications so you never miss scheduling updates.",
-      "Download the calendar file (.ics) for each confirmed interview.",
-      "Review recruiter notes and prepare questions ahead of time.",
+      "Bật thông báo email để không bỏ lỡ cập nhật lịch phỏng vấn.",
+      "Tải tệp lịch (.ics) cho mỗi buổi phỏng vấn đã xác nhận.",
+      "Xem ghi chú của nhà tuyển dụng và chuẩn bị câu hỏi trước buổi gặp.",
     ],
   },
 ];
 
 const resources = [
   {
-    label: "Portal overview",
-    description: "Quick tour across dashboard, applications, interviews, and CV management.",
+    label: "Tổng quan portal",
+    description: "Giới thiệu nhanh về dashboard, đơn ứng tuyển, lịch phỏng vấn và quản lý CV.",
     href: "/docs/candidate/portal",
   },
   {
-    label: "Interview checklist",
-    description: "Guidance on technical setup, common questions, and follow-up etiquette.",
+    label: "Checklist phỏng vấn",
+    description: "Hướng dẫn chuẩn bị thiết bị, câu hỏi thường gặp và phép lịch sự sau buổi phỏng vấn.",
     href: "/docs/candidate/interviews",
   },
   {
-    label: "Privacy & data",
-    description: "How Talentflow stores your information and the controls at your disposal.",
+    label: "Quyền riêng tư & dữ liệu",
+    description: "Cách Talentflow lưu trữ thông tin và các tùy chọn kiểm soát của bạn.",
     href: "/docs/legal/privacy",
   },
 ];
@@ -55,33 +55,33 @@ export default function CandidateDocsPage() {
       <Panel variant="glass" padding="lg" className="space-y-5">
         <div className="space-y-3">
           <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-            Candidate playbook
+            Cẩm nang ứng viên
           </span>
           <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
-            Navigate Talentflow like a pro.
+            Chinh phục Talentflow như một chuyên gia.
           </h1>
           <p className="text-sm text-foreground/70">
-            Use this guide to make the most of your applications, interviews, and profile management across
-            the recruitment platform.
+            Dùng cẩm nang này để tối ưu từng đơn ứng tuyển, lịch phỏng vấn và việc quản lý hồ sơ trên nền tảng tuyển
+            dụng.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href={ROUTES.candidatePortal}>
             <Button size="sm" variant="secondary">
-              Go to portal
+              Vào cổng ứng viên
             </Button>
           </Link>
           <Link href={ROUTES.jobs}>
-            <Button size="sm">Browse open jobs</Button>
+            <Button size="sm">Xem việc đang tuyển</Button>
           </Link>
         </div>
       </Panel>
 
       <Panel padding="lg" className="space-y-5">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Milestones</h2>
+          <h2 className="text-lg font-semibold text-foreground">Các cột mốc chính</h2>
           <p className="text-sm text-foreground/60">
-            Follow these milestones to keep your journey organised from day one.
+            Bám sát những cột mốc này để hành trình của bạn luôn mạch lạc ngay từ ngày đầu tiên.
           </p>
         </div>
         <div className="space-y-4">
@@ -103,35 +103,35 @@ export default function CandidateDocsPage() {
 
       <Panel padding="lg" className="space-y-5">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Common questions</h2>
+          <h2 className="text-lg font-semibold text-foreground">Câu hỏi thường gặp</h2>
           <p className="text-sm text-foreground/60">
-            Quick answers to the issues we see most often from candidates.
+            Những câu trả lời nhanh cho các tình huống ứng viên hay gặp nhất.
           </p>
         </div>
         <ul className="space-y-3 text-sm text-foreground/70">
           <li>
-            - <strong className="text-foreground">I forgot my password</strong>: use the{" "}
+            - <strong className="text-foreground">Quên mật khẩu</strong>: sử dụng{" "}
             <Link href="/auth/forgot-password" className="text-accent hover:text-foreground">
-              reset flow
+              luồng đặt lại
             </Link>{" "}
-            to receive a temporary code by email.
+            để nhận mã tạm qua email.
           </li>
           <li>
-            - <strong className="text-foreground">My interview slot changed</strong>: check the candidate portal for
-            the updated time and download the new calendar file.
+            - <strong className="text-foreground">Lịch phỏng vấn bị đổi</strong>: kiểm tra lại cổng ứng viên để xem
+            thời gian mới và tải tệp lịch cập nhật.
           </li>
           <li>
-            - <strong className="text-foreground">My file upload failed</strong>: ensure your CV is under 10 MB
-            and saved as PDF, then retry on a stable connection.
+            - <strong className="text-foreground">Tải CV thất bại</strong>: đảm bảo tệp dưới 10 MB, định dạng PDF và thử
+            lại khi kết nối ổn định.
           </li>
         </ul>
       </Panel>
 
       <Panel padding="lg" className="space-y-5">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Further resources</h2>
+          <h2 className="text-lg font-semibold text-foreground">Tài nguyên bổ sung</h2>
           <p className="text-sm text-foreground/60">
-            Dive deeper with these hand-picked articles and reference material.
+            Đào sâu hơn với những bài viết và tài liệu tham khảo được chọn lọc dưới đây.
           </p>
         </div>
         <div className="space-y-3">
@@ -145,7 +145,7 @@ export default function CandidateDocsPage() {
                 <p className="text-xs text-foreground/60">{resource.description}</p>
               </div>
               <Link href={resource.href} className="text-xs font-semibold text-accent transition hover:text-foreground">
-                Read more
+                Xem chi tiết
               </Link>
             </div>
           ))}

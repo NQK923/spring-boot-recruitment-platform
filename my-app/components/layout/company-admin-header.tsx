@@ -6,11 +6,11 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { ROUTES } from "@/lib/routes";
 
 const companyAdminNavigation: NavItem[] = [
-  { href: `${ROUTES.companyAdminDashboard}#overview`, label: "Overview" },
-  { href: `${ROUTES.companyAdminDashboard}#company`, label: "Company" },
-  { href: `${ROUTES.companyAdminDashboard}#team`, label: "Team" },
-  { href: `${ROUTES.companyAdminDashboard}#jobs`, label: "Jobs" },
-  { href: `${ROUTES.companyAdminDashboard}#invites`, label: "Invitations" },
+  { href: `${ROUTES.companyAdminDashboard}#overview`, label: "Tổng quan" },
+  { href: `${ROUTES.companyAdminDashboard}#company`, label: "Thông tin công ty" },
+  { href: `${ROUTES.companyAdminDashboard}#team`, label: "Đội ngũ" },
+  { href: `${ROUTES.companyAdminDashboard}#jobs`, label: "Tin tuyển dụng" },
+  { href: `${ROUTES.companyAdminDashboard}#invites`, label: "Lời mời" },
 ];
 
 export function CompanyAdminHeader() {
@@ -23,10 +23,10 @@ export function CompanyAdminHeader() {
           </span>
           <div className="flex flex-col leading-tight">
             <span className="text-base font-semibold tracking-tight text-foreground sm:text-lg">
-              Company workspace
+              Không gian làm việc công ty
             </span>
             <span className="hidden text-[11px] font-medium uppercase tracking-[0.32em] text-muted sm:block">
-              Admin controls
+              Công cụ quản trị
             </span>
           </div>
         </Link>

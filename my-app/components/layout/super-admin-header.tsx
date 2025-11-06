@@ -6,8 +6,8 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { ROUTES } from "@/lib/routes";
 
 const superAdminNavigation: NavItem[] = [
-  { href: ROUTES.superAdminCompanies, label: "Companies" },
-  { href: ROUTES.superAdminUsers, label: "Users" },
+  { href: ROUTES.superAdminCompanies, label: "Quản lý doanh nghiệp" },
+  { href: ROUTES.superAdminUsers, label: "Quản lý người dùng" },
 ];
 
 export function SuperAdminHeader() {
@@ -20,10 +20,10 @@ export function SuperAdminHeader() {
           </span>
           <div className="flex flex-col leading-tight">
             <span className="text-base font-semibold tracking-tight text-foreground sm:text-lg">
-              Super admin console
+              Bảng điều khiển Super Admin
             </span>
             <span className="hidden text-[11px] font-medium uppercase tracking-[0.32em] text-muted sm:block">
-              Platform controls
+              Kiểm soát nền tảng
             </span>
           </div>
         </Link>

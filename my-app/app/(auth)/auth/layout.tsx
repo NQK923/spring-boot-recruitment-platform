@@ -14,17 +14,17 @@ export default function AuthLayout({
                   Talentflow
                 </p>
                 <h1 className="mt-3 text-2xl font-semibold leading-snug">
-                  One login for every hiring workflow.
+                  Đăng nhập một lần cho mọi quy trình tuyển dụng.
                 </h1>
               </div>
               <ul className="space-y-3 text-sm text-white/85">
-                <li>- Guided onboarding walks new teammates through the right workspace.</li>
-                <li>- Candidate profiles stay synced the moment an account is created.</li>
-                <li>- Password resets are quick, secure, and easy to complete on any device.</li>
+                <li>- Onboarding có hướng dẫn giúp thành viên mới vào đúng workspace.</li>
+                <li>- Hồ sơ ứng viên được đồng bộ ngay khi tài khoản được tạo.</li>
+                <li>- Đặt lại mật khẩu nhanh chóng, an toàn và hoàn tất trên mọi thiết bị.</li>
               </ul>
             </div>
             <p className="text-xs text-white/70">
-              Need help? Contact your company admin or the Talentflow support team.
+              Cần hỗ trợ? Hãy liên hệ quản trị viên công ty hoặc đội hỗ trợ Talentflow.
             </p>
           </aside>
           <main className="flex-1 px-6 py-10 sm:px-10">

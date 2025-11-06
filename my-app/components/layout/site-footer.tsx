@@ -44,9 +44,12 @@ export function SiteFooter() {
         <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-indigo-600/70 via-purple-600/60 to-slate-900 p-8 text-white shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold">Cần hướng dẫn chi tiết hoặc trao đổi với đội hỗ trợ?</h2>
+              <h2 className="text-2xl font-semibold">
+                Cần hướng dẫn chi tiết hoặc trao đổi với đội hỗ trợ?
+              </h2>
               <p className="text-sm text-white/80">
-                Chúng tôi luôn sẵn sàng đồng hành trong quá trình triển khai, onboarding ứng viên và giải đáp mọi thắc mắc vận hành hằng ngày.
+                Chúng tôi luôn sẵn sàng đồng hành trong quá trình triển khai, onboarding ứng viên và giải
+                đáp mọi thắc mắc vận hành hằng ngày.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -67,27 +70,36 @@ export function SiteFooter() {
 
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
           <div className="space-y-4">
-            <Link href={ROUTES.home} className="inline-flex items-center gap-2 text-lg font-semibold tracking-tight">
+            <Link
+              href={ROUTES.home}
+              className="inline-flex items-center gap-2 text-lg font-semibold tracking-tight"
+            >
               Talentflow
             </Link>
             <p className="max-w-sm text-sm text-white/70">
-              Talentflow kết nối doanh nghiệp, nhà tuyển dụng và ứng viên trong cùng một không gian làm việc, giúp quản lý vị trí tuyển dụng, hồ sơ và lịch phỏng vấn với sự minh bạch toàn diện.
+              Talentflow kết nối doanh nghiệp, nhà tuyển dụng và ứng viên trong cùng một không gian làm
+              việc, giúp quản lý vị trí tuyển dụng, hồ sơ và lịch phỏng vấn với sự minh bạch toàn diện.
             </p>
             <div className="space-y-1 text-sm text-white/70">
               <p>
-                Email:{" "}
-                <a href="mailto:support@talentflow.app" className="font-semibold text-white hover:text-indigo-200">
+                Hộp thư:{" "}
+                <a
+                  href="mailto:support@talentflow.app"
+                  className="font-semibold text-white hover:text-indigo-200"
+                >
                   support@talentflow.app
                 </a>
               </p>
-              <p>Hotline: +84 234 567 899</p>
-              <p>Thời gian hỗ trợ: 08:00-18:00 (Thứ Hai - Thứ Sáu)</p>
+              <p>Đường dây nóng: +84 234 567 899</p>
+              <p>Khung giờ hỗ trợ: 08:00-18:00 (Thứ Hai - Thứ Sáu)</p>
             </div>
           </div>
 
           {footerLinks.map((group) => (
             <div key={group.label} className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">{group.label}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
+                {group.label}
+              </p>
               <ul className="space-y-2 text-sm text-white/70">
                 {group.items.map((item) => (
                   <li key={item.href}>
