@@ -7,6 +7,15 @@ import type { ApplicationStatus } from "@/lib/types";
 
 const STATUSES: ApplicationStatus[] = ["APPLIED", "SCREENING", "INTERVIEWING", "OFFERED", "HIRED", "REJECTED"];
 
+const STATUS_LABELS: Record<ApplicationStatus, string> = {
+  APPLIED: "Đã nộp",
+  SCREENING: "Sàng lọc",
+  INTERVIEWING: "Phỏng vấn",
+  OFFERED: "Đề nghị",
+  HIRED: "Đã tuyển",
+  REJECTED: "Đã từ chối",
+};
+
 type Props = {
   applicationId: number;
   currentStatus: ApplicationStatus;
@@ -39,12 +48,12 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
       >
         {STATUSES.map((status) => (
           <option key={status} value={status}>
-            {status.charAt(0) + status.slice(1).toLowerCase()}
+            {STATUS_LABELS[status] ?? status}
           </option>
         ))}
       </select>
       <Button type="submit" size="sm" disabled={pending}>
-        {pending ? "Updating..." : "Update status"}
+        {pending ? "Đang cập nhật..." : "Cập nhật trạng thái"}
       </Button>
       {state?.error ? (
         <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">

@@ -26,8 +26,8 @@ export function DebouncedSearchInput({
   debounceMs = DEFAULT_DEBOUNCE_MS,
   className,
   inputClassName,
-  searchLabel = "Search",
-  clearLabel = "Clear",
+  searchLabel = "Tìm kiếm",
+  clearLabel = "Xóa",
 }: DebouncedSearchInputProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -122,7 +122,7 @@ export function DebouncedSearchInput({
         onClick={handleSubmitClick}
         disabled={isPending || normalizedValue === lastApplied}
       >
-        {isPending ? "Searching…" : searchLabel}
+        {isPending ? "Đang tìm…" : searchLabel}
       </Button>
       {normalizedValue || lastApplied ? (
         <button

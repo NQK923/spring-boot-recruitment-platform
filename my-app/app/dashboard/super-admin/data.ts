@@ -45,7 +45,7 @@ export async function fetchSuperAdminCompanies(): Promise<SuperAdminCompany[]> {
       const item = company as Record<string, unknown>;
       return {
         id: Number(item.id ?? index),
-        name: String(item.name ?? "Unnamed company"),
+        name: String(item.name ?? "Chưa có tên"),
         status: String(item.status ?? "PENDING").toUpperCase(),
         description: toNullableString(item.description),
         website: toNullableString(item.website),
@@ -85,7 +85,7 @@ export async function fetchSuperAdminDashboard(): Promise<SuperAdminDashboard | 
 
     const topCompanies = topCompaniesRaw.map((item, index) => ({
       companyId: Number(item.companyId ?? index),
-      companyName: String(item.companyName ?? "Unknown company"),
+      companyName: String(item.companyName ?? "Chưa xác định"),
       openRoles: Number(item.openRoles ?? 0),
     }));
 
@@ -131,7 +131,7 @@ export async function fetchCompanyUsers(companyId: number): Promise<SuperAdminCo
 
     return (data as CompanyUserApi[]).map((user, index) => ({
       id: Number(user.userId ?? user.id ?? index),
-      email: String(user.email ?? "unknown@talentflow.app"),
+      email: String(user.email ?? "khongro@talentflow.app"),
       role: String(user.role ?? user.roleName ?? "UNKNOWN"),
       locked: Boolean(user.locked),
       joinedAt: toNullableString(user.joinedAt ?? user.createdAt ?? user.created_at),

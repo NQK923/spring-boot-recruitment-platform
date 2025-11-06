@@ -57,10 +57,10 @@ export function SuperAdminCompanySwitcher({
       )}
     >
       {options.length === 0 ? (
-        <option value="">No companies available</option>
+        <option value="">Chưa có công ty nào</option>
       ) : (
         <>
-          <option value="">Choose a company</option>
+          <option value="">Chọn công ty</option>
           {options.map((company) => (
             <option key={company.id} value={company.id}>
               {company.name}

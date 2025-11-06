@@ -23,7 +23,7 @@ export function InviteCompanyUserForm({ companies }: InviteCompanyUserFormProps)
     <form className="space-y-4 text-sm" action={formAction}>
       <div className="space-y-2">
         <label htmlFor="invite-company" className="font-semibold text-foreground">
-          Company
+          Công ty
         </label>
         <select
           id="invite-company"
@@ -33,7 +33,7 @@ export function InviteCompanyUserForm({ companies }: InviteCompanyUserFormProps)
           required
         >
           <option value="" disabled>
-            Select company
+            Chọn công ty
           </option>
           {companies.map((company) => (
             <option key={company.id} value={company.id}>
@@ -44,20 +44,20 @@ export function InviteCompanyUserForm({ companies }: InviteCompanyUserFormProps)
       </div>
       <div className="space-y-2">
         <label htmlFor="invite-email" className="font-semibold text-foreground">
-          Email address
+          Địa chỉ email
         </label>
         <Input
           id="invite-email"
           name="email"
           type="email"
-          placeholder="admin@example.com"
+          placeholder="quantri@congty.vn"
           autoComplete="email"
           required
         />
       </div>
       <div className="space-y-2">
         <label htmlFor="invite-role" className="font-semibold text-foreground">
-          Role
+          Vai trò
         </label>
         <select
           id="invite-role"
@@ -65,8 +65,8 @@ export function InviteCompanyUserForm({ companies }: InviteCompanyUserFormProps)
           defaultValue="COMPANY_ADMIN"
           className="h-9 w-full rounded-2xl border border-border/70 bg-surface/98 px-3 text-sm text-foreground shadow-[0_6px_18px_rgba(var(--shadow-soft),0.22)] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
         >
-          <option value="COMPANY_ADMIN">Company Admin</option>
-          <option value="RECRUITER">Recruiter</option>
+          <option value="COMPANY_ADMIN">Quản trị viên công ty</option>
+          <option value="RECRUITER">Nhà tuyển dụng</option>
         </select>
       </div>
       {state?.error ? (
@@ -80,7 +80,7 @@ export function InviteCompanyUserForm({ companies }: InviteCompanyUserFormProps)
         </p>
       ) : null}
       <Button type="submit" size="md" disabled={pending} className="w-full sm:w-auto">
-        {pending ? "Sending..." : "Send invitation"}
+        {pending ? "Đang gửi..." : "Gửi lời mời"}
       </Button>
     </form>
   );

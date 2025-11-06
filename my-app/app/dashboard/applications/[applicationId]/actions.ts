@@ -16,7 +16,7 @@ export async function updateStatusAction(
 ): Promise<ActionState> {
   const newStatus = String(formData.get("status") ?? "").toUpperCase();
   if (!newStatus) {
-    return { error: "Please choose a status." };
+    return { error: "Vui lòng chọn trạng thái." };
   }
 
   try {
@@ -26,12 +26,12 @@ export async function updateStatusAction(
     });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Unable to update application status.";
+      error instanceof Error ? error.message : "Không thể cập nhật trạng thái hồ sơ.";
     return { error: message };
   }
 
   revalidatePath(`${ROUTES.recruiterDashboard}/applications/${applicationId}`);
-  return { success: "Status updated." };
+  return { success: "Đã cập nhật trạng thái." };
 }
 
 export async function addNoteAction(
@@ -41,7 +41,7 @@ export async function addNoteAction(
 ): Promise<ActionState> {
   const content = String(formData.get("content") ?? "").trim();
   if (!content) {
-    return { error: "Note content cannot be empty." };
+    return { error: "Nội dung ghi chú không được để trống." };
   }
 
   try {
@@ -51,10 +51,10 @@ export async function addNoteAction(
     });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Unable to create note.";
+      error instanceof Error ? error.message : "Không thể tạo ghi chú.";
     return { error: message };
   }
 
   revalidatePath(`${ROUTES.recruiterDashboard}/applications/${applicationId}`);
-  return { success: "Note added." };
+  return { success: "Đã thêm ghi chú." };
 }

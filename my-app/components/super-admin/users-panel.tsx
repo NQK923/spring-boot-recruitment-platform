@@ -45,7 +45,7 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
   const describeJoinedAt = useCallback(
     (value: string | null) => {
       if (!value) {
-        return "Recently added";
+        return "Mới được thêm";
       }
       try {
         return dateFormatter.format(new Date(value));
@@ -75,7 +75,7 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
               setAlert({ type: "success", message: result.success });
             }
           } catch {
-            setAlert({ type: "error", message: "Something went wrong. Try again in a moment." });
+            setAlert({ type: "error", message: "Có lỗi xảy ra. Vui lòng thử lại sau." });
           } finally {
             setPendingUserId(null);
             router.refresh();
@@ -89,7 +89,7 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
   if (users.length === 0) {
     return (
       <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
-        {companyName} does not have any members yet. Send an invitation to get their hiring team onboard.
+        {companyName} chưa có thành viên nào. Gửi lời mời để đội tuyển dụng bắt đầu sử dụng.
       </div>
     );
   }
@@ -121,30 +121,30 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
           >
             <div className="space-y-1">
               <p className="font-semibold text-foreground">{user.email}</p>
-              <p className="text-xs text-foreground/60">Joined {describeJoinedAt(user.joinedAt)}</p>
+              <p className="text-xs text-foreground/60">Tham gia {describeJoinedAt(user.joinedAt)}</p>
               <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em]">
-                <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">{normalizedRole}</span>
+                <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">{formatRole(normalizedRole)}</span>
                 <span
                   className={cx(
                     "rounded-full px-2 py-1",
                     isLocked ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-600"
                   )}
                 >
-                  {isLocked ? "Locked" : "Active"}
+                  {isLocked ? "Đã khóa" : "Đang hoạt động"}
                 </span>
               </div>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50">
-                <span>Status</span>
+                <span>Trạng thái</span>
                 <span
                   className={cx(
                     "rounded-lg px-3 py-1",
                     isLocked ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-600"
                   )}
                 >
-                  {isLocked ? "Locked" : "Active"}
+                  {isLocked ? "Đã khóa" : "Đang hoạt động"}
                 </span>
               </div>
               <Button
@@ -160,7 +160,7 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
                     : "border border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
                 )}
               >
-                {isProcessing ? "Updating..." : isLocked ? "Unlock account" : "Lock account"}
+                {isProcessing ? "Đang cập nhật..." : isLocked ? "Mở khóa tài khoản" : "Khóa tài khoản"}
               </Button>
             </div>
           </div>
@@ -168,4 +168,18 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
       })}
     </div>
   );
+}
+
+function formatRole(role: string) {
+  const normalized = role.toUpperCase().replace(/\s+/g, " ");
+  const ROLE_LABELS: Record<string, string> = {
+    "COMPANY ADMIN": "Quản trị viên công ty",
+    RECRUITER: "Nhà tuyển dụng",
+    "MANAGED EXTERNALLY": "Quản lý bên ngoài",
+    "SUPER ADMIN": "Quản trị cấp cao",
+  };
+  if (ROLE_LABELS[normalized]) {
+    return ROLE_LABELS[normalized];
+  }
+  return role;
 }

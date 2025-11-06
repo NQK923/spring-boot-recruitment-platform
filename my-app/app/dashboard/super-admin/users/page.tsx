@@ -18,6 +18,18 @@ function statusClass(status: string) {
   }
 }
 
+function statusLabel(status: string) {
+  switch (status.toUpperCase()) {
+    case "ACTIVE":
+      return "Hoạt động";
+    case "INACTIVE":
+      return "Ngưng hoạt động";
+    case "PENDING":
+    default:
+      return "Đang xét";
+  }
+}
+
 type SuperAdminUsersPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
@@ -32,9 +44,9 @@ export default async function SuperAdminUsersPage({ searchParams }: SuperAdminUs
     return (
       <Container className="py-10">
         <Panel className="space-y-4" padding="lg">
-          <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">User management</h1>
+          <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Quản lý người dùng</h1>
           <p className="text-sm text-foreground/60">
-            Create a company tenant first, then you can invite admins and recruiters to manage their hiring pipeline.
+            Hãy tạo tenant công ty trước, sau đó bạn có thể mời quản trị viên và nhà tuyển dụng quản lý pipeline.
           </p>
         </Panel>
       </Container>
@@ -55,9 +67,9 @@ export default async function SuperAdminUsersPage({ searchParams }: SuperAdminUs
       <Panel className="space-y-6" padding="lg">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">User management</h1>
+            <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Quản lý người dùng</h1>
             <p className="mt-2 text-sm text-foreground/60">
-              Lock or unlock access for company admins and recruiters across every tenant.
+              Khóa hoặc mở khóa quyền truy cập của quản trị viên và nhà tuyển dụng trên mọi tenant.
             </p>
           </div>
           <SuperAdminCompanySwitcher
@@ -69,25 +81,25 @@ export default async function SuperAdminUsersPage({ searchParams }: SuperAdminUs
         <div className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-foreground/50">
           <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">{selectedCompany.name}</span>
           <span className={`rounded-full px-2 py-1 ${statusClass(selectedCompany.status)}`}>
-            {selectedCompany.status}
+            {statusLabel(selectedCompany.status)}
           </span>
           <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">
-            {numberFormatter.format(users.length)} member{users.length === 1 ? "" : "s"}
+            {numberFormatter.format(users.length)} thành viên
           </span>
           <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">
-            {numberFormatter.format(activeUsers)} active
+            {numberFormatter.format(activeUsers)} đang hoạt động
           </span>
           <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">
-            {numberFormatter.format(lockedUsers)} locked
+            {numberFormatter.format(lockedUsers)} bị khóa
           </span>
         </div>
       </Panel>
 
       <Panel className="space-y-6" padding="lg">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Team roster</h2>
+          <h2 className="text-xl font-semibold text-foreground">Danh sách thành viên</h2>
           <p className="text-sm text-foreground/60">
-            Keep access aligned with company expectations. Locked accounts cannot sign in until you reactivate them.
+            Đảm bảo quyền truy cập phù hợp với kỳ vọng của công ty. Tài khoản bị khóa sẽ không đăng nhập được cho tới khi bạn mở lại.
           </p>
         </div>
         <SuperAdminUsersPanel

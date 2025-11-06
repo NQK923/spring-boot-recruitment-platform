@@ -48,7 +48,7 @@ export async function createCompanyAction(
   const logoUrl = String(formData.get("logoUrl") ?? "").trim();
 
   if (!name) {
-    return { error: "Company name is required." };
+    return { error: "Tên công ty là bắt buộc." };
   }
 
   try {
@@ -62,14 +62,14 @@ export async function createCompanyAction(
       }),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to create company.";
+    const message = error instanceof Error ? error.message : "Không thể tạo công ty.";
     return { error: message };
   }
 
   revalidatePath(ROUTES.superAdminCompanies);
   revalidatePath(ROUTES.superAdminUsers);
 
-  return { success: "Company created successfully." };
+  return { success: "Đã tạo công ty thành công." };
 }
 
 export type InviteCompanyUserState = {
@@ -86,10 +86,10 @@ export async function inviteCompanyUserAction(
   const role = String(formData.get("role") ?? "").trim() || "COMPANY_ADMIN";
 
   if (companyId == null) {
-    return { error: "Select a company for the invitation." };
+    return { error: "Hãy chọn công ty để gửi lời mời." };
   }
   if (!email) {
-    return { error: "Recipient email is required." };
+    return { error: "Email người nhận là bắt buộc." };
   }
 
   try {
@@ -98,14 +98,14 @@ export async function inviteCompanyUserAction(
       body: JSON.stringify({ email, role }),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to send invitation.";
+    const message = error instanceof Error ? error.message : "Không thể gửi lời mời.";
     return { error: message };
   }
 
   revalidatePath(ROUTES.superAdminCompanies);
   revalidatePath(ROUTES.superAdminUsers);
 
-  return { success: "Invitation email queued." };
+  return { success: "Đã xếp lịch gửi email mời." };
 }
 
 export async function updateCompanyStatusAction(formData: FormData): Promise<void> {
@@ -174,7 +174,7 @@ export async function updateCompanyUserLockAction(
   const userId = Number(input.userId);
 
   if (!Number.isFinite(companyId) || !Number.isFinite(userId)) {
-    return { error: "Invalid user payload." };
+    return { error: "Dữ liệu người dùng không hợp lệ." };
   }
 
   try {
@@ -186,12 +186,12 @@ export async function updateCompanyUserLockAction(
       body: JSON.stringify({ locked: Boolean(input.locked) }),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to update user status.";
+    const message = error instanceof Error ? error.message : "Không thể cập nhật trạng thái người dùng.";
     return { error: message };
   }
 
   revalidatePath(ROUTES.superAdminUsers);
   revalidatePath(ROUTES.superAdminCompanies);
 
-  return { success: input.locked ? "User locked." : "User unlocked." };
+  return { success: input.locked ? "Đã khóa người dùng." : "Đã mở khóa người dùng." };
 }

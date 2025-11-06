@@ -21,12 +21,12 @@ export function AddNoteForm({ applicationId }: Props) {
     <form className="flex flex-col gap-3" action={formAction}>
       <Input
         name="content"
-        placeholder="Add a note about this candidate..."
+        placeholder="Thêm ghi chú cho ứng viên này..."
         required
         disabled={pending}
       />
       <Button type="submit" size="sm" disabled={pending}>
-        {pending ? "Saving..." : "Add note"}
+        {pending ? "Đang lưu..." : "Thêm ghi chú"}
       </Button>
       {state?.error ? (
         <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">

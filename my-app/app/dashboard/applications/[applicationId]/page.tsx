@@ -71,7 +71,20 @@ async function getCandidateProfile(candidateId: number | null | undefined): Prom
   }
 }
 
+const STATUS_LABELS: Record<ApplicationStatus, string> = {
+  APPLIED: "Đã nộp",
+  SCREENING: "Sàng lọc",
+  INTERVIEWING: "Phỏng vấn",
+  OFFERED: "Đề nghị",
+  HIRED: "Đã tuyển",
+  REJECTED: "Đã từ chối",
+};
+
 function formatStatus(status: string) {
+  const upper = status.toUpperCase() as ApplicationStatus;
+  if (upper in STATUS_LABELS) {
+    return STATUS_LABELS[upper];
+  }
   return status
     .toLowerCase()
     .split("_")
@@ -81,7 +94,7 @@ function formatStatus(status: string) {
 
 function formatDateTime(value: string | null | undefined) {
   if (!value) {
-    return "Unknown";
+    return "Không rõ";
   }
   try {
     return dateTimeFormatter.format(new Date(value));
@@ -138,7 +151,7 @@ export default async function ApplicationDetailsPage({
         href={ROUTES.recruiterDashboard}
         className="text-sm font-semibold text-foreground/70 hover:text-foreground"
       >
-        Back to dashboard
+        Quay lại bảng điều khiển
       </Link>
 
       <header className="space-y-2">
@@ -146,29 +159,29 @@ export default async function ApplicationDetailsPage({
           {formatStatus(application.status)}
         </span>
         <h1 className="text-3xl font-semibold text-foreground">
-          {job?.title ?? `Application #${application.id}`}
+          {job?.title ?? `Hồ sơ #${application.id}`}
         </h1>
         <p className="text-sm text-foreground/60">
-          Candidate: {application.candidateName ?? `#${application.candidateId}`} - Job #
+          Ứng viên: {application.candidateName ?? `#${application.candidateId}`} · Mã việc #
           {application.jobPostingId}
         </p>
-        <p className="text-xs text-foreground/50">Applied {formatDateTime(application.appliedAt)}</p>
+        <p className="text-xs text-foreground/50">Nộp hồ sơ {formatDateTime(application.appliedAt)}</p>
       </header>
 
       <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
         <article className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-foreground">Job information</h2>
+            <h2 className="text-lg font-semibold text-foreground">Thông tin việc làm</h2>
             <p className="whitespace-pre-wrap text-sm text-foreground/70">
               {job?.description ??
-                "Job details are not available. The listing may have been archived or the hiring team has not published the latest description."}
+                "Chưa có mô tả chi tiết cho việc làm này. Có thể tin tuyển dụng đã được lưu trữ hoặc nhóm tuyển dụng chưa cập nhật nội dung mới."}
             </p>
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Status</h3>
+            <h3 className="text-sm font-semibold text-foreground">Trạng thái</h3>
             <p className="text-sm text-foreground/70">
-              Update the pipeline stage after reviewing candidate progress.
+              Cập nhật giai đoạn quy trình sau khi đánh giá tiến độ của ứng viên.
             </p>
             <div className="mt-3">
               <StatusUpdateForm
@@ -179,16 +192,16 @@ export default async function ApplicationDetailsPage({
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Notes</h3>
+            <h3 className="text-sm font-semibold text-foreground">Ghi chú</h3>
             <p className="text-sm text-foreground/70">
-              Notes are visible to recruiters and company admins to keep collaboration in sync.
+              Ghi chú hiển thị với quản trị viên công ty và nhà tuyển dụng để giữ thông tin nhất quán.
             </p>
             <div className="mt-4 space-y-4">
               <AddNoteForm applicationId={application.id} />
               <div className="space-y-3">
                 {notes.length === 0 ? (
                   <p className="rounded-xl border border-foreground/10 bg-background/60 px-4 py-4 text-sm text-foreground/60">
-                    No notes yet. Capture interview feedback, context, or follow-up tasks here.
+                    Chưa có ghi chú nào. Hãy lưu lại phản hồi phỏng vấn hoặc các đầu việc cần theo dõi tại đây.
                   </p>
                 ) : (
                   notes.map((note) => (
@@ -198,7 +211,7 @@ export default async function ApplicationDetailsPage({
                     >
                       <p className="text-foreground/80">{note.content}</p>
                       <p className="mt-2 text-xs text-foreground/50">
-                        Author #{note.authorUserId} - {formatDateTime(note.createdAt)}
+                        Người tạo #{note.authorUserId} · {formatDateTime(note.createdAt)}
                       </p>
                     </div>
                   ))
@@ -210,61 +223,61 @@ export default async function ApplicationDetailsPage({
 
         <article className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
           <div className="space-y-3 text-sm">
-            <h2 className="text-lg font-semibold text-foreground">Candidate metadata</h2>
+            <h2 className="text-lg font-semibold text-foreground">Thông tin ứng viên</h2>
             <div className="flex justify-between">
-              <span className="text-foreground/60">Candidate ID</span>
+              <span className="text-foreground/60">Mã ứng viên</span>
               <span className="font-semibold text-foreground">
-                {application.candidateId ?? "Unknown"}
+                {application.candidateId ?? "Không rõ"}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-foreground/60">CV reference</span>
-              <span className="font-semibold text-foreground">{application.cvId ?? "N/A"}</span>
+              <span className="text-foreground/60">CV liên kết</span>
+              <span className="font-semibold text-foreground">{application.cvId ?? "Không có"}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-foreground/60">Source</span>
-              <span className="font-semibold text-foreground">{application.source ?? "N/A"}</span>
+              <span className="text-foreground/60">Nguồn</span>
+              <span className="font-semibold text-foreground">{application.source ?? "Không có"}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-foreground/60">Owner</span>
+              <span className="text-foreground/60">Phụ trách</span>
               <span className="font-semibold text-foreground">
-                {application.ownerUserId ?? "Unassigned"}
+                {application.ownerUserId ?? "Chưa gán"}
               </span>
             </div>
           </div>
 
           <div className="space-y-3 text-sm">
-            <h3 className="text-sm font-semibold text-foreground">Profile snapshot</h3>
+            <h3 className="text-sm font-semibold text-foreground">Tóm tắt hồ sơ</h3>
             {profile ? (
               <div className="space-y-3">
                 <div>
-                  <span className="text-foreground/60">Full name</span>
+                  <span className="text-foreground/60">Họ và tên</span>
                   <p className="font-semibold text-foreground">
-                    {profile.fullName || `Candidate #${application.candidateId}`}
+                    {profile.fullName || `Ứng viên #${application.candidateId}`}
                   </p>
                 </div>
                 <div>
-                  <span className="text-foreground/60">Phone</span>
+                  <span className="text-foreground/60">Số điện thoại</span>
                   <p className="font-semibold text-foreground">
-                    {profile.phoneNumber || "Not provided"}
+                    {profile.phoneNumber || "Chưa cung cấp"}
                   </p>
                 </div>
                 <div>
-                  <span className="text-foreground/60">Summary</span>
+                  <span className="text-foreground/60">Giới thiệu</span>
                   <p className="text-foreground/70">
-                    {profile.summary || "No summary captured yet."}
+                    {profile.summary || "Chưa có phần giới thiệu."}
                   </p>
                 </div>
                 {primarySkills.length > 0 ? (
                   <div>
-                    <span className="text-foreground/60">Skills</span>
+                    <span className="text-foreground/60">Kỹ năng</span>
                     <div className="mt-1 flex flex-wrap gap-2">
                       {primarySkills.map((skill) => (
                         <span
                           key={skill.id}
                           className="rounded-full border border-foreground/10 px-3 py-1 text-xs font-medium text-foreground/70"
                         >
-                          {skill.skillName || "Skill"}
+                          {skill.skillName || "Kỹ năng"}
                         </span>
                       ))}
                     </div>
@@ -272,21 +285,21 @@ export default async function ApplicationDetailsPage({
                 ) : null}
                 {latestExperience ? (
                   <div>
-                    <span className="text-foreground/60">Latest experience</span>
+                    <span className="text-foreground/60">Kinh nghiệm gần nhất</span>
                     <p className="font-semibold text-foreground">
-                      {latestExperience.title || "Role title"}
+                      {latestExperience.title || "Chức danh"}
                     </p>
                     <p className="text-xs text-foreground/50">
-                      {latestExperience.companyName || "Company"} (
-                      {formatProfileDate(latestExperience.startDate, "Unknown")} -{" "}
-                      {formatProfileDate(latestExperience.endDate, "Present")})
+                      {latestExperience.companyName || "Công ty"} (
+                      {formatProfileDate(latestExperience.startDate, "Không rõ")} -{" "}
+                      {formatProfileDate(latestExperience.endDate, "Hiện tại")})
                     </p>
                   </div>
                 ) : null}
               </div>
             ) : (
               <p className="rounded-xl border border-foreground/10 bg-background/60 px-4 py-4 text-sm text-foreground/60">
-                Candidate profile is not available yet. Ask the candidate to complete their profile.
+                Chưa có hồ sơ ứng viên. Hãy nhắc ứng viên hoàn thiện thông tin của họ.
               </p>
             )}
           </div>
