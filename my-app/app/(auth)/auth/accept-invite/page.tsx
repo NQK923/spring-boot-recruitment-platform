@@ -42,8 +42,8 @@ export default async function AcceptInvitePage({ searchParams }: AcceptInvitePag
     return (
       <div className="space-y-6">
         <header className="space-y-2">
-          <h1 className="text-2xl font-semibold text-foreground">Liên kết mời không hợp lệ</h1>
-          <p className="text-sm text-foreground/65">
+          <h1 className="text-2xl font-semibold text-text">Liên kết mời không hợp lệ</h1>
+          <p className="text-sm text-text/65">
             Không tìm thấy mã lời mời trong liên kết này. Vui lòng yêu cầu quản trị công ty gửi lại lời mời.
           </p>
         </header>
@@ -63,8 +63,8 @@ export default async function AcceptInvitePage({ searchParams }: AcceptInvitePag
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold text-foreground">Chấp nhận lời mời</h1>
-        <p className="text-sm text-foreground/65">
+        <h1 className="text-2xl font-semibold text-text">Chấp nhận lời mời</h1>
+        <p className="text-sm text-text/65">
           Tạo mật khẩu để kích hoạt tài khoản và tham gia workspace của công ty.
         </p>
       </header>

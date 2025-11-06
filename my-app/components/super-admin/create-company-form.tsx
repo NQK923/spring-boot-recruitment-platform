@@ -13,30 +13,30 @@ export function CreateCompanyForm() {
   return (
     <form className="space-y-4 text-sm" action={formAction}>
       <div className="space-y-2">
-        <label htmlFor="company-name" className="font-semibold text-foreground">
+        <label htmlFor="company-name" className="font-semibold text-text">
           Tên công ty
         </label>
         <Input id="company-name" name="name" placeholder="Công ty Mặt Trời" required />
       </div>
       <div className="space-y-2">
-        <label htmlFor="company-website" className="font-semibold text-foreground">
+        <label htmlFor="company-website" className="font-semibold text-text">
           Website
         </label>
         <Input id="company-website" name="website" placeholder="https://congty.vn" />
       </div>
       <div className="space-y-2">
-        <label htmlFor="company-description" className="font-semibold text-foreground">
+        <label htmlFor="company-description" className="font-semibold text-text">
           Mô tả
         </label>
         <textarea
           id="company-description"
           name="description"
           placeholder="Tóm tắt ngắn gọn để nhà tuyển dụng nắm thông tin..."
-          className="min-h-[96px] w-full rounded-2xl border border-border/70 bg-surface/98 px-4 py-3 text-sm text-foreground shadow-[0_6px_18px_rgba(var(--shadow-soft),0.22)] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+          className="min-h-[96px] w-full rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-text shadow-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="company-logo" className="font-semibold text-foreground">
+        <label htmlFor="company-logo" className="font-semibold text-text">
           URL logo
         </label>
         <Input id="company-logo" name="logoUrl" placeholder="https://cdn.congty.vn/logo.png" />

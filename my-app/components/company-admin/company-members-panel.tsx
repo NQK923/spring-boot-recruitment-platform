@@ -76,7 +76,7 @@ export function CompanyMembersPanel({ users }: Props) {
 
   if (users.length === 0) {
     return (
-      <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
+      <div className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
         Chưa có thành viên nào. Gửi lời mời để nhà tuyển dụng bắt đầu cộng tác.
       </div>
     );
@@ -97,7 +97,7 @@ export function CompanyMembersPanel({ users }: Props) {
         </p>
       ) : null}
 
-      <p className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 text-xs text-foreground/60">
+      <p className="rounded-2xl border border-border bg-surface px-5 py-4 text-xs text-muted">
         Vai trò sẽ cố định khi thành viên tham gia. Nếu cần đổi vai trò, hãy gỡ thành viên và gửi lời mời mới.
       </p>
 
@@ -109,13 +109,13 @@ export function CompanyMembersPanel({ users }: Props) {
         return (
           <div
             key={user.id}
-            className="flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="space-y-1">
-              <p className="font-semibold text-foreground">{user.email}</p>
-              <p className="text-xs text-foreground/60">Tham gia {formatJoinedAt(user.joinedAt)}</p>
+              <p className="font-semibold text-text">{user.email}</p>
+              <p className="text-xs text-muted">Tham gia {formatJoinedAt(user.joinedAt)}</p>
               <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em]">
-                <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">{formatRole(user.role)}</span>
+                <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">{formatRole(user.role)}</span>
                 <span
                   className={cx(
                     "rounded-full px-2 py-1",
@@ -128,9 +128,9 @@ export function CompanyMembersPanel({ users }: Props) {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-text/50">
                 <span>Vai trò</span>
-                <span className="rounded-lg bg-foreground/5 px-3 py-1 text-foreground/70">
+                <span className="rounded-lg bg-foreground/5 px-3 py-1 text-muted">
                   {formatRole(user.role)}
                 </span>
               </div>
@@ -157,7 +157,7 @@ export function CompanyMembersPanel({ users }: Props) {
                   variant="ghost"
                   size="sm"
                   disabled
-                  className="text-foreground/60"
+                  className="text-muted"
                 >
                   {isCompanyAdmin ? "Quản trị viên công ty" : "Quản lý bên ngoài"}
                 </Button>

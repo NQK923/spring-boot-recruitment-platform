@@ -54,16 +54,16 @@ export function SiteNavbar({
   const palette =
     variant === "inverse"
       ? {
-          text: "text-white/70",
-          active: "bg-white/10 text-white shadow-[0_10px_30px_rgba(15,23,42,0.2)]",
-          inactive: "hover:bg-white/10 hover:text-white",
-          indicator: "bg-white/70",
+          text: "text-surface/80",
+          active: "bg-surface/10 text-surface shadow-lg",
+          inactive: "hover:bg-surface/10 hover:text-surface",
+          indicator: "bg-accent-500/80",
         }
       : {
           text: "text-muted",
-          active: "bg-surface-muted text-foreground shadow-[0_8px_16px_rgba(15,23,42,0.08)]",
-          inactive: "hover:bg-surface-muted hover:text-foreground",
-          indicator: "bg-accent",
+          active: "bg-surface text-text shadow-lg",
+          inactive: "hover:bg-surface hover:text-text",
+          indicator: "bg-primary-600",
         };
 
   useEffect(() => {
@@ -190,7 +190,7 @@ export function SiteNavbar({
           >
             <span>{item.label}</span>
             {item.badge ? (
-              <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">
+              <span className="rounded-full bg-primary-600/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-600">
                 {item.badge}
               </span>
             ) : null}

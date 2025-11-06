@@ -149,38 +149,38 @@ export default async function ApplicationDetailsPage({
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 px-6 py-16">
       <Link
         href={ROUTES.recruiterDashboard}
-        className="text-sm font-semibold text-foreground/70 hover:text-foreground"
+        className="text-sm font-semibold text-muted hover:text-text"
       >
         Quay lại bảng điều khiển
       </Link>
 
       <header className="space-y-2">
-        <span className="inline-flex items-center rounded-full bg-foreground/10 px-3 py-1 text-xs font-semibold text-foreground">
+        <span className="inline-flex items-center rounded-full bg-foreground/10 px-3 py-1 text-xs font-semibold text-text">
           {formatStatus(application.status)}
         </span>
-        <h1 className="text-3xl font-semibold text-foreground">
+        <h1 className="text-3xl font-semibold text-text">
           {job?.title ?? `Hồ sơ #${application.id}`}
         </h1>
-        <p className="text-sm text-foreground/60">
+        <p className="text-sm text-muted">
           Ứng viên: {application.candidateName ?? `#${application.candidateId}`} · Mã việc #
           {application.jobPostingId}
         </p>
-        <p className="text-xs text-foreground/50">Nộp hồ sơ {formatDateTime(application.appliedAt)}</p>
+        <p className="text-xs text-text/50">Nộp hồ sơ {formatDateTime(application.appliedAt)}</p>
       </header>
 
       <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
-        <article className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
+        <article className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-foreground">Thông tin việc làm</h2>
-            <p className="whitespace-pre-wrap text-sm text-foreground/70">
+            <h2 className="text-lg font-semibold text-text">Thông tin việc làm</h2>
+            <p className="whitespace-pre-wrap text-sm text-muted">
               {job?.description ??
                 "Chưa có mô tả chi tiết cho việc làm này. Có thể tin tuyển dụng đã được lưu trữ hoặc nhóm tuyển dụng chưa cập nhật nội dung mới."}
             </p>
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Trạng thái</h3>
-            <p className="text-sm text-foreground/70">
+            <h3 className="text-sm font-semibold text-text">Trạng thái</h3>
+            <p className="text-sm text-muted">
               Cập nhật giai đoạn quy trình sau khi đánh giá tiến độ của ứng viên.
             </p>
             <div className="mt-3">
@@ -192,25 +192,25 @@ export default async function ApplicationDetailsPage({
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Ghi chú</h3>
-            <p className="text-sm text-foreground/70">
+            <h3 className="text-sm font-semibold text-text">Ghi chú</h3>
+            <p className="text-sm text-muted">
               Ghi chú hiển thị với quản trị viên công ty và nhà tuyển dụng để giữ thông tin nhất quán.
             </p>
             <div className="mt-4 space-y-4">
               <AddNoteForm applicationId={application.id} />
               <div className="space-y-3">
                 {notes.length === 0 ? (
-                  <p className="rounded-xl border border-foreground/10 bg-background/60 px-4 py-4 text-sm text-foreground/60">
+                  <p className="rounded-xl border border-border bg-bg/60 px-4 py-4 text-sm text-muted">
                     Chưa có ghi chú nào. Hãy lưu lại phản hồi phỏng vấn hoặc các đầu việc cần theo dõi tại đây.
                   </p>
                 ) : (
                   notes.map((note) => (
                     <div
                       key={note.id}
-                      className="rounded-xl border border-foreground/10 px-4 py-3 text-sm text-foreground"
+                      className="rounded-xl border border-border px-4 py-3 text-sm text-text"
                     >
-                      <p className="text-foreground/80">{note.content}</p>
-                      <p className="mt-2 text-xs text-foreground/50">
+                      <p className="text-text/80">{note.content}</p>
+                      <p className="mt-2 text-xs text-text/50">
                         Người tạo #{note.authorUserId} · {formatDateTime(note.createdAt)}
                       </p>
                     </div>
@@ -221,61 +221,61 @@ export default async function ApplicationDetailsPage({
           </div>
         </article>
 
-        <article className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
+        <article className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
           <div className="space-y-3 text-sm">
-            <h2 className="text-lg font-semibold text-foreground">Thông tin ứng viên</h2>
+            <h2 className="text-lg font-semibold text-text">Thông tin ứng viên</h2>
             <div className="flex justify-between">
-              <span className="text-foreground/60">Mã ứng viên</span>
-              <span className="font-semibold text-foreground">
+              <span className="text-muted">Mã ứng viên</span>
+              <span className="font-semibold text-text">
                 {application.candidateId ?? "Không rõ"}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-foreground/60">CV liên kết</span>
-              <span className="font-semibold text-foreground">{application.cvId ?? "Không có"}</span>
+              <span className="text-muted">CV liên kết</span>
+              <span className="font-semibold text-text">{application.cvId ?? "Không có"}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-foreground/60">Nguồn</span>
-              <span className="font-semibold text-foreground">{application.source ?? "Không có"}</span>
+              <span className="text-muted">Nguồn</span>
+              <span className="font-semibold text-text">{application.source ?? "Không có"}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-foreground/60">Phụ trách</span>
-              <span className="font-semibold text-foreground">
+              <span className="text-muted">Phụ trách</span>
+              <span className="font-semibold text-text">
                 {application.ownerUserId ?? "Chưa gán"}
               </span>
             </div>
           </div>
 
           <div className="space-y-3 text-sm">
-            <h3 className="text-sm font-semibold text-foreground">Tóm tắt hồ sơ</h3>
+            <h3 className="text-sm font-semibold text-text">Tóm tắt hồ sơ</h3>
             {profile ? (
               <div className="space-y-3">
                 <div>
-                  <span className="text-foreground/60">Họ và tên</span>
-                  <p className="font-semibold text-foreground">
+                  <span className="text-muted">Họ và tên</span>
+                  <p className="font-semibold text-text">
                     {profile.fullName || `Ứng viên #${application.candidateId}`}
                   </p>
                 </div>
                 <div>
-                  <span className="text-foreground/60">Số điện thoại</span>
-                  <p className="font-semibold text-foreground">
+                  <span className="text-muted">Số điện thoại</span>
+                  <p className="font-semibold text-text">
                     {profile.phoneNumber || "Chưa cung cấp"}
                   </p>
                 </div>
                 <div>
-                  <span className="text-foreground/60">Giới thiệu</span>
-                  <p className="text-foreground/70">
+                  <span className="text-muted">Giới thiệu</span>
+                  <p className="text-muted">
                     {profile.summary || "Chưa có phần giới thiệu."}
                   </p>
                 </div>
                 {primarySkills.length > 0 ? (
                   <div>
-                    <span className="text-foreground/60">Kỹ năng</span>
+                    <span className="text-muted">Kỹ năng</span>
                     <div className="mt-1 flex flex-wrap gap-2">
                       {primarySkills.map((skill) => (
                         <span
                           key={skill.id}
-                          className="rounded-full border border-foreground/10 px-3 py-1 text-xs font-medium text-foreground/70"
+                          className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted"
                         >
                           {skill.skillName || "Kỹ năng"}
                         </span>
@@ -285,11 +285,11 @@ export default async function ApplicationDetailsPage({
                 ) : null}
                 {latestExperience ? (
                   <div>
-                    <span className="text-foreground/60">Kinh nghiệm gần nhất</span>
-                    <p className="font-semibold text-foreground">
+                    <span className="text-muted">Kinh nghiệm gần nhất</span>
+                    <p className="font-semibold text-text">
                       {latestExperience.title || "Chức danh"}
                     </p>
-                    <p className="text-xs text-foreground/50">
+                    <p className="text-xs text-text/50">
                       {latestExperience.companyName || "Công ty"} (
                       {formatProfileDate(latestExperience.startDate, "Không rõ")} -{" "}
                       {formatProfileDate(latestExperience.endDate, "Hiện tại")})
@@ -298,7 +298,7 @@ export default async function ApplicationDetailsPage({
                 ) : null}
               </div>
             ) : (
-              <p className="rounded-xl border border-foreground/10 bg-background/60 px-4 py-4 text-sm text-foreground/60">
+              <p className="rounded-xl border border-border bg-bg/60 px-4 py-4 text-sm text-muted">
                 Chưa có hồ sơ ứng viên. Hãy nhắc ứng viên hoàn thiện thông tin của họ.
               </p>
             )}

@@ -252,9 +252,9 @@ function ChatWidgetInner() {
           tabIndex={-1}
           style={panelStyles}
           className={cx(
-            "chat-widget-panel fixed z-[9999] flex flex-col overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-background/98 via-surface/95 to-background/98 text-foreground shadow-[0_28px_56px_rgba(15,23,42,0.28)] backdrop-blur-xl transition duration-200",
+            "chat-widget-panel fixed z-[9999] flex flex-col overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-bg/98 via-surface/95 to-bg/98 text-text shadow-lg backdrop-blur-xl transition duration-200",
             isMobile
-              ? "mx-auto w-full max-w-none rounded-t-[36px] border-t border-border/60"
+              ? "mx-auto w-full max-w-none rounded-t-[36px] border-t border-border"
               : "w-[420px]"
           )}
         >
@@ -268,7 +268,7 @@ function ChatWidgetInner() {
             close={close}
           />
           <div className="flex flex-1 min-h-0 flex-col px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4">
-            <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[32px] border border-border/40 bg-gradient-to-br from-background/99 via-background/95 to-background/98 shadow-[0_24px_52px_rgba(15,23,42,0.22)]">
+            <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[32px] border border-border bg-gradient-to-br from-bg/99 via-bg/95 to-bg/98 shadow-lg">
               <div className="flex-1 min-h-0">
                 <MessageList
                   messages={messages}
@@ -280,7 +280,7 @@ function ChatWidgetInner() {
                 />
               </div>
               {info ? <Toast message={info} /> : null}
-              <div className="border-t border-border/50 bg-background/94">
+              <div className="border-t border-border bg-bg/94">
                 <Composer
                   status={status}
                   language={language}
@@ -312,13 +312,13 @@ function FloatingLauncher({
       aria-label={isOpen ? "Thu nhỏ trợ lý tuyển dụng" : "Mở trợ lý tuyển dụng"}
       onClick={toggle}
           className={cx(
-            "fixed bottom-5 right-5 z-[9998] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-[rgb(var(--accent))] via-[rgba(var(--accent),0.88)] to-[rgba(var(--accent),0.66)] text-white shadow-[0_20px_38px_rgba(15,23,42,0.28)] transition duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[rgba(var(--accent),0.85)] sm:bottom-6 sm:right-6",
+            "fixed bottom-5 right-5 z-[9998] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-primary-600 via-accent-600 to-accent-500 text-white shadow-lg transition duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg sm:bottom-6 sm:right-6",
             isOpen ? "scale-95 opacity-80" : "scale-100"
           )}
     >
       <ChatBubbleIcon />
       {hasUnread ? (
-        <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-white/60 bg-white text-[9px] font-semibold text-[rgb(var(--accent))] shadow-[0_6px_12px_rgba(15,23,42,0.2)]">
+        <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-surface/60 bg-surface text-[9px] font-semibold text-accent-600 shadow-lg">
           ●
         </span>
       ) : null}
@@ -346,17 +346,17 @@ function WidgetPanelHeader({
   return (
     <div
       onPointerDown={onPointerDown}
-      className="cursor-grab select-none border-b border-border/50 bg-gradient-to-br from-[rgba(var(--accent),0.14)] via-background/98 to-background/96 px-6 py-4"
+    className="cursor-grab select-none border-b border-border bg-gradient-to-br from-accent-500/10 via-bg/98 to-bg/96 px-6 py-4"
     >
       <div className="flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-1 items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(var(--accent),0.16)] text-[rgb(var(--accent))] shadow-[0_10px_20px_rgba(var(--accent),0.18)]">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-500/15 text-accent-600 shadow-lg">
               <ChatBubbleIcon />
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-[15px] font-semibold tracking-wide text-foreground">Trợ lý tuyển dụng</span>
-              <div className="flex flex-wrap items-center gap-2 text-[11px] text-foreground/60">
+              <span className="text-[15px] font-semibold tracking-wide text-text">Trợ lý tuyển dụng</span>
+              <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted">
                 <span>Hỗ trợ tức thì cho mọi câu hỏi tuyển dụng</span>
                 <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-500">
                   <span aria-hidden="true">●</span>
@@ -368,7 +368,7 @@ function WidgetPanelHeader({
           <button
             type="button"
             onClick={close}
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border/60 bg-background/80 text-foreground/60 transition hover:border-[rgba(var(--accent),0.6)] hover:bg-[rgba(var(--accent),0.08)] hover:text-foreground"
+            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border bg-bg/80 text-muted transition hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-text"
             aria-label="Đóng trợ lý"
             data-no-drag="true"
           >
@@ -376,7 +376,7 @@ function WidgetPanelHeader({
           </button>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs font-medium" data-no-drag="true">
-          <div className="relative flex items-center gap-1.5 rounded-full border border-border/60 bg-background/85 px-3 py-1.5">
+          <div className="relative flex items-center gap-1.5 rounded-full border border-border bg-bg/85 px-3 py-1.5">
             <label htmlFor="chat-lang" className="sr-only">
               Ngôn ngữ
             </label>
@@ -384,17 +384,17 @@ function WidgetPanelHeader({
               id="chat-lang"
               value={language}
               onChange={(event) => setLanguage(event.target.value === "en" ? "en" : "vi")}
-              className="peer cursor-pointer appearance-none rounded-full border border-border/60 bg-background/95 px-3 py-1 text-xs font-medium text-foreground outline-none transition focus:border-[rgb(var(--accent))] focus:ring-2 focus:ring-[rgb(var(--accent))]/30"
+              className="peer cursor-pointer appearance-none rounded-full border border-border bg-bg/95 px-3 py-1 text-xs font-medium text-text outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-500/30"
             >
               <option value="vi">Tiếng Việt</option>
               <option value="en">Tiếng Anh</option>
             </select>
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-foreground/60">
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted">
               ▾
             </span>
           </div>
-          <div className="flex cursor-pointer items-center gap-2 rounded-full border border-border/60 bg-background/85 px-3 py-1.5">
-            <span className="text-[11px] text-foreground/60">Trả lời trực tiếp</span>
+          <div className="flex cursor-pointer items-center gap-2 rounded-full border border-border bg-bg/85 px-3 py-1.5">
+            <span className="text-[11px] text-muted">Trả lời trực tiếp</span>
             <input
               id="chat-streaming-switch"
               type="checkbox"
@@ -404,15 +404,15 @@ function WidgetPanelHeader({
             />
             <label
               htmlFor="chat-streaming-switch"
-              className="relative block h-5 w-9 cursor-pointer rounded-full bg-border transition peer-checked:bg-[rgb(var(--accent))]"
+            className="relative block h-5 w-9 cursor-pointer rounded-full bg-border transition peer-checked:bg-primary-600"
             >
-              <span className="absolute left-1 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-white transition peer-checked:translate-x-3.5" />
+              <span className="absolute left-1 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-surface transition peer-checked:translate-x-3.5" />
             </label>
           </div>
           <button
             type="button"
             onClick={clear}
-            className="cursor-pointer rounded-full border border-border/60 bg-background/85 px-3 py-1.5 text-[11px] text-foreground/70 transition hover:border-[rgba(var(--accent),0.6)] hover:bg-[rgba(var(--accent),0.08)] hover:text-[rgb(var(--accent))]"
+            className="cursor-pointer rounded-full border border-border bg-surface px-3 py-1.5 text-[11px] text-muted transition hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-accent-600"
           >
             Xóa hội thoại
           </button>

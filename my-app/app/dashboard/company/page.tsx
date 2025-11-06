@@ -280,23 +280,23 @@ export default async function CompanyAdminDashboardPage() {
             <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
               Bảng điều khiển quản trị công ty
             </span>
-            <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
+            <h1 className="text-3xl font-semibold text-text sm:text-4xl">
               Giữ workspace đồng bộ và sẵn sàng tuyển dụng.
             </h1>
-            <p className="max-w-2xl text-sm text-foreground/70">
+            <p className="max-w-2xl text-sm text-muted">
               Mời đồng đội, chăm chút hình ảnh thương hiệu và theo dõi các vị trí đang mở tại một trung tâm duy nhất.
             </p>
-            <ul className="space-y-3 text-sm text-foreground/70">
+            <ul className="space-y-3 text-sm text-muted">
               {insights.map((insight, index) => (
                 <li key={`${insight}-${index}`} className="flex items-start gap-3">
-                  <span className="mt-1 h-2.5 w-2.5 rounded-full bg-accent/70" aria-hidden />
+                  <span className="mt-1 h-2.5 w-2.5 rounded-full bg-primary-600/70" aria-hidden />
                   <span>{insight}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="relative overflow-hidden rounded-3xl border border-foreground/10 bg-gradient-to-br from-surface via-surface/85 to-surface/95 p-6 shadow-[0_18px_32px_rgba(15,23,42,0.15)]">
-            <div className="pointer-events-none absolute -top-14 right-0 h-32 w-32 rounded-full bg-accent/20 blur-3xl" />
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-surface via-surface/85 to-surface/95 p-6 shadow-lg">
+            <div className="pointer-events-none absolute -top-14 right-0 h-32 w-32 rounded-full bg-primary-600/20 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-16 left-6 h-28 w-28 rounded-full bg-foreground/10 blur-3xl" />
             <div className="space-y-4">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
@@ -304,23 +304,23 @@ export default async function CompanyAdminDashboardPage() {
               </p>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-xs text-foreground/60">Quy mô đội ngũ</p>
-                  <p className="mt-1 text-2xl font-semibold text-foreground">{users.length}</p>
-                  <p className="text-xs text-foreground/60">Thành viên đang cộng tác trong hôm nay.</p>
+                  <p className="text-xs text-muted">Quy mô đội ngũ</p>
+                  <p className="mt-1 text-2xl font-semibold text-text">{users.length}</p>
+                  <p className="text-xs text-muted">Thành viên đang cộng tác trong hôm nay.</p>
                 </div>
                 <div>
-                  <p className="text-xs text-foreground/60">Vị trí đã đăng</p>
-                  <p className="mt-1 text-2xl font-semibold text-foreground">{publishedJobs.length}</p>
-                  <p className="text-xs text-foreground/60">Đang hiển thị với ứng viên.</p>
+                  <p className="text-xs text-muted">Vị trí đã đăng</p>
+                  <p className="mt-1 text-2xl font-semibold text-text">{publishedJobs.length}</p>
+                  <p className="text-xs text-muted">Đang hiển thị với ứng viên.</p>
                 </div>
               </div>
-              <div className="rounded-2xl border border-foreground/10 bg-surface/85 px-4 py-3 text-xs text-foreground/70">
+              <div className="rounded-2xl border border-border bg-surface px-4 py-3 text-xs text-muted">
                 {profile?.companySize
                   ? `Quy mô công ty: ${profile.companySize}.`
                   : "Chia sẻ quy mô để ứng viên biết kỳ vọng."}
               </div>
             </div>
-            <div className="mt-4 rounded-xl border border-foreground/10 bg-surface/80 px-4 py-3 text-xs text-foreground/60">
+            <div className="mt-4 rounded-xl border border-border bg-surface/80 px-4 py-3 text-xs text-muted">
               {profile?.createdAt
                 ? `Đã tham gia từ ${formatDate(profile.createdAt)}.`
                 : "Hoàn thiện hồ sơ công ty để xem phân tích chi tiết hơn."}
@@ -331,15 +331,15 @@ export default async function CompanyAdminDashboardPage() {
           {metrics.map((metric) => (
             <div
               key={metric.label}
-              className="group rounded-2xl border border-foreground/10 bg-surface/95 p-5 text-sm text-foreground/70 shadow-[0_10px_22px_rgba(15,23,42,0.08)] transition hover:border-accent/30 hover:shadow-[0_22px_36px_rgba(15,23,42,0.14)]"
+              className="group rounded-2xl border border-border bg-surface p-5 text-sm text-muted shadow-lg transition hover:border-accent/30 hover:shadow-lg"
             >
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
                 {metric.label}
               </p>
-              <p className="mt-3 text-3xl font-semibold text-foreground">{metric.value}</p>
+              <p className="mt-3 text-3xl font-semibold text-text">{metric.value}</p>
               <p className="mt-2 text-xs">{metric.helper}</p>
               {metric.footnote ? (
-                <p className="mt-3 text-xs text-foreground/60">{metric.footnote}</p>
+                <p className="mt-3 text-xs text-muted">{metric.footnote}</p>
               ) : null}
             </div>
           ))}
@@ -349,11 +349,11 @@ export default async function CompanyAdminDashboardPage() {
             <Link
               key={action.href}
               href={action.href}
-              className="group flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 text-sm text-foreground/75 transition hover:border-accent/40 hover:text-foreground hover:shadow-[0_20px_34px_rgba(15,23,42,0.12)]"
+              className="group flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4 text-sm text-muted transition hover:border-accent/40 hover:text-text hover:shadow-lg"
             >
-              <span className="text-sm font-semibold text-foreground">{action.label}</span>
-              <p className="text-xs text-foreground/60">{action.description}</p>
-              <span className="inline-flex items-center gap-2 text-xs font-semibold text-accent transition group-hover:translate-x-0.5">
+              <span className="text-sm font-semibold text-text">{action.label}</span>
+              <p className="text-xs text-muted">{action.description}</p>
+              <span className="inline-flex items-center gap-2 text-xs font-semibold text-primary-600 transition group-hover:translate-x-0.5">
                 Đi tới khu vực
                 <span aria-hidden>→</span>
               </span>
@@ -365,81 +365,81 @@ export default async function CompanyAdminDashboardPage() {
       <Panel id="company" variant="surface" padding="lg" className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Tổng quan công ty</h2>
-            <p className="text-sm text-foreground/60">
+            <h2 className="text-lg font-semibold text-text">Tổng quan công ty</h2>
+            <p className="text-sm text-muted">
               Kiểm tra lại thông tin thương hiệu, địa điểm tuyển dụng và lộ trình mở vị trí trước khi mời thêm thành viên.
             </p>
           </div>
-          <Link href={ROUTES.docs} className="text-sm font-semibold text-foreground hover:underline">
+          <Link href={ROUTES.docs} className="text-sm font-semibold text-text hover:underline">
             Hướng dẫn cập nhật
           </Link>
         </div>
-        <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] text-sm text-foreground/70">
-          <div className="space-y-4 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4">
+        <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] text-sm text-muted">
+          <div className="space-y-4 rounded-2xl border border-border bg-surface px-5 py-4">
             <p className="text-xs uppercase tracking-[0.28em] text-muted">Thông tin công ty</p>
             <div className="space-y-1">
-              <p className="font-semibold text-foreground">{profile?.name ?? "Chưa cập nhật"}</p>
+              <p className="font-semibold text-text">{profile?.name ?? "Chưa cập nhật"}</p>
               {profile?.website ? (
                 <a
                   href={profile.website}
-                  className="text-xs font-semibold text-accent hover:underline"
+                  className="text-xs font-semibold text-primary-600 hover:underline"
                   target="_blank"
                   rel="noreferrer"
                 >
                   {profile.website}
                 </a>
               ) : (
-                <p className="text-xs text-foreground/50">Thêm website để ứng viên tìm hiểu thêm.</p>
+                <p className="text-xs text-text/50">Thêm website để ứng viên tìm hiểu thêm.</p>
               )}
             </div>
-            <p className="text-xs text-foreground/60">
+            <p className="text-xs text-muted">
               {profile?.description ?? "Thêm mô tả để nhà tuyển dụng có bối cảnh phù hợp."}
             </p>
-            <p className="text-xs text-foreground/60">
-              <span className="font-semibold text-foreground">Quy mô công ty:</span>{" "}
+            <p className="text-xs text-muted">
+              <span className="font-semibold text-text">Quy mô công ty:</span>{" "}
               {profile?.companySize ?? "Chia sẻ quy mô nhân sự để đặt kỳ vọng phù hợp với ứng viên."}
             </p>
           </div>
-          <div className="space-y-4 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4">
+          <div className="space-y-4 rounded-2xl border border-border bg-surface px-5 py-4">
             <p className="text-xs uppercase tracking-[0.28em] text-muted">Trụ sở</p>
-            <p className="font-semibold text-foreground">
+            <p className="font-semibold text-text">
               {profile?.companyAddress ?? "Thêm địa chỉ văn phòng chính hoặc trụ sở."}
             </p>
-            <p className="text-xs text-foreground/60">Gia nhập Talentflow từ {formatDate(profile?.createdAt)}</p>
+            <p className="text-xs text-muted">Gia nhập Talentflow từ {formatDate(profile?.createdAt)}</p>
             <div>
               <h3 className="text-xs uppercase tracking-[0.28em] text-muted">Cập nhật chi tiết</h3>
-              <p className="text-xs text-foreground/60">
+              <p className="text-xs text-muted">
                 Giữ thông điệp thương hiệu luôn mới. Thay đổi sẽ áp dụng ngay cho mọi bài tuyển dụng.
               </p>
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border border-foreground/10 bg-surface/95 p-5">
+        <div className="rounded-2xl border border-border bg-surface p-5">
           <UpdateCompanyForm profile={profileForForm} />
         </div>
       </Panel>
 
       <Panel id="team" variant="surface" padding="lg" className="space-y-6">
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Danh sách thành viên</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Danh sách thành viên</h2>
+          <p className="text-sm text-muted">
             Quản trị viên công ty phụ trách phân quyền, trong khi nhà tuyển dụng quản lý từng vị trí và pipeline.
           </p>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/60">
-            <span className="inline-flex items-center rounded-full border border-foreground/15 bg-surface px-3 py-1 font-semibold uppercase tracking-[0.2em] text-foreground/70">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+            <span className="inline-flex items-center rounded-full border border-foreground/15 bg-surface px-3 py-1 font-semibold uppercase tracking-[0.2em] text-muted">
               {users.length} đang hoạt động
             </span>
             <span className="inline-flex items-center rounded-full border border-foreground/15 bg-surface px-3 py-1 uppercase tracking-[0.2em]">
               {pendingInvitationCount} lời mời chờ phản hồi
             </span>
             {lockedUsers > 0 ? (
-              <span className="inline-flex items-center rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-semibold uppercase tracking-[0.2em] text-accent">
+              <span className="inline-flex items-center rounded-full border border-accent/30 bg-primary-600/10 px-3 py-1 font-semibold uppercase tracking-[0.2em] text-primary-600">
                 {lockedUsers} bị khóa
               </span>
             ) : null}
           </div>
         </div>
-        <div className="rounded-2xl border border-foreground/10 bg-surface/95 p-5">
+        <div className="rounded-2xl border border-border bg-surface p-5">
           <InviteMemberForm />
         </div>
         <CompanyMembersPanel users={users} />
@@ -447,8 +447,8 @@ export default async function CompanyAdminDashboardPage() {
 
       <Panel id="jobs" variant="surface" padding="lg" className="space-y-6">
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Danh mục việc làm</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Danh mục việc làm</h2>
+          <p className="text-sm text-muted">
             Tạo nháp, đăng hoặc tạm dừng vị trí ngay tại workspace này. Thay đổi sẽ đồng bộ tức thì với bảng việc làm công khai.
           </p>
         </div>
@@ -456,7 +456,7 @@ export default async function CompanyAdminDashboardPage() {
         <CreateJobForm positions={positions} />
 
         {jobs.length === 0 ? (
-          <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
+          <div className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
             Chưa có việc làm nào được tạo. Hãy tạo nháp để khởi động pipeline tuyển dụng.
           </div>
         ) : (
@@ -471,17 +471,17 @@ export default async function CompanyAdminDashboardPage() {
       <Panel id="invites" variant="surface" padding="lg" className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Lời mời đang xử lý</h2>
-            <p className="text-sm text-foreground/60">
+            <h2 className="text-lg font-semibold text-text">Lời mời đang xử lý</h2>
+            <p className="text-sm text-muted">
               Theo dõi lời mời đang chờ để đồng đội không bỏ lỡ email chào mừng.
             </p>
           </div>
-          <Link href="/docs/admin#reminders" className="text-sm font-semibold text-foreground hover:underline">
+          <Link href="/docs/admin#reminders" className="text-sm font-semibold text-text hover:underline">
             Mẫu nhắc nhở
           </Link>
         </div>
         {recentInvites.length === 0 ? (
-          <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
+          <div className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
             Không có lời mời nào còn tồn đọng. Bạn đang quản lý đội ngũ rất tốt!
           </div>
         ) : (
@@ -489,13 +489,13 @@ export default async function CompanyAdminDashboardPage() {
             {recentInvites.map((invite, index) => (
               <div
                 key={`${invite.email}-${index}`}
-                className="flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
-                  <p className="font-semibold text-foreground">{invite.email ?? "pending@email.com"}</p>
-                  <p className="text-xs text-foreground/60">{invite.role ?? "Vai trò sẽ cập nhật"}</p>
+                  <p className="font-semibold text-text">{invite.email ?? "pending@email.com"}</p>
+                  <p className="text-xs text-muted">{invite.role ?? "Vai trò sẽ cập nhật"}</p>
                 </div>
-                <p className="text-xs text-foreground/50">
+                <p className="text-xs text-text/50">
                   Đã gửi {invite.invitedAt ? formatDate(invite.invitedAt) : "gần đây"}
                 </p>
               </div>

@@ -219,15 +219,15 @@ function LatestJobCard({ job }: { job: JobPostingPublic }) {
   return (
     <Panel className="flex h-full flex-col gap-5">
       <div className="flex flex-col gap-2">
-        <span className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
+        <span className="text-xs font-semibold uppercase tracking-[0.24em] text-primary-600/70">
           {workType}
         </span>
-        <h3 className="text-xl font-semibold text-foreground">{job.title}</h3>
-        <p className="text-sm leading-relaxed text-foreground/70">{summary}</p>
+        <h3 className="text-xl font-semibold text-text">{job.title}</h3>
+        <p className="text-sm leading-relaxed text-muted">{summary}</p>
       </div>
 
       <div className="mt-auto flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-wrap gap-2 text-xs text-foreground/60">
+        <div className="flex flex-wrap gap-2 text-xs text-muted">
           <span className="rounded-full border border-foreground/15 px-3 py-1">{location}</span>
           {department ? (
             <span className="rounded-full border border-foreground/15 px-3 py-1">
@@ -253,22 +253,22 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col gap-24 pb-24">
-      <section className="relative overflow-hidden bg-[linear-gradient(165deg,_rgba(15,23,42,0.9)_0%,_rgba(15,23,42,0.6)_40%,_transparent_100%)]">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.35),_transparent_55%)]" />
-        <Container className="flex flex-col gap-16 py-20 text-white lg:flex-row lg:items-center">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-accent-600/80 to-primary-500">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_var(--accent-500)_0%,_transparent_55%)] opacity-40" />
+        <Container className="flex flex-col gap-16 py-20 text-surface lg:flex-row lg:items-center">
           <div className="max-w-2xl space-y-6">
-            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">
+            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-surface/70">
               Giải pháp tuyển dụng toàn diện
             </span>
             <h1 className="text-4xl font-semibold sm:text-5xl">
               Kết nối ứng viên và đội ngũ tuyển dụng trên cùng một nền tảng
             </h1>
-            <p className="text-base leading-relaxed text-white/80">
+            <p className="text-base leading-relaxed text-surface/80">
               TalentFlow hợp nhất đăng tuyển, giao tiếp với ứng viên và điều phối phỏng vấn, trong khi
               gateway đảm bảo mọi kết nối luôn an toàn.
             </p>
             <div className="flex flex-wrap gap-3">{renderHeroActions(viewer)}</div>
-            <div className="flex flex-wrap gap-3 text-xs text-white/60">
+            <div className="flex flex-wrap gap-3 text-xs text-surface/60">
               <span className="rounded-full border border-white/20 px-3 py-1">
                 Bảo mật JWT end-to-end
               </span>
@@ -280,28 +280,28 @@ export default async function Home() {
               </span>
             </div>
           </div>
-          <Panel variant="glass" className="bg-white/10 text-left text-sm text-white/85 backdrop-blur-md">
+          <Panel variant="glass" className="bg-surface/10 text-left text-sm text-text backdrop-blur-md">
             <div className="space-y-4">
-              <p className="text-lg font-semibold text-white">TalentFlow hỗ trợ:</p>
+              <p className="text-lg font-semibold text-surface">TalentFlow hỗ trợ:</p>
               <ul className="space-y-3">
                 <li className="flex gap-3">
                   <span className="mt-1 inline-flex h-2.5 w-2.5 flex-shrink-0 rounded-full bg-emerald-400" />
                   <span>
-                    <strong className="font-semibold text-white">Ứng viên</strong> quản lý CV, đơn ứng
+                    <strong className="font-semibold text-surface">Ứng viên</strong> quản lý CV, đơn ứng
                     tuyển và thông báo mà không bỏ lỡ bối cảnh.
                   </span>
                 </li>
                 <li className="flex gap-3">
                   <span className="mt-1 inline-flex h-2.5 w-2.5 flex-shrink-0 rounded-full bg-sky-400" />
                   <span>
-                    <strong className="font-semibold text-white">Nhà tuyển dụng</strong> phối hợp trên
+                    <strong className="font-semibold text-surface">Nhà tuyển dụng</strong> phối hợp trên
                     pipeline chung với nhiệm vụ, ghi chú và kế hoạch phỏng vấn.
                   </span>
                 </li>
                 <li className="flex gap-3">
                   <span className="mt-1 inline-flex h-2.5 w-2.5 flex-shrink-0 rounded-full bg-violet-400" />
                   <span>
-                    <strong className="font-semibold text-white">Quản trị viên</strong> kiểm soát triển
+                    <strong className="font-semibold text-surface">Quản trị viên</strong> kiểm soát triển
                     khai đa doanh nghiệp với bảng điều khiển và dấu vết kiểm soát.
                   </span>
                 </li>
@@ -318,10 +318,10 @@ export default async function Home() {
               <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
                 Việc làm mới nhất
               </span>
-              <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
+              <h2 className="text-3xl font-semibold text-text sm:text-4xl">
                 Những vị trí đang tuyển ngay lúc này
               </h2>
-              <p className="max-w-2xl text-sm text-foreground/70">
+              <p className="max-w-2xl text-sm text-muted">
                 Đón đầu cơ hội mới trước khi người khác kịp ứng tuyển. Đăng nhập để nộp hồ sơ ngay và nhận thông báo tiến độ.
               </p>
             </div>
@@ -338,8 +338,8 @@ export default async function Home() {
             ) : (
               <Panel className="md:col-span-2 xl:col-span-3">
                 <div className="flex flex-col gap-4 text-center sm:text-left">
-                  <h3 className="text-xl font-semibold text-foreground">Chưa có việc làm nào được đăng</h3>
-                  <p className="text-sm text-foreground/70">
+                  <h3 className="text-xl font-semibold text-text">Chưa có việc làm nào được đăng</h3>
+                  <p className="text-sm text-muted">
                     Khi nhà tuyển dụng đăng tin, chúng sẽ xuất hiện tại đây ngay lập tức. Quay lại sau hoặc đăng nhập để là người tạo bài đăng đầu tiên.
                   </p>
                   <div className="flex flex-wrap justify-center gap-3 sm:justify-start">
@@ -365,10 +365,10 @@ export default async function Home() {
             <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
               Cách thức vận hành
             </span>
-            <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
+            <h2 className="text-3xl font-semibold text-text sm:text-4xl">
               Lộ trình được thiết kế riêng cho từng vai trò
             </h2>
-            <p className="mx-auto max-w-2xl text-sm text-foreground/70">
+            <p className="mx-auto max-w-2xl text-sm text-muted">
               Các microservice chia sẻ bối cảnh qua gateway để ứng viên, nhà tuyển dụng và quản trị viên luôn biết bước tiếp theo.
             </p>
           </div>
@@ -376,24 +376,24 @@ export default async function Home() {
             {JOURNEYS.map((journey) => (
               <Panel key={journey.id} className="flex h-full flex-col gap-6">
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
+                  <span className="text-xs font-semibold uppercase tracking-[0.24em] text-primary-600/70">
                     {journey.label}
                   </span>
-                  <h3 className="text-2xl font-semibold text-foreground">{journey.title}</h3>
-                  <p className="text-sm text-foreground/70">{journey.caption}</p>
+                  <h3 className="text-2xl font-semibold text-text">{journey.title}</h3>
+                  <p className="text-sm text-muted">{journey.caption}</p>
                 </div>
                 <div className="space-y-4">
                   {journey.steps.map((step, index) => (
                     <div
                       key={step.title}
-                      className="flex gap-4 rounded-xl border border-border/60 bg-surface-muted px-4 py-4"
+                      className="flex gap-4 rounded-xl border border-border bg-surface px-4 py-4"
                     >
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[rgba(var(--accent),0.08)] text-sm font-semibold text-[rgb(var(--accent))]">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-sm font-semibold text-accent-600">
                         {(index + 1).toString().padStart(2, "0")}
                       </div>
                       <div className="space-y-1">
-                        <p className="font-semibold text-foreground">{step.title}</p>
-                        <p className="text-sm text-foreground/70">{step.description}</p>
+                        <p className="font-semibold text-text">{step.title}</p>
+                        <p className="text-sm text-muted">{step.description}</p>
                       </div>
                     </div>
                   ))}
@@ -404,21 +404,21 @@ export default async function Home() {
         </Container>
       </section>
 
-      <section className="bg-surface-muted/60 py-16">
+      <section className="bg-surface/60 py-16">
         <Container className="space-y-12">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl space-y-2">
               <span className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
                 Khách hàng tin dùng
               </span>
-              <h2 className="text-3xl font-semibold text-foreground sm:text-4xl">
+              <h2 className="text-3xl font-semibold text-text sm:text-4xl">
                 Những đội ngũ đang phát triển cùng TalentFlow
               </h2>
-              <p className="text-sm text-foreground/70">
+              <p className="text-sm text-muted">
                 Họ tự động hóa email nhắc nhở, chia sẻ dashboard với lãnh đạo và giữ cho ứng viên được cập nhật ở từng giai đoạn.
               </p>
             </div>
-            <div className="flex flex-wrap gap-3 text-xs text-foreground/60">
+            <div className="flex flex-wrap gap-3 text-xs text-muted">
               {TRUSTED_COMPANIES.map((company) => (
                 <span
                   key={company}
@@ -432,10 +432,10 @@ export default async function Home() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {TESTIMONIALS.map((item) => (
               <Panel key={item.author} className="flex h-full flex-col justify-between gap-6">
-                <p className="text-sm leading-relaxed text-foreground/80">“{item.quote}”</p>
+                <p className="text-sm leading-relaxed text-text/80">“{item.quote}”</p>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">{item.author}</p>
-                  <p className="text-xs uppercase tracking-[0.24em] text-foreground/50">
+                  <p className="text-sm font-semibold text-text">{item.author}</p>
+                  <p className="text-xs uppercase tracking-[0.24em] text-text/50">
                     {item.role}
                   </p>
                 </div>
@@ -447,14 +447,14 @@ export default async function Home() {
 
       <section>
         <Container>
-          <Panel className="flex flex-col items-center gap-6 bg-gradient-to-r from-[rgba(var(--accent),0.12)] to-transparent text-center">
-            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-accent/70">
+          <Panel className="flex flex-col items-center gap-6 bg-gradient-to-r from-accent-500/10 to-transparent text-center">
+            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-primary-600/70">
               Sẵn sàng bắt đầu
             </span>
-            <h2 className="max-w-2xl text-3xl font-semibold text-foreground sm:text-4xl">
+            <h2 className="max-w-2xl text-3xl font-semibold text-text sm:text-4xl">
               Khởi động quy trình tuyển dụng hiện đại ngay hôm nay
             </h2>
-            <p className="max-w-xl text-sm text-foreground/70">
+            <p className="max-w-xl text-sm text-muted">
               Kết nối với gateway, tích hợp dịch vụ của bạn và tiến từ đăng tuyển đến chốt offer mà không mất bối cảnh.
             </p>
             <div className="flex flex-wrap justify-center gap-3">

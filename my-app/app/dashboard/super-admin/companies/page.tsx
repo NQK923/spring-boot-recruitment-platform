@@ -85,42 +85,42 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
       <div className="grid gap-6 lg:grid-cols-[2fr,1fr]">
         <Panel className="space-y-6" padding="lg">
           <div>
-            <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Workspace quản trị cấp cao</h1>
-            <p className="mt-2 text-sm text-foreground/60">
+            <h1 className="text-2xl font-semibold text-text sm:text-3xl">Workspace quản trị cấp cao</h1>
+            <p className="mt-2 text-sm text-muted">
               Giám sát mọi tenant, đảm bảo quy trình onboard thông suốt và mỗi công ty đều có người phụ trách phù hợp.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-foreground/50">Số công ty</p>
-              <p className="mt-2 text-2xl font-semibold text-foreground">
+            <div className="rounded-2xl border border-border bg-surface px-5 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-text/50">Số công ty</p>
+              <p className="mt-2 text-2xl font-semibold text-text">
                 {numberFormatter.format(dashboard?.totalCompanies ?? companies.length)}
               </p>
-              <p className="text-xs text-foreground/60">Tenant đã đăng ký trên nền tảng</p>
+              <p className="text-xs text-muted">Tenant đã đăng ký trên nền tảng</p>
             </div>
-            <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-foreground/50">Vị trí đang mở</p>
-              <p className="mt-2 text-2xl font-semibold text-foreground">
+            <div className="rounded-2xl border border-border bg-surface px-5 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-text/50">Vị trí đang mở</p>
+              <p className="mt-2 text-2xl font-semibold text-text">
                 {numberFormatter.format(dashboard?.totalJobPostings ?? 0)}
               </p>
-              <p className="text-xs text-foreground/60">Bài tuyển dụng đang hiển thị trên toàn bộ tenant</p>
+              <p className="text-xs text-muted">Bài tuyển dụng đang hiển thị trên toàn bộ tenant</p>
             </div>
-            <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-foreground/50">Hồ sơ ứng tuyển</p>
-              <p className="mt-2 text-2xl font-semibold text-foreground">
+            <div className="rounded-2xl border border-border bg-surface px-5 py-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-text/50">Hồ sơ ứng tuyển</p>
+              <p className="mt-2 text-2xl font-semibold text-text">
                 {numberFormatter.format(dashboard?.totalApplications ?? 0)}
               </p>
-              <p className="text-xs text-foreground/60">Hồ sơ ứng viên đã nhận</p>
+              <p className="text-xs text-muted">Hồ sơ ứng viên đã nhận</p>
             </div>
           </div>
           {topCompanies.length > 0 ? (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-foreground/50">Công ty tuyển dụng tích cực</p>
-              <ul className="mt-3 space-y-2 text-sm text-foreground/70">
+              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-text/50">Công ty tuyển dụng tích cực</p>
+              <ul className="mt-3 space-y-2 text-sm text-muted">
                 {topCompanies.slice(0, 4).map((company) => (
-                  <li key={company.companyId} className="flex items-center justify-between rounded-xl border border-foreground/10 bg-surface/95 px-4 py-2">
-                    <span className="font-medium text-foreground">{company.companyName}</span>
-                    <span className="text-xs font-semibold uppercase tracking-[0.24em] text-foreground/50">
+                  <li key={company.companyId} className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-2">
+                    <span className="font-medium text-text">{company.companyName}</span>
+                    <span className="text-xs font-semibold uppercase tracking-[0.24em] text-text/50">
                       {numberFormatter.format(company.openRoles)} vị trí mở
                     </span>
                   </li>
@@ -133,23 +133,23 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
         <div className="space-y-6">
           <Panel className="space-y-4" padding="lg">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Tạo công ty mới</h2>
-              <p className="text-sm text-foreground/60">Khởi tạo workspace riêng và có thể gán người phụ trách sau.</p>
+              <h2 className="text-lg font-semibold text-text">Tạo công ty mới</h2>
+              <p className="text-sm text-muted">Khởi tạo workspace riêng và có thể gán người phụ trách sau.</p>
             </div>
             <CreateCompanyForm />
           </Panel>
 
           <Panel className="space-y-4" padding="lg">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Mời quản trị công ty</h2>
-              <p className="text-sm text-foreground/60">
+              <h2 className="text-lg font-semibold text-text">Mời quản trị công ty</h2>
+              <p className="text-sm text-muted">
                 Gửi lời mời để chủ công ty cấu hình tenant và thêm thành viên.
               </p>
             </div>
             {companyOptions.length > 0 ? (
               <InviteCompanyUserForm companies={companyOptions} />
             ) : (
-              <p className="rounded-xl border border-dashed border-foreground/20 bg-surface-muted px-4 py-3 text-sm text-foreground/60">
+              <p className="rounded-xl border border-dashed border-border bg-surface px-4 py-3 text-sm text-muted">
                 Hãy tạo công ty trước khi gửi lời mời.
               </p>
             )}
@@ -160,14 +160,14 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
       <Panel className="space-y-6" padding="lg">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">Danh sách công ty</h2>
-            <p className="text-sm text-foreground/60">
+            <h2 className="text-xl font-semibold text-text">Danh sách công ty</h2>
+            <p className="text-sm text-muted">
               Rà soát trạng thái và theo dõi tenant nào đã sẵn sàng vận hành.
             </p>
           </div>
           <Suspense
             fallback={
-              <div className="h-10 w-full max-w-sm rounded-2xl bg-surface-muted" />
+              <div className="h-10 w-full max-w-sm rounded-2xl bg-surface" />
             }
           >
             <DebouncedSearchInput
@@ -180,7 +180,7 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
         </div>
         <div className="space-y-4">
           {filteredCompanies.length === 0 ? (
-            <p className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
+            <p className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
               {searchTerm
                 ? `Không tìm thấy công ty khớp với "${searchTerm}".`
                 : "Chưa có công ty nào. Hãy tạo tenant đầu tiên để bắt đầu."}
@@ -189,29 +189,29 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
             filteredCompanies.map((company) => (
               <div
                 key={company.id}
-                className="flex flex-col gap-6 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-5 md:flex-row md:items-center md:justify-between"
+                className="flex flex-col gap-6 rounded-2xl border border-border bg-surface px-5 py-5 md:flex-row md:items-center md:justify-between"
               >
                 <div className="space-y-2">
-                  <h3 className="text-lg font-semibold text-foreground">{company.name}</h3>
-                  <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em] text-foreground/50">
+                  <h3 className="text-lg font-semibold text-text">{company.name}</h3>
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em] text-text/50">
                     <span className={cx("rounded-full px-2 py-1 font-semibold", statusClass(company.status))}>
                       {statusLabel(company.status)}
                     </span>
-                    <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">
+                    <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">
                       Tham gia {formatDate(company.createdAt)}
                     </span>
                   </div>
                   {company.description ? (
-                    <p className="text-sm text-foreground/70">{company.description}</p>
+                    <p className="text-sm text-muted">{company.description}</p>
                   ) : (
-                    <p className="text-sm text-foreground/50">Chưa có mô tả.</p>
+                    <p className="text-sm text-text/50">Chưa có mô tả.</p>
                   )}
                   {company.website ? (
                     <a
                       href={company.website}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline"
+                      className="inline-flex items-center gap-1 text-sm font-semibold text-primary-600 hover:underline"
                     >
                       {company.website}
                     </a>
@@ -220,13 +220,13 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
 
                 <form
                   action={updateCompanyStatusAction}
-                  className="flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-surface px-4 py-4 text-sm text-foreground/80 md:w-[260px]"
+                  className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-4 py-4 text-sm text-text/80 md:w-[260px]"
                 >
                   <input type="hidden" name="companyId" value={company.id} />
                   <input type="hidden" name="redirectTo" value={redirectPath} />
                   <label
                     htmlFor={`company-status-${company.id}`}
-                    className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50"
+                    className="text-xs font-semibold uppercase tracking-[0.2em] text-text/50"
                   >
                     Trạng thái công ty
                   </label>
@@ -234,7 +234,7 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
                     id={`company-status-${company.id}`}
                     name="status"
                     defaultValue={company.status}
-                    className="h-9 rounded-2xl border border-border/70 bg-surface-muted px-3 text-sm text-foreground shadow-[0_6px_18px_rgba(var(--shadow-soft),0.18)] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+                    className="h-9 rounded-2xl border border-border bg-surface px-3 text-sm text-text shadow-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
                   >
                     {COMPANY_STATUS_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>

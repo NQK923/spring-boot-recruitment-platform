@@ -43,7 +43,7 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
     <form className="space-y-5" action={formAction}>
       <input type="hidden" name="next" value={resolvedNext} />
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-foreground" htmlFor="email">
+        <label className="text-sm font-semibold text-text" htmlFor="email">
           Địa chỉ email
         </label>
         <Input
@@ -57,11 +57,11 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-semibold text-foreground" htmlFor="password">
+          <label className="text-sm font-semibold text-text" htmlFor="password">
             Mật khẩu
           </label>
           <Link
-            className="text-xs font-medium text-accent hover:underline"
+            className="text-xs font-medium text-primary-600 hover:underline"
             href={ROUTES.forgotPassword}
           >
             Quên mật khẩu?
@@ -84,9 +84,9 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
         {pending ? "Đang đăng nhập..." : "Đăng nhập"}
       </Button>
-      <div className="text-center text-sm text-foreground/60">
+      <div className="text-center text-sm text-muted">
         Chưa có tài khoản?{" "}
-        <Link className="font-medium text-foreground hover:underline" href={ROUTES.register}>
+        <Link className="font-medium text-text hover:underline" href={ROUTES.register}>
           Tạo ngay
         </Link>
       </div>

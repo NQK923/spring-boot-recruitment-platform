@@ -34,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} bg-bg text-text antialiased`}>
         <script dangerouslySetInnerHTML={{ __html: INITIAL_THEME_SCRIPT }} />
         <ThemeProvider>
           <ChatWidgetProvider>

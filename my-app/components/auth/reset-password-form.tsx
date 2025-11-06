@@ -15,7 +15,7 @@ export function ResetPasswordForm() {
   return (
     <form className="space-y-5" action={formAction}>
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-foreground" htmlFor="email">
+        <label className="text-sm font-semibold text-text" htmlFor="email">
           Địa chỉ email
         </label>
         <Input
@@ -28,7 +28,7 @@ export function ResetPasswordForm() {
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-foreground" htmlFor="otp">
+        <label className="text-sm font-semibold text-text" htmlFor="otp">
           Mã đặt lại
         </label>
         <Input
@@ -41,12 +41,12 @@ export function ResetPasswordForm() {
           autoComplete="one-time-code"
           required
         />
-        <p className="text-xs text-foreground/55">
+        <p className="text-xs text-text/55">
           Nhập mã sáu chữ số từ email. Mỗi mã sẽ hết hạn sau 10 phút kể từ khi cấp.
         </p>
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-foreground" htmlFor="newPassword">
+        <label className="text-sm font-semibold text-text" htmlFor="newPassword">
           Mật khẩu mới
         </label>
         <Input
@@ -66,9 +66,9 @@ export function ResetPasswordForm() {
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
         {pending ? "Đang cập nhật mật khẩu..." : "Đặt lại mật khẩu"}
       </Button>
-      <p className="text-center text-sm text-foreground/60">
+      <p className="text-center text-sm text-muted">
         Đã nhớ mật khẩu?{" "}
-        <Link className="font-medium text-foreground hover:underline" href={ROUTES.signIn}>
+        <Link className="font-medium text-text hover:underline" href={ROUTES.signIn}>
           Quay lại đăng nhập
         </Link>
       </p>

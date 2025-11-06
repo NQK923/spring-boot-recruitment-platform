@@ -24,9 +24,9 @@ export function GenerateCvForm() {
     <form
       ref={formRef}
       action={formAction}
-      className="space-y-3 rounded-xl border border-foreground/10 bg-background/80 p-4"
+      className="space-y-3 rounded-xl border border-border bg-bg/80 p-4"
     >
-      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
+      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
         Version name
         <Input
           name="generatedVersionName"

@@ -54,7 +54,7 @@ export function SkillsForm({ skills }: SkillsFormProps) {
         {items.map((item, index) => (
           <div
             key={`skill-${index}`}
-            className="flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-background/70 px-4 py-3 sm:flex-row sm:items-center"
+            className="flex flex-col gap-2 rounded-2xl border border-border bg-bg/70 px-4 py-3 sm:flex-row sm:items-center"
           >
             <Input
               value={item.skillName}

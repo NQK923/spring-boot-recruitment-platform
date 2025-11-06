@@ -64,11 +64,11 @@ export function EducationForm({ education }: EducationFormProps) {
         {items.map((item, index) => (
           <div
             key={`education-${index}`}
-            className="space-y-3 rounded-2xl border border-foreground/10 bg-background/70 px-4 py-4"
+            className="space-y-3 rounded-2xl border border-border bg-bg/70 px-4 py-4"
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <label className="flex-1 text-sm text-foreground/70">
-                <span className="mb-1 block font-semibold text-foreground">School</span>
+              <label className="flex-1 text-sm text-muted">
+                <span className="mb-1 block font-semibold text-text">School</span>
                 <Input
                   value={item.school}
                   onChange={(event) => handleChange(index, "school", event.target.value)}
@@ -76,8 +76,8 @@ export function EducationForm({ education }: EducationFormProps) {
                   disabled={pending}
                 />
               </label>
-              <label className="flex-1 text-sm text-foreground/70">
-                <span className="mb-1 block font-semibold text-foreground">Degree / Program</span>
+              <label className="flex-1 text-sm text-muted">
+                <span className="mb-1 block font-semibold text-text">Degree / Program</span>
                 <Input
                   value={item.degree}
                   onChange={(event) => handleChange(index, "degree", event.target.value)}
@@ -87,8 +87,8 @@ export function EducationForm({ education }: EducationFormProps) {
               </label>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="text-sm text-foreground/70">
-                <span className="mb-1 block font-semibold text-foreground">Start date</span>
+              <label className="text-sm text-muted">
+                <span className="mb-1 block font-semibold text-text">Start date</span>
                 <Input
                   type="date"
                   value={item.startDate}
@@ -96,8 +96,8 @@ export function EducationForm({ education }: EducationFormProps) {
                   disabled={pending}
                 />
               </label>
-              <label className="text-sm text-foreground/70">
-                <span className="mb-1 block font-semibold text-foreground">End date</span>
+              <label className="text-sm text-muted">
+                <span className="mb-1 block font-semibold text-text">End date</span>
                 <Input
                   type="date"
                   value={item.endDate}

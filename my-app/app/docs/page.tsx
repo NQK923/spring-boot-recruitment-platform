@@ -33,10 +33,10 @@ export default async function DocsPage() {
           <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
             Trung tâm tài liệu
           </span>
-          <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
+          <h1 className="text-3xl font-semibold text-text sm:text-4xl">
             Mọi thứ đội ngũ bạn cần để vận hành Talentflow.
           </h1>
-          <p className="max-w-3xl text-sm text-foreground/70">
+          <p className="max-w-3xl text-sm text-muted">
             Khám phá tài liệu cho từng vai trò, các bước triển khai và hướng dẫn tích hợp. Hãy đồng bộ những trang này
             với không gian Confluence/Notion của bạn hoặc gửi cho thành viên mới trong quá trình onboarding.
           </p>
@@ -73,14 +73,14 @@ export default async function DocsPage() {
           <Panel
             key={guide.title}
             padding="lg"
-            className="flex flex-col justify-between space-y-4 border border-border/60 bg-gradient-to-br from-surface to-slate-900/30"
+            className="flex flex-col justify-between space-y-4 border border-border bg-gradient-to-br from-surface to-slate-900/30"
           >
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted/80">
                 Tài liệu nổi bật
               </p>
-              <h2 className="text-2xl font-semibold text-foreground">{guide.title}</h2>
-              <p className="text-sm text-foreground/70">{guide.description}</p>
+              <h2 className="text-2xl font-semibold text-text">{guide.title}</h2>
+              <p className="text-sm text-muted">{guide.description}</p>
             </div>
             <Link href={guide.href}>
               <Button size="sm">{guide.cta}</Button>

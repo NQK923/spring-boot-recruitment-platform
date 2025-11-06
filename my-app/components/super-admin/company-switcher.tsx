@@ -52,7 +52,7 @@ export function SuperAdminCompanySwitcher({
       onChange={handleChange}
       disabled={options.length === 0 || isPending}
       className={cx(
-        "h-10 min-w-[220px] rounded-2xl border border-border/70 bg-surface/98 px-3 text-sm font-semibold text-foreground shadow-[0_6px_18px_rgba(var(--shadow-soft),0.22)] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-60",
+        "h-10 min-w-[220px] rounded-2xl border border-border bg-surface px-3 text-sm font-semibold text-text shadow-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30 disabled:cursor-not-allowed disabled:opacity-60",
         className
       )}
     >

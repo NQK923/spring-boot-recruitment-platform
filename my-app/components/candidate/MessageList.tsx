@@ -108,9 +108,9 @@ export function MessageList({
       aria-label="Lịch sử trò chuyện với trợ lý tuyển dụng"
     >
       {showQuickPrompts ? (
-        <div className="flex h-full flex-col items-center justify-center gap-4 text-center text-sm text-foreground/70">
+        <div className="flex h-full flex-col items-center justify-center gap-4 text-center text-sm text-muted">
           <div className="max-w-xs space-y-1.5">
-            <p className="font-semibold text-foreground">Xin chào! Trợ lý tuyển dụng luôn sẵn sàng.</p>
+            <p className="font-semibold text-text">Xin chào! Trợ lý tuyển dụng luôn sẵn sàng.</p>
             <p>Chọn nhanh một chủ đề bên dưới hoặc đặt câu hỏi riêng của bạn để bắt đầu đối thoại.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
@@ -121,8 +121,8 @@ export function MessageList({
                 onClick={() => sendMessage(item.prompt)}
                 disabled={status === "loading" || status === "streaming"}
                 className={cx(
-                  "cursor-pointer rounded-full border border-border/60 bg-background/80 px-4 py-2 text-xs font-medium text-foreground shadow-sm transition",
-                  "hover:border-[rgb(var(--accent))] hover:bg-[rgba(var(--accent),0.08)] hover:text-[rgb(var(--accent))]",
+                  "cursor-pointer rounded-full border border-border bg-surface px-4 py-2 text-xs font-medium text-text shadow-sm transition",
+                  "hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-accent-600",
                   (status === "loading" || status === "streaming") && "opacity-60"
                 )}
               >
@@ -138,20 +138,20 @@ export function MessageList({
           ))}
           {showTypingDots ? (
             <div className="flex justify-start">
-              <div className="max-w-[75%] rounded-2xl border border-border/60 bg-background/90 px-4 py-2 shadow-[0_10px_24px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+              <div className="max-w-[75%] rounded-2xl border border-border bg-bg/90 px-4 py-2 shadow-lg backdrop-blur-sm">
                 <TypingDots />
               </div>
             </div>
           ) : null}
           {status === "error" && error ? (
-            <p className="text-center text-xs text-red-500">{translateSystemText(error)}</p>
+            <p className="text-center text-xs text-error-600">{translateSystemText(error)}</p>
           ) : null}
           {status === "error" && retryAvailable ? (
             <div className="flex justify-center pt-2">
               <button
                 type="button"
                 onClick={onRetry}
-                className="cursor-pointer rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-[rgba(var(--accent),0.6)] hover:bg-[rgba(var(--accent),0.08)] hover:text-[rgb(var(--accent))]"
+                className="cursor-pointer rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text transition hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-accent-600"
               >
                 Thử lại
               </button>
@@ -171,10 +171,10 @@ function MessageBubble({ message }: { message: ChatMessage }) {
     <div className={cx("flex", isUser ? "justify-end" : "justify-start")}>
       <div
         className={cx(
-          "max-w-[78%] rounded-2xl px-4 py-2 text-sm leading-relaxed shadow-[0_10px_24px_rgba(15,23,42,0.12)]",
+          "max-w-[78%] rounded-2xl px-4 py-2 text-sm leading-relaxed shadow-lg",
           isUser
-            ? "bg-gradient-to-br from-[rgb(var(--accent))] to-[rgba(var(--accent),0.85)] text-white"
-            : "border border-border/60 bg-background/90 backdrop-blur-sm text-foreground"
+            ? "bg-gradient-to-br from-primary-600 to-primary-700 text-white"
+            : "border border-border bg-bg/90 backdrop-blur-sm text-text"
         )}
       >
         <p className="whitespace-pre-wrap break-words">{content}</p>

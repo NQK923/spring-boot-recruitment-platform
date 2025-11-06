@@ -86,23 +86,23 @@ export default async function CandidateProfilePage() {
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-6 py-16">
       <header className="space-y-2">
-        <p className="text-sm font-semibold uppercase tracking-wide text-foreground/50">Candidate</p>
-        <h1 className="text-3xl font-semibold text-foreground">Profile settings</h1>
-        <p className="text-sm text-foreground/60">
+        <p className="text-sm font-semibold uppercase tracking-wide text-text/50">Candidate</p>
+        <h1 className="text-3xl font-semibold text-text">Profile settings</h1>
+        <p className="text-sm text-muted">
           Information saved here powers recruiter dashboards, application cards, and interview briefs.
         </p>
       </header>
 
-      <section className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Personal details</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Personal details</h2>
+          <p className="text-sm text-muted">
             Update your basic profile attributes. These values populate recruiter-facing summaries.
           </p>
         </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <AvatarUploader avatarUrl={profile.avatarUrl} fullName={profile.fullName} />
-          <p className="text-xs text-foreground/50 md:max-w-sm">
+          <p className="text-xs text-text/50 md:max-w-sm">
             This photo appears on your candidate dashboard and any recruiter-facing application cards.
           </p>
         </div>
@@ -113,10 +113,10 @@ export default async function CandidateProfilePage() {
         />
       </section>
 
-      <section className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
         <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold text-foreground">CV management</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">CV management</h2>
+          <p className="text-sm text-muted">
             Upload polished CVs or generate lightweight placeholders to tailor submissions for each role.
           </p>
         </div>
@@ -125,9 +125,9 @@ export default async function CandidateProfilePage() {
           <GenerateCvForm />
         </div>
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-foreground">Existing versions</h3>
+          <h3 className="text-sm font-semibold text-text">Existing versions</h3>
           {cvs.length === 0 ? (
-            <p className="rounded-xl border border-foreground/10 bg-background/60 px-4 py-4 text-sm text-foreground/60">
+            <p className="rounded-xl border border-border bg-bg/60 px-4 py-4 text-sm text-muted">
               No CVs uploaded yet. Add one above to attach it to future applications.
             </p>
           ) : (
@@ -139,25 +139,25 @@ export default async function CandidateProfilePage() {
                 return (
                   <div
                     key={cv.id}
-                    className="flex flex-col gap-2 rounded-xl border border-foreground/10 bg-background/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-2 rounded-xl border border-border bg-bg/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
-                      <p className="font-semibold text-foreground">{cv.versionName}</p>
-                      <p className="text-xs text-foreground/50">
+                      <p className="font-semibold text-text">{cv.versionName}</p>
+                      <p className="text-xs text-text/50">
                         Added {formatDate(cv.createdAt, "Unknown date")} {cv.isDefault ? "(default)" : ""}
                       </p>
                     </div>
                     {downloadHref ? (
                       <a
                         href={downloadHref}
-                        className="text-xs font-semibold text-foreground hover:underline"
+                        className="text-xs font-semibold text-text hover:underline"
                         target="_blank"
                         rel="noreferrer"
                       >
                         Download
                       </a>
                     ) : (
-                      <span className="text-xs text-foreground/50">
+                      <span className="text-xs text-text/50">
                         Generated placeholder - upload an updated version when ready.
                       </span>
                     )}
@@ -169,10 +169,10 @@ export default async function CandidateProfilePage() {
         </div>
       </section>
 
-      <section className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Experience</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Experience</h2>
+          <p className="text-sm text-muted">
             Chronicle the roles that shaped your journey. Add new entries or update existing ones whenever your
             story evolves.
           </p>
@@ -180,20 +180,20 @@ export default async function CandidateProfilePage() {
         <ExperiencesForm experiences={experiences} />
       </section>
 
-      <section className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Education</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Education</h2>
+          <p className="text-sm text-muted">
             Keep your academic background current so recruiters understand your foundation and specialties.
           </p>
         </div>
         <EducationForm education={education} />
       </section>
 
-      <section className="space-y-6 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Skills</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Skills</h2>
+          <p className="text-sm text-muted">
             Spotlight the skills you rely on most. Add hard and soft skills to help recruiters match you quickly.
           </p>
         </div>

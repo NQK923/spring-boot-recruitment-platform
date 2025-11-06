@@ -24,11 +24,11 @@ export function UploadCvForm() {
     <form
       ref={formRef}
       action={formAction}
-      className="space-y-3 rounded-xl border border-foreground/10 bg-background/80 p-4"
+      className="space-y-3 rounded-xl border border-border bg-bg/80 p-4"
       encType="multipart/form-data"
     >
       <div className="grid gap-3 md:grid-cols-[2fr,3fr]">
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
           Version name
           <Input
             name="versionName"
@@ -37,7 +37,7 @@ export function UploadCvForm() {
             required
           />
         </label>
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-foreground/60">
+        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
           Upload file
           <Input name="file" type="file" accept=".pdf,.doc,.docx" disabled={pending} required />
         </label>

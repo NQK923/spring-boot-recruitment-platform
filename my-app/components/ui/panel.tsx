@@ -28,8 +28,8 @@ export function Panel({
     <Component
       id={id}
       className={cx(
-        "relative rounded-2xl border border-border bg-surface shadow-[0_12px_24px_rgba(15,23,42,0.08)] transition-shadow duration-200",
-        variant === "glass" ? "glass-panel" : "bg-surface",
+        "relative rounded-2xl border border-border bg-surface text-text shadow-lg transition-shadow duration-200",
+        variant === "glass" ? "glass-panel" : null,
         paddingMap[padding],
         className
       )}

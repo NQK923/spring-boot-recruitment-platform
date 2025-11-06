@@ -90,8 +90,8 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
             disabled={disabled}
             rows={1}
             className={cx(
-              "w-full resize-none overflow-hidden rounded-2xl border border-transparent bg-background/90 px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-foreground/50",
-              "shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] focus:border-[rgb(var(--accent))] focus:ring-2 focus:ring-[rgb(var(--accent))]/25",
+              "w-full resize-none overflow-hidden rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted",
+              "focus:border-primary-500 focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-bg",
               disabled && "opacity-60"
             )}
             aria-disabled={disabled}
@@ -104,7 +104,7 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
             <button
               type="button"
               onClick={onRetry}
-              className="cursor-pointer rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-[rgba(var(--accent),0.6)] hover:bg-[rgba(var(--accent),0.08)] hover:text-[rgb(var(--accent))]"
+              className="cursor-pointer rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text transition hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-accent-600"
             >
               {RETRY_LABEL[language]}
             </button>
@@ -114,7 +114,7 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
             disabled={!canSend}
             aria-label={SEND_LABEL[language]}
             className={cx(
-              "flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-[rgb(var(--accent))] to-[rgba(var(--accent),0.85)] text-white shadow-[0_12px_24px_rgba(var(--accent),0.3)] transition-transform duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent))]/35",
+              "flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700 text-white shadow-lg transition-transform duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
               canSend ? "hover:scale-105 focus-visible:scale-105" : "opacity-50"
             )}
           >
@@ -122,7 +122,7 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
           </button>
         </div>
       </div>
-      <div className="flex items-center justify-end text-[11px] text-foreground/60">
+      <div className="flex items-center justify-end text-[11px] text-muted">
         <span aria-live="polite">
           {disabled ? "Đang xử lý..." : "\u00A0"}
         </span>

@@ -18,14 +18,14 @@ export function ApplyForm({ jobPostingId }: Props) {
   );
 
   return (
-    <form action={formAction} className="flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-background/70 p-6 shadow-sm">
+    <form action={formAction} className="flex flex-col gap-3 rounded-2xl border border-border bg-bg/70 p-6 shadow-sm">
       <div>
-        <h2 className="text-lg font-semibold text-foreground">Ứng tuyển vị trí này</h2>
-        <p className="text-sm text-foreground/60">
+        <h2 className="text-lg font-semibold text-text">Ứng tuyển vị trí này</h2>
+        <p className="text-sm text-muted">
           Gửi hồ sơ cùng CV mới nhất. Bạn có thể cập nhật lại trong portal ứng viên.
         </p>
       </div>
-      <label className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
+      <label className="text-xs font-semibold uppercase tracking-wide text-muted">
         Mã CV (không bắt buộc)
         <Input
           name="cvId"
@@ -36,7 +36,7 @@ export function ApplyForm({ jobPostingId }: Props) {
           className="mt-1"
         />
       </label>
-      <label className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
+      <label className="text-xs font-semibold uppercase tracking-wide text-muted">
         Nguồn (không bắt buộc)
         <Input
           name="source"

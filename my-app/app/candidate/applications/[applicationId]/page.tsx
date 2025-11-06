@@ -99,91 +99,91 @@ export default async function CandidateApplicationDetailsPage({
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-16">
       <Link
         href={ROUTES.candidatePortal}
-        className="text-sm font-semibold text-foreground/70 hover:text-foreground"
+        className="text-sm font-semibold text-muted hover:text-text"
       >
         Back to applications
       </Link>
 
       <header className="space-y-2">
-        <span className="inline-flex items-center rounded-full bg-foreground/10 px-3 py-1 text-xs font-semibold text-foreground">
+        <span className="inline-flex items-center rounded-full bg-foreground/10 px-3 py-1 text-xs font-semibold text-text">
           {formatStatus(application.status)}
         </span>
-        <h1 className="text-3xl font-semibold text-foreground">
+        <h1 className="text-3xl font-semibold text-text">
           {job?.title ?? `Application #${application.id}`}
         </h1>
-        <p className="text-sm text-foreground/60">
+        <p className="text-sm text-muted">
           Job #{application.jobPostingId} - Applied {formatDate(application.appliedAt, true)}
         </p>
       </header>
 
-      <section className="space-y-4 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
-        <h2 className="text-lg font-semibold text-foreground">Job overview</h2>
-        <p className="whitespace-pre-wrap text-sm text-foreground/70">
+      <section className="space-y-4 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
+        <h2 className="text-lg font-semibold text-text">Job overview</h2>
+        <p className="whitespace-pre-wrap text-sm text-muted">
           {job?.description ??
             "The hiring team is preparing a detailed description, including responsibilities, qualifications, and benefits."}
         </p>
       </section>
 
-      <section className="space-y-4 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
-        <h2 className="text-lg font-semibold text-foreground">Application info</h2>
+      <section className="space-y-4 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
+        <h2 className="text-lg font-semibold text-text">Application info</h2>
         <dl className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <dt className="text-foreground/60">Status</dt>
-            <dd className="font-semibold text-foreground">{formatStatus(application.status)}</dd>
+            <dt className="text-muted">Status</dt>
+            <dd className="font-semibold text-text">{formatStatus(application.status)}</dd>
           </div>
           <div>
-            <dt className="text-foreground/60">Applied on</dt>
-            <dd className="font-semibold text-foreground">{formatDate(application.appliedAt, true)}</dd>
+            <dt className="text-muted">Applied on</dt>
+            <dd className="font-semibold text-text">{formatDate(application.appliedAt, true)}</dd>
           </div>
           <div>
-            <dt className="text-foreground/60">CV reference</dt>
-            <dd className="font-semibold text-foreground">{application.cvId ?? "N/A"}</dd>
+            <dt className="text-muted">CV reference</dt>
+            <dd className="font-semibold text-text">{application.cvId ?? "N/A"}</dd>
           </div>
           <div>
-            <dt className="text-foreground/60">Source</dt>
-            <dd className="font-semibold text-foreground">{application.source ?? "N/A"}</dd>
+            <dt className="text-muted">Source</dt>
+            <dd className="font-semibold text-text">{application.source ?? "N/A"}</dd>
           </div>
           <div>
-            <dt className="text-foreground/60">Owner</dt>
-            <dd className="font-semibold text-foreground">{application.ownerUserId ?? "Unassigned"}</dd>
+            <dt className="text-muted">Owner</dt>
+            <dd className="font-semibold text-text">{application.ownerUserId ?? "Unassigned"}</dd>
           </div>
           <div>
-            <dt className="text-foreground/60">Candidate name</dt>
-            <dd className="font-semibold text-foreground">
+            <dt className="text-muted">Candidate name</dt>
+            <dd className="font-semibold text-text">
               {application.candidateName ?? `Candidate #${application.candidateId}`}
             </dd>
           </div>
         </dl>
       </section>
 
-      <section className="space-y-4 rounded-2xl border border-foreground/10 bg-background/70 p-8 shadow-sm">
-        <h2 className="text-lg font-semibold text-foreground">Interviews</h2>
+      <section className="space-y-4 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
+        <h2 className="text-lg font-semibold text-text">Interviews</h2>
         {interviews.length === 0 ? (
-          <p className="text-sm text-foreground/60">
+          <p className="text-sm text-muted">
             No interviews scheduled yet. You will receive an email when a recruiter sets one up.
           </p>
         ) : (
           <div className="space-y-3 text-sm">
             {interviews.map((interview) => (
-              <div key={interview.id} className="rounded-xl border border-foreground/10 px-4 py-3">
+              <div key={interview.id} className="rounded-xl border border-border px-4 py-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-foreground">
+                  <span className="font-medium text-text">
                     {formatDate(interview.scheduleTime, true)}
                   </span>
-                  <span className="text-xs text-foreground/60">{interview.format ?? "Format TBD"}</span>
+                  <span className="text-xs text-muted">{interview.format ?? "Format TBD"}</span>
                 </div>
-                <p className="text-xs text-foreground/50">
+                <p className="text-xs text-text/50">
                   {interview.locationOrLink ? interview.locationOrLink : "Location or link will be shared"}
                 </p>
                 {interview.outcome ? (
-                  <p className="mt-1 text-xs text-foreground/50">Outcome: {interview.outcome}</p>
+                  <p className="mt-1 text-xs text-text/50">Outcome: {interview.outcome}</p>
                 ) : null}
               </div>
             ))}
           </div>
         )}
         {calendarHref ? (
-          <Link href={calendarHref} className="text-sm font-semibold text-foreground hover:underline">
+          <Link href={calendarHref} className="text-sm font-semibold text-text hover:underline">
             Download interview calendar (.ics)
           </Link>
         ) : null}

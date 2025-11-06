@@ -102,8 +102,8 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
             <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
               Khám phá cơ hội mới
             </span>
-            <h1 className="mt-2 text-3xl font-semibold text-foreground sm:text-4xl">Các vị trí đang tuyển</h1>
-            <p className="mt-2 max-w-2xl text-sm text-foreground/70">
+            <h1 className="mt-2 text-3xl font-semibold text-text sm:text-4xl">Các vị trí đang tuyển</h1>
+            <p className="mt-2 max-w-2xl text-sm text-muted">
               Duyệt các cơ hội tuyển dụng từ những đội ngũ đang sử dụng Talentflow. Bản tin được cập nhật liên tục khi nhà tuyển dụng thay đổi yêu cầu, địa điểm hay mức lương, giúp bạn luôn thấy thông tin mới nhất.
             </p>
           </div>
@@ -113,14 +113,14 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
             </Button>
           </Link>
         </div>
-        <div className="flex flex-wrap gap-3 text-xs text-foreground/60">
-          <span className="rounded-full border border-foreground/10 px-3 py-1">
+        <div className="flex flex-wrap gap-3 text-xs text-muted">
+          <span className="rounded-full border border-border px-3 py-1">
             Vị trí mới được bổ sung hằng tuần
           </span>
-          <span className="rounded-full border border-foreground/10 px-3 py-1">
+          <span className="rounded-full border border-border px-3 py-1">
             Ghi chú từ nhà tuyển dụng được chia sẻ minh bạch
           </span>
-          <span className="rounded-full border border-foreground/10 px-3 py-1">
+          <span className="rounded-full border border-border px-3 py-1">
             Theo dõi đơn ứng tuyển với cảnh báo trạng thái
           </span>
         </div>

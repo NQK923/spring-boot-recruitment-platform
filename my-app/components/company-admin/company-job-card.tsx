@@ -8,10 +8,10 @@ import { UpdateJobForm } from "@/components/jobs/update-job-form";
 import type { JobPosting, JobPosition } from "@/lib/types";
 
 const JOB_STATUS_PILLS: Record<JobPosting["status"], string> = {
-  DRAFT: "border border-foreground/15 bg-surface/80 text-foreground/65",
-  PUBLISHED: "border border-accent/25 bg-accent/10 text-accent",
-  PAUSED: "border border-foreground/15 bg-foreground/10 text-foreground/70",
-  CLOSED: "border border-foreground/20 bg-foreground/5 text-foreground/60",
+  DRAFT: "border border-foreground/15 bg-surface/80 text-text/65",
+  PUBLISHED: "border border-accent/25 bg-primary-600/10 text-primary-600",
+  PAUSED: "border border-foreground/15 bg-foreground/10 text-muted",
+  CLOSED: "border border-border bg-foreground/5 text-muted",
 };
 
 const STATUS_LABELS: Record<JobPosting["status"], string> = {
@@ -53,16 +53,16 @@ export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
   const pillClass = JOB_STATUS_PILLS[job.status ?? "DRAFT"] ?? JOB_STATUS_PILLS.DRAFT;
 
   return (
-    <div className="space-y-4 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 shadow-[0_12px_26px_rgba(15,23,42,0.08)] transition hover:border-accent/30 hover:shadow-[0_20px_40px_rgba(15,23,42,0.12)]">
+    <div className="space-y-4 rounded-2xl border border-border bg-surface px-5 py-4 shadow-lg transition hover:border-accent/30 hover:shadow-lg">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-sm font-semibold text-foreground sm:text-base">{job.title}</p>
+            <p className="text-sm font-semibold text-text sm:text-base">{job.title}</p>
             <span className={["inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize", pillClass].join(" ")}>
               {formatStatusLabel(job.status ?? "DRAFT")}
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/60">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
             {job.jobPosition?.department ? <span>{job.jobPosition.department}</span> : null}
             {job.location ? (
               <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-foreground/40">
@@ -75,24 +75,24 @@ export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
               </span>
             ) : null}
           </div>
-          <p className="text-xs text-foreground/60">
+          <p className="text-xs text-muted">
             Tạo lúc {formatTimestamp(job.createdAt)} · Cập nhật {formatTimestamp(job.updatedAt)}
           </p>
         </div>
         <div className="flex flex-col items-end gap-2 text-xs">
           <Link
             href={`${ROUTES.jobs}/${job.id}`}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-accent transition hover:text-foreground"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 transition hover:text-text"
           >
             Xem bài tuyển dụng
             <span aria-hidden>↗</span>
           </Link>
           {job.recruiterId ? (
-            <span className="rounded-full border border-foreground/10 bg-surface px-2 py-1 text-[11px] uppercase tracking-[0.2em] text-foreground/60">
+            <span className="rounded-full border border-border bg-surface px-2 py-1 text-[11px] uppercase tracking-[0.2em] text-muted">
               Phụ trách #{job.recruiterId}
             </span>
           ) : (
-            <span className="rounded-full border border-accent/25 bg-accent/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-accent">
+            <span className="rounded-full border border-accent/25 bg-primary-600/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-600">
               Chưa có phụ trách
             </span>
           )}
@@ -100,11 +100,11 @@ export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
       </div>
 
       {job.description ? (
-        <p className="text-xs text-foreground/65">{job.description}</p>
+        <p className="text-xs text-text/65">{job.description}</p>
       ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-foreground/50">
+        <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-text/50">
           {job.salaryRange ? <span>{job.salaryRange}</span> : null}
           {job.jobPosition?.title ? (
             <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-foreground/40">
@@ -123,7 +123,7 @@ export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
       </div>
 
       {editing ? (
-        <div className="border-t border-foreground/10 pt-4">
+        <div className="border-t border-border pt-4">
           <UpdateJobForm job={job} positions={positions} />
         </div>
       ) : null}

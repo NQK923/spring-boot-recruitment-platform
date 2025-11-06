@@ -20,7 +20,7 @@ export function AccountMenu() {
     <button
       type="button"
       onClick={handleLogout}
-      className="inline-flex h-9 items-center justify-center rounded-full border border-foreground/30 bg-surface px-4 text-sm font-medium text-foreground/80 transition hover:border-foreground/45 hover:text-foreground hover:shadow-md disabled:pointer-events-none disabled:opacity-50"
+      className="inline-flex h-9 items-center justify-center rounded-full border border-foreground/30 bg-surface px-4 text-sm font-medium text-text/80 transition hover:border-foreground/45 hover:text-text hover:shadow-md disabled:pointer-events-none disabled:opacity-50"
       disabled={pending}
     >
       {pending ? "Đang đăng xuất..." : "Đăng xuất"}

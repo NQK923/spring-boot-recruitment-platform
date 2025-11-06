@@ -67,19 +67,19 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
   return (
     <form className="space-y-6" action={formAction}>
       <input type="hidden" name="token" value={token} />
-      <div className="rounded-2xl border border-border/70 bg-surface-muted/60 px-4 py-4 text-sm text-foreground/75">
+      <div className="rounded-2xl border border-border bg-surface/60 px-4 py-4 text-sm text-muted">
         <p>
           Bạn sẽ tham gia Talentflow với vai trò{" "}
-          <span className="font-semibold text-foreground">{roleLabel}</span> bằng email{" "}
-          <span className="font-semibold text-foreground">{email}</span>.
+          <span className="font-semibold text-text">{roleLabel}</span> bằng email{" "}
+          <span className="font-semibold text-text">{email}</span>.
         </p>
         {formattedExpiry ? (
-          <p className="mt-2 text-foreground/60">Lời mời sẽ hết hạn vào {formattedExpiry}.</p>
+          <p className="mt-2 text-muted">Lời mời sẽ hết hạn vào {formattedExpiry}.</p>
         ) : null}
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-foreground" htmlFor="password">
+        <label className="text-sm font-semibold text-text" htmlFor="password">
           Tạo mật khẩu
         </label>
         <Input
@@ -94,7 +94,7 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-foreground" htmlFor="confirmPassword">
+        <label className="text-sm font-semibold text-text" htmlFor="confirmPassword">
           Xác nhận mật khẩu
         </label>
         <Input
@@ -118,9 +118,9 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
         {pending ? "Đang kích hoạt tài khoản..." : "Kích hoạt tài khoản"}
       </Button>
 
-      <p className="text-center text-xs text-foreground/50">
+      <p className="text-center text-xs text-text/50">
         Cần hỗ trợ? Liên hệ{" "}
-        <Link className="font-medium text-foreground hover:underline" href="mailto:support@talentflow.app">
+        <Link className="font-medium text-text hover:underline" href="mailto:support@talentflow.app">
           support@talentflow.app
         </Link>{" "}
         hoặc quản trị viên công ty của bạn.

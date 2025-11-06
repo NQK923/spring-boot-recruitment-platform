@@ -57,10 +57,10 @@ export default function AdminDocsPage() {
           <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
             Sổ tay quản trị viên
           </span>
-          <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
+          <h1 className="text-3xl font-semibold text-text sm:text-4xl">
             Vận hành Talentflow an toàn và ở quy mô lớn.
           </h1>
-          <p className="max-w-3xl text-sm text-foreground/70">
+          <p className="max-w-3xl text-sm text-muted">
             Quản trị viên chịu trách nhiệm quản lý tenant, onboarding và giữ môi trường vận hành sạch. Hãy sử dụng sổ
             tay này mỗi ngày và cập nhật khi quy trình nội bộ thay đổi.
           </p>
@@ -80,8 +80,8 @@ export default function AdminDocsPage() {
       <section id="workspace-preparation">
         <Panel padding="lg" className="space-y-6">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Checklist triển khai</h2>
-            <p className="text-sm text-foreground/60">
+            <h2 className="text-lg font-semibold text-text">Checklist triển khai</h2>
+            <p className="text-sm text-muted">
               Hoàn thành những bước này trước khi mời nhà tuyển dụng hoặc ứng viên vào nền tảng.
             </p>
           </div>
@@ -89,10 +89,10 @@ export default function AdminDocsPage() {
             {checklist.map((section) => (
               <div
                 key={section.title}
-                className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5"
+                className="space-y-3 rounded-2xl border border-border bg-surface p-5"
               >
-                <h3 className="text-sm font-semibold text-foreground">{section.title}</h3>
-                <ul className="space-y-2 text-sm text-foreground/70">
+                <h3 className="text-sm font-semibold text-text">{section.title}</h3>
+                <ul className="space-y-2 text-sm text-muted">
                   {section.items.map((item) => (
                     <li key={item}>- {item}</li>
                   ))}
@@ -106,29 +106,29 @@ export default function AdminDocsPage() {
       <section id="access">
         <Panel padding="lg" className="space-y-5">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Truy cập & tuân thủ</h2>
-            <p className="text-sm text-foreground/60">
+            <h2 className="text-lg font-semibold text-text">Truy cập & tuân thủ</h2>
+            <p className="text-sm text-muted">
               Rà soát định kỳ để đảm bảo mọi người giữ đúng quyền truy cập và nhật ký luôn sạch.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Vệ sinh phân quyền (hằng tuần)</h3>
-              <p className="text-sm text-foreground/70">
+            <div className="space-y-2 rounded-2xl border border-border bg-surface p-5">
+              <h3 className="text-sm font-semibold text-text">Vệ sinh phân quyền (hằng tuần)</h3>
+              <p className="text-sm text-muted">
                 Xuất danh sách người dùng trong phần quản trị. Thu hồi quyền với các thành viên đã nghỉ việc hoặc đổi
                 nhiệm vụ.
               </p>
             </div>
-            <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Theo dõi nhật ký (hằng tháng)</h3>
-              <p className="text-sm text-foreground/70">
+            <div className="space-y-2 rounded-2xl border border-border bg-surface p-5">
+              <h3 className="text-sm font-semibold text-text">Theo dõi nhật ký (hằng tháng)</h3>
+              <p className="text-sm text-muted">
                 Rà soát các lần đổi trạng thái ứng tuyển và chắc chắn rằng ghi chú thể hiện rõ quyết định và phê duyệt.
               </p>
             </div>
           </div>
-          <div className="space-y-2 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-            <h3 className="text-sm font-semibold text-foreground">Lưu trữ dữ liệu</h3>
-            <p className="text-sm text-foreground/70">
+          <div className="space-y-2 rounded-2xl border border-border bg-surface p-5">
+            <h3 className="text-sm font-semibold text-text">Lưu trữ dữ liệu</h3>
+            <p className="text-sm text-muted">
               Thiết lập tự động xóa lời mời hết hạn, mã đặt lại mật khẩu và hồ sơ đã lưu trữ theo chính sách công ty.
             </p>
           </div>
@@ -138,8 +138,8 @@ export default function AdminDocsPage() {
       <section id="support">
         <Panel padding="lg" className="space-y-5">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Ma trận hỗ trợ</h2>
-            <p className="text-sm text-foreground/60">
+            <h2 className="text-lg font-semibold text-text">Ma trận hỗ trợ</h2>
+            <p className="text-sm text-muted">
               Sử dụng bảng sau khi bạn gặp sự cố nền tảng hoặc cần phối hợp cùng đội khác.
             </p>
           </div>
@@ -147,15 +147,15 @@ export default function AdminDocsPage() {
             {escalations.map((entry) => (
               <div
                 key={entry.label}
-                className="flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
-                  <p className="text-sm font-semibold text-foreground">{entry.label}</p>
-                  <p className="text-xs text-foreground/60">{entry.description}</p>
+                  <p className="text-sm font-semibold text-text">{entry.label}</p>
+                  <p className="text-xs text-muted">{entry.description}</p>
                 </div>
                 <a
                   href={`mailto:${entry.contact}`}
-                  className="text-xs font-semibold text-accent transition hover:text-foreground"
+                  className="text-xs font-semibold text-primary-600 transition hover:text-text"
                 >
                   {entry.contact}
                 </a>
@@ -168,24 +168,24 @@ export default function AdminDocsPage() {
       <section id="templates">
         <Panel padding="lg" className="space-y-6">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Mẫu liên lạc</h2>
-            <p className="text-sm text-foreground/60">
+            <h2 className="text-lg font-semibold text-text">Mẫu liên lạc</h2>
+            <p className="text-sm text-muted">
               Những đoạn văn bản sẵn sàng gửi cho các tình huống mời tham gia và nhắc nhở phổ biến nhất.
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            <div id="invites" className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Email mời tham gia</h3>
-              <ul className="space-y-2 text-sm text-foreground/70">
+            <div id="invites" className="space-y-3 rounded-2xl border border-border bg-surface p-5">
+              <h3 className="text-sm font-semibold text-text">Email mời tham gia</h3>
+              <ul className="space-y-2 text-sm text-muted">
                 <li>- Tiêu đề: &#34;Mời bạn tham gia Talentflow&#34;</li>
                 <li>- Nhắc lại ai đã mời và lý do cụ thể.</li>
                 <li>- Một câu giải thích điều gì xảy ra sau khi chấp nhận.</li>
                 <li>- Nút liên kết tới URL lời mời kèm ngày hết hạn.</li>
               </ul>
             </div>
-            <div id="reminders" className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Thông báo nhắc nhở</h3>
-              <ul className="space-y-2 text-sm text-foreground/70">
+            <div id="reminders" className="space-y-3 rounded-2xl border border-border bg-surface p-5">
+              <h3 className="text-sm font-semibold text-text">Thông báo nhắc nhở</h3>
+              <ul className="space-y-2 text-sm text-muted">
                 <li>- Gửi lời nhắc thân thiện trước 48 giờ khi lời mời sắp hết hạn.</li>
                 <li>- Đính kèm thông tin liên hệ nếu họ cần hỗ trợ đăng nhập.</li>
                 <li>- Đề nghị gửi lại lời mời nếu liên kết đã hết hạn.</li>
@@ -199,22 +199,22 @@ export default function AdminDocsPage() {
       <section id="troubleshooting">
         <Panel padding="lg" className="space-y-5">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Mẹo xử lý nhanh</h2>
-            <p className="text-sm text-foreground/60">
+            <h2 className="text-lg font-semibold text-text">Mẹo xử lý nhanh</h2>
+            <p className="text-sm text-muted">
               Bắt đầu với những bước này trước khi nhờ tới đội kỹ thuật.
             </p>
           </div>
-          <ul className="space-y-3 text-sm text-foreground/70">
+          <ul className="space-y-3 text-sm text-muted">
             <li>
-              - <strong className="text-foreground">Sự cố đăng nhập</strong>: kiểm tra thành viên đã chấp nhận lời mời
+              - <strong className="text-text">Sự cố đăng nhập</strong>: kiểm tra thành viên đã chấp nhận lời mời
               hay chưa hoặc gửi yêu cầu đặt lại mật khẩu từ trang đăng nhập.
             </li>
             <li>
-              - <strong className="text-foreground">Thiếu bối cảnh công ty</strong>: đảm bảo thành viên đã được gán vào
+              - <strong className="text-text">Thiếu bối cảnh công ty</strong>: đảm bảo thành viên đã được gán vào
               đúng công ty và vai trò trong mục quản trị.
             </li>
             <li>
-              - <strong className="text-foreground">Thông báo đến chậm</strong>: xác nhận địa chỉ người gửi đã được
+              - <strong className="text-text">Thông báo đến chậm</strong>: xác nhận địa chỉ người gửi đã được
               xác thực và nhắc thành viên kiểm tra thư mục spam trước khi leo thang.
             </li>
           </ul>

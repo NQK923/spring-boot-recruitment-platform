@@ -44,8 +44,8 @@ export default async function SuperAdminUsersPage({ searchParams }: SuperAdminUs
     return (
       <Container className="py-10">
         <Panel className="space-y-4" padding="lg">
-          <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Quản lý người dùng</h1>
-          <p className="text-sm text-foreground/60">
+          <h1 className="text-2xl font-semibold text-text sm:text-3xl">Quản lý người dùng</h1>
+          <p className="text-sm text-muted">
             Hãy tạo tenant công ty trước, sau đó bạn có thể mời quản trị viên và nhà tuyển dụng quản lý pipeline.
           </p>
         </Panel>
@@ -67,8 +67,8 @@ export default async function SuperAdminUsersPage({ searchParams }: SuperAdminUs
       <Panel className="space-y-6" padding="lg">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Quản lý người dùng</h1>
-            <p className="mt-2 text-sm text-foreground/60">
+            <h1 className="text-2xl font-semibold text-text sm:text-3xl">Quản lý người dùng</h1>
+            <p className="mt-2 text-sm text-muted">
               Khóa hoặc mở khóa quyền truy cập của quản trị viên và nhà tuyển dụng trên mọi tenant.
             </p>
           </div>
@@ -78,18 +78,18 @@ export default async function SuperAdminUsersPage({ searchParams }: SuperAdminUs
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-foreground/50">
-          <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">{selectedCompany.name}</span>
+        <div className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-text/50">
+          <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">{selectedCompany.name}</span>
           <span className={`rounded-full px-2 py-1 ${statusClass(selectedCompany.status)}`}>
             {statusLabel(selectedCompany.status)}
           </span>
-          <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">
+          <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">
             {numberFormatter.format(users.length)} thành viên
           </span>
-          <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">
+          <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">
             {numberFormatter.format(activeUsers)} đang hoạt động
           </span>
-          <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">
+          <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">
             {numberFormatter.format(lockedUsers)} bị khóa
           </span>
         </div>
@@ -97,8 +97,8 @@ export default async function SuperAdminUsersPage({ searchParams }: SuperAdminUs
 
       <Panel className="space-y-6" padding="lg">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Danh sách thành viên</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-xl font-semibold text-text">Danh sách thành viên</h2>
+          <p className="text-sm text-muted">
             Đảm bảo quyền truy cập phù hợp với kỳ vọng của công ty. Tài khoản bị khóa sẽ không đăng nhập được cho tới khi bạn mở lại.
           </p>
         </div>

@@ -32,7 +32,7 @@ export function UpdateProfileForm({ fullName, phoneNumber, summary }: Props) {
   return (
     <form action={formAction} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
-        <label className="flex flex-col gap-1 text-sm text-foreground/80">
+        <label className="flex flex-col gap-1 text-sm text-text/80">
           Full name
           <Input
             name="fullName"
@@ -41,7 +41,7 @@ export function UpdateProfileForm({ fullName, phoneNumber, summary }: Props) {
             disabled={pending}
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-foreground/80">
+        <label className="flex flex-col gap-1 text-sm text-text/80">
           Phone number
           <Input
             name="phoneNumber"
@@ -51,7 +51,7 @@ export function UpdateProfileForm({ fullName, phoneNumber, summary }: Props) {
           />
         </label>
       </div>
-      <label className="flex flex-col gap-1 text-sm text-foreground/80">
+      <label className="flex flex-col gap-1 text-sm text-text/80">
         Summary
         <textarea
           name="summary"
@@ -59,7 +59,7 @@ export function UpdateProfileForm({ fullName, phoneNumber, summary }: Props) {
           placeholder="Share a short bio so recruiters know what motivates you."
           disabled={pending}
           rows={4}
-          className="min-h-[120px] rounded-xl border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-foreground/40 focus:ring-0"
+          className="min-h-[120px] rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
         />
       </label>
       {state?.error ? (

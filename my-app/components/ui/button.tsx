@@ -8,14 +8,14 @@ type Size = "sm" | "md" | "lg";
 function variantClasses(variant: Variant) {
   switch (variant) {
     case "secondary":
-      return "border border-border bg-surface-muted text-foreground hover:bg-surface hover:text-foreground hover:shadow-[0_10px_20px_rgba(15,23,42,0.1)]";
+      return "border border-border bg-surface text-text shadow-sm hover:bg-primary-50 hover:text-text";
     case "ghost":
-      return "border border-border/60 bg-transparent text-foreground/75 hover:border-border/70 hover:text-foreground";
+      return "text-primary-600 hover:bg-primary-50 dark:hover:bg-surface/10";
     case "outline":
-      return "border border-border bg-transparent text-foreground hover:border-foreground/30 hover:bg-surface/90";
+      return "border border-border text-text hover:bg-primary-50 dark:hover:bg-surface/10";
     case "primary":
     default:
-      return "bg-[rgb(var(--accent))] text-white shadow-[0_10px_24px_rgba(15,23,42,0.18)] hover:bg-[rgba(var(--accent),0.9)]";
+      return "bg-primary-600 text-white shadow-sm hover:bg-primary-700";
   }
 }
 
@@ -47,7 +47,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseClasses = cx(
-    "inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
+    "inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-50",
     variantClasses(variant),
     sizeClasses(size)
   );

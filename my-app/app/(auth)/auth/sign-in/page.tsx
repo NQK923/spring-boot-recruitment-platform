@@ -54,8 +54,8 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   return (
     <div className="space-y-6">
       <header className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold text-foreground">Đăng nhập</h1>
-        <p className="text-sm text-foreground/65">
+        <h1 className="text-2xl font-semibold text-text">Đăng nhập</h1>
+        <p className="text-sm text-text/65">
           Nhập thông tin để truy cập workspace tuyển dụng của bạn.
         </p>
       </header>
@@ -74,7 +74,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
 
       <div className="space-y-5">
         <SocialSignIn nextPath={safeNext} initialError={socialError} />
-        <div className="flex items-center gap-3 text-xs text-foreground/50">
+        <div className="flex items-center gap-3 text-xs text-text/50">
           <span className="h-px flex-1 bg-foreground/15" />
           <span>Hoặc tiếp tục bằng email</span>
           <span className="h-px flex-1 bg-foreground/15" />

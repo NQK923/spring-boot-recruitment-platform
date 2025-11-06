@@ -15,7 +15,7 @@ export function RegisterForm() {
   return (
     <form className="space-y-5" action={formAction}>
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-foreground" htmlFor="email">
+        <label className="text-sm font-semibold text-text" htmlFor="email">
           Địa chỉ email
         </label>
         <Input
@@ -28,7 +28,7 @@ export function RegisterForm() {
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-foreground" htmlFor="password">
+        <label className="text-sm font-semibold text-text" htmlFor="password">
           Mật khẩu
         </label>
         <Input
@@ -48,9 +48,9 @@ export function RegisterForm() {
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
         {pending ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
       </Button>
-      <div className="text-center text-sm text-foreground/60">
+      <div className="text-center text-sm text-muted">
         Đã có tài khoản?{" "}
-        <Link className="font-medium text-foreground hover:underline" href={ROUTES.signIn}>
+        <Link className="font-medium text-text hover:underline" href={ROUTES.signIn}>
           Đăng nhập
         </Link>
       </div>

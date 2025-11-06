@@ -13,7 +13,7 @@ export function ForgotPasswordForm() {
   return (
     <form className="space-y-5" action={formAction}>
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-foreground" htmlFor="email">
+        <label className="text-sm font-semibold text-text" htmlFor="email">
           Địa chỉ email
         </label>
         <Input
@@ -24,7 +24,7 @@ export function ForgotPasswordForm() {
           autoComplete="email"
           required
         />
-        <p className="text-xs text-foreground/55">
+        <p className="text-xs text-text/55">
           Chúng tôi sẽ gửi mã gồm sáu chữ số tới email này nếu tài khoản được xác minh.
         </p>
       </div>

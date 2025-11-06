@@ -101,7 +101,7 @@ export function DebouncedSearchInput({
   return (
     <div
       className={cx(
-        "flex flex-wrap items-center gap-3 rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3",
+        "flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3",
         className
       )}
     >
@@ -111,7 +111,7 @@ export function DebouncedSearchInput({
         onChange={handleChange}
         placeholder={placeholder}
         className={cx(
-          "flex-1 min-w-[220px] rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none transition focus:border-foreground/40",
+          "flex-1 min-w-[220px] rounded-lg border border-border bg-bg px-3 py-2 text-sm outline-none transition focus:border-foreground/40",
           inputClassName
         )}
       />
@@ -128,7 +128,7 @@ export function DebouncedSearchInput({
         <button
           type="button"
           onClick={handleClear}
-          className="text-sm font-semibold text-foreground transition hover:text-accent"
+          className="text-sm font-semibold text-text transition hover:text-primary-700"
         >
           {clearLabel}
         </button>

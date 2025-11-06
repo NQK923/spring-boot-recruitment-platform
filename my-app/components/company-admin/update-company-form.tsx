@@ -22,7 +22,7 @@ export function UpdateCompanyForm({ profile }: { profile: CompanyProfile }) {
   return (
     <form className="space-y-4 text-sm" action={formAction}>
       <div className="space-y-2">
-        <label htmlFor="company-name" className="font-semibold text-foreground">
+        <label htmlFor="company-name" className="font-semibold text-text">
           Tên công ty
         </label>
         <Input
@@ -34,7 +34,7 @@ export function UpdateCompanyForm({ profile }: { profile: CompanyProfile }) {
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="company-website" className="font-semibold text-foreground">
+        <label htmlFor="company-website" className="font-semibold text-text">
           Website
         </label>
         <Input
@@ -45,7 +45,7 @@ export function UpdateCompanyForm({ profile }: { profile: CompanyProfile }) {
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="company-logo" className="font-semibold text-foreground">
+        <label htmlFor="company-logo" className="font-semibold text-text">
           URL logo
         </label>
         <Input
@@ -56,7 +56,7 @@ export function UpdateCompanyForm({ profile }: { profile: CompanyProfile }) {
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="company-size" className="font-semibold text-foreground">
+        <label htmlFor="company-size" className="font-semibold text-text">
           Quy mô công ty
         </label>
         <Input
@@ -67,7 +67,7 @@ export function UpdateCompanyForm({ profile }: { profile: CompanyProfile }) {
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="company-address" className="font-semibold text-foreground">
+        <label htmlFor="company-address" className="font-semibold text-text">
           Trụ sở / địa chỉ chính
         </label>
         <textarea
@@ -75,11 +75,11 @@ export function UpdateCompanyForm({ profile }: { profile: CompanyProfile }) {
           name="companyAddress"
           defaultValue={profile.companyAddress ?? ""}
           placeholder="123 Nguyen Trai, District 1, Ho Chi Minh City"
-          className="min-h-[72px] w-full rounded-2xl border border-border/70 bg-surface/98 px-4 py-3 text-sm text-foreground shadow-[0_6px_18px_rgba(var(--shadow-soft),0.22)] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+          className="min-h-[72px] w-full rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-text shadow-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="company-description" className="font-semibold text-foreground">
+        <label htmlFor="company-description" className="font-semibold text-text">
           Mô tả
         </label>
         <textarea
@@ -87,7 +87,7 @@ export function UpdateCompanyForm({ profile }: { profile: CompanyProfile }) {
           name="description"
           defaultValue={profile.description ?? ""}
           placeholder="Chia sẻ phần giới thiệu ngắn để hiển thị trên bài tuyển dụng và dashboard nội bộ."
-          className="min-h-[96px] w-full rounded-2xl border border-border/70 bg-surface/98 px-4 py-3 text-sm text-foreground shadow-[0_6px_18px_rgba(var(--shadow-soft),0.22)] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+          className="min-h-[96px] w-full rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-text shadow-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
         />
       </div>
       {state?.error ? (

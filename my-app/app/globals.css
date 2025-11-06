@@ -4,90 +4,86 @@
   color-scheme: light;
 }
 
-:root,
 :root[data-theme="light"] {
-  --background: 248 249 255;
-  --foreground: 26 32 54;
-  --muted: 128 137 170;
-  --accent: 68 104 255;
-  --accent-soft: 225 232 255;
-  --surface: 255 255 255;
-  --surface-muted: 240 243 255;
-  --border: 217 223 241;
-  --border-strong: 198 206 231;
-  --ring: 68 104 255;
-  --shadow-soft: 32 42 78;
-  --shadow-strong: 18 24 56;
-  --brand-gradient: linear-gradient(135deg, rgba(82, 120, 254, 1) 0%, rgba(110, 140, 255, 0.96) 50%, rgba(178, 188, 255, 0.94) 100%);
-  --brand-text: 255 255 255;
-  --brand-border: 64 84 198;
+  /* Neutral */
+  --bg: #F7FAF8;
+  --surface: #FFFFFF;
+  --text: #1F2937;
+  --text-muted: #64748B;
+  --border: #E6E9E7;
+
+  /* Primary (Green) */
+  --primary-50: #ECFDF5;
+  --primary-100: #D1FAE5;
+  --primary-200: #A7F3D0;
+  --primary-300: #6EE7B7;
+  --primary-400: #34D399;
+  --primary-500: #10B981;
+  --primary-600: #059669;
+  --primary-700: #047857;
+
+  /* Accent (Teal) */
+  --accent-500: #14B8A6;
+  --accent-600: #0D9488;
+
+  /* Semantic */
+  --success-500: #22C55E;
+  --success-600: #16A34A;
+  --warning-500: #F59E0B;
+  --warning-600: #D97706;
+  --error-500: #F43F5E;
+  --error-600: #DC2626;
+  --info-500: #38BDF8;
+  --info-600: #0EA5E9;
+
+  /* Focus ring */
+  --focus: #7DD3FC;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --background: 14 16 26;
-  --foreground: 226 232 255;
-  --muted: 152 162 206;
-  --accent: 118 148 255;
-  --accent-soft: 54 70 144;
-  --surface: 24 28 44;
-  --surface-muted: 30 34 48;
-  --border: 50 58 86;
-  --border-strong: 66 76 110;
-  --ring: 108 130 240;
-  --shadow-soft: 12 14 32;
-  --shadow-strong: 6 8 20;
-  --brand-gradient: linear-gradient(135deg, rgba(120, 150, 255, 0.95) 0%, rgba(158, 176, 255, 0.92) 55%, rgba(196, 172, 255, 0.9) 100%);
-  --brand-text: 16 22 40;
-  --brand-border: 180 200 255;
-}
 
-@theme inline {
-  --color-background: rgb(var(--background));
-  --color-foreground: rgb(var(--foreground));
-  --color-muted: rgb(var(--muted));
-  --color-accent: rgb(var(--accent));
-  --color-accent-soft: rgb(var(--accent-soft));
-  --color-surface: rgb(var(--surface));
-  --color-surface-muted: rgb(var(--surface-muted));
-  --color-border: rgb(var(--border));
-  --color-ring: rgb(var(--ring));
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Neutral */
+  --bg: #0D1612;
+  --surface: #111C17;
+  --text: #E6F2EC;
+  --text-muted: #A7B8B1;
+  --border: #1C2A24;
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --background: 14 16 26;
-    --foreground: 226 232 255;
-    --muted: 152 162 206;
-    --accent: 118 148 255;
-    --accent-soft: 54 70 144;
-    --surface: 24 28 44;
-    --surface-muted: 30 34 48;
-    --border: 50 58 86;
-    --border-strong: 66 76 110;
-    --ring: 108 130 240;
-    --shadow-soft: 12 14 32;
-    --shadow-strong: 6 8 20;
-  }
+  /* Primary (Green giảm bão hòa/sáng) */
+  --primary-500: #34D399;
+  --primary-600: #10B981;
+  --primary-700: #0EA36F;
+
+  /* Accent (Teal) */
+  --accent-500: #2DD4BF;
+  --accent-600: #14B8A6;
+
+  /* Semantic */
+  --success-500: #22C55E;
+  --success-600: #16A34A;
+  --warning-500: #F59E0B;
+  --warning-600: #D97706;
+  --error-500: #F43F5E;
+  --error-600: #DC2626;
+  --info-500: #38BDF8;
+  --info-600: #0EA5E9;
+
+  /* Focus ring */
+  --focus: #60A5FA;
 }
 
 html {
-  background-color: rgb(var(--background));
+  background-color: var(--bg);
 }
 
 body {
   min-height: 100vh;
   font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background-color: rgb(var(--background));
-  background-image:
-    radial-gradient(520px 520px at 12% -12%, rgba(var(--accent-soft), 0.42), transparent 65%),
-    radial-gradient(760px 760px at 78% -18%, rgba(var(--accent), 0.14), transparent 70%),
-    linear-gradient(180deg, rgba(var(--surface-muted), 0.72) 0%, rgba(var(--surface), 0.7) 40%, rgb(var(--background)) 100%);
-  color: rgb(var(--foreground));
+  background-color: var(--bg);
+  color: var(--text);
   text-rendering: optimizeLegibility;
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
 * {
@@ -95,43 +91,47 @@ body {
 }
 
 ::selection {
-  background: rgba(var(--accent), 0.2);
-  color: rgb(var(--foreground));
+  background: color-mix(in srgb, var(--primary-200) 45%, transparent);
+  color: var(--text);
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  transition: color 150ms ease;
 }
 
 a:hover {
-  color: rgb(var(--accent));
+  color: var(--primary-600);
 }
 
 .brand-gradient {
-  background: var(--brand-gradient);
-  color: rgb(var(--brand-text));
-  border: 1px solid rgba(var(--brand-border), 0.35);
+  background: linear-gradient(
+    135deg,
+    var(--primary-600) 0%,
+    color-mix(in srgb, var(--primary-400) 70%, var(--accent-500)) 55%,
+    color-mix(in srgb, var(--primary-200) 80%, var(--surface)) 100%
+  );
+  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--primary-600) 35%, transparent);
   box-shadow:
-    0 10px 24px rgba(var(--shadow-soft), 0.25),
-    0 6px 18px rgba(var(--shadow-strong), 0.14);
+    0 10px 24px color-mix(in srgb, var(--primary-700) 18%, transparent),
+    0 6px 18px color-mix(in srgb, var(--primary-700) 10%, transparent);
 }
 
 .glass-panel {
-  background: rgba(var(--surface), 0.92);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
   backdrop-filter: blur(24px);
+  border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
   box-shadow:
-    0 18px 48px rgba(var(--shadow-soft), 0.28),
-    0 12px 28px rgba(var(--shadow-strong), 0.12);
-  border: 1px solid rgba(var(--border), 0.85);
+    0 18px 48px color-mix(in srgb, var(--text) 15%, transparent),
+    0 12px 28px color-mix(in srgb, var(--text) 8%, transparent);
 }
 
-@media (prefers-color-scheme: dark) {
-  .glass-panel {
-    background: rgba(var(--surface), 0.88);
-    box-shadow:
-      0 28px 68px rgba(var(--shadow-strong), 0.45),
-      0 12px 36px rgba(var(--shadow-soft), 0.18);
-    border: 1px solid rgba(var(--border), 0.7);
-  }
+:root[data-theme="dark"] .glass-panel {
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border-color: color-mix(in srgb, var(--border) 70%, transparent);
+  box-shadow:
+    0 28px 68px color-mix(in srgb, var(--text) 22%, transparent),
+    0 12px 36px color-mix(in srgb, var(--text) 12%, transparent);
 }

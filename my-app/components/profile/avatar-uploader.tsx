@@ -93,7 +93,7 @@ export function AvatarUploader({ avatarUrl, fullName }: AvatarUploaderProps) {
 
   return (
     <div className="flex items-center gap-4">
-      <div className="relative h-20 w-20 overflow-hidden rounded-full border border-foreground/10 bg-foreground/5">
+      <div className="relative h-20 w-20 overflow-hidden rounded-full border border-border bg-foreground/5">
         {avatarUrl ? (
           <Image
             src={avatarUrl}
@@ -104,7 +104,7 @@ export function AvatarUploader({ avatarUrl, fullName }: AvatarUploaderProps) {
             priority={false}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-foreground/10 text-lg font-semibold text-foreground/80">
+          <div className="flex h-full w-full items-center justify-center bg-foreground/10 text-lg font-semibold text-text/80">
             {initials}
           </div>
         )}
@@ -130,7 +130,7 @@ export function AvatarUploader({ avatarUrl, fullName }: AvatarUploaderProps) {
         </div>
         {error ? <p className="text-xs text-red-500">{error}</p> : null}
         {!error && !avatarUrl ? (
-          <p className="text-xs text-foreground/50">
+          <p className="text-xs text-text/50">
             Recommended size 320×320. We use your social avatar if available.
           </p>
         ) : null}

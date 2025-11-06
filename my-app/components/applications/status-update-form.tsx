@@ -43,7 +43,7 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
       <select
         name="status"
         defaultValue={currentStatus}
-        className="h-11 rounded-xl border border-foreground/20 bg-background px-4 text-sm"
+        className="h-11 rounded-xl border border-border bg-bg px-4 text-sm"
         disabled={pending}
       >
         {STATUSES.map((status) => (

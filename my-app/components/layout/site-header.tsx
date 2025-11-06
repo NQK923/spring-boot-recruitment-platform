@@ -55,14 +55,14 @@ export async function SiteHeader() {
   const navItems = buildNavigation({ roles, isAuthenticated });
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-surface/95 shadow-[0_12px_32px_rgba(15,23,42,0.1)] backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">
+    <header className="sticky top-0 z-40 border-b border-border bg-surface shadow-lg backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">
       <Container className="flex h-16 items-center justify-between gap-4 sm:h-20">
         <Link href={ROUTES.home} className="flex items-center gap-3">
           <span className="brand-gradient inline-flex h-9 w-9 items-center justify-center rounded-xl text-sm font-semibold uppercase shadow-sm">
             TF
           </span>
           <div className="flex flex-col leading-tight">
-            <span className="text-base font-semibold tracking-tight text-foreground sm:text-lg">
+            <span className="text-base font-semibold tracking-tight text-text sm:text-lg">
               Talentflow
             </span>
             <span className="hidden text-[11px] font-medium uppercase tracking-[0.32em] text-muted sm:block">

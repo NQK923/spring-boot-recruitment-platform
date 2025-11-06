@@ -152,13 +152,13 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
     <div className="space-y-6">
       <Panel padding="lg" className="space-y-6">
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-foreground">Tìm kiếm vị trí tuyển dụng</p>
-          <p className="text-xs text-foreground/60">{searchSummary}</p>
+          <p className="text-sm font-semibold text-text">Tìm kiếm vị trí tuyển dụng</p>
+          <p className="text-xs text-muted">{searchSummary}</p>
         </div>
 
         <JobsSearchForm key={initialQuery} initialQuery={initialQuery} />
 
-        <div className="space-y-4 border-t border-border/60 pt-4">
+        <div className="space-y-4 border-t border-border pt-4">
           {showFiltersPanel ? (
             <div className="space-y-4">
               {workTypeOptions.length > 0 && (
@@ -186,17 +186,17 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
               )}
             </div>
           ) : (
-            <p className="text-xs text-foreground/60">
+            <p className="text-xs text-muted">
               Bộ lọc nhanh sẽ hiển thị khi nhà tuyển dụng bổ sung thông tin hình thức làm việc hoặc địa điểm cho bài đăng.
             </p>
           )}
 
-          {resultsLabel.length > 0 && <p className="text-xs text-foreground/60">{resultsLabel}</p>}
+          {resultsLabel.length > 0 && <p className="text-xs text-muted">{resultsLabel}</p>}
         </div>
       </Panel>
 
       {filteredJobs.length === 0 ? (
-        <Panel padding="lg" className="text-sm text-foreground/60">
+        <Panel padding="lg" className="text-sm text-muted">
           {emptyStateMessage}
         </Panel>
       ) : (
@@ -215,13 +215,13 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
               >
                 <Panel
                   padding="lg"
-                  className="flex h-full flex-col gap-4 transition-shadow duration-200 group-hover:shadow-[0_16px_32px_rgba(15,23,42,0.12)]"
+                  className="flex h-full flex-col gap-4 transition-shadow duration-200 group-hover:shadow-lg"
                 >
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-semibold text-foreground">{job.title}</h2>
+                    <h2 className="text-2xl font-semibold text-text">{job.title}</h2>
                   </div>
 
-                  <p className="line-clamp-4 text-sm text-foreground/70">
+                  <p className="line-clamp-4 text-sm text-muted">
                     {job.description ??
                       "The hiring team is preparing a detailed description. Check back soon for responsibilities and requirements."}
                   </p>
@@ -236,13 +236,13 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
                   </div>
 
                   {job.salaryRange && (
-                    <p className="text-xs font-medium text-foreground">
-                      <span className="text-foreground/70">Compensation:</span> {job.salaryRange}
+                    <p className="text-xs font-medium text-text">
+                      <span className="text-muted">Compensation:</span> {job.salaryRange}
                     </p>
                   )}
 
                   <div className="mt-auto flex flex-col gap-3 pt-4 text-sm sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs text-foreground/60">
+                    <p className="text-xs text-muted">
                       {isRemoteFriendly(job.workType)
                         ? "Đội ngũ làm việc linh hoạt, hỗ trợ làm việc từ xa."
                         : "Đội ngũ phối hợp chặt chẽ với các hoạt động tại văn phòng."}
@@ -250,7 +250,7 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
                     <div className="flex flex-wrap gap-2">
                       <Link
                         href={`${ROUTES.signIn}?next=${cardHref}`}
-                        className="inline-flex items-center justify-center rounded-lg border border-border/80 px-4 py-2 text-xs font-semibold text-foreground transition hover:border-foreground"
+                        className="inline-flex items-center justify-center rounded-lg border border-border px-4 py-2 text-xs font-semibold text-text transition hover:border-foreground"
                         onClick={handleApplyClick}
                       >
                         Ứng tuyển vị trí này
@@ -318,8 +318,8 @@ function PaginationControls({
   const summary = `Trang ${page}/${effectiveTotalPages} (tổng cộng ${totalItems} vị trí)`;
 
   return (
-    <div className="flex flex-col gap-3 border-t border-border/40 pt-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-xs text-foreground/60">{summary}</p>
+    <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-xs text-muted">{summary}</p>
       <div className="flex gap-2">
         <Button
           type="button"
@@ -370,7 +370,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
       type="button"
       onClick={onClick}
       className={cx(
-        "rounded-full border border-border/80 px-3 py-1 text-xs font-medium text-foreground/70 transition hover:border-foreground/70 hover:text-foreground",
+        "rounded-full border border-border px-3 py-1 text-xs font-medium text-muted transition hover:border-foreground/70 hover:text-text",
         active && "border-foreground bg-foreground text-background"
       )}
     >
@@ -381,7 +381,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
 
 function JobMetaChip({ label }: { label: string }) {
   return (
-    <span className="rounded-full border border-border/70 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-foreground/70">
+    <span className="rounded-full border border-border px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted">
       {label}
     </span>
   );

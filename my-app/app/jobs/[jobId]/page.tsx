@@ -91,8 +91,8 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
           <span className="h-1 w-1 rounded-full bg-muted/50" />
           <span>Đăng tuyển công khai</span>
         </div>
-        <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">{job.title}</h1>
-        <p className="max-w-3xl text-sm text-foreground/70">
+        <h1 className="text-3xl font-semibold text-text sm:text-4xl">{job.title}</h1>
+        <p className="max-w-3xl text-sm text-muted">
           Thông tin chi tiết được cung cấp trực tiếp từ đội ngũ tuyển dụng. Hãy ứng tuyển để tham gia pipeline, hoặc đăng nhập vào workspace ứng viên để theo dõi phỏng vấn và phản hồi.
         </p>
       </header>
@@ -101,37 +101,37 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
         <div className="space-y-6">
           <Panel variant="surface" padding="lg" className="space-y-6">
             <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-foreground">Tổng quan vị trí</h2>
-              <p className="whitespace-pre-wrap text-sm text-foreground/70">
+              <h2 className="text-lg font-semibold text-text">Tổng quan vị trí</h2>
+              <p className="whitespace-pre-wrap text-sm text-muted">
                 {job.description ??
                   "Đội ngũ tuyển dụng đang hoàn thiện mô tả. Hãy quay lại sau hoặc theo dõi vị trí để nhận cập nhật."}
               </p>
             </div>
             <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-foreground">Yêu cầu</h2>
-              <p className="whitespace-pre-wrap text-sm text-foreground/70">
+              <h2 className="text-lg font-semibold text-text">Yêu cầu</h2>
+              <p className="whitespace-pre-wrap text-sm text-muted">
                 {job.requirements ??
                   "Nhà tuyển dụng sẽ bổ sung kỹ năng, kinh nghiệm và công cụ bắt buộc ngay khi được xác nhận."}
               </p>
             </div>
             <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-foreground">Quyền lợi</h2>
-              <p className="whitespace-pre-wrap text-sm text-foreground/70">
+              <h2 className="text-lg font-semibold text-text">Quyền lợi</h2>
+              <p className="whitespace-pre-wrap text-sm text-muted">
                 {job.benefits ??
                   "Thông tin quyền lợi và đãi ngộ sẽ được cập nhật khi bài đăng hoàn tất."}
               </p>
             </div>
             <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-foreground">Khung lương</h2>
-              <p className="whitespace-pre-wrap text-sm text-foreground/70">
+              <h2 className="text-lg font-semibold text-text">Khung lương</h2>
+              <p className="whitespace-pre-wrap text-sm text-muted">
                 {job.salaryRange ??
                   "Thông tin lương sẽ hiển thị sau khi đội ngũ tuyển dụng xác định mức cụ thể cho vị trí này."}
               </p>
             </div>
           </Panel>
 
-          <Panel variant="surface" padding="lg" className="text-sm text-foreground/70">
-            <p className="font-semibold text-foreground">Quy trình tuyển dụng của đội ngũ này</p>
+          <Panel variant="surface" padding="lg" className="text-sm text-muted">
+            <p className="font-semibold text-text">Quy trình tuyển dụng của đội ngũ này</p>
             <p className="mt-2">
               Hồ sơ sẽ được chuyển thẳng tới nhà tuyển dụng phụ trách. Bạn sẽ nhận cập nhật kịp thời, ghi chú nội bộ và lời mời phỏng vấn trong suốt quá trình.
             </p>
@@ -142,29 +142,29 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
           <Panel variant="glass" padding="lg" className="space-y-4">
             <div className="space-y-1">
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Về công ty</p>
-              <h2 className="text-xl font-semibold text-foreground">
+              <h2 className="text-xl font-semibold text-text">
                 {companyProfile?.name ?? "Đơn vị tuyển dụng"}
               </h2>
             </div>
-            <p className="text-sm text-foreground/70">
+            <p className="text-sm text-muted">
               {companyProfile?.description ??
                 "Đội ngũ tuyển dụng sẽ chia sẻ thêm về văn hóa, giá trị và sứ mệnh của công ty khi bài đăng được cập nhật."}
             </p>
-            <dl className="space-y-3 text-sm text-foreground/70">
+            <dl className="space-y-3 text-sm text-muted">
               <div>
-                <dt className="font-semibold text-foreground">Quy mô nhân sự</dt>
+                <dt className="font-semibold text-text">Quy mô nhân sự</dt>
                 <dd>{companyProfile?.companySize ?? "Đang chờ nhà tuyển dụng xác nhận số lượng nhân sự."}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-foreground">Văn phòng chính</dt>
+                <dt className="font-semibold text-text">Văn phòng chính</dt>
                 <dd>{companyProfile?.companyAddress ?? "Địa chỉ văn phòng sẽ được công bố sớm."}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-foreground">Nơi làm việc</dt>
+                <dt className="font-semibold text-text">Nơi làm việc</dt>
                 <dd>{job.location ?? "Thông tin địa điểm sẽ hiển thị sau khi xác nhận."}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-foreground">Hình thức làm việc</dt>
+                <dt className="font-semibold text-text">Hình thức làm việc</dt>
                 <dd>{job.workType ?? "Đội ngũ sẽ sớm xác nhận kỳ vọng onsite, hybrid hoặc remote."}</dd>
               </div>
             </dl>
@@ -173,7 +173,7 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
                 href={companyWebsite}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-lg border border-border/70 px-4 py-2 text-xs font-semibold text-foreground transition hover:border-foreground"
+                className="inline-flex items-center justify-center rounded-lg border border-border px-4 py-2 text-xs font-semibold text-text transition hover:border-foreground"
               >
                 Truy cập trang công ty
               </Link>
@@ -186,8 +186,8 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
         <Panel variant="glass" padding="lg">
           <div className="space-y-4">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Gửi hồ sơ ứng tuyển</h2>
-              <p className="text-sm text-foreground/70">
+              <h2 className="text-lg font-semibold text-text">Gửi hồ sơ ứng tuyển</h2>
+              <p className="text-sm text-muted">
                 Hãy gửi hồ sơ kèm CV mới nhất. Bạn có thể quản lý tài liệu và theo dõi trạng thái ngay trong portal ứng viên.
               </p>
             </div>
@@ -195,9 +195,9 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
           </div>
         </Panel>
       ) : (
-        <Panel variant="glass" padding="lg" className="space-y-4 text-sm text-foreground/70">
+        <Panel variant="glass" padding="lg" className="space-y-4 text-sm text-muted">
           <div>
-            <p className="font-semibold text-foreground">Sẵn sàng ứng tuyển?</p>
+            <p className="font-semibold text-text">Sẵn sàng ứng tuyển?</p>
             <p>
               Đăng nhập bằng tài khoản ứng viên để nộp hồ sơ và theo dõi các giai đoạn trong portal chuyên biệt.
             </p>

@@ -57,10 +57,10 @@ export default function CandidateDocsPage() {
           <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
             Cẩm nang ứng viên
           </span>
-          <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
+          <h1 className="text-3xl font-semibold text-text sm:text-4xl">
             Chinh phục Talentflow như một chuyên gia.
           </h1>
-          <p className="text-sm text-foreground/70">
+          <p className="text-sm text-muted">
             Dùng cẩm nang này để tối ưu từng đơn ứng tuyển, lịch phỏng vấn và việc quản lý hồ sơ trên nền tảng tuyển
             dụng.
           </p>
@@ -79,8 +79,8 @@ export default function CandidateDocsPage() {
 
       <Panel padding="lg" className="space-y-5">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Các cột mốc chính</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Các cột mốc chính</h2>
+          <p className="text-sm text-muted">
             Bám sát những cột mốc này để hành trình của bạn luôn mạch lạc ngay từ ngày đầu tiên.
           </p>
         </div>
@@ -88,10 +88,10 @@ export default function CandidateDocsPage() {
           {milestones.map((milestone) => (
             <div
               key={milestone.title}
-              className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 p-5"
+              className="space-y-3 rounded-2xl border border-border bg-surface p-5"
             >
-              <h3 className="text-sm font-semibold text-foreground">{milestone.title}</h3>
-              <ul className="space-y-2 text-sm text-foreground/70">
+              <h3 className="text-sm font-semibold text-text">{milestone.title}</h3>
+              <ul className="space-y-2 text-sm text-muted">
                 {milestone.steps.map((step) => (
                   <li key={step}>- {step}</li>
                 ))}
@@ -103,25 +103,25 @@ export default function CandidateDocsPage() {
 
       <Panel padding="lg" className="space-y-5">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Câu hỏi thường gặp</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Câu hỏi thường gặp</h2>
+          <p className="text-sm text-muted">
             Những câu trả lời nhanh cho các tình huống ứng viên hay gặp nhất.
           </p>
         </div>
-        <ul className="space-y-3 text-sm text-foreground/70">
+        <ul className="space-y-3 text-sm text-muted">
           <li>
-            - <strong className="text-foreground">Quên mật khẩu</strong>: sử dụng{" "}
-            <Link href="/auth/forgot-password" className="text-accent hover:text-foreground">
+            - <strong className="text-text">Quên mật khẩu</strong>: sử dụng{" "}
+            <Link href="/auth/forgot-password" className="text-primary-600 hover:text-text">
               luồng đặt lại
             </Link>{" "}
             để nhận mã tạm qua email.
           </li>
           <li>
-            - <strong className="text-foreground">Lịch phỏng vấn bị đổi</strong>: kiểm tra lại cổng ứng viên để xem
+            - <strong className="text-text">Lịch phỏng vấn bị đổi</strong>: kiểm tra lại cổng ứng viên để xem
             thời gian mới và tải tệp lịch cập nhật.
           </li>
           <li>
-            - <strong className="text-foreground">Tải CV thất bại</strong>: đảm bảo tệp dưới 10 MB, định dạng PDF và thử
+            - <strong className="text-text">Tải CV thất bại</strong>: đảm bảo tệp dưới 10 MB, định dạng PDF và thử
             lại khi kết nối ổn định.
           </li>
         </ul>
@@ -129,8 +129,8 @@ export default function CandidateDocsPage() {
 
       <Panel padding="lg" className="space-y-5">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Tài nguyên bổ sung</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Tài nguyên bổ sung</h2>
+          <p className="text-sm text-muted">
             Đào sâu hơn với những bài viết và tài liệu tham khảo được chọn lọc dưới đây.
           </p>
         </div>
@@ -138,13 +138,13 @@ export default function CandidateDocsPage() {
           {resources.map((resource) => (
             <div
               key={resource.href}
-              className="flex flex-col gap-2 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <p className="text-sm font-semibold text-foreground">{resource.label}</p>
-                <p className="text-xs text-foreground/60">{resource.description}</p>
+                <p className="text-sm font-semibold text-text">{resource.label}</p>
+                <p className="text-xs text-muted">{resource.description}</p>
               </div>
-              <Link href={resource.href} className="text-xs font-semibold text-accent transition hover:text-foreground">
+              <Link href={resource.href} className="text-xs font-semibold text-primary-600 transition hover:text-text">
                 Xem chi tiết
               </Link>
             </div>

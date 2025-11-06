@@ -66,11 +66,11 @@ export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
         {items.map((experience, index) => (
           <div
             key={`experience-${index}`}
-            className="space-y-3 rounded-2xl border border-foreground/10 bg-background/70 px-4 py-4"
+            className="space-y-3 rounded-2xl border border-border bg-bg/70 px-4 py-4"
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <label className="flex-1 text-sm text-foreground/70">
-                <span className="mb-1 block font-semibold text-foreground">Role title</span>
+              <label className="flex-1 text-sm text-muted">
+                <span className="mb-1 block font-semibold text-text">Role title</span>
                 <Input
                   value={experience.title}
                   onChange={(event) => handleChange(index, "title", event.target.value)}
@@ -78,8 +78,8 @@ export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
                   disabled={pending}
                 />
               </label>
-              <label className="flex-1 text-sm text-foreground/70">
-                <span className="mb-1 block font-semibold text-foreground">Company</span>
+              <label className="flex-1 text-sm text-muted">
+                <span className="mb-1 block font-semibold text-text">Company</span>
                 <Input
                   value={experience.companyName}
                   onChange={(event) => handleChange(index, "companyName", event.target.value)}
@@ -89,8 +89,8 @@ export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
               </label>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="text-sm text-foreground/70">
-                <span className="mb-1 block font-semibold text-foreground">Start date</span>
+              <label className="text-sm text-muted">
+                <span className="mb-1 block font-semibold text-text">Start date</span>
                 <Input
                   type="date"
                   value={experience.startDate}
@@ -98,8 +98,8 @@ export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
                   disabled={pending}
                 />
               </label>
-              <label className="text-sm text-foreground/70">
-                <span className="mb-1 block font-semibold text-foreground">End date</span>
+              <label className="text-sm text-muted">
+                <span className="mb-1 block font-semibold text-text">End date</span>
                 <Input
                   type="date"
                   value={experience.endDate}
@@ -108,14 +108,14 @@ export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
                 />
               </label>
             </div>
-            <label className="text-sm text-foreground/70">
-              <span className="mb-1 block font-semibold text-foreground">Summary</span>
+            <label className="text-sm text-muted">
+              <span className="mb-1 block font-semibold text-text">Summary</span>
               <textarea
                 value={experience.description}
                 onChange={(event) => handleChange(index, "description", event.target.value)}
                 rows={3}
                 placeholder="Highlight responsibilities or achievements."
-                className="w-full rounded-2xl border border-foreground/10 bg-background/70 px-3 py-2 text-sm text-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+                className="w-full rounded-2xl border border-border bg-bg/70 px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
                 disabled={pending}
               />
             </label>

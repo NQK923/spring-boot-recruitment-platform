@@ -218,29 +218,29 @@ export default async function DashboardPage() {
             <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
               Không gian nhà tuyển dụng
             </span>
-            <h1 className="text-3xl font-semibold text-foreground sm:text-4xl">
+            <h1 className="text-3xl font-semibold text-text sm:text-4xl">
               Điều phối việc làm, ứng viên và phỏng vấn trên cùng một nền tảng.
             </h1>
-            <p className="max-w-2xl text-sm text-foreground/70">
+            <p className="max-w-2xl text-sm text-muted">
               Theo sát pipeline tuyển dụng với ưu tiên rõ ràng, bối cảnh từ hoạt động gần nhất và đường dẫn hành động nhanh nhất.
             </p>
-            <ul className="space-y-2 text-sm text-foreground/70">
+            <ul className="space-y-2 text-sm text-muted">
               {heroHighlights.map((highlight) => (
                 <li key={highlight} className="flex items-start gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-accent" aria-hidden />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary-600" aria-hidden />
                   <span>{highlight}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="space-y-3 rounded-3xl border border-foreground/10 bg-surface/90 p-6 shadow-[0_18px_32px_rgba(15,23,42,0.14)]">
+          <div className="space-y-3 rounded-3xl border border-border bg-surface p-6 shadow-lg">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
               Trọng tâm hôm nay
             </p>
-            <p className="text-sm text-foreground/70">
+            <p className="text-sm text-muted">
               Bắt đầu với các ứng viên đang chờ liên hệ, sau đó rà soát lịch phỏng vấn để đảm bảo chuẩn bị và người theo dõi.
             </p>
-            <div className="rounded-2xl border border-accent/20 bg-accent/10 px-4 py-3 text-xs text-accent">
+            <div className="rounded-2xl border border-accent/20 bg-primary-600/10 px-4 py-3 text-xs text-primary-600">
               Duy trì tốc độ phản hồi: hãy xác nhận mọi hồ sơ mới trong vòng 24 giờ.
             </div>
           </div>
@@ -249,13 +249,13 @@ export default async function DashboardPage() {
           {summaryMetrics.map((metric) => (
             <div
               key={metric.label}
-              className="rounded-2xl border border-foreground/10 bg-surface/95 p-5 shadow-[0_12px_24px_rgba(15,23,42,0.08)] transition hover:border-accent/30 hover:shadow-[0_20px_36px_rgba(15,23,42,0.12)]"
+              className="rounded-2xl border border-border bg-surface p-5 shadow-lg transition hover:border-accent/30 hover:shadow-lg"
             >
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
                 {metric.label}
               </p>
-              <p className="mt-3 text-3xl font-semibold text-foreground">{metric.value}</p>
-              <p className="mt-1 text-xs text-foreground/60">{metric.helper}</p>
+              <p className="mt-3 text-3xl font-semibold text-text">{metric.value}</p>
+              <p className="mt-1 text-xs text-muted">{metric.helper}</p>
             </div>
           ))}
         </div>
@@ -263,8 +263,8 @@ export default async function DashboardPage() {
 
       <Panel variant="surface" padding="lg" className="space-y-6">
         <header className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Hành động nhanh</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Hành động nhanh</h2>
+          <p className="text-sm text-muted">
             Truy cập ngay các khu vực giữ pipeline luôn thông suốt và thúc đẩy ứng viên tiến bước.
           </p>
         </header>
@@ -273,11 +273,11 @@ export default async function DashboardPage() {
             <Link
               key={action.label}
               href={action.href}
-              className="group flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 text-sm text-foreground/70 transition hover:border-accent/40 hover:text-foreground hover:shadow-[0_22px_40px_rgba(15,23,42,0.12)]"
+              className="group flex flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-4 text-sm text-muted transition hover:border-accent/40 hover:text-text hover:shadow-lg"
             >
-              <span className="text-sm font-semibold text-foreground">{action.label}</span>
+              <span className="text-sm font-semibold text-text">{action.label}</span>
               <span className="text-xs">{action.description}</span>
-              <span className="inline-flex items-center gap-2 text-xs font-semibold text-accent transition group-hover:translate-x-0.5">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold text-primary-600 transition group-hover:translate-x-0.5">
                 Thực hiện ngay
                 <span aria-hidden>&gt;</span>
               </span>
@@ -288,8 +288,8 @@ export default async function DashboardPage() {
 
       <Panel id="jobs" variant="surface" padding="lg" className="space-y-6">
         <header className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Danh mục việc làm</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Danh mục việc làm</h2>
+          <p className="text-sm text-muted">
             Rà soát các vị trí bạn đang hỗ trợ tuyển dụng. {canAdminJobs
               ? "Chuyển sang workspace quản trị công ty khi cần đăng, tạm dừng hoặc chỉnh sửa bài tuyển dụng."
               : "Chỉ quản trị viên công ty mới có thể tạo hoặc chỉnh sửa bài đăng. Hãy liên hệ quản trị khi cần thay đổi."}
@@ -310,7 +310,7 @@ export default async function DashboardPage() {
           ) : null}
         </header>
         {jobs.length === 0 ? (
-          <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
+          <div className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
             Chưa có bài đăng. Liên hệ quản trị công ty để mở vị trí đầu tiên.
           </div>
         ) : (
@@ -318,24 +318,24 @@ export default async function DashboardPage() {
             {jobs.map((job) => (
               <div
                 key={job.id}
-                className="space-y-3 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 shadow-[0_12px_22px_rgba(15,23,42,0.08)]"
+                className="space-y-3 rounded-2xl border border-border bg-surface px-5 py-4 shadow-lg"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <p className="font-semibold text-foreground">{job.title}</p>
-                    <p className="text-xs text-foreground/60">
+                    <p className="font-semibold text-text">{job.title}</p>
+                    <p className="text-xs text-muted">
                       Trạng thái {formatStatus(job.status)} • Cập nhật {formatDate(job.updatedAt)}
                     </p>
                   </div>
                   <Link
                     href={`${ROUTES.jobs}/${job.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-accent transition hover:text-foreground"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 transition hover:text-text"
                   >
                     Xem bài tuyển dụng
                     <span aria-hidden>&gt;</span>
                   </Link>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/55">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-text/55">
                   {job.location ? <span>{job.location}</span> : null}
                   {job.workType ? (
                     <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-foreground/40">
@@ -348,7 +348,7 @@ export default async function DashboardPage() {
                     </span>
                   ) : null}
                 </div>
-                <p className="text-xs text-foreground/50">
+                <p className="text-xs text-text/50">
                   {canAdminJobs
                     ? "Cần chỉnh sửa? Vào workspace quản trị công ty để cập nhật bài tuyển dụng."
                     : "Cần cập nhật? Hãy nhờ quản trị công ty điều chỉnh nội dung."}
@@ -362,13 +362,13 @@ export default async function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Panel id="pipeline" variant="surface" padding="lg" className="space-y-4">
           <header>
-            <h2 className="text-lg font-semibold text-foreground">Tổng quan pipeline</h2>
-            <p className="text-sm text-foreground/60">
+            <h2 className="text-lg font-semibold text-text">Tổng quan pipeline</h2>
+            <p className="text-sm text-muted">
               Tổng hợp từ toàn bộ hồ sơ của công ty. Cập nhật trạng thái ở bất kỳ hồ sơ nào, số liệu sẽ tự động thay đổi.
             </p>
           </header>
           {allApplications.length === 0 ? (
-            <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-4 py-6 text-sm text-foreground/60">
+            <div className="rounded-2xl border border-border bg-surface px-4 py-6 text-sm text-muted">
               Chưa có hồ sơ nào. Mời ứng viên hoặc đăng tuyển vị trí mới để bắt đầu xây dựng pipeline.
             </div>
           ) : (
@@ -376,10 +376,10 @@ export default async function DashboardPage() {
               {Object.entries(pipelineCounts).map(([status, count]) => (
                 <div
                   key={status}
-                  className="flex items-center justify-between rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3 text-sm shadow-[0_10px_20px_rgba(15,23,42,0.08)]"
+                  className="flex items-center justify-between rounded-2xl border border-border bg-surface px-4 py-3 text-sm shadow-lg"
                 >
-                  <span className="text-foreground/70">{formatStatus(status)}</span>
-                  <span className="font-semibold text-foreground">{count}</span>
+                  <span className="text-muted">{formatStatus(status)}</span>
+                  <span className="font-semibold text-text">{count}</span>
                 </div>
               ))}
             </div>
@@ -388,14 +388,14 @@ export default async function DashboardPage() {
 
         <Panel id="interviews" variant="surface" padding="lg" className="space-y-4">
           <header>
-            <h2 className="text-lg font-semibold text-foreground">Phỏng vấn sắp diễn ra</h2>
-            <p className="text-sm text-foreground/60">
+            <h2 className="text-lg font-semibold text-text">Phỏng vấn sắp diễn ra</h2>
+            <p className="text-sm text-muted">
               Xem năm cuộc trao đổi tiếp theo trên lịch của bạn. Có thể đổi lịch hoặc ghi nhận phản hồi ngay tại khu vực phỏng vấn.
             </p>
           </header>
 
           {upcomingInterviews.length === 0 ? (
-            <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-4 py-6 text-sm text-foreground/60">
+            <div className="rounded-2xl border border-border bg-surface px-4 py-6 text-sm text-muted">
               Chưa có phỏng vấn nào. Hãy phối hợp với ứng viên để đưa họ tiến lên.
             </div>
           ) : (
@@ -403,15 +403,15 @@ export default async function DashboardPage() {
               {upcomingInterviews.map((interview) => (
                 <div
                   key={interview.id}
-                  className="rounded-2xl border border-foreground/10 bg-surface/95 px-4 py-3 shadow-[0_10px_20px_rgba(15,23,42,0.08)]"
+                  className="rounded-2xl border border-border bg-surface px-4 py-3 shadow-lg"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-foreground">Đơn ứng tuyển #{interview.applicationId}</span>
-                    <span className="text-xs text-foreground/60">
+                    <span className="font-semibold text-text">Đơn ứng tuyển #{interview.applicationId}</span>
+                    <span className="text-xs text-muted">
                       {formatDateTime(interview.scheduleTime, interview.timezone)}
                     </span>
                   </div>
-                  <p className="text-xs text-foreground/55">
+                  <p className="text-xs text-text/55">
                     {interview.format ?? "Hình thức cập nhật sau"} -{" "}
                     {interview.locationOrLink ? interview.locationOrLink : "Địa điểm sẽ được thông báo"}
                   </p>
@@ -424,14 +424,14 @@ export default async function DashboardPage() {
 
       <Panel id="applications" variant="surface" padding="lg" className="space-y-4">
         <header>
-          <h2 className="text-lg font-semibold text-foreground">Hồ sơ mới nhất</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Hồ sơ mới nhất</h2>
+          <p className="text-sm text-muted">
             Hoạt động gần đây trong pipeline. Nhấp để xem ghi chú, cập nhật trạng thái hoặc thêm phản hồi.
           </p>
         </header>
 
         {recentApplications.length === 0 ? (
-          <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-4 py-6 text-sm text-foreground/60">
+          <div className="rounded-2xl border border-border bg-surface px-4 py-6 text-sm text-muted">
             Chưa có dữ liệu. Hồ sơ sẽ xuất hiện tại đây ngay khi ứng viên nộp.
           </div>
         ) : (
@@ -440,18 +440,18 @@ export default async function DashboardPage() {
               <Link
                 key={application.id}
                 href={`${ROUTES.recruiterDashboard}/applications/${application.id}`}
-                className="flex items-center justify-between rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 transition hover:border-accent/30 hover:bg-surface/80"
+                className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4 transition hover:border-accent/30 hover:bg-surface/80"
               >
                 <div>
-                  <p className="font-semibold text-foreground">Hồ sơ #{application.id}</p>
-                  <p className="text-xs text-foreground/50">
+                  <p className="font-semibold text-text">Hồ sơ #{application.id}</p>
+                  <p className="text-xs text-text/50">
                     Vị trí #{application.jobPostingId} • Nộp ngày {formatDate(application.appliedAt)}
                   </p>
-                  <p className="text-xs text-foreground/50">
+                  <p className="text-xs text-text/50">
                     Ứng viên {application.candidateName ?? `#${application.candidateId}`}
                   </p>
                 </div>
-                <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                <span className="rounded-full bg-primary-600/10 px-3 py-1 text-xs font-semibold text-primary-600">
                   {formatStatus(application.status)}
                 </span>
               </Link>
@@ -462,20 +462,20 @@ export default async function DashboardPage() {
 
       <Panel id="job-health" variant="surface" padding="lg" className="space-y-4">
         <header>
-          <h2 className="text-lg font-semibold text-foreground">Sức khỏe tuyển dụng</h2>
-          <p className="text-sm text-foreground/60">
+          <h2 className="text-lg font-semibold text-text">Sức khỏe tuyển dụng</h2>
+          <p className="text-sm text-muted">
             Theo dõi số lượng hồ sơ theo từng vị trí và nhận diện các vai trò cần thêm nguồn ứng viên hoặc phản hồi nhanh hơn.
           </p>
         </header>
 
         {jobs.length === 0 ? (
-          <div className="rounded-2xl border border-foreground/10 bg-surface/90 px-4 py-6 text-sm text-foreground/60">
+          <div className="rounded-2xl border border-border bg-surface px-4 py-6 text-sm text-muted">
             Chưa có vị trí nào cho công ty của bạn. Tạo bài đăng tuyển dụng để hiển thị dữ liệu.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-foreground/10 bg-surface/95 shadow-[0_12px_24px_rgba(15,23,42,0.08)]">
+          <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-lg">
             <table className="min-w-full divide-y divide-foreground/10 text-sm">
-              <thead className="text-left text-xs uppercase tracking-[0.28em] text-foreground/50">
+              <thead className="text-left text-xs uppercase tracking-[0.28em] text-text/50">
                 <tr>
                   <th className="px-4 py-3">Vị trí</th>
                   <th className="px-4 py-3">Trạng thái</th>
@@ -487,9 +487,9 @@ export default async function DashboardPage() {
                   const applications = applicationsByJob.get(job.id) ?? [];
                   return (
                     <tr key={job.id}>
-                      <td className="px-4 py-3 text-sm text-foreground">{job.title}</td>
-                      <td className="px-4 py-3 text-sm text-foreground/70">{formatStatus(job.status)}</td>
-                      <td className="px-4 py-3 text-right text-sm font-semibold text-foreground">{applications.length}</td>
+                      <td className="px-4 py-3 text-sm text-text">{job.title}</td>
+                      <td className="px-4 py-3 text-sm text-muted">{formatStatus(job.status)}</td>
+                      <td className="px-4 py-3 text-right text-sm font-semibold text-text">{applications.length}</td>
                     </tr>
                   );
                 })}

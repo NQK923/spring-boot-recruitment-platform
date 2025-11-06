@@ -30,7 +30,7 @@ export function MobileNav({ items }: MobileNavProps) {
     <button
       type="button"
       aria-label="Mở hoặc đóng thanh điều hướng"
-      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-foreground shadow-sm transition hover:border-border/80 hover:shadow-md sm:hidden"
+      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-text shadow-sm transition hover:border-border hover:shadow-md sm:hidden"
       onClick={() => setOpen((prev) => !prev)}
     >
       {open ? "Đóng" : "Mở"}
@@ -47,7 +47,7 @@ export function MobileNav({ items }: MobileNavProps) {
       {open
         ? createPortal(
             <div className="fixed inset-0 z-50 bg-foreground/20 backdrop-blur-sm sm:hidden">
-              <div className="absolute inset-x-4 top-4 rounded-2xl border border-foreground/10 bg-surface px-5 py-6 shadow-lg">
+              <div className="absolute inset-x-4 top-4 rounded-2xl border border-border bg-surface px-5 py-6 shadow-lg">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold uppercase tracking-[0.2em] text-muted">
                     Điều hướng
@@ -55,7 +55,7 @@ export function MobileNav({ items }: MobileNavProps) {
                   <button
                     type="button"
                     aria-label="Đóng thanh điều hướng"
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-foreground transition hover:border-border/80 hover:shadow-md"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-text transition hover:border-border hover:shadow-md"
                     onClick={() => setOpen(false)}
                   >
                     Đóng

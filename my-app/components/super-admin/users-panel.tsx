@@ -88,7 +88,7 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
 
   if (users.length === 0) {
     return (
-      <div className="rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-6 text-sm text-foreground/60">
+      <div className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
         {companyName} chưa có thành viên nào. Gửi lời mời để đội tuyển dụng bắt đầu sử dụng.
       </div>
     );
@@ -117,13 +117,13 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
         return (
           <div
             key={`${companyId}-${user.id}`}
-            className="flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-surface/95 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="space-y-1">
-              <p className="font-semibold text-foreground">{user.email}</p>
-              <p className="text-xs text-foreground/60">Tham gia {describeJoinedAt(user.joinedAt)}</p>
+              <p className="font-semibold text-text">{user.email}</p>
+              <p className="text-xs text-muted">Tham gia {describeJoinedAt(user.joinedAt)}</p>
               <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em]">
-                <span className="rounded-full bg-foreground/5 px-2 py-1 text-foreground/70">{formatRole(normalizedRole)}</span>
+                <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">{formatRole(normalizedRole)}</span>
                 <span
                   className={cx(
                     "rounded-full px-2 py-1",
@@ -136,7 +136,7 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-text/50">
                 <span>Trạng thái</span>
                 <span
                   className={cx(
