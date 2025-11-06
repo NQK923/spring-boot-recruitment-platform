@@ -8,14 +8,14 @@ type Size = "sm" | "md" | "lg";
 function variantClasses(variant: Variant) {
   switch (variant) {
     case "secondary":
-      return "border border-border bg-surface text-text shadow-sm hover:bg-primary-50 hover:text-text";
+      return "border-2 border-border bg-white dark:bg-surface text-text shadow-md hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30 hover:border-primary-300 dark:hover:border-primary-500";
     case "ghost":
-      return "text-primary-600 hover:bg-primary-50 dark:hover:bg-surface/10";
+      return "text-primary-600 dark:text-primary-400 hover:bg-gradient-to-r hover:from-primary-50 hover:to-accent-50 dark:hover:from-primary-900/30 dark:hover:to-accent-900/30";
     case "outline":
-      return "border border-border text-text hover:bg-primary-50 dark:hover:bg-surface/10";
+      return "border-2 border-primary-300 dark:border-primary-500 text-text hover:bg-gradient-to-r hover:from-primary-50 hover:to-accent-50 dark:hover:from-primary-900/30 dark:hover:to-accent-900/30 hover:border-primary-400 dark:hover:border-primary-400";
     case "primary":
     default:
-      return "bg-primary-600 text-white shadow-sm hover:bg-primary-700";
+      return "bg-gradient-to-r from-primary-600 to-primary-700 dark:from-primary-500 dark:to-primary-600 text-white shadow-lg hover:from-primary-700 hover:to-primary-800 dark:hover:from-primary-600 dark:hover:to-primary-700 hover:shadow-xl";
   }
 }
 
@@ -47,7 +47,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseClasses = cx(
-    "inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-50",
+    "inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-50",
     variantClasses(variant),
     sizeClasses(size)
   );

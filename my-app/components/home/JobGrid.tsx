@@ -18,8 +18,7 @@ type JobGridProps = {
 export function JobGrid({ jobs }: JobGridProps) {
   if (!jobs.length) {
     return (
-      <section aria-labelledby="home-jobs" className="relative overflow-hidden bg-gradient-to-br from-bg via-primary-50/40 to-accent-500/20 py-20">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),_transparent_60%)]" />
+      <section aria-labelledby="home-jobs" className="relative overflow-hidden bg-bg py-20">
         <Container className="space-y-8">
           <Header />
           <Panel className="text-center text-muted">
@@ -39,24 +38,27 @@ export function JobGrid({ jobs }: JobGridProps) {
           {(jobs as JobWithExtras[]).map((job) => (
             <article
               key={job.id}
-              className="flex h-full flex-col justify-between rounded-2xl border border-border bg-gradient-to-br from-primary-600/10 via-surface to-accent-500/10 p-6 shadow-lg transition hover:border-primary-600 hover:shadow-xl dark:from-surface/25 dark:via-surface/15 dark:to-accent-500/20"
+              className="group flex h-full flex-col justify-between rounded-2xl border-2 border-border bg-white dark:bg-surface p-6 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:border-primary-400 dark:hover:border-primary-500 hover:shadow-2xl hover:shadow-primary-500/20 dark:hover:shadow-primary-500/30"
             >
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-text">
-                  <Link href={`/jobs/${job.id}`} className="hover:text-primary-600">
-                    {job.title}
-                  </Link>
-                </h3>
-                <p className="text-sm text-muted">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="text-lg font-bold text-text group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                    <Link href={`/jobs/${job.id}`}>
+                      {job.title}
+                    </Link>
+                  </h3>
+                  <span className="flex-shrink-0 text-xl">💼</span>
+                </div>
+                <p className="text-sm font-medium text-muted">
                   {getCompanyName(job)} • {job.location ?? "Linh hoạt"}
                 </p>
-                <p className="text-sm text-muted">{getJobSummary(job)}</p>
+                <p className="text-sm text-muted line-clamp-3">{getJobSummary(job)}</p>
               </div>
 
-              <div className="mt-6 space-y-3 text-sm text-muted">
-                <p>{job.workType ?? "Hình thức linh hoạt"}</p>
+              <div className="mt-6 space-y-3">
+                <p className="text-sm font-medium text-primary-600 dark:text-primary-400">{job.workType ?? "Hình thức linh hoạt"}</p>
                 {job.salaryRange ? (
-                  <span className="inline-flex w-fit rounded-full bg-primary-600/15 px-3 py-1 text-xs font-semibold text-primary-600">
+                  <span className="inline-flex w-fit rounded-full bg-gradient-to-r from-primary-500 to-accent-500 px-4 py-1.5 text-xs font-bold text-white shadow-md">
                     {job.salaryRange}
                   </span>
                 ) : null}
@@ -66,10 +68,10 @@ export function JobGrid({ jobs }: JobGridProps) {
                   data-analytics-id="job_apply_click"
                   data-section="jobs"
                   data-job-id={job.id}
-                  className="px-0 text-left text-primary-600 hover:text-primary-700"
+                  className="w-full justify-center rounded-lg bg-gradient-to-r from-primary-50 to-accent-50 dark:from-primary-900/30 dark:to-accent-900/30 px-0 font-bold text-primary-600 dark:text-primary-400 hover:from-primary-100 hover:to-accent-100 dark:hover:from-primary-800/40 dark:hover:to-accent-800/40 hover:text-primary-700 dark:hover:text-primary-300"
                 >
                   <Link href={`/jobs/${job.id}`} aria-label={`Ứng tuyển vị trí ${job.title}`}>
-                    Ứng tuyển ngay
+                    Ứng tuyển ngay →
                   </Link>
                 </Button>
               </div>

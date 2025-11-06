@@ -45,17 +45,17 @@ const TRACKS: HowItWorksTrack[] = [
 
 export function HowItWorks() {
   return (
-    <section aria-labelledby="home-how-it-works">
-      <Container className="space-y-8">
-        <div className="mx-auto max-w-2xl text-center space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.32em] text-muted">
-            Cách hoạt động
+    <section aria-labelledby="home-how-it-works" className="relative overflow-hidden py-20">
+      <Container className="relative space-y-12">
+        <div className="mx-auto max-w-2xl text-center space-y-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.32em]" style={{ color: '#6366F1' }}>
+            Cách thức hoạt động
           </p>
-          <h2 id="home-how-it-works" className="text-3xl font-semibold text-text">
+          <h2 id="home-how-it-works" className="text-4xl font-bold text-text">
             3 bước rõ ràng cho cả ứng viên và nhà tuyển dụng
           </h2>
         </div>
-        <div className="rounded-3xl border border-border bg-gradient-to-br from-accent-500/10 via-primary-500/8 to-primary-600/10 p-8 shadow-lg dark:from-surface/15 dark:via-surface/10 dark:to-surface/20">
+        <div className="rounded-3xl border-2 border-border bg-surface p-8 md:p-12 shadow-xl">
           <HowItWorksTabs tracks={TRACKS} />
         </div>
       </Container>

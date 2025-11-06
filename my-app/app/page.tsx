@@ -50,16 +50,30 @@ export default async function HomePage() {
   const jobs = await getLatestJobs();
 
   return (
-    <main className="flex flex-col gap-24 bg-bg text-text">
+    <main className="flex flex-col bg-bg text-text">
       <Hero />
-      <Features />
-      <JobGrid jobs={jobs} />
-      <HowItWorks />
-      <Stats />
-      <TrustedBy />
-      <Testimonials />
+      <div className="py-12">
+        <Features />
+      </div>
+      <div className="py-12" style={{ background: 'linear-gradient(180deg, #FAFBFC 0%, #F9FAFB 50%, #FAFBFC 100%)' }}>
+        <JobGrid jobs={jobs} />
+      </div>
+      <div className="py-12">
+        <HowItWorks />
+      </div>
+      <div className="py-12" style={{ background: 'linear-gradient(180deg, #FAFBFC 0%, #F9FAFB 50%, #FAFBFC 100%)' }}>
+        <Stats />
+      </div>
+      <div className="py-12">
+        <TrustedBy />
+      </div>
+      <div className="py-12" style={{ background: 'linear-gradient(180deg, #FAFBFC 0%, #F9FAFB 50%, #FAFBFC 100%)' }}>
+        <Testimonials />
+      </div>
       <FinalCTA />
-      <FAQ />
+      <div className="py-12">
+        <FAQ />
+      </div>
       <StructuredData jobs={jobs} />
     </main>
   );

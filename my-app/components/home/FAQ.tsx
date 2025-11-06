@@ -32,36 +32,30 @@ const FAQ_ITEMS = [
 
 export function FAQ() {
   return (
-    <section aria-labelledby="home-faq" className="relative overflow-hidden bg-gradient-to-br from-accent-500/15 via-bg to-primary-500/20 pb-24 pt-20">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(8,145,178,0.18),_transparent_55%)]" />
-      <Container className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-        <div className="space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.32em] text-muted">Câu hỏi thường gặp</p>
-          <h2 id="home-faq" className="text-3xl font-semibold text-text">
+    <section aria-labelledby="home-faq" className="relative overflow-hidden py-20">
+      <Container className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+        <div className="space-y-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.32em]" style={{ color: '#6366F1' }}>Câu hỏi thường gặp</p>
+          <h2 id="home-faq" className="text-4xl font-bold text-text">
             Chúng tôi luôn đồng hành cùng bạn
           </h2>
-          <p className="text-base text-muted">
+          <p className="text-lg text-muted">
             Nếu cần thêm thông tin về triển khai hay chính sách, hãy liên hệ đội hỗ trợ Talentflow để được hướng dẫn chi tiết.
           </p>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {FAQ_ITEMS.map((item, index) => (
             <details
               key={item.question}
-              className={[
-                "group rounded-2xl border border-border p-5 shadow-lg transition",
-                index % 2 === 0
-                  ? "bg-gradient-to-r from-surface via-surface to-primary-50/60 dark:from-surface/85 dark:via-surface/70 dark:to-surface/85"
-                  : "bg-gradient-to-r from-surface via-surface to-accent-500/10 dark:from-surface/85 dark:via-surface/75 dark:to-surface/85",
-              ].join(" ")}
+              className="group rounded-3xl border-2 border-border bg-surface p-6 md:p-8 shadow-lg transition-all duration-300 hover:shadow-xl"
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-sm font-semibold text-text">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-bold text-text">
                 <span>{item.question}</span>
-                <span aria-hidden="true" className="transition group-open:rotate-90">
+                <span aria-hidden="true" className="text-2xl transition-transform duration-300 group-open:rotate-90" style={{ color: '#6366F1' }}>
                   →
                 </span>
               </summary>
-              <p className="mt-3 text-sm text-muted">{item.answer}</p>
+              <p className="mt-4 text-base leading-relaxed text-muted">{item.answer}</p>
             </details>
           ))}
         </div>

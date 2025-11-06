@@ -5,78 +5,78 @@ const FEATURES = [
     icon: "⚙️",
     title: "Tự động hoá pipeline",
     description: "Kết nối quy trình từ đăng tin, sàng lọc đến thông báo và nhắc việc chỉ trong một bảng trạng thái.",
-    gradient: "from-primary-100/90 via-primary-50 to-accent-100/70",
-    iconBg: "bg-primary-600/15 text-primary-700",
-    borderAccent: "border-primary-400/60",
+    bgColor: "linear-gradient(135deg, #E0E7FF 0%, #F0F4FF 50%, #E0E7FF 100%)",
+    iconBg: "linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)",
+    borderColor: "#A5B4FC",
   },
   {
     icon: "🧾",
     title: "Hồ sơ ứng viên đầy đủ",
     description: "Theo dõi kinh nghiệm, kỹ năng, CV và ghi chú nội bộ trên cùng một giao diện trực quan.",
-    gradient: "from-accent-500/20 via-surface to-primary-100/60",
-    iconBg: "bg-accent-500/15 text-accent-600",
-    borderAccent: "border-accent-400/60",
+    bgColor: "linear-gradient(135deg, #FFE4E6 0%, #FFF1F2 50%, #FFE4E6 100%)",
+    iconBg: "linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%)",
+    borderColor: "#FCA5A5",
   },
   {
     icon: "🗓️",
     title: "Lịch phỏng vấn nhanh",
     description: "Chốt múi giờ, gửi thư mời kèm file .ics và đồng bộ với các nền tảng lịch phổ biến.",
-    gradient: "from-info-600/15 via-surface to-primary-500/10",
-    iconBg: "bg-info-600/15 text-info-600",
-    borderAccent: "border-info-500/60",
+    bgColor: "linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 50%, #DBEAFE 100%)",
+    iconBg: "linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)",
+    borderColor: "#93C5FD",
   },
   {
     icon: "📊",
     title: "Báo cáo tức thì",
     description: "Quan sát tỷ lệ chuyển đổi, thời gian tuyển và nguồn ứng viên để tối ưu chiến dịch.",
-    gradient: "from-success-600/15 via-surface to-warning-500/12",
-    iconBg: "bg-success-600/15 text-success-600",
-    borderAccent: "border-success-500/60",
+    bgColor: "linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 50%, #D1FAE5 100%)",
+    iconBg: "linear-gradient(135deg, #10B981 0%, #059669 100%)",
+    borderColor: "#6EE7B7",
   },
 ] as const;
 
 export function Features() {
   return (
-    <section aria-labelledby="home-features" className="relative overflow-hidden bg-gradient-to-br from-primary-600/8 via-bg to-accent-500/10 py-20">
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_bottom_left,_rgba(56,189,248,0.2),_transparent_50%)]" />
+    <section aria-labelledby="home-features" className="relative overflow-hidden bg-bg py-20">
       <Container className="space-y-12">
-        <div className="max-w-2xl space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-[0.32em] text-muted">
+        <div className="max-w-3xl mx-auto text-center space-y-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.32em]" style={{ color: '#6366F1' }}>
             Giải pháp toàn diện
           </p>
-          <h2 id="home-features" className="text-3xl font-semibold text-text">
+          <h2 id="home-features" className="text-4xl font-bold text-text">
             Giá trị rõ ràng cho mọi đội tuyển dụng
           </h2>
-          <p className="text-base text-muted">
+          <p className="text-lg text-muted max-w-2xl mx-auto">
             Talentflow giúp doanh nghiệp và ứng viên phối hợp nhịp nhàng, giảm thời gian tuyển và nâng cao trải nghiệm.
           </p>
         </div>
         <div className="relative">
           <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(20,184,166,0.18),_transparent_55%)]" />
         </div>
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((feature) => (
             <article
               key={feature.title}
-              className={[
-                "relative h-full overflow-hidden rounded-2xl border bg-gradient-to-br p-6 shadow-lg transition hover:-translate-y-1 hover:shadow-xl",
-                feature.gradient,
-                feature.borderAccent,
-                "dark:from-surface/30 dark:via-surface/20 dark:to-surface/25",
-              ].join(" ")}
+              className="group relative h-full overflow-hidden rounded-3xl border-2 shadow-lg transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl"
+              style={{
+                background: feature.bgColor,
+                borderColor: feature.borderColor,
+              }}
             >
-              <div className="pointer-events-none absolute -top-8 -right-6 h-24 w-24 rounded-full bg-white/20 blur-3xl dark:bg-surface/10" />
-              <span
-                className={[
-                  "inline-flex h-11 w-11 items-center justify-center rounded-xl text-2xl",
-                  feature.iconBg,
-                  "dark:bg-surface/40",
-                ].join(" ")}
-              >
-                {feature.icon}
-              </span>
-              <h3 className="text-lg font-semibold text-text">{feature.title}</h3>
-              <p className="mt-3 text-sm text-muted">{feature.description}</p>
+              <div className="relative p-8 space-y-6">
+                <div className="inline-flex">
+                  <span
+                    className="inline-flex h-16 w-16 items-center justify-center rounded-2xl text-3xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 text-white shadow-xl"
+                    style={{ background: feature.iconBg }}
+                  >
+                    {feature.icon}
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-text leading-tight">{feature.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted">{feature.description}</p>
+                </div>
+              </div>
             </article>
           ))}
         </div>
