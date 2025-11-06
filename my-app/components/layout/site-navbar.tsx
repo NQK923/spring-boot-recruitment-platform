@@ -54,16 +54,16 @@ export function SiteNavbar({
   const palette =
     variant === "inverse"
       ? {
-          text: "text-surface/80",
-          active: "bg-surface/10 text-surface shadow-lg",
-          inactive: "hover:bg-surface/10 hover:text-surface",
-          indicator: "bg-accent-500/80",
+          text: "text-white/90",
+          active: "bg-white/20 text-white shadow-md",
+          inactive: "hover:bg-white/10 hover:text-white",
+          indicator: "bg-white",
         }
       : {
-          text: "text-muted",
-          active: "bg-surface text-text shadow-lg",
-          inactive: "hover:bg-surface hover:text-text",
-          indicator: "bg-primary-600",
+          text: "text-slate-700",
+          active: "bg-indigo-50 text-indigo-700 shadow-sm",
+          inactive: "hover:bg-blue-50 hover:text-indigo-600",
+          indicator: "bg-indigo-600",
         };
 
   useEffect(() => {
@@ -190,7 +190,7 @@ export function SiteNavbar({
           >
             <span>{item.label}</span>
             {item.badge ? (
-              <span className="rounded-full bg-primary-600/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-600">
+              <span className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
                 {item.badge}
               </span>
             ) : null}

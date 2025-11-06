@@ -20,14 +20,14 @@ export async function NavigationActions() {
 
   if (!currentUser) {
     return (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Link href={ROUTES.signIn} className="hidden sm:inline-flex">
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" className="font-semibold">
             Đăng nhập
           </Button>
         </Link>
         <Link href={ROUTES.register}>
-          <Button size="sm">Bắt đầu ngay</Button>
+          <Button size="sm" className="font-bold shadow-sm">Bắt đầu ngay</Button>
         </Link>
       </div>
     );
@@ -39,8 +39,8 @@ export async function NavigationActions() {
   return (
     <div className="flex items-center gap-3 text-sm">
       <div className="hidden flex-col text-right sm:flex">
-        <span className="font-medium text-text">{emailLabel}</span>
-        {roleLabel ? <span className="text-xs text-muted">{roleLabel}</span> : null}
+        <span className="font-semibold text-slate-900">{emailLabel}</span>
+        {roleLabel ? <span className="text-xs text-indigo-600 font-medium">{roleLabel}</span> : null}
       </div>
       <AccountMenu />
     </div>

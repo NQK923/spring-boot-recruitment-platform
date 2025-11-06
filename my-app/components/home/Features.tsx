@@ -40,9 +40,17 @@ export function Features() {
   return (
     <section
       aria-labelledby="home-features"
-      className="relative overflow-hidden bg-gradient-to-b from-purple-50 via-pink-50 to-white py-16"
+      className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-16"
     >
-      <Container className="space-y-8">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-1/4 h-80 w-80 rounded-full bg-gradient-to-br from-purple-300 to-pink-300 opacity-20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 right-1/4 h-72 w-72 rounded-full bg-gradient-to-br from-indigo-300 to-purple-300 opacity-15 blur-3xl"
+      />
+      <Container className="relative space-y-8">
         <div className="mx-auto max-w-2xl text-center space-y-3">
           <p className="text-xs uppercase tracking-wider text-purple-600 font-bold">
             Bộ tính năng tinh gọn

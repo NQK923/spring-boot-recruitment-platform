@@ -68,65 +68,47 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-3 px-4 py-4 sm:px-5 sm:py-5"
+      className="flex items-center gap-3 px-4 py-4"
     >
-      <div className="flex items-end gap-3">
-        <div className="flex-1">
-          <label htmlFor="chat-widget-input" className="sr-only">
-            Nhập tin nhắn
-          </label>
-          <textarea
-            id="chat-widget-input"
-            ref={textareaRef}
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                submitCurrentValue();
-              }
-            }}
-            placeholder={PLACEHOLDER[language]}
-            disabled={disabled}
-            rows={1}
-            className={cx(
-              "w-full resize-none overflow-hidden rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-text outline-none transition placeholder:text-muted",
-              "focus:border-primary-500 focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-bg",
-              disabled && "opacity-60"
-            )}
-            aria-disabled={disabled}
-            autoComplete="off"
-            autoCorrect="on"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          {status === "error" && retryAvailable ? (
-            <button
-              type="button"
-              onClick={onRetry}
-              className="cursor-pointer rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text transition hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-accent-600"
-            >
-              {RETRY_LABEL[language]}
-            </button>
-          ) : null}
-          <button
-            type="submit"
-            disabled={!canSend}
-            aria-label={SEND_LABEL[language]}
-            className={cx(
-              "flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700 text-white shadow-lg transition-transform duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
-              canSend ? "hover:scale-105 focus-visible:scale-105" : "opacity-50"
-            )}
-          >
-            {disabled ? <SpinnerIcon /> : <SendIcon />}
-          </button>
-        </div>
+      <div className="flex-1">
+        <label htmlFor="chat-widget-input" className="sr-only">
+          Nhập tin nhắn
+        </label>
+        <textarea
+          id="chat-widget-input"
+          ref={textareaRef}
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              submitCurrentValue();
+            }
+          }}
+          placeholder={PLACEHOLDER[language]}
+          disabled={disabled}
+          rows={1}
+          className={cx(
+            "w-full resize-none overflow-hidden rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400",
+            "focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200",
+            disabled && "opacity-50 cursor-not-allowed"
+          )}
+          aria-disabled={disabled}
+          autoComplete="off"
+          autoCorrect="on"
+        />
       </div>
-      <div className="flex items-center justify-end text-[11px] text-muted">
-        <span aria-live="polite">
-          {disabled ? "Đang xử lý..." : "\u00A0"}
-        </span>
-      </div>
+      <button
+        type="submit"
+        disabled={!canSend}
+        aria-label={SEND_LABEL[language]}
+        className={cx(
+          "flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 text-white shadow-md transition-all duration-200",
+          canSend ? "hover:scale-110 hover:shadow-lg" : "opacity-50 cursor-not-allowed"
+        )}
+      >
+        {disabled ? <SpinnerIcon /> : <SendIcon />}
+      </button>
     </form>
   );
 }

@@ -55,17 +55,17 @@ export async function SiteHeader() {
   const navItems = buildNavigation({ roles, isAuthenticated });
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-surface shadow-lg backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">
-      <Container className="flex h-16 items-center justify-between gap-4 sm:h-20">
-        <Link href={ROUTES.home} className="flex items-center gap-3">
-          <span className="brand-gradient inline-flex h-9 w-9 items-center justify-center rounded-xl text-sm font-semibold uppercase shadow-sm">
+    <header className="sticky top-0 z-40 border-b-2 border-blue-100 bg-white/95 shadow-sm backdrop-blur-md">
+      <Container className="flex h-16 items-center justify-between gap-4 sm:h-18">
+        <Link href={ROUTES.home} className="flex items-center gap-3 group">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 text-sm font-bold uppercase text-white shadow-md group-hover:shadow-lg transition-shadow">
             TF
           </span>
           <div className="flex flex-col leading-tight">
-            <span className="text-base font-semibold tracking-tight text-text sm:text-lg">
+            <span className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
               Talentflow
             </span>
-            <span className="hidden text-[11px] font-medium uppercase tracking-[0.32em] text-muted sm:block">
+            <span className="hidden text-[10px] font-bold uppercase tracking-wider text-indigo-600 sm:block">
               Nền tảng tuyển dụng
             </span>
           </div>

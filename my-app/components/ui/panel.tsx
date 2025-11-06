@@ -28,8 +28,8 @@ export function Panel({
     <Component
       id={id}
       className={cx(
-        "relative rounded-2xl border border-primary-300/30 bg-gradient-to-br from-white/90 via-slate-50/85 to-blue-50/80 shadow-md transition-all duration-300 hover:shadow-lg hover:border-primary-400/50",
-        variant === "glass" ? "glass-panel backdrop-blur-md" : null,
+        "relative rounded-2xl border-2 border-blue-100 bg-white shadow-sm transition-all duration-200 hover:shadow-md hover:border-blue-200",
+        variant === "glass" ? "backdrop-blur-md bg-white/95" : null,
         paddingMap[padding],
         className
       )}

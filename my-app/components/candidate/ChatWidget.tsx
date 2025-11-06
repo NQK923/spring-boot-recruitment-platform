@@ -252,44 +252,44 @@ function ChatWidgetInner() {
           tabIndex={-1}
           style={panelStyles}
           className={cx(
-            "chat-widget-panel fixed z-[9999] flex flex-col overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-bg/98 via-surface/95 to-bg/98 text-text shadow-lg backdrop-blur-xl transition duration-200",
+            "chat-widget-panel fixed z-[9999] flex flex-col overflow-hidden rounded-2xl bg-white shadow-2xl transition-all duration-300",
             isMobile
-              ? "mx-auto w-full max-w-none rounded-t-[36px] border-t border-border"
+              ? "mx-auto w-full max-w-none rounded-t-3xl"
               : "w-[420px]"
           )}
         >
           <WidgetPanelHeader
-            language={language}
-            isStreamingPreferred={isStreamingPreferred}
             onPointerDown={startDragging}
-            setLanguage={setLanguage}
-            setStreamingPreferred={setStreamingPreferred}
-            clear={clear}
             close={close}
           />
-          <div className="flex flex-1 min-h-0 flex-col px-4 pb-4 pt-3 sm:px-6 sm:pb-6 sm:pt-4">
-            <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[32px] border border-border bg-gradient-to-br from-bg/99 via-bg/95 to-bg/98 shadow-lg">
-              <div className="flex-1 min-h-0">
-                <MessageList
-                  messages={messages}
-                  status={status}
-                  error={error}
-                  retryAvailable={retryAvailable}
-                  onRetry={retryLastAttempt}
-                  sendMessage={sendMessage}
-                />
-              </div>
-              {info ? <Toast message={info} /> : null}
-              <div className="border-t border-border bg-bg/94">
-                <Composer
-                  status={status}
-                  language={language}
-                  sendMessage={sendMessage}
-                  retryAvailable={retryAvailable}
-                  onRetry={retryLastAttempt}
-                />
-              </div>
+          <div className="flex flex-1 min-h-0 flex-col">
+            <div className="flex-1 min-h-0 bg-gradient-to-b from-slate-50 to-white">
+              <MessageList
+                messages={messages}
+                status={status}
+                error={error}
+                retryAvailable={retryAvailable}
+                onRetry={retryLastAttempt}
+                sendMessage={sendMessage}
+              />
             </div>
+            {info ? <Toast message={info} /> : null}
+            <div className="border-t border-slate-200 bg-white">
+              <Composer
+                status={status}
+                language={language}
+                sendMessage={sendMessage}
+                retryAvailable={retryAvailable}
+                onRetry={retryLastAttempt}
+              />
+            </div>
+            <WidgetFooter
+              language={language}
+              isStreamingPreferred={isStreamingPreferred}
+              setLanguage={setLanguage}
+              setStreamingPreferred={setStreamingPreferred}
+              clear={clear}
+            />
           </div>
         </div>
       ) : null}
@@ -311,14 +311,14 @@ function FloatingLauncher({
       type="button"
       aria-label={isOpen ? "Thu nhỏ trợ lý tuyển dụng" : "Mở trợ lý tuyển dụng"}
       onClick={toggle}
-          className={cx(
-            "fixed bottom-5 right-5 z-[9998] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-primary-600 via-accent-600 to-accent-500 text-white shadow-lg transition duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg sm:bottom-6 sm:right-6",
-            isOpen ? "scale-95 opacity-80" : "scale-100"
-          )}
+      className={cx(
+        "fixed bottom-5 right-5 z-[9998] flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 sm:bottom-6 sm:right-6",
+        isOpen ? "scale-95 opacity-90" : "scale-100"
+      )}
     >
       <ChatBubbleIcon />
       {hasUnread ? (
-        <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full border border-surface/60 bg-surface text-[9px] font-semibold text-accent-600 shadow-lg">
+        <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-pink-500 to-rose-500 text-[10px] font-bold text-white shadow-md animate-pulse">
           ●
         </span>
       ) : null}
@@ -327,96 +327,104 @@ function FloatingLauncher({
 }
 
 function WidgetPanelHeader({
-  language,
-  isStreamingPreferred,
   onPointerDown,
-  setLanguage,
-  setStreamingPreferred,
-  clear,
   close,
 }: {
-  language: "vi" | "en";
-  isStreamingPreferred: boolean;
   onPointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
-  setLanguage: (lang: "vi" | "en") => void;
-  setStreamingPreferred: (value: boolean) => void;
-  clear: () => void;
   close: () => void;
 }) {
   return (
     <div
       onPointerDown={onPointerDown}
-    className="cursor-grab select-none border-b border-border bg-gradient-to-br from-accent-500/10 via-bg/98 to-bg/96 px-6 py-4"
+      className="cursor-grab select-none bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 px-5 py-4"
     >
-      <div className="flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex flex-1 items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-500/15 text-accent-600 shadow-lg">
-              <ChatBubbleIcon />
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[15px] font-semibold tracking-wide text-text">Trợ lý tuyển dụng</span>
-              <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted">
-                <span>Hỗ trợ tức thì cho mọi câu hỏi tuyển dụng</span>
-                <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-500">
-                  <span aria-hidden="true">●</span>
-                  <span>Trực tuyến</span>
-                </span>
-              </div>
-            </div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+            <ChatBubbleIcon />
           </div>
-          <button
-            type="button"
-            onClick={close}
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border bg-bg/80 text-muted transition hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-text"
-            aria-label="Đóng trợ lý"
-            data-no-drag="true"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 text-xs font-medium" data-no-drag="true">
-          <div className="relative flex items-center gap-1.5 rounded-full border border-border bg-bg/85 px-3 py-1.5">
-            <label htmlFor="chat-lang" className="sr-only">
-              Ngôn ngữ
-            </label>
-            <select
-              id="chat-lang"
-              value={language}
-              onChange={(event) => setLanguage(event.target.value === "en" ? "en" : "vi")}
-              className="peer cursor-pointer appearance-none rounded-full border border-border bg-bg/95 px-3 py-1 text-xs font-medium text-text outline-none transition focus:border-accent-500 focus:ring-2 focus:ring-accent-500/30"
-            >
-              <option value="vi">Tiếng Việt</option>
-              <option value="en">Tiếng Anh</option>
-            </select>
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted">
-              ▾
+          <div className="flex flex-col">
+            <span className="text-base font-bold text-white">Trợ lý tuyển dụng</span>
+            <span className="flex items-center gap-1.5 text-xs font-medium text-white/90">
+              <span className="flex h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+              Trực tuyến
             </span>
           </div>
-          <div className="flex cursor-pointer items-center gap-2 rounded-full border border-border bg-bg/85 px-3 py-1.5">
-            <span className="text-[11px] text-muted">Trả lời trực tiếp</span>
+        </div>
+        <button
+          type="button"
+          onClick={close}
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-white/20 text-white backdrop-blur-sm transition-all hover:bg-white/30"
+          aria-label="Đóng trợ lý"
+          data-no-drag="true"
+        >
+          <CloseIcon />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function WidgetFooter({
+  language,
+  isStreamingPreferred,
+  setLanguage,
+  setStreamingPreferred,
+  clear,
+}: {
+  language: "vi" | "en";
+  isStreamingPreferred: boolean;
+  setLanguage: (lang: "vi" | "en") => void;
+  setStreamingPreferred: (value: boolean) => void;
+  clear: () => void;
+}) {
+  return (
+    <div className="border-t border-slate-200 bg-slate-50 px-4 py-3" data-no-drag="true">
+      <div className="flex items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2">
+          <select
+            id="chat-lang"
+            value={language}
+            onChange={(event) => setLanguage(event.target.value === "en" ? "en" : "vi")}
+            className="cursor-pointer rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none transition hover:border-indigo-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200"
+          >
+            <option value="vi">🇻🇳 VI</option>
+            <option value="en">🇬🇧 EN</option>
+          </select>
+          
+          <div className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 transition hover:border-indigo-400">
             <input
-              id="chat-streaming-switch"
+              id="chat-streaming-toggle"
               type="checkbox"
-              className="peer sr-only"
+              className="sr-only"
               checked={isStreamingPreferred}
               onChange={(event) => setStreamingPreferred(event.target.checked)}
             />
-            <label
-              htmlFor="chat-streaming-switch"
-            className="relative block h-5 w-9 cursor-pointer rounded-full bg-border transition peer-checked:bg-primary-600"
+            <label 
+              htmlFor="chat-streaming-toggle" 
+              className={cx(
+                "relative flex h-4 w-7 cursor-pointer items-center rounded-full transition-colors duration-200",
+                isStreamingPreferred ? "bg-indigo-500" : "bg-slate-300"
+              )}
             >
-              <span className="absolute left-1 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-surface transition peer-checked:translate-x-3.5" />
+              <span className={cx(
+                "absolute left-0.5 h-3 w-3 rounded-full bg-white shadow-sm transition-transform duration-200",
+                isStreamingPreferred ? "translate-x-3" : "translate-x-0"
+              )} />
+            </label>
+            <label htmlFor="chat-streaming-toggle" className="cursor-pointer text-xs font-semibold text-slate-700">
+              Stream
             </label>
           </div>
-          <button
-            type="button"
-            onClick={clear}
-            className="cursor-pointer rounded-full border border-border bg-surface px-3 py-1.5 text-[11px] text-muted transition hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-accent-600"
-          >
-            Xóa hội thoại
-          </button>
         </div>
+        
+        <button
+          type="button"
+          onClick={clear}
+          className="cursor-pointer rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-all hover:border-rose-400 hover:bg-rose-50 hover:text-rose-600"
+        >
+          🗑️ Xóa
+        </button>
       </div>
     </div>
   );
@@ -425,8 +433,8 @@ function WidgetPanelHeader({
 function Toast({ message }: { message: string }) {
   return (
     <div className="pointer-events-none absolute inset-x-4 top-4 z-[10000]">
-      <div className="rounded-xl border border-amber-400/70 bg-amber-50 px-4 py-2 text-xs text-amber-800 shadow-lg">
-        {message}
+      <div className="rounded-xl border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-3 text-sm font-semibold text-amber-900 shadow-lg">
+        ⚠️ {message}
       </div>
     </div>
   );

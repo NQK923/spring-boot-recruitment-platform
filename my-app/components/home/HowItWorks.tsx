@@ -51,8 +51,16 @@ export function HowItWorks() {
   const data = FLOWS[flow];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-purple-50 to-white py-16">
-      <Container className="space-y-8">
+    <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 py-16">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/3 right-10 h-96 w-96 rounded-full bg-gradient-to-br from-purple-300 to-blue-300 opacity-20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-1/4 left-10 h-72 w-72 rounded-full bg-gradient-to-br from-indigo-300 to-purple-300 opacity-15 blur-3xl"
+      />
+      <Container className="relative space-y-8">
         <div className="mx-auto max-w-3xl text-center space-y-3">
           <p className="text-xs uppercase tracking-wider text-purple-600 font-bold">
             Quy trình làm việc

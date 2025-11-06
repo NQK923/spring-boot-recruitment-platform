@@ -103,15 +103,17 @@ export function MessageList({
   return (
     <div
       ref={scrollRef}
-      className="h-full overflow-y-auto px-5 py-6 sm:px-6 sm:py-7"
+      className="h-full overflow-y-auto px-4 py-5"
       aria-live="polite"
       aria-label="Lịch sử trò chuyện với trợ lý tuyển dụng"
     >
       {showQuickPrompts ? (
-        <div className="flex h-full flex-col items-center justify-center gap-4 text-center text-sm text-muted">
-          <div className="max-w-xs space-y-1.5">
-            <p className="font-semibold text-text">Xin chào! Trợ lý tuyển dụng luôn sẵn sàng.</p>
-            <p>Chọn nhanh một chủ đề bên dưới hoặc đặt câu hỏi riêng của bạn để bắt đầu đối thoại.</p>
+        <div className="flex h-full flex-col items-center justify-center gap-5 text-center">
+          <div className="max-w-xs space-y-2">
+            <p className="text-lg font-bold text-slate-900">👋 Xin chào!</p>
+            <p className="text-sm text-slate-600 font-medium leading-relaxed">
+              Chọn nhanh một chủ đề bên dưới hoặc đặt câu hỏi riêng của bạn để bắt đầu đối thoại.
+            </p>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
             {QUICK_PROMPTS.map((item) => (
@@ -121,9 +123,8 @@ export function MessageList({
                 onClick={() => sendMessage(item.prompt)}
                 disabled={status === "loading" || status === "streaming"}
                 className={cx(
-                  "cursor-pointer rounded-full border border-border bg-surface px-4 py-2 text-xs font-medium text-text shadow-sm transition",
-                  "hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-accent-600",
-                  (status === "loading" || status === "streaming") && "opacity-60"
+                  "cursor-pointer rounded-xl border-2 border-blue-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition-all hover:border-indigo-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-indigo-700 hover:shadow-md",
+                  (status === "loading" || status === "streaming") && "opacity-50 cursor-not-allowed"
                 )}
               >
                 {item.label}
@@ -138,22 +139,22 @@ export function MessageList({
           ))}
           {showTypingDots ? (
             <div className="flex justify-start">
-              <div className="max-w-[75%] rounded-2xl border border-border bg-bg/90 px-4 py-2 shadow-lg backdrop-blur-sm">
+              <div className="max-w-[75%] rounded-2xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 shadow-sm">
                 <TypingDots />
               </div>
             </div>
           ) : null}
           {status === "error" && error ? (
-            <p className="text-center text-xs text-error-600">{translateSystemText(error)}</p>
+            <p className="text-center text-sm font-semibold text-rose-600">❌ {translateSystemText(error)}</p>
           ) : null}
           {status === "error" && retryAvailable ? (
             <div className="flex justify-center pt-2">
               <button
                 type="button"
                 onClick={onRetry}
-                className="cursor-pointer rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text transition hover:border-accent-500/60 hover:bg-accent-500/10 hover:text-accent-600"
+                className="cursor-pointer rounded-xl border-2 border-blue-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all hover:border-indigo-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-indigo-700 hover:shadow-md"
               >
-                Thử lại
+                🔄 Thử lại
               </button>
             </div>
           ) : null}
@@ -171,10 +172,10 @@ function MessageBubble({ message }: { message: ChatMessage }) {
     <div className={cx("flex", isUser ? "justify-end" : "justify-start")}>
       <div
         className={cx(
-          "max-w-[78%] rounded-2xl px-4 py-2 text-sm leading-relaxed shadow-lg",
+          "max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm",
           isUser
-            ? "bg-gradient-to-br from-primary-600 to-primary-700 text-white"
-            : "border border-border bg-bg/90 backdrop-blur-sm text-text"
+            ? "bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 text-white font-medium"
+            : "border-2 border-blue-200 bg-gradient-to-br from-white to-blue-50 text-slate-800 font-medium"
         )}
       >
         <p className="whitespace-pre-wrap break-words">{content}</p>

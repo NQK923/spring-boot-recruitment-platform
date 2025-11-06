@@ -40,73 +40,55 @@ export function SiteFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border bg-bg text-text">
+    <footer className="border-t-2 border-blue-200 bg-white">
       <Container className="space-y-12 py-12">
-        <div className="rounded-3xl border border-accent-500/30 bg-gradient-to-br from-primary-700 via-accent-600 to-primary-500 p-8 text-surface shadow-lg">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold">
-                Cần hướng dẫn chi tiết hoặc trao đổi với đội hỗ trợ?
-              </h2>
-              <p className="text-sm text-surface/80">
-                Chúng tôi luôn sẵn sàng đồng hành trong quá trình triển khai, onboarding ứng viên và giải đáp mọi
-                thắc mắc vận hành hằng ngày.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href="mailto:support@talentflow.app"
-                className="inline-flex h-9 items-center justify-center rounded-lg border border-accent-500/40 bg-accent-500/10 px-4 text-sm font-semibold text-accent-600 transition hover:bg-accent-500/20"
-              >
-                Gửi email hỗ trợ
-              </a>
-              <Link href={ROUTES.docs}>
-                <Button size="sm" variant="primary">
-                  Xem tài liệu
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
+        {/* Footer Links */}
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_repeat(3,minmax(0,1fr))]">
           <div className="space-y-4">
             <Link
               href={ROUTES.home}
-              className="inline-flex items-center gap-2 text-lg font-semibold tracking-tight"
+              className="inline-flex items-center gap-2 group"
             >
-              Talentflow
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 text-sm font-bold uppercase text-white shadow-md">
+                TF
+              </span>
+              <span className="text-xl font-bold text-slate-900">Talentflow</span>
             </Link>
-            <p className="max-w-sm text-sm text-muted">
-              Talentflow kết nối doanh nghiệp, nhà tuyển dụng và ứng viên trong cùng một không gian làm việc, giúp
-              quản lý vòng tuyển dụng, hồ sơ và lịch phỏng vấn với sự minh bạch toàn diện.
+            <p className="max-w-sm text-sm text-slate-700 leading-relaxed font-medium">
+              Nền tảng tuyển dụng hiện đại kết nối doanh nghiệp và ứng viên. Quản lý pipeline minh bạch, hiệu quả và chuyên nghiệp.
             </p>
-            <div className="space-y-1 text-sm text-muted">
-              <p>
-                Hỗ trợ:{" "}
+            <div className="space-y-2 text-sm">
+              <p className="flex items-center gap-2">
+                <span className="text-base">📧</span>
                 <a
                   href="mailto:support@talentflow.app"
-                  className="font-semibold text-primary-600 transition hover:text-primary-700"
+                  className="font-bold text-indigo-600 hover:text-indigo-700 transition"
                 >
                   support@talentflow.app
                 </a>
               </p>
-              <p>Đường dây nóng: +84 234 567 899</p>
-              <p>Giờ hỗ trợ: 08:00-18:00 (Thứ Hai - Thứ Sáu)</p>
+              <p className="flex items-center gap-2">
+                <span className="text-base">📞</span>
+                <span className="font-bold text-slate-900">+84 234 567 899</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-base">🕐</span>
+                <span className="font-medium text-slate-700">08:00-18:00 (T2-T6)</span>
+              </p>
             </div>
           </div>
 
           {footerLinks.map((group) => (
-            <div key={group.label} className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
+            <div key={group.label} className="space-y-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-indigo-700">
                 {group.label}
               </p>
-              <ul className="space-y-2 text-sm text-muted">
+              <ul className="space-y-2.5 text-sm">
                 {group.items.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="transition-colors hover:text-primary-600"
+                      className="text-slate-800 font-semibold hover:text-indigo-600 transition-colors"
                     >
                       {item.label}
                     </Link>
@@ -117,16 +99,19 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="flex flex-col gap-6 border-t border-border pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {currentYear} Talentflow.</p>
-          <div className="flex flex-wrap items-center gap-4 text-muted">
+        {/* Bottom Bar */}
+        <div className="flex flex-col gap-4 border-t-2 border-slate-200 pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-slate-700 font-bold">
+            © {currentYear} Talentflow. All rights reserved.
+          </p>
+          <div className="flex flex-wrap items-center gap-5">
             {socialLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs font-semibold uppercase tracking-[0.2em] transition hover:text-primary-600"
+                className="text-sm font-bold text-slate-800 hover:text-indigo-600 transition-colors"
               >
                 {link.label}
               </a>

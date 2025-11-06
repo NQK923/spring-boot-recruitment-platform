@@ -31,11 +31,15 @@ export function Hero() {
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pb-20 pt-24 md:pb-24 md:pt-28">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-24 right-24 h-96 w-96 rounded-full bg-blue-400/30 blur-3xl"
+        className="pointer-events-none absolute -top-24 right-24 h-96 w-96 rounded-full bg-gradient-to-br from-blue-400 to-indigo-400 opacity-30 blur-3xl"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -bottom-28 left-16 h-80 w-80 rounded-full bg-purple-400/25 blur-3xl"
+        className="pointer-events-none absolute -bottom-28 left-16 h-80 w-80 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 opacity-25 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 right-1/3 h-64 w-64 rounded-full bg-gradient-to-br from-indigo-300 to-purple-300 opacity-20 blur-3xl"
       />
       <Container className="relative">
         {/* Main Content */}

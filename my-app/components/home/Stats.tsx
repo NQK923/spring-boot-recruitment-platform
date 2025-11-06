@@ -9,8 +9,16 @@ const STATS = [
 
 export function Stats() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50 to-purple-50 py-16">
-      <Container className="space-y-8">
+    <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 py-16">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-10 right-10 h-72 w-72 rounded-full bg-gradient-to-br from-blue-300 to-purple-300 opacity-20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-10 left-10 h-64 w-64 rounded-full bg-gradient-to-br from-indigo-300 to-pink-300 opacity-15 blur-3xl"
+      />
+      <Container className="relative space-y-8">
         <div className="text-center space-y-2">
           <p className="text-xs uppercase tracking-wider text-blue-600 font-bold">
             Những con số biết nói

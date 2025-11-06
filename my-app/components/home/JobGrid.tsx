@@ -19,8 +19,16 @@ const BADGES = ["Product", "Hybrid", "Mid-level", "Growth team"] as const;
 
 export function JobGrid({ jobs }: JobGridProps) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white via-indigo-50 to-blue-50 py-16">
-      <Container className="space-y-8">
+    <section className="relative overflow-hidden bg-gradient-to-br from-pink-50 via-blue-50 to-indigo-50 py-16">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-20 left-20 h-96 w-96 rounded-full bg-gradient-to-br from-blue-300 to-indigo-300 opacity-20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-20 right-20 h-80 w-80 rounded-full bg-gradient-to-br from-pink-300 to-purple-300 opacity-15 blur-3xl"
+      />
+      <Container className="relative space-y-8">
         <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full border-2 border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-1.5 text-xs text-amber-700 font-bold">

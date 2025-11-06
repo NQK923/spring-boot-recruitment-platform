@@ -4,7 +4,7 @@ type TypingDotsProps = {
   ariaLabel?: string;
 };
 
-const DOT_STYLE = "h-2.5 w-2.5 rounded-full bg-foreground/60";
+const DOT_STYLE = "h-2.5 w-2.5 rounded-full bg-indigo-500";
 
 export function TypingDots({ ariaLabel = "Đang nhập..." }: TypingDotsProps) {
   return (
@@ -16,7 +16,7 @@ export function TypingDots({ ariaLabel = "Đang nhập..." }: TypingDotsProps) {
       <span className="sr-only">{ariaLabel}</span>
       <div
         aria-hidden="true"
-        className="flex items-center gap-1 rounded-full bg-border/60 px-3 py-1.5"
+        className="flex items-center gap-1.5"
       >
         <span
           className={`${DOT_STYLE} animate-pulse`}

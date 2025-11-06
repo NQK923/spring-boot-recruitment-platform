@@ -6,7 +6,15 @@ import { ROUTES } from "@/lib/routes";
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-16">
+    <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 py-16">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-gradient-to-br from-indigo-300 to-purple-300 opacity-20 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-1/4 right-1/4 h-80 w-80 rounded-full bg-gradient-to-br from-blue-300 to-indigo-300 opacity-15 blur-3xl"
+      />
       <Container className="relative">
         <div className="rounded-3xl border-2 border-blue-200 bg-white p-10 text-center shadow-lg">
           <span className="inline-flex rounded-full border-2 border-green-200 bg-gradient-to-r from-green-500 to-emerald-500 px-5 py-2 text-sm font-bold text-white shadow-sm">

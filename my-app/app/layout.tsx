@@ -31,8 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" data-theme="dark" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} bg-bg text-text antialiased`}>
+    <html lang="vi" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider>
           <ChatWidgetProvider>
             <div className="flex min-h-screen flex-col">
