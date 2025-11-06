@@ -20,12 +20,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Talentflow | Nền tảng tuyển dụng",
+  title: "TalentFlow | Nền tảng tuyển dụng chuyên nghiệp",
   description:
-    "Quản lý doanh nghiệp, bài đăng tuyển dụng, hồ sơ ứng tuyển và lịch phỏng vấn trên một nền tảng duy nhất.",
+    "Vận hành toàn bộ pipeline tuyển dụng – đăng job, sàng lọc, phỏng vấn và báo cáo – trên một giao diện tối ưu cho đội ngũ recruiter.",
 };
-
-const INITIAL_THEME_SCRIPT = `(function(){try{var storageKey='talentflow-ui-theme';var stored=localStorage.getItem(storageKey);var theme=(stored==='light'||stored==='dark')?stored:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -33,9 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi">
+    <html lang="vi" data-theme="dark" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} bg-bg text-text antialiased`}>
-        <script dangerouslySetInnerHTML={{ __html: INITIAL_THEME_SCRIPT }} />
         <ThemeProvider>
           <ChatWidgetProvider>
             <div className="flex min-h-screen flex-col">

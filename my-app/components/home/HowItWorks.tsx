@@ -1,85 +1,101 @@
-﻿'use client';
+'use client';
 
 import { useState } from "react";
 
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 
-const WORKFLOWS = {
+const FLOWS = {
   candidate: {
     label: "Ứng viên",
+    color: "from-blue-500 to-indigo-500",
     steps: [
-      { title: "Tạo hồ sơ chuyên nghiệp", description: "Hoàn thiện thông tin cá nhân, kỹ năng và CV chuẩn ATS chỉ trong vài phút." },
-      { title: "Ứng tuyển tức thì", description: "Chọn việc làm phù hợp, gửi hồ sơ và đính kèm CV ngay trên nền tảng." },
-      { title: "Theo dõi trạng thái", description: "Nhận thông báo khi có thay đổi trạng thái, ghi chú phản hồi trực tiếp trên timeline." },
+      {
+        title: "Tạo hồ sơ nổi bật",
+        detail: "Hoàn thiện CV chuẩn ATS, nhập kinh nghiệm và kỹ năng chỉ trong 5 phút.",
+      },
+      {
+        title: "Ứng tuyển và theo dõi",
+        detail: "Chọn job phù hợp, nộp hồ sơ và theo dõi tiến độ realtime qua timeline minh bạch.",
+      },
+      {
+        title: "Nhận thông báo kịp thời",
+        detail: "Nhận email/SMS khi có lịch phỏng vấn, kết quả vòng và offer cuối cùng.",
+      },
     ],
   },
   recruiter: {
     label: "Nhà tuyển dụng",
+    color: "from-purple-500 to-pink-500",
     steps: [
-      { title: "Đăng tin tuyển dụng", description: "Tạo job mới từ mẫu, gán pipeline và phân quyền cho đội tuyển dụng." },
-      { title: "Sàng lọc & giao việc", description: "Chấm điểm hồ sơ, giao nhiệm vụ cho từng thành viên và trao đổi nội bộ." },
-      { title: "Phỏng vấn & offer", description: "Đặt lịch phỏng vấn, ghi nhận đánh giá và gửi offer chỉ trong một bảng điều khiển." },
+      {
+        title: "Đăng job đa kênh",
+        detail: "Sử dụng template hoặc AI gợi ý JD, xuất bản tới Career site & mạng xã hội.",
+      },
+      {
+        title: "Sàng lọc & phối hợp",
+        detail: "Drag & drop ứng viên qua các stage, giao việc cho team và ghi chú ngay trên card.",
+      },
+      {
+        title: "Phỏng vấn & báo cáo",
+        detail: "Đặt lịch, thu thập feedback, phát hành offer và theo dõi KPI tuyển dụng tức thời.",
+      },
     ],
   },
 } as const;
 
-type WorkflowKey = keyof typeof WORKFLOWS;
+type FlowKey = keyof typeof FLOWS;
 
 export function HowItWorks() {
-  const [active, setActive] = useState<WorkflowKey>("candidate");
-  const workflow = WORKFLOWS[active];
+  const [flow, setFlow] = useState<FlowKey>("candidate");
+  const data = FLOWS[flow];
 
   return (
-    <section className="bg-surface/30">
-      <Container className="space-y-12 py-20">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.32em] text-primary-600">
-            Lộ trình rõ ràng
+    <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-purple-50 to-white py-16">
+      <Container className="space-y-8">
+        <div className="mx-auto max-w-3xl text-center space-y-3">
+          <p className="text-xs uppercase tracking-wider text-purple-600 font-bold">
+            Quy trình làm việc
           </p>
-          <h2 className="mt-3 text-3xl font-bold text-text">Cách TalentFlow đồng hành cùng bạn</h2>
-          <p className="mt-4 text-lg text-muted">
-            Chọn vai trò để xem các bước tối ưu hoá trải nghiệm tuyển dụng của bạn.
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Một pipeline cho tất cả</h2>
+          <p className="text-base text-slate-600">
+            Chọn vai trò của bạn để xem hành trình tối ưu tương ứng
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-3" role="tablist" aria-label="Lựa chọn vai trò">
-          {(Object.keys(WORKFLOWS) as WorkflowKey[]).map((key) => (
+        <div className="flex flex-wrap justify-center gap-3">
+          {(Object.keys(FLOWS) as FlowKey[]).map((key) => (
             <button
               key={key}
-              role="tab"
               type="button"
-              aria-selected={active === key}
-              aria-controls={`workflow-panel-${key}`}
-              onClick={() => setActive(key)}
+              onClick={() => setFlow(key)}
               className={[
-                "rounded-full border px-5 py-2 text-sm font-semibold transition-colors",
-                active === key
-                  ? "border-primary-600 bg-primary-600 text-white"
-                  : "border-border bg-surface text-text hover:bg-primary-50 dark:hover:bg-white/5",
+                "rounded-full border-2 px-6 py-2.5 text-sm font-bold transition-all",
+                flow === key
+                  ? "border-blue-600 bg-blue-600 text-white shadow-md"
+                  : "border-blue-200 bg-white text-slate-700 hover:bg-blue-50 hover:border-blue-300",
               ].join(" ")}
             >
-              {WORKFLOWS[key].label}
+              {FLOWS[key].label}
             </button>
           ))}
         </div>
 
-        <div
-          id={`workflow-panel-${active}`}
-          role="tabpanel"
-          aria-live="polite"
-          className="grid gap-6 md:grid-cols-3"
-        >
-          {workflow.steps.map((step, index) => (
-            <Card key={step.title} className="h-full">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-base font-bold text-primary-600">
-                {index + 1}
-              </span>
-              <h3 className="mt-4 text-lg font-semibold text-text">{step.title}</h3>
-              <p className="mt-2 text-sm text-muted">{step.description}</p>
-            </Card>
-          ))}
-        </div>
+        <Card className="bg-white border-2 border-purple-100 shadow-md">
+          <ol className="relative space-y-6 before:absolute before:left-[18px] before:top-3 before:h-[calc(100%-2rem)] before:w-0.5 before:bg-gradient-to-b before:from-blue-300 before:via-purple-300 before:to-transparent">
+            {data.steps.map((step, index) => (
+              <li key={step.title} className="relative pl-12">
+                <span
+                  className={`absolute left-0 top-0 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br ${data.color} text-white font-bold shadow-md ring-4 ring-white`}
+                >
+                  {index + 1}
+                </span>
+                <h3 className="text-lg font-bold text-slate-900">{step.title}</h3>
+                <p className="mt-1 text-sm text-slate-600 leading-relaxed">{step.detail}</p>
+              </li>
+            ))}
+          </ol>
+        </Card>
       </Container>
     </section>
   );

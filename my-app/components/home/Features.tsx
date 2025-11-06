@@ -1,45 +1,77 @@
-﻿import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 
 const FEATURES = [
   {
+    icon: "🧩",
     title: "Tự động hoá pipeline",
-    description: "Từ đăng tin, sàng lọc đến thông báo nội bộ đều chạy tự động theo quy tắc của doanh nghiệp.",
+    description:
+      "Chuẩn hoá các bước từ đăng tin, phân luồng, gán người phụ trách đến gửi thông báo – mọi thứ chạy tự động theo quy tắc bạn đặt ra.",
+    gradient: "from-primary-500/20 via-primary-500/10 to-surface-2",
+    chip: "bg-primary-500/20 text-primary-200",
   },
   {
-    title: "Hồ sơ ứng viên đầy đủ",
-    description: "Tổng hợp kinh nghiệm, kỹ năng, CV, ghi chú và lịch sử tương tác trong một giao diện duy nhất.",
+    icon: "📇",
+    title: "Hồ sơ ứng viên giàu dữ liệu",
+    description:
+      "Tổng hợp kinh nghiệm, kỹ năng, CV, ghi chú nội bộ và lịch sử tương tác trong một hồ sơ duy nhất, giúp quyết định nhanh và chính xác.",
+    gradient: "from-accent-600/20 via-accent-500/12 to-surface-2",
+    chip: "bg-accent-600/20 text-accent-100",
   },
   {
-    title: "Lịch phỏng vấn nhanh",
-    description: "Đặt lịch theo múi giờ, gửi thư mời và file .ics chỉ với vài cú nhấp, hạn chế trùng lịch.",
+    icon: "🗓️",
+    title: "Lịch phỏng vấn thông minh",
+    description:
+      "Đặt lịch theo múi giờ, gửi thư mời kèm file .ics, đồng bộ Google/Outlook và nhắc việc tự động để không bỏ sót buổi phỏng vấn nào.",
+    gradient: "from-primary-600/22 via-primary-500/14 to-surface-2",
+    chip: "bg-primary-500/20 text-primary-200",
   },
   {
-    title: "Báo cáo tức thì",
-    description: "Theo dõi tỷ lệ chuyển đổi, thời gian tuyển dụng và nguồn ứng viên được cập nhật liên tục.",
+    icon: "📈",
+    title: "Dashboard tức thời",
+    description:
+      "Theo dõi tỷ lệ chuyển đổi, thời gian tuyển, nguồn ứng viên và hiệu suất từng recruiter với các widget trực quan cập nhật mỗi giờ.",
+    gradient: "from-success-600/22 via-success-500/14 to-surface-2",
+    chip: "bg-success-600/20 text-success-200",
   },
 ] as const;
 
 export function Features() {
   return (
-    <section aria-labelledby="home-features" className="bg-bg">
-      <Container className="space-y-12 py-20">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.32em] text-primary-600">
-            Bộ tính năng cốt lõi
+    <section
+      aria-labelledby="home-features"
+      className="relative overflow-hidden bg-gradient-to-b from-purple-50 via-pink-50 to-white py-16"
+    >
+      <Container className="space-y-8">
+        <div className="mx-auto max-w-2xl text-center space-y-3">
+          <p className="text-xs uppercase tracking-wider text-purple-600 font-bold">
+            Bộ tính năng tinh gọn
           </p>
-          <h2 id="home-features" className="mt-3 text-3xl font-bold text-text">
-            Giải pháp tinh gọn cho cả ứng viên và doanh nghiệp
+          <h2 id="home-features" className="text-3xl md:text-4xl font-bold text-slate-900">
+            Thiết kế cho đội tuyển dụng hiện đại
           </h2>
-          <p className="mt-4 text-lg text-muted">
-            TalentFlow tích hợp đầy đủ công cụ tuyển dụng hiện đại, giảm thao tác thủ công và tăng trải nghiệm minh bạch.
+          <p className="text-base text-slate-600">
+            TalentFlow kết hợp công nghệ và UX: nhẹ nhàng, dễ dùng nhưng đủ mạnh mẽ cho doanh nghiệp.
           </p>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((feature) => (
-            <Card key={feature.title} className="h-full rounded-2xl border border-border bg-surface p-6">
-              <h3 className="text-xl font-semibold text-text">{feature.title}</h3>
-              <p className="mt-3 text-sm text-muted">{feature.description}</p>
+            <Card
+              key={feature.title}
+              className="group h-full bg-white border-2 border-purple-100 hover:border-purple-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
+              title={
+                <span className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 text-2xl">
+                    {feature.icon}
+                  </span>
+                  <span className="text-base font-bold text-slate-900">{feature.title}</span>
+                </span>
+              }
+            >
+              <div className="rounded-xl bg-gradient-to-br from-purple-50/50 to-pink-50/30 p-3 text-sm text-slate-600 leading-relaxed">
+                {feature.description}
+              </div>
             </Card>
           ))}
         </div>

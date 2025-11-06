@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,67 +15,91 @@ type JobWithExtras = JobPostingPublic & {
   company?: { name?: string | null } | null;
 };
 
+const BADGES = ["Product", "Hybrid", "Mid-level", "Growth team"] as const;
+
 export function JobGrid({ jobs }: JobGridProps) {
   return (
-    <section aria-labelledby="home-jobs" className="bg-bg">
-      <Container className="space-y-8 py-20">
-        <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.32em] text-muted">Việc làm mới nhất</p>
-            <h2 id="home-jobs" className="mt-2 text-3xl font-bold text-text">
-              Cơ hội sẵn sàng dành cho bạn
+    <section className="relative overflow-hidden bg-gradient-to-b from-white via-indigo-50 to-blue-50 py-16">
+      <Container className="space-y-8">
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 rounded-full border-2 border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-1.5 text-xs text-amber-700 font-bold">
+              ⭐ Tuyển chọn mới nhất
+            </div>
+            <h2 id="home-jobs" className="text-3xl md:text-4xl font-bold text-slate-900">
+              Việc làm nổi bật
             </h2>
+            <p className="text-base text-slate-600">
+              Cập nhật trực tiếp từ các doanh nghiệp đang tuyển dụng
+            </p>
           </div>
-          <Button asChild variant="ghost" className="self-start">
-            <Link href={ROUTES.jobs} aria-label="Xem tất cả việc làm đang tuyển">
-              Xem tất cả việc làm
-            </Link>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            {BADGES.map((badge) => (
+              <span
+                key={badge}
+                className="rounded-full border-2 border-blue-200 bg-white px-3 py-1 text-xs font-bold text-blue-700 hover:border-blue-300 hover:bg-blue-50 transition-all"
+              >
+                {badge}
+              </span>
+            ))}
+            <Button asChild variant="ghost" className="px-3 py-1 text-sm font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+              <Link href={ROUTES.jobs} aria-label="Xem tất cả việc làm đang tuyển">
+                Xem tất cả →
+              </Link>
+            </Button>
+          </div>
         </header>
 
         {jobs.length === 0 ? (
-          <Card className="text-center text-muted">
-            Chưa có việc làm mới trong thời gian này. Hãy quay lại sau hoặc tạo thông báo việc làm để được cập nhật sớm nhất.
+          <Card className="text-center text-slate-600 bg-white py-12">
+            Chưa có việc làm mới. Hãy quay lại sau!
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {jobs.map((job) => (
-              <article
+              <Card
                 key={job.id}
-                className="group rounded-2xl border border-border bg-surface p-5 transition-colors hover:bg-primary-50/30 dark:hover:bg-white/5"
+                as="article"
+                className="group h-full bg-white border-2 border-blue-100 hover:border-blue-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
               >
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold text-text group-hover:text-primary-600">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-600">{job.workType ?? "Linh hoạt"}</span>
+                    <span className="rounded-full bg-gradient-to-r from-green-500 to-emerald-500 px-2.5 py-0.5 text-xs text-white font-bold">
+                      Mở
+                    </span>
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900 transition-colors group-hover:text-blue-600">
                     <Link href={`/jobs/${job.id}`} aria-label={`Xem chi tiết việc làm ${job.title}`}>
                       {job.title}
                     </Link>
                   </h3>
-                  <p className="text-sm font-medium text-muted">
+                  <p className="text-sm font-semibold text-slate-700">
                     {getCompanyName(job)} · {job.location ?? "Linh hoạt"}
                   </p>
                   {job.salaryRange ? (
-                    <span className="inline-flex items-center rounded-full bg-success-600/10 px-3 py-1 text-xs font-semibold text-success-600">
-                      {job.salaryRange}
+                    <span className="inline-flex items-center rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 border-2 border-amber-200 px-3 py-1 text-xs font-bold text-amber-800">
+                      💰 {job.salaryRange}
                     </span>
                   ) : null}
-                  <p className="line-clamp-3 text-sm text-muted">{getJobSummary(job)}</p>
+                  <p className="text-sm text-slate-600 line-clamp-2">{getJobSummary(job)}</p>
                 </div>
-                <div className="mt-6 flex items-center justify-between text-sm text-muted">
-                  <span>{job.workType ?? "Làm việc linh hoạt"}</span>
+                <div className="mt-4 flex items-center justify-between text-sm">
                   <Button
                     asChild
                     size="sm"
                     variant="ghost"
+                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-bold"
                     data-analytics-id="job_apply_click"
                     data-section="jobs"
                     data-job-id={job.id}
                   >
                     <Link href={`/jobs/${job.id}`} aria-label={`Ứng tuyển vào vị trí ${job.title}`}>
-                      Ứng tuyển
+                      Ứng tuyển →
                     </Link>
                   </Button>
                 </div>
-              </article>
+              </Card>
             ))}
           </div>
         )}

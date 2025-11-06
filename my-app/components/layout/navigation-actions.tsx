@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AccountMenu } from "@/components/layout/account-menu";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { ROUTES } from "@/lib/routes";
 import { getCurrentUser } from "@/lib/current-user";
 
@@ -22,7 +21,6 @@ export async function NavigationActions() {
   if (!currentUser) {
     return (
       <div className="flex items-center gap-3">
-        <ThemeToggle />
         <Link href={ROUTES.signIn} className="hidden sm:inline-flex">
           <Button variant="ghost" size="sm">
             Đăng nhập
@@ -40,7 +38,6 @@ export async function NavigationActions() {
 
   return (
     <div className="flex items-center gap-3 text-sm">
-      <ThemeToggle />
       <div className="hidden flex-col text-right sm:flex">
         <span className="font-medium text-text">{emailLabel}</span>
         {roleLabel ? <span className="text-xs text-muted">{roleLabel}</span> : null}

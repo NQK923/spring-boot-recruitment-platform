@@ -50,12 +50,12 @@ export default async function HomePage() {
   const jobs = await getLatestJobs({ limit: LATEST_JOBS_LIMIT });
 
   return (
-    <main className="flex flex-col bg-bg text-text">
+    <main className="flex flex-col bg-white text-slate-900">
       <Hero />
+      <Stats />
       <Features />
       <JobGrid jobs={jobs} />
       <HowItWorks />
-      <Stats />
       <Testimonials />
       <FinalCTA />
       <FAQ />
