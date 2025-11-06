@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { ChatWidgetProvider } from "@/app/providers/chat-widget-provider";
 import { ChatWidget } from "@/components/candidate/ChatWidget";
+import { ThemeProvider } from "@/app/providers/theme-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,6 +25,8 @@ export const metadata: Metadata = {
     "Quản lý doanh nghiệp, bài đăng tuyển dụng, hồ sơ ứng tuyển và lịch phỏng vấn trên một nền tảng duy nhất.",
 };
 
+const INITIAL_THEME_SCRIPT = `(function(){try{var storageKey='talentflow-ui-theme';var stored=localStorage.getItem(storageKey);var theme=(stored==='light'||stored==='dark')?stored:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,14 +35,17 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}>
-        <ChatWidgetProvider>
-          <div className="flex min-h-screen flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
-          <ChatWidget />
-        </ChatWidgetProvider>
+        <script dangerouslySetInnerHTML={{ __html: INITIAL_THEME_SCRIPT }} />
+        <ThemeProvider>
+          <ChatWidgetProvider>
+            <div className="flex min-h-screen flex-col">
+              <SiteHeader />
+              <main className="flex-1">{children}</main>
+              <SiteFooter />
+            </div>
+            <ChatWidget />
+          </ChatWidgetProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

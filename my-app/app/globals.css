@@ -2,18 +2,44 @@
 
 :root {
   color-scheme: light;
-  --background: 245 247 252;
-  --foreground: 27 35 55;
-  --muted: 114 124 155;
-  --accent: 76 110 245;
-  --accent-soft: 212 222 255;
+}
+
+:root,
+:root[data-theme="light"] {
+  --background: 248 249 255;
+  --foreground: 26 32 54;
+  --muted: 128 137 170;
+  --accent: 68 104 255;
+  --accent-soft: 225 232 255;
   --surface: 255 255 255;
-  --surface-muted: 238 242 250;
-  --border: 214 220 236;
-  --border-strong: 191 200 225;
-  --ring: 76 110 245;
-  --shadow-soft: 26 36 64;
-  --shadow-strong: 16 24 56;
+  --surface-muted: 240 243 255;
+  --border: 217 223 241;
+  --border-strong: 198 206 231;
+  --ring: 68 104 255;
+  --shadow-soft: 32 42 78;
+  --shadow-strong: 18 24 56;
+  --brand-gradient: linear-gradient(135deg, rgba(82, 120, 254, 1) 0%, rgba(110, 140, 255, 0.96) 50%, rgba(178, 188, 255, 0.94) 100%);
+  --brand-text: 255 255 255;
+  --brand-border: 64 84 198;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: 14 16 26;
+  --foreground: 226 232 255;
+  --muted: 152 162 206;
+  --accent: 118 148 255;
+  --accent-soft: 54 70 144;
+  --surface: 24 28 44;
+  --surface-muted: 30 34 48;
+  --border: 50 58 86;
+  --border-strong: 66 76 110;
+  --ring: 108 130 240;
+  --shadow-soft: 12 14 32;
+  --shadow-strong: 6 8 20;
+  --brand-gradient: linear-gradient(135deg, rgba(120, 150, 255, 0.95) 0%, rgba(158, 176, 255, 0.92) 55%, rgba(196, 172, 255, 0.9) 100%);
+  --brand-text: 16 22 40;
+  --brand-border: 180 200 255;
 }
 
 @theme inline {
@@ -31,7 +57,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     color-scheme: dark;
     --background: 14 16 26;
     --foreground: 226 232 255;
@@ -57,9 +83,9 @@ body {
   font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background-color: rgb(var(--background));
   background-image:
-    radial-gradient(600px 600px at 10% -10%, rgba(var(--accent-soft), 0.28), transparent 65%),
-    radial-gradient(800px 800px at 80% -20%, rgba(var(--accent), 0.12), transparent 70%),
-    linear-gradient(180deg, rgba(var(--surface-muted), 0.6) 0%, rgba(var(--surface), 0.65) 48%, rgb(var(--background)) 100%);
+    radial-gradient(520px 520px at 12% -12%, rgba(var(--accent-soft), 0.42), transparent 65%),
+    radial-gradient(760px 760px at 78% -18%, rgba(var(--accent), 0.14), transparent 70%),
+    linear-gradient(180deg, rgba(var(--surface-muted), 0.72) 0%, rgba(var(--surface), 0.7) 40%, rgb(var(--background)) 100%);
   color: rgb(var(--foreground));
   text-rendering: optimizeLegibility;
 }
@@ -83,7 +109,12 @@ a:hover {
 }
 
 .brand-gradient {
-  background: linear-gradient(135deg, rgba(var(--accent), 1) 0%, rgba(116, 149, 255, 0.92) 55%, rgba(150, 120, 255, 0.9) 100%);
+  background: var(--brand-gradient);
+  color: rgb(var(--brand-text));
+  border: 1px solid rgba(var(--brand-border), 0.35);
+  box-shadow:
+    0 10px 24px rgba(var(--shadow-soft), 0.25),
+    0 6px 18px rgba(var(--shadow-strong), 0.14);
 }
 
 .glass-panel {
