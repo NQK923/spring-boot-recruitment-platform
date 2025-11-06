@@ -10,9 +10,9 @@ export default async function RegisterPage() {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold text-text">Tạo tài khoản mới</h1>
-        <p className="text-sm text-text/65">
+      <header className="space-y-3 text-center">
+        <h1 className="text-3xl font-bold text-slate-900">Tạo tài khoản mới</h1>
+        <p className="text-sm text-slate-600 font-medium">
           Đăng ký với vai trò ứng viên để quản lý hồ sơ, CV và theo dõi trạng thái ứng tuyển.
         </p>
       </header>

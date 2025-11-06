@@ -322,24 +322,24 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-1 text-sm text-muted">
-        <p>Đăng nhập với vai trò ứng viên bằng tài khoản mạng xã hội.</p>
-        <p className="text-text/50">
+      <div className="space-y-2 text-sm">
+        <p className="font-semibold text-slate-700">Đăng nhập với vai trò ứng viên bằng tài khoản mạng xã hội.</p>
+        <p className="text-slate-500">
           Chúng tôi sẽ tạo hồ sơ ứng viên nếu bạn là người dùng mới.
         </p>
       </div>
 
       {error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}
-        </p>
+        <div className="rounded-xl border-2 border-rose-300 bg-gradient-to-r from-rose-50 to-red-50 px-4 py-3 text-sm font-semibold text-rose-700">
+          ❌ {error}
+        </div>
       ) : null}
 
       <div className="grid gap-3">
         <Button
           variant="secondary"
           size="lg"
-          className="w-full justify-center gap-2 text-text"
+          className="w-full justify-center gap-3 font-semibold"
           onClick={handleGoogleLogin}
           disabled={googleDisabled}
         >
@@ -355,7 +355,7 @@ export function SocialSignIn({ nextPath, initialError }: SocialSignInProps) {
         <Button
           variant="secondary"
           size="lg"
-          className="w-full justify-center gap-2 text-text"
+          className="w-full justify-center gap-3 font-semibold"
           onClick={handleGitHubLogin}
           disabled={githubDisabled}
         >

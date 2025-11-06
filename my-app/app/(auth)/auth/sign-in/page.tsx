@@ -53,31 +53,31 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold text-text">Đăng nhập</h1>
-        <p className="text-sm text-text/65">
+      <header className="space-y-3 text-center">
+        <h1 className="text-3xl font-bold text-slate-900">Đăng nhập</h1>
+        <p className="text-sm text-slate-600 font-medium">
           Nhập thông tin để truy cập workspace tuyển dụng của bạn.
         </p>
       </header>
 
       {justRegistered ? (
-        <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          Tạo tài khoản thành công. Đăng nhập bằng thông tin vừa tạo để tiếp tục.
-        </p>
+        <div className="rounded-xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+          ✓ Tạo tài khoản thành công. Đăng nhập bằng thông tin vừa tạo để tiếp tục.
+        </div>
       ) : null}
 
       {passwordReset ? (
-        <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          Mật khẩu đã được cập nhật. Bạn có thể đăng nhập bằng mật khẩu mới.
-        </p>
+        <div className="rounded-xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+          ✓ Mật khẩu đã được cập nhật. Bạn có thể đăng nhập bằng mật khẩu mới.
+        </div>
       ) : null}
 
       <div className="space-y-5">
         <SocialSignIn nextPath={safeNext} initialError={socialError} />
-        <div className="flex items-center gap-3 text-xs text-text/50">
-          <span className="h-px flex-1 bg-foreground/15" />
+        <div className="flex items-center gap-3 text-xs font-semibold text-slate-400">
+          <span className="h-px flex-1 bg-slate-300" />
           <span>Hoặc tiếp tục bằng email</span>
-          <span className="h-px flex-1 bg-foreground/15" />
+          <span className="h-px flex-1 bg-slate-300" />
         </div>
         <SignInForm defaultNext={safeNext} />
       </div>

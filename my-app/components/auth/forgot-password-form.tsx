@@ -13,7 +13,7 @@ export function ForgotPasswordForm() {
   return (
     <form className="space-y-5" action={formAction}>
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-text" htmlFor="email">
+        <label className="text-sm font-bold text-slate-900" htmlFor="email">
           Địa chỉ email
         </label>
         <Input
@@ -24,19 +24,19 @@ export function ForgotPasswordForm() {
           autoComplete="email"
           required
         />
-        <p className="text-xs text-text/55">
+        <p className="text-xs text-slate-500 font-medium">
           Chúng tôi sẽ gửi mã gồm sáu chữ số tới email này nếu tài khoản được xác minh.
         </p>
       </div>
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {state.error}
-        </p>
+        <div className="rounded-xl border-2 border-rose-300 bg-gradient-to-r from-rose-50 to-red-50 px-4 py-3 text-sm font-semibold text-rose-700">
+          ❌ {state.error}
+        </div>
       ) : null}
       {state?.success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          {state.success}
-        </p>
+        <div className="rounded-xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+          ✓ {state.success}
+        </div>
       ) : null}
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
         {pending ? "Đang gửi mã đặt lại..." : "Gửi mã đặt lại"}

@@ -43,7 +43,7 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
     <form className="space-y-5" action={formAction}>
       <input type="hidden" name="next" value={resolvedNext} />
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-text" htmlFor="email">
+        <label className="text-sm font-bold text-slate-900" htmlFor="email">
           Địa chỉ email
         </label>
         <Input
@@ -57,11 +57,11 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-semibold text-text" htmlFor="password">
+          <label className="text-sm font-bold text-slate-900" htmlFor="password">
             Mật khẩu
           </label>
           <Link
-            className="text-xs font-medium text-primary-600 hover:underline"
+            className="text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline"
             href={ROUTES.forgotPassword}
           >
             Quên mật khẩu?
@@ -77,16 +77,16 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
         />
       </div>
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {state.error}
-        </p>
+        <div className="rounded-xl border-2 border-rose-300 bg-gradient-to-r from-rose-50 to-red-50 px-4 py-3 text-sm font-semibold text-rose-700">
+          ❌ {state.error}
+        </div>
       ) : null}
       <Button className="w-full" size="lg" type="submit" disabled={pending}>
         {pending ? "Đang đăng nhập..." : "Đăng nhập"}
       </Button>
-      <div className="text-center text-sm text-muted">
+      <div className="text-center text-sm font-medium text-slate-600">
         Chưa có tài khoản?{" "}
-        <Link className="font-medium text-text hover:underline" href={ROUTES.register}>
+        <Link className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline" href={ROUTES.register}>
           Tạo ngay
         </Link>
       </div>
