@@ -15,7 +15,7 @@ export function ResetPasswordForm() {
   return (
     <form className="space-y-5" action={formAction}>
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-text" htmlFor="email">
+        <label className="text-sm font-bold text-slate-900" htmlFor="email">
           Địa chỉ email
         </label>
         <Input
@@ -28,7 +28,7 @@ export function ResetPasswordForm() {
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-text" htmlFor="otp">
+        <label className="text-sm font-bold text-slate-900" htmlFor="otp">
           Mã đặt lại
         </label>
         <Input
@@ -41,12 +41,12 @@ export function ResetPasswordForm() {
           autoComplete="one-time-code"
           required
         />
-        <p className="text-xs text-text/55">
+        <p className="text-xs text-slate-500 font-medium">
           Nhập mã sáu chữ số từ email. Mỗi mã sẽ hết hạn sau 10 phút kể từ khi cấp.
         </p>
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-text" htmlFor="newPassword">
+        <label className="text-sm font-bold text-slate-900" htmlFor="newPassword">
           Mật khẩu mới
         </label>
         <Input
@@ -59,16 +59,16 @@ export function ResetPasswordForm() {
         />
       </div>
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {state.error}
-        </p>
+        <div className="rounded-xl border-2 border-rose-300 bg-gradient-to-r from-rose-50 to-red-50 px-4 py-3 text-sm font-semibold text-rose-700">
+          ❌ {state.error}
+        </div>
       ) : null}
-      <Button className="w-full" size="lg" type="submit" disabled={pending}>
+      <Button className="w-full font-semibold" size="lg" type="submit" disabled={pending}>
         {pending ? "Đang cập nhật mật khẩu..." : "Đặt lại mật khẩu"}
       </Button>
-      <p className="text-center text-sm text-muted">
+      <p className="text-center text-sm font-medium text-slate-600">
         Đã nhớ mật khẩu?{" "}
-        <Link className="font-medium text-text hover:underline" href={ROUTES.signIn}>
+        <Link className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline" href={ROUTES.signIn}>
           Quay lại đăng nhập
         </Link>
       </p>

@@ -41,9 +41,9 @@ export default async function AcceptInvitePage({ searchParams }: AcceptInvitePag
   if (!tokenParam || tokenParam.trim().length === 0) {
     return (
       <div className="space-y-6">
-        <header className="space-y-2">
-          <h1 className="text-2xl font-semibold text-text">Liên kết mời không hợp lệ</h1>
-          <p className="text-sm text-text/65">
+        <header className="space-y-3 text-center">
+          <h1 className="text-3xl font-bold text-slate-900">Liên kết mời không hợp lệ</h1>
+          <p className="text-sm text-slate-600 font-medium">
             Không tìm thấy mã lời mời trong liên kết này. Vui lòng yêu cầu quản trị công ty gửi lại lời mời.
           </p>
         </header>
@@ -62,18 +62,18 @@ export default async function AcceptInvitePage({ searchParams }: AcceptInvitePag
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2">
-        <h1 className="text-2xl font-semibold text-text">Chấp nhận lời mời</h1>
-        <p className="text-sm text-text/65">
+      <header className="space-y-3 text-center">
+        <h1 className="text-3xl font-bold text-slate-900">Chấp nhận lời mời</h1>
+        <p className="text-sm text-slate-600 font-medium">
           Tạo mật khẩu để kích hoạt tài khoản và tham gia workspace của công ty.
         </p>
       </header>
 
       {error ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          <p className="font-semibold">Không thể sử dụng lời mời</p>
-          <p className="mt-1">{error}</p>
-          <p className="mt-2 text-xs text-red-600/80">
+        <div className="rounded-xl border-2 border-rose-300 bg-gradient-to-r from-rose-50 to-red-50 px-4 py-3 text-sm">
+          <p className="font-bold text-rose-800">❌ Không thể sử dụng lời mời</p>
+          <p className="mt-2 font-semibold text-rose-700">{error}</p>
+          <p className="mt-3 text-xs font-medium text-rose-600">
             Nếu vấn đề tiếp tục, hãy nhờ quản trị viên gửi lại lời mời.
           </p>
         </div>

@@ -78,27 +78,28 @@ export function JobsSearchForm({ initialQuery = "", className }: JobsSearchFormP
   }
 
   return (
-    <form className={cx("flex w-full flex-col gap-3 sm:flex-row", className)} onSubmit={handleSubmit}>
+    <form className={cx("flex w-full flex-col gap-3 sm:flex-row sm:items-center", className)} onSubmit={handleSubmit}>
       <Input
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         placeholder="Tìm theo chức danh hoặc địa điểm"
         aria-label="Tìm vị trí tuyển dụng"
         autoComplete="off"
+        className="flex-1"
       />
-      <div className="flex gap-2 sm:w-auto">
-        <Button type="submit" size="lg" disabled={isPending}>
-          {isPending ? "Đang tìm..." : "Tìm kiếm"}
+      <div className="flex shrink-0 gap-2">
+        <Button type="submit" size="lg" disabled={isPending} className="whitespace-nowrap font-semibold">
+          {isPending ? "Đang tìm..." : "🔍 Tìm kiếm"}
         </Button>
         <Button
           type="button"
           variant="ghost"
           size="lg"
-          className="whitespace-nowrap"
+          className="whitespace-nowrap font-semibold"
           disabled={isPending || query.length === 0}
           onClick={handleClear}
         >
-          Xóa
+          ✕ Xóa
         </Button>
       </div>
     </form>

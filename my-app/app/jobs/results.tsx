@@ -150,15 +150,15 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
 
   return (
     <div className="space-y-6">
-      <Panel padding="lg" className="space-y-6">
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-text">Tìm kiếm vị trí tuyển dụng</p>
-          <p className="text-xs text-muted">{searchSummary}</p>
+      <Panel padding="lg" className="space-y-6 border-2 border-blue-200 bg-gradient-to-br from-white to-blue-50">
+        <div className="space-y-2">
+          <p className="text-base font-bold text-slate-900">🔍 Tìm kiếm vị trí tuyển dụng</p>
+          <p className="text-sm text-slate-600 font-medium">{searchSummary}</p>
         </div>
 
         <JobsSearchForm key={initialQuery} initialQuery={initialQuery} />
 
-        <div className="space-y-4 border-t border-border pt-4">
+        <div className="space-y-4 border-t-2 border-blue-100 pt-5">
           {showFiltersPanel ? (
             <div className="space-y-4">
               {workTypeOptions.length > 0 && (
@@ -180,27 +180,27 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
               )}
 
               {hasClientFilters && (
-                <Button variant="ghost" size="sm" className="whitespace-nowrap" onClick={clearFilters}>
-                  Xóa bộ lọc nhanh
+                <Button variant="ghost" size="sm" className="whitespace-nowrap font-semibold" onClick={clearFilters}>
+                  🗑️ Xóa bộ lọc nhanh
                 </Button>
               )}
             </div>
           ) : (
-            <p className="text-xs text-muted">
+            <p className="text-sm text-slate-500 font-medium">
               Bộ lọc nhanh sẽ hiển thị khi nhà tuyển dụng bổ sung thông tin hình thức làm việc hoặc địa điểm cho bài đăng.
             </p>
           )}
 
-          {resultsLabel.length > 0 && <p className="text-xs text-muted">{resultsLabel}</p>}
+          {resultsLabel.length > 0 && <p className="text-sm text-slate-600 font-medium">{resultsLabel}</p>}
         </div>
       </Panel>
 
       {filteredJobs.length === 0 ? (
-        <Panel padding="lg" className="text-sm text-muted">
+        <Panel padding="lg" className="border-2 border-slate-200 bg-slate-50 text-center text-base font-medium text-slate-600">
           {emptyStateMessage}
         </Panel>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2">
           {filteredJobs.map((job) => {
             const cardHref = `${ROUTES.jobs}/${job.id}`;
             return (
@@ -210,18 +210,18 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
                 tabIndex={0}
                 onClick={() => navigateToJob(job.id)}
                 onKeyDown={createCardKeyDownHandler(job.id)}
-                className="group flex h-full cursor-pointer flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                className="group flex h-full cursor-pointer flex-col focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-300"
                 aria-label={`Xem chi tiết cho ${job.title}`}
               >
                 <Panel
                   padding="lg"
-                  className="flex h-full flex-col gap-4 transition-shadow duration-200 group-hover:shadow-lg"
+                  className="flex h-full flex-col gap-4 border-2 border-blue-200 bg-white transition-all duration-200 group-hover:border-indigo-300 group-hover:shadow-xl"
                 >
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-semibold text-text">{job.title}</h2>
+                    <h2 className="text-2xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{job.title}</h2>
                   </div>
 
-                  <p className="line-clamp-4 text-sm text-muted">
+                  <p className="line-clamp-4 text-sm leading-relaxed text-slate-600 font-medium">
                     {job.description ??
                       "The hiring team is preparing a detailed description. Check back soon for responsibilities and requirements."}
                   </p>
@@ -236,24 +236,24 @@ export function JobsResults({ pageData, hasQuery, initialQuery, currentUiPage }:
                   </div>
 
                   {job.salaryRange && (
-                    <p className="text-xs font-medium text-text">
-                      <span className="text-muted">Compensation:</span> {job.salaryRange}
+                    <p className="text-sm font-bold text-slate-900">
+                      <span className="text-slate-500">💰 Mức lương:</span> {job.salaryRange}
                     </p>
                   )}
 
                   <div className="mt-auto flex flex-col gap-3 pt-4 text-sm sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs text-muted">
+                    <p className="text-xs font-medium text-slate-500">
                       {isRemoteFriendly(job.workType)
-                        ? "Đội ngũ làm việc linh hoạt, hỗ trợ làm việc từ xa."
-                        : "Đội ngũ phối hợp chặt chẽ với các hoạt động tại văn phòng."}
+                        ? "🏠 Đội ngũ làm việc linh hoạt, hỗ trợ làm việc từ xa."
+                        : "🏢 Đội ngũ phối hợp chặt chẽ với các hoạt động tại văn phòng."}
                     </p>
                     <div className="flex flex-wrap gap-2">
                       <Link
                         href={`${ROUTES.signIn}?next=${cardHref}`}
-                        className="inline-flex items-center justify-center rounded-lg border border-border px-4 py-2 text-xs font-semibold text-text transition hover:border-foreground"
+                        className="inline-flex items-center justify-center rounded-xl border-2 border-indigo-300 bg-white px-4 py-2 text-sm font-bold text-indigo-600 transition-all hover:border-indigo-400 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-indigo-700"
                         onClick={handleApplyClick}
                       >
-                        Ứng tuyển vị trí này
+                        📩 Ứng tuyển vị trí này
                       </Link>
                     </div>
                   </div>
@@ -318,9 +318,9 @@ function PaginationControls({
   const summary = `Trang ${page}/${effectiveTotalPages} (tổng cộng ${totalItems} vị trí)`;
 
   return (
-    <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-xs text-muted">{summary}</p>
-      <div className="flex gap-2">
+    <div className="flex flex-col gap-4 rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-sm font-bold text-slate-900">{summary}</p>
+      <div className="flex gap-3">
         <Button
           type="button"
           variant="outline"
@@ -328,8 +328,9 @@ function PaginationControls({
           onClick={() => onPageChange(page - 1)}
           disabled={disablePrev}
           aria-label="Trang trước"
+          className="font-semibold"
         >
-          Trước
+          ← Trước
         </Button>
         <Button
           type="button"
@@ -338,8 +339,9 @@ function PaginationControls({
           onClick={() => onPageChange(page + 1)}
           disabled={disableNext}
           aria-label="Trang tiếp theo"
+          className="font-semibold"
         >
-          Tiếp
+          Tiếp →
         </Button>
       </div>
     </div>
@@ -348,8 +350,8 @@ function PaginationControls({
 
 function FilterRow({ title, options, activeValue, onToggle }: FilterRowProps) {
   return (
-    <div className="space-y-2">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">{title}</p>
+    <div className="space-y-3">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-700">{title}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => (
           <FilterPill
@@ -370,8 +372,10 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
       type="button"
       onClick={onClick}
       className={cx(
-        "rounded-full border border-border px-3 py-1 text-xs font-medium text-muted transition hover:border-foreground/70 hover:text-text",
-        active && "border-foreground bg-foreground text-background"
+        "rounded-full border-2 px-4 py-2 text-xs font-bold transition-all",
+        active
+          ? "border-indigo-400 bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md"
+          : "border-blue-200 bg-white text-slate-700 hover:border-indigo-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50"
       )}
     >
       {label}
@@ -381,7 +385,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
 
 function JobMetaChip({ label }: { label: string }) {
   return (
-    <span className="rounded-full border border-border px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-muted">
+    <span className="rounded-full border-2 border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.12em] text-slate-700">
       {label}
     </span>
   );

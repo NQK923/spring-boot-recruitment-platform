@@ -17,8 +17,8 @@ export default async function AcceptInviteAliasPage({ searchParams }: AcceptInvi
       if (value.length > 0 && typeof value[0] === "string") {
         params.append(key, value[0]);
       }
-    } else if (typeof value === "string") {
-      params.append(key, value);
+    } else {
+        params.append(key, value);
     }
   });
 

@@ -95,33 +95,33 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   const hasQuery = normalizedSearch.length > 0;
 
   return (
-    <Container className="flex flex-col gap-10">
-      <header className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <Container className="flex flex-col gap-10 py-12">
+      <header className="space-y-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
+            <span className="inline-block rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.32em] text-indigo-700">
               Khám phá cơ hội mới
             </span>
-            <h1 className="mt-2 text-3xl font-semibold text-text sm:text-4xl">Các vị trí đang tuyển</h1>
-            <p className="mt-2 max-w-2xl text-sm text-muted">
-              Duyệt các cơ hội tuyển dụng từ những đội ngũ đang sử dụng Talentflow. Bản tin được cập nhật liên tục khi nhà tuyển dụng thay đổi yêu cầu, địa điểm hay mức lương, giúp bạn luôn thấy thông tin mới nhất.
+            <h1 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">Các vị trí đang tuyển</h1>
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-600">
+              Duyệt các cơ hội tuyển dụng từ những đội ngũ đang sử dụng TalentFlow. Bản tin được cập nhật liên tục khi nhà tuyển dụng thay đổi yêu cầu, địa điểm hay mức lương, giúp bạn luôn thấy thông tin mới nhất.
             </p>
           </div>
           <Link href={ROUTES.register}>
-            <Button variant="secondary" size="md">
-              Tạo hồ sơ ứng viên
+            <Button variant="secondary" size="md" className="whitespace-nowrap font-semibold">
+              📝 Tạo hồ sơ ứng viên
             </Button>
           </Link>
         </div>
-        <div className="flex flex-wrap gap-3 text-xs text-muted">
-          <span className="rounded-full border border-border px-3 py-1">
-            Vị trí mới được bổ sung hằng tuần
+        <div className="flex flex-wrap gap-3 text-xs">
+          <span className="rounded-full border-2 border-blue-200 bg-blue-50 px-4 py-2 font-semibold text-blue-700">
+            ✓ Vị trí mới được bổ sung hằng tuần
           </span>
-          <span className="rounded-full border border-border px-3 py-1">
-            Ghi chú từ nhà tuyển dụng được chia sẻ minh bạch
+          <span className="rounded-full border-2 border-indigo-200 bg-indigo-50 px-4 py-2 font-semibold text-indigo-700">
+            ✓ Ghi chú từ nhà tuyển dụng được chia sẻ minh bạch
           </span>
-          <span className="rounded-full border border-border px-3 py-1">
-            Theo dõi đơn ứng tuyển với cảnh báo trạng thái
+          <span className="rounded-full border-2 border-purple-200 bg-purple-50 px-4 py-2 font-semibold text-purple-700">
+            ✓ Theo dõi đơn ứng tuyển với cảnh báo trạng thái
           </span>
         </div>
       </header>

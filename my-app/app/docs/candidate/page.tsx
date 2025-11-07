@@ -51,49 +51,52 @@ const resources = [
 
 export default function CandidateDocsPage() {
   return (
-    <Container className="max-w-4xl space-y-10">
-      <Panel variant="glass" padding="lg" className="space-y-5">
-        <div className="space-y-3">
-          <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-            Cẩm nang ứng viên
+    <Container className="max-w-4xl space-y-10 py-12">
+      <Panel variant="glass" padding="lg" className="space-y-6 border-2 border-blue-200 bg-gradient-to-br from-white to-blue-50">
+        <div className="space-y-4">
+          <span className="inline-block rounded-full bg-gradient-to-r from-blue-100 to-cyan-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.32em] text-blue-700">
+            🎯 Cẩm nang ứng viên
           </span>
-          <h1 className="text-3xl font-semibold text-text sm:text-4xl">
-            Chinh phục Talentflow như một chuyên gia.
+          <h1 className="text-4xl font-bold text-slate-900 sm:text-5xl">
+            Chinh phục TalentFlow như một chuyên gia.
           </h1>
-          <p className="text-sm text-muted">
+          <p className="text-base leading-relaxed text-slate-600 font-medium">
             Dùng cẩm nang này để tối ưu từng đơn ứng tuyển, lịch phỏng vấn và việc quản lý hồ sơ trên nền tảng tuyển
             dụng.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href={ROUTES.candidatePortal}>
-            <Button size="sm" variant="secondary">
-              Vào cổng ứng viên
+            <Button size="sm" variant="secondary" className="font-semibold">
+              ← Vào cổng ứng viên
             </Button>
           </Link>
           <Link href={ROUTES.jobs}>
-            <Button size="sm">Xem việc đang tuyển</Button>
+            <Button size="sm" className="font-semibold">💼 Xem việc đang tuyển</Button>
           </Link>
         </div>
       </Panel>
 
-      <Panel padding="lg" className="space-y-5">
-        <div>
-          <h2 className="text-lg font-semibold text-text">Các cột mốc chính</h2>
-          <p className="text-sm text-muted">
+      <Panel padding="lg" className="space-y-6 border-2 border-indigo-200 bg-gradient-to-br from-white to-indigo-50">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold text-slate-900">🎯 Các cột mốc chính</h2>
+          <p className="text-sm text-slate-600 font-medium">
             Bám sát những cột mốc này để hành trình của bạn luôn mạch lạc ngay từ ngày đầu tiên.
           </p>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-5">
           {milestones.map((milestone) => (
             <div
               key={milestone.title}
-              className="space-y-3 rounded-2xl border border-border bg-surface p-5"
+              className="space-y-3 rounded-xl border-2 border-indigo-300 bg-gradient-to-r from-indigo-50 to-blue-50 p-5"
             >
-              <h3 className="text-sm font-semibold text-text">{milestone.title}</h3>
-              <ul className="space-y-2 text-sm text-muted">
+              <h3 className="text-base font-bold text-indigo-900">{milestone.title}</h3>
+              <ul className="space-y-2 text-sm text-slate-700 font-medium">
                 {milestone.steps.map((step) => (
-                  <li key={step}>- {step}</li>
+                  <li key={step} className="flex gap-2">
+                    <span className="text-indigo-600">•</span>
+                    <span>{step}</span>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -101,51 +104,60 @@ export default function CandidateDocsPage() {
         </div>
       </Panel>
 
-      <Panel padding="lg" className="space-y-5">
-        <div>
-          <h2 className="text-lg font-semibold text-text">Câu hỏi thường gặp</h2>
-          <p className="text-sm text-muted">
+      <Panel padding="lg" className="space-y-6 border-2 border-emerald-200 bg-gradient-to-br from-white to-emerald-50">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold text-slate-900">❓ Câu hỏi thường gặp</h2>
+          <p className="text-sm text-slate-600 font-medium">
             Những câu trả lời nhanh cho các tình huống ứng viên hay gặp nhất.
           </p>
         </div>
-        <ul className="space-y-3 text-sm text-muted">
-          <li>
-            - <strong className="text-text">Quên mật khẩu</strong>: sử dụng{" "}
-            <Link href="/auth/forgot-password" className="text-primary-600 hover:text-text">
-              luồng đặt lại
-            </Link>{" "}
-            để nhận mã tạm qua email.
+        <ul className="space-y-3 text-sm text-slate-700 font-medium">
+          <li className="flex gap-2">
+            <span className="text-emerald-600">•</span>
+            <span>
+              <strong className="font-bold text-emerald-900">Quên mật khẩu</strong>: sử dụng{" "}
+              <Link href="/auth/forgot-password" className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline">
+                luồng đặt lại
+              </Link>{" "}
+              để nhận mã tạm qua email.
+            </span>
           </li>
-          <li>
-            - <strong className="text-text">Lịch phỏng vấn bị đổi</strong>: kiểm tra lại cổng ứng viên để xem
-            thời gian mới và tải tệp lịch cập nhật.
+          <li className="flex gap-2">
+            <span className="text-emerald-600">•</span>
+            <span>
+              <strong className="font-bold text-emerald-900">Lịch phỏng vấn bị đổi</strong>: kiểm tra lại cổng ứng viên để xem
+              thời gian mới và tải tệp lịch cập nhật.
+            </span>
           </li>
-          <li>
-            - <strong className="text-text">Tải CV thất bại</strong>: đảm bảo tệp dưới 10 MB, định dạng PDF và thử
-            lại khi kết nối ổn định.
+          <li className="flex gap-2">
+            <span className="text-emerald-600">•</span>
+            <span>
+              <strong className="font-bold text-emerald-900">Tải CV thất bại</strong>: đảm bảo tệp dưới 10 MB, định dạng PDF và thử
+              lại khi kết nối ổn định.
+            </span>
           </li>
         </ul>
       </Panel>
 
-      <Panel padding="lg" className="space-y-5">
-        <div>
-          <h2 className="text-lg font-semibold text-text">Tài nguyên bổ sung</h2>
-          <p className="text-sm text-muted">
+      <Panel padding="lg" className="space-y-6 border-2 border-purple-200 bg-gradient-to-br from-white to-purple-50">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold text-slate-900">📚 Tài nguyên bổ sung</h2>
+          <p className="text-sm text-slate-600 font-medium">
             Đào sâu hơn với những bài viết và tài liệu tham khảo được chọn lọc dưới đây.
           </p>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {resources.map((resource) => (
             <div
               key={resource.href}
-              className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 rounded-xl border-2 border-purple-300 bg-gradient-to-r from-purple-50 to-pink-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
-              <div>
-                <p className="text-sm font-semibold text-text">{resource.label}</p>
-                <p className="text-xs text-muted">{resource.description}</p>
+              <div className="space-y-1">
+                <p className="text-base font-bold text-purple-900">{resource.label}</p>
+                <p className="text-sm text-slate-700 font-medium">{resource.description}</p>
               </div>
-              <Link href={resource.href} className="text-xs font-semibold text-primary-600 transition hover:text-text">
-                Xem chi tiết
+              <Link href={resource.href} className="text-sm font-bold text-indigo-600 transition hover:text-indigo-700 hover:underline whitespace-nowrap">
+                Xem chi tiết →
               </Link>
             </div>
           ))}

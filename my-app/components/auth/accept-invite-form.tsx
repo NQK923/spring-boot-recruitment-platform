@@ -43,14 +43,14 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
   if (state?.success) {
     return (
       <div className="space-y-6">
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          <p className="font-semibold">Đã chấp nhận lời mời</p>
-          <p className="mt-2">
-            Tài khoản <span className="font-medium">{email}</span> đã sẵn sàng. Đăng nhập để bắt đầu phối hợp cùng đội ngũ.
+        <div className="rounded-xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-4 text-sm">
+          <p className="font-bold text-emerald-800">✓ Đã chấp nhận lời mời</p>
+          <p className="mt-2 font-semibold text-emerald-700">
+            Tài khoản <span className="font-bold">{email}</span> đã sẵn sàng. Đăng nhập để bắt đầu phối hợp cùng đội ngũ.
           </p>
         </div>
         <Button
-          className="w-full"
+          className="w-full font-semibold"
           size="lg"
           type="button"
           onClick={() => router.push(ROUTES.signIn)}
@@ -67,19 +67,19 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
   return (
     <form className="space-y-6" action={formAction}>
       <input type="hidden" name="token" value={token} />
-      <div className="rounded-2xl border border-border bg-surface/60 px-4 py-4 text-sm text-muted">
-        <p>
-          Bạn sẽ tham gia Talentflow với vai trò{" "}
-          <span className="font-semibold text-text">{roleLabel}</span> bằng email{" "}
-          <span className="font-semibold text-text">{email}</span>.
+      <div className="rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-4 text-sm">
+        <p className="font-semibold text-slate-700">
+          Bạn sẽ tham gia TalentFlow với vai trò{" "}
+          <span className="font-bold text-indigo-700">{roleLabel}</span> bằng email{" "}
+          <span className="font-bold text-indigo-700">{email}</span>.
         </p>
         {formattedExpiry ? (
-          <p className="mt-2 text-muted">Lời mời sẽ hết hạn vào {formattedExpiry}.</p>
+          <p className="mt-2 font-medium text-slate-600">⏰ Lời mời sẽ hết hạn vào {formattedExpiry}.</p>
         ) : null}
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-text" htmlFor="password">
+        <label className="text-sm font-bold text-slate-900" htmlFor="password">
           Tạo mật khẩu
         </label>
         <Input
@@ -94,7 +94,7 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-semibold text-text" htmlFor="confirmPassword">
+        <label className="text-sm font-bold text-slate-900" htmlFor="confirmPassword">
           Xác nhận mật khẩu
         </label>
         <Input
@@ -109,12 +109,12 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
       </div>
 
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {state.error}
-        </p>
+        <div className="rounded-xl border-2 border-rose-300 bg-gradient-to-r from-rose-50 to-red-50 px-4 py-3 text-sm font-semibold text-rose-700">
+          ❌ {state.error}
+        </div>
       ) : null}
 
-      <Button className="w-full" disabled={pending} size="lg" type="submit">
+      <Button className="w-full font-semibold" disabled={pending} size="lg" type="submit">
         {pending ? "Đang kích hoạt tài khoản..." : "Kích hoạt tài khoản"}
       </Button>
 
