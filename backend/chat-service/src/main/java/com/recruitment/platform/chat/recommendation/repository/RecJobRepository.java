@@ -28,11 +28,27 @@ public class RecJobRepository {
             updated_at = now()
         """;
 
-    private static final String SEARCH_SQL = """
+    private static final String SEARCH_SQL_WITH_PROFILE = """
         SELECT job_id,
                metadata,
                0.50 * (1 - (embedding <=> ?::vector)) +
                0.35 * COALESCE(1 - (embedding <=> ?::vector), 0) +
+               0.15 * EXP(
+                   - GREATEST(
+                       EXTRACT(EPOCH FROM (now() - COALESCE((metadata->>'postedAt')::timestamptz, updated_at))) / 86400,
+                       0
+                   ) / ?
+               ) AS score
+        FROM rec_db.rec_jobs
+        WHERE COALESCE(metadata->>'status', 'OPEN') = 'OPEN'
+        ORDER BY score DESC
+        LIMIT ?
+        """;
+
+    private static final String SEARCH_SQL_NO_PROFILE = """
+        SELECT job_id,
+               metadata,
+               0.50 * (1 - (embedding <=> ?::vector)) +
                0.15 * EXP(
                    - GREATEST(
                        EXTRACT(EPOCH FROM (now() - COALESCE((metadata->>'postedAt')::timestamptz, updated_at))) / 86400,
@@ -74,16 +90,18 @@ public class RecJobRepository {
         Assert.isTrue(topK > 0, "topK phải lớn hơn 0");
         Assert.notNull(queryVector, "queryVector bắt buộc");
 
+        boolean hasProfileVector = profileVector != null && profileVector.length > 0;
+        String sql = hasProfileVector ? SEARCH_SQL_WITH_PROFILE : SEARCH_SQL_NO_PROFILE;
+
         return jdbcTemplate.query(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SEARCH_SQL);
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setObject(1, PgVectorUtil.toDatabaseVector(queryVector), Types.OTHER);
-            if (profileVector != null) {
-                ps.setObject(2, PgVectorUtil.toDatabaseVector(profileVector), Types.OTHER);
-            } else {
-                ps.setNull(2, Types.OTHER);
+            int paramIndex = 2;
+            if (hasProfileVector) {
+                ps.setObject(paramIndex++, PgVectorUtil.toDatabaseVector(profileVector), Types.OTHER);
             }
-            ps.setInt(3, Math.max(freshnessDays, 1));
-            ps.setInt(4, topK);
+            ps.setInt(paramIndex++, Math.max(freshnessDays, 1));
+            ps.setInt(paramIndex, topK);
             return ps;
         }, (rs, rowNum) -> mapJobHit(rs));
     }

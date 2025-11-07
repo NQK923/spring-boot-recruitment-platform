@@ -22,6 +22,9 @@ public class GeminiProperties {
     private String model;
 
     @NotBlank
+    private String embeddingModel = "text-embedding-004";
+
+    @NotBlank
     private String baseUrl;
 
     @Min(0)

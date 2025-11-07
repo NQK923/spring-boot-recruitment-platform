@@ -1,36 +1,35 @@
 package com.recruitment.platform.chat.recommendation.service;
 
+import com.recruitment.platform.chat.client.GeminiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.util.List;
 
 @Service
 public class EmbeddingService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EmbeddingService.class);
-    private static final int DEFAULT_VECTOR_DIMENSION = 1536;
+    private static final int DEFAULT_VECTOR_DIMENSION = 3072;
 
-    private final EmbeddingModel embeddingModel;
+    private final GeminiClient geminiClient;
 
-    public EmbeddingService(EmbeddingModel embeddingModel) {
-        this.embeddingModel = embeddingModel;
+    public EmbeddingService(GeminiClient geminiClient) {
+        this.geminiClient = geminiClient;
     }
 
     public float[] embedText(String text) {
         String sanitized = StringUtils.hasText(text) ? text : "Thông tin chưa được cung cấp.";
-        List<Double> output = embeddingModel.embed(sanitized);
-        if (output == null || output.isEmpty()) {
-            LOG.warn("Nhận được embedding rỗng, trả về vector mặc định.");
+        try {
+            float[] vector = geminiClient.embedText(sanitized);
+            if (vector == null || vector.length == 0) {
+                LOG.warn("Nhận được embedding rỗng từ Gemini, trả về vector mặc định.");
+                return new float[DEFAULT_VECTOR_DIMENSION];
+            }
+            return vector;
+        } catch (Exception ex) {
+            LOG.error("Gọi Gemini embedContent thất bại, trả về vector mặc định.", ex);
             return new float[DEFAULT_VECTOR_DIMENSION];
         }
-        float[] vector = new float[output.size()];
-        for (int i = 0; i < output.size(); i++) {
-            vector[i] = output.get(i).floatValue();
-        }
-        return vector;
     }
 }

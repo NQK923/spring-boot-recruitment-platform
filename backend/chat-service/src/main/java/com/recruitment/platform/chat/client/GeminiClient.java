@@ -62,6 +62,37 @@ public class GeminiClient {
             .doOnError(error -> LOG.error("Gemini streamGenerateContent failed", error));
     }
 
+    public float[] embedText(String text) {
+        GeminiEmbeddingRequest request = new GeminiEmbeddingRequest(
+            new GeminiEmbeddingContent(
+                List.of(new GeminiPart(text == null ? "" : text))
+            )
+        );
+
+        GeminiEmbeddingResponse response = webClient.post()
+            .uri(uriBuilder -> uriBuilder
+                .path("/models/{model}:embedContent")
+                .queryParam("key", properties.getApiKey())
+                .build(properties.getEmbeddingModel()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .retrieve()
+            .bodyToMono(GeminiEmbeddingResponse.class)
+            .doOnError(error -> LOG.error("Gemini embedContent failed", error))
+            .block();
+
+        if (response == null || response.embedding() == null || response.embedding().values() == null) {
+            return new float[0];
+        }
+
+        List<Double> values = response.embedding().values();
+        float[] vector = new float[values.size()];
+        for (int i = 0; i < values.size(); i++) {
+            vector[i] = values.get(i).floatValue();
+        }
+        return vector;
+    }
+
     private GeminiRequest buildRequest(List<GeminiContent> contents) {
         return new GeminiRequest(
             new GeminiSystemInstruction(List.of(new GeminiPart(systemPromptProvider.getPrompt()))),
@@ -131,4 +162,12 @@ public class GeminiClient {
         GeminiContent content
     ) {
     }
+
+    private record GeminiEmbeddingRequest(GeminiEmbeddingContent content) {}
+
+    private record GeminiEmbeddingContent(List<GeminiPart> parts) {}
+
+    private record GeminiEmbeddingResponse(GeminiEmbedding embedding) {}
+
+    private record GeminiEmbedding(List<Double> values) {}
 }
