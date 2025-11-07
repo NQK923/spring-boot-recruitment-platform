@@ -211,20 +211,20 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <Container className="space-y-10">
-      <Panel variant="glass" padding="lg" className="space-y-8">
+    <Container className="space-y-10 py-10">
+      <Panel variant="surface" padding="lg" className="space-y-8 bg-gradient-to-br from-primary-50 to-white">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           <div className="space-y-4">
-            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
+            <span className="text-xs font-bold uppercase tracking-[0.32em] text-primary-600">
               Không gian nhà tuyển dụng
             </span>
-            <h1 className="text-3xl font-semibold text-text sm:text-4xl">
+            <h1 className="text-4xl font-bold text-gray-900">
               Điều phối việc làm, ứng viên và phỏng vấn trên cùng một nền tảng.
             </h1>
-            <p className="max-w-2xl text-sm text-muted">
+            <p className="max-w-2xl text-base text-gray-600 leading-relaxed">
               Theo sát pipeline tuyển dụng với ưu tiên rõ ràng, bối cảnh từ hoạt động gần nhất và đường dẫn hành động nhanh nhất.
             </p>
-            <ul className="space-y-2 text-sm text-muted">
+            <ul className="space-y-2 text-sm text-gray-700">
               {heroHighlights.map((highlight) => (
                 <li key={highlight} className="flex items-start gap-3">
                   <span className="mt-1 h-2 w-2 rounded-full bg-primary-600" aria-hidden />
@@ -233,14 +233,14 @@ export default async function DashboardPage() {
               ))}
             </ul>
           </div>
-          <div className="space-y-3 rounded-3xl border border-border bg-surface p-6 shadow-lg">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+          <div className="space-y-3 rounded-3xl border border-primary-200 bg-white p-6 shadow-md">
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">
               Trọng tâm hôm nay
             </p>
-            <p className="text-sm text-muted">
+            <p className="text-sm text-gray-600">
               Bắt đầu với các ứng viên đang chờ liên hệ, sau đó rà soát lịch phỏng vấn để đảm bảo chuẩn bị và người theo dõi.
             </p>
-            <div className="rounded-2xl border border-accent/20 bg-primary-600/10 px-4 py-3 text-xs text-primary-600">
+            <div className="rounded-2xl border border-primary-200 bg-primary-100 px-4 py-3 text-sm font-semibold text-primary-700">
               Duy trì tốc độ phản hồi: hãy xác nhận mọi hồ sơ mới trong vòng 24 giờ.
             </div>
           </div>
@@ -249,22 +249,22 @@ export default async function DashboardPage() {
           {summaryMetrics.map((metric) => (
             <div
               key={metric.label}
-              className="rounded-2xl border border-border bg-surface p-5 shadow-lg transition hover:border-accent/30 hover:shadow-lg"
+              className="rounded-2xl border border-primary-200 bg-white p-6 shadow-sm transition hover:shadow-md hover:border-primary-300"
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
+              <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">
                 {metric.label}
               </p>
-              <p className="mt-3 text-3xl font-semibold text-text">{metric.value}</p>
-              <p className="mt-1 text-xs text-muted">{metric.helper}</p>
+              <p className="mt-3 text-4xl font-bold text-gray-900">{metric.value}</p>
+              <p className="mt-1 text-sm text-gray-600">{metric.helper}</p>
             </div>
           ))}
         </div>
       </Panel>
 
-      <Panel variant="surface" padding="lg" className="space-y-6">
+      <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
         <header className="space-y-3">
-          <h2 className="text-lg font-semibold text-text">Hành động nhanh</h2>
-          <p className="text-sm text-muted">
+          <h2 className="text-xl font-bold text-gray-900">Hành động nhanh</h2>
+          <p className="text-sm text-gray-600">
             Truy cập ngay các khu vực giữ pipeline luôn thông suốt và thúc đẩy ứng viên tiến bước.
           </p>
         </header>
@@ -273,11 +273,11 @@ export default async function DashboardPage() {
             <Link
               key={action.label}
               href={action.href}
-              className="group flex flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-4 text-sm text-muted transition hover:border-accent/40 hover:text-text hover:shadow-lg"
+              className="group flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-4 text-sm transition hover:border-primary-300 hover:shadow-md"
             >
-              <span className="text-sm font-semibold text-text">{action.label}</span>
-              <span className="text-xs">{action.description}</span>
-              <span className="inline-flex items-center gap-2 text-xs font-semibold text-primary-600 transition group-hover:translate-x-0.5">
+              <span className="text-base font-bold text-gray-900">{action.label}</span>
+              <span className="text-sm text-gray-600">{action.description}</span>
+              <span className="inline-flex items-center gap-2 text-sm font-bold text-primary-600 transition group-hover:translate-x-0.5">
                 Thực hiện ngay
                 <span aria-hidden>&gt;</span>
               </span>
@@ -286,10 +286,10 @@ export default async function DashboardPage() {
         </div>
       </Panel>
 
-      <Panel id="jobs" variant="surface" padding="lg" className="space-y-6">
+      <Panel id="jobs" variant="surface" padding="lg" className="space-y-6 bg-white">
         <header className="space-y-3">
-          <h2 className="text-lg font-semibold text-text">Danh mục việc làm</h2>
-          <p className="text-sm text-muted">
+          <h2 className="text-xl font-bold text-gray-900">Danh mục việc làm</h2>
+          <p className="text-sm text-gray-600">
             Rà soát các vị trí bạn đang hỗ trợ tuyển dụng. {canAdminJobs
               ? "Chuyển sang workspace quản trị công ty khi cần đăng, tạm dừng hoặc chỉnh sửa bài tuyển dụng."
               : "Chỉ quản trị viên công ty mới có thể tạo hoặc chỉnh sửa bài đăng. Hãy liên hệ quản trị khi cần thay đổi."}
@@ -310,7 +310,7 @@ export default async function DashboardPage() {
           ) : null}
         </header>
         {jobs.length === 0 ? (
-          <div className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-6 text-sm text-gray-600 text-center">
             Chưa có bài đăng. Liên hệ quản trị công ty để mở vị trí đầu tiên.
           </div>
         ) : (
@@ -318,32 +318,32 @@ export default async function DashboardPage() {
             {jobs.map((job) => (
               <div
                 key={job.id}
-                className="space-y-3 rounded-2xl border border-border bg-surface px-5 py-4 shadow-lg"
+                className="space-y-3 rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <p className="font-semibold text-text">{job.title}</p>
-                    <p className="text-xs text-muted">
+                    <p className="font-bold text-gray-900">{job.title}</p>
+                    <p className="text-sm text-gray-600">
                       Trạng thái {formatStatus(job.status)} • Cập nhật {formatDate(job.updatedAt)}
                     </p>
                   </div>
                   <Link
                     href={`${ROUTES.jobs}/${job.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 transition hover:text-text"
+                    className="inline-flex items-center gap-1 text-sm font-bold text-primary-600 transition hover:text-primary-700"
                   >
                     Xem bài tuyển dụng
                     <span aria-hidden>&gt;</span>
                   </Link>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 text-xs text-text/55">
+                <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
                   {job.location ? <span>{job.location}</span> : null}
                   {job.workType ? (
-                    <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-foreground/40">
+                    <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-gray-400">
                       {job.workType.toLowerCase()}
                     </span>
                   ) : null}
                   {job.salaryRange ? (
-                    <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-foreground/40">
+                    <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-gray-400">
                       {job.salaryRange}
                     </span>
                   ) : null}

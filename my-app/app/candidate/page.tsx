@@ -319,24 +319,24 @@ export default async function CandidatePortalPage() {
 
   return (
     <Container className="space-y-10 py-10">
-      <Panel variant="surface" padding="lg" className="overflow-hidden">
+      <Panel variant="surface" padding="lg" className="overflow-hidden relative">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-accent/10 via-transparent to-transparent"
+          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-primary-500/10 via-transparent to-transparent"
         />
         <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="max-w-2xl space-y-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-text/50">Chào mừng bạn trở lại</p>
-            <h1 className="text-3xl font-semibold text-text">
+            <p className="text-xs uppercase tracking-[0.28em] text-primary-600/70 font-semibold">Chào mừng bạn trở lại</p>
+            <h1 className="text-3xl font-bold text-gray-900">
               {profileData.fullName
                 ? `${profileData.fullName}, tiếp tục duy trì đà tiến nhé`
                 : "Sẵn sàng cho cơ hội tiếp theo?"}
             </h1>
-            <p className="text-sm text-muted">
+            <p className="text-base text-gray-600 leading-relaxed">
               {profileData.summary ??
                 "Hãy chia sẻ đôi nét để đội ngũ tuyển dụng nắm được trọng tâm và kinh nghiệm của bạn trong nháy mắt."}
             </p>
-            <div className="flex flex-wrap gap-3 pt-1">
+            <div className="flex flex-wrap gap-3 pt-2">
               <Button asChild size="sm">
                 <Link href={ROUTES.candidateProfile}>Cập nhật hồ sơ</Link>
               </Button>
@@ -348,9 +348,9 @@ export default async function CandidatePortalPage() {
               </Button>
             </div>
           </div>
-          <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-2xl border border-border bg-surface/60 p-4 text-center backdrop-blur md:w-auto">
+          <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-2xl border border-primary-200 bg-white/80 p-5 text-center backdrop-blur shadow-sm md:w-auto">
             <AvatarUploader avatarUrl={profileData.avatarUrl} fullName={profileData.fullName} />
-            <p className="text-xs text-muted">
+            <p className="text-xs text-gray-600">
               Một bức ảnh cập nhật giúp nhà tuyển dụng thêm tin tưởng vào hồ sơ của bạn.
             </p>
           </div>
@@ -358,33 +358,33 @@ export default async function CandidatePortalPage() {
       </Panel>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-2xl border border-border bg-surface p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Đơn đang xử lý</p>
-          <p className="mt-3 text-3xl font-semibold text-text">{activeApplications.length}</p>
-          <p className="text-xs text-muted">
+        <div className="rounded-2xl border border-primary-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+          <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">Đơn đang xử lý</p>
+          <p className="mt-3 text-4xl font-bold text-gray-900">{activeApplications.length}</p>
+          <p className="text-sm text-gray-600 mt-1">
             {lastAppliedAt
               ? `Cập nhật gần nhất ${formatDate(lastAppliedAt)}`
               : "Gửi hồ sơ đầu tiên để bắt đầu hành trình."}
           </p>
         </div>
-        <div className="rounded-2xl border border-border bg-surface p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Mức độ hoàn thiện hồ sơ</p>
-          <p className="mt-3 text-3xl font-semibold text-text">{profileCompletion}%</p>
-          <p className="text-xs text-muted">{profileCompletionLabel}</p>
+        <div className="rounded-2xl border border-primary-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+          <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">Mức độ hoàn thiện hồ sơ</p>
+          <p className="mt-3 text-4xl font-bold text-gray-900">{profileCompletion}%</p>
+          <p className="text-sm text-gray-600 mt-1">{profileCompletionLabel}</p>
         </div>
-        <div className="rounded-2xl border border-border bg-surface p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Thư viện CV</p>
-          <p className="mt-3 text-3xl font-semibold text-text">{sortedCvs.length}</p>
-          <p className="text-xs text-muted">
+        <div className="rounded-2xl border border-primary-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+          <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">Thư viện CV</p>
+          <p className="mt-3 text-4xl font-bold text-gray-900">{sortedCvs.length}</p>
+          <p className="text-sm text-gray-600 mt-1">
             {defaultCv ? `Mặc định: ${defaultCv.versionName}` : "Tải lên CV phù hợp để sẵn sàng sử dụng."}
           </p>
         </div>
-        <div className="rounded-2xl border border-border bg-surface p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">Phỏng vấn tiếp theo</p>
-          <p className="mt-3 text-lg font-semibold text-text">
+        <div className="rounded-2xl border border-primary-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+          <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">Phỏng vấn tiếp theo</p>
+          <p className="mt-3 text-lg font-bold text-gray-900">
             {nextInterview ? formatDateTime(nextInterview.scheduleTime, nextInterview.timezone) : "Chưa lên lịch"}
           </p>
-          <p className="text-xs text-muted">
+          <p className="text-sm text-gray-600 mt-1">
             {nextInterview
               ? `Đơn ứng tuyển #${nextInterview.applicationId} - ${nextInterview.format ?? "Đang cập nhật hình thức"}`
               : "Phỏng vấn sắp tới sẽ xuất hiện tại đây ngay khi được xác nhận."}
@@ -393,11 +393,11 @@ export default async function CandidatePortalPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-        <Panel variant="surface" padding="lg" className="space-y-6">
+        <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-text">Đơn ứng tuyển gần đây</h2>
-              <p className="text-sm text-muted">Theo dõi bạn đang ở giai đoạn nào trong từng quy trình.</p>
+              <h2 className="text-xl font-bold text-gray-900">Đơn ứng tuyển gần đây</h2>
+              <p className="text-sm text-gray-600 mt-1">Theo dõi bạn đang ở giai đoạn nào trong từng quy trình.</p>
             </div>
             <Button asChild size="sm" variant="outline">
               <Link href={ROUTES.candidateApplications}>Xem tất cả</Link>
@@ -409,23 +409,23 @@ export default async function CandidatePortalPage() {
                 <Link
                   key={application.id}
                   href={`${ROUTES.candidateApplications}/${application.id}`}
-                  className="group flex flex-col gap-3 rounded-2xl border border-border bg-surface p-5 transition hover:border-primary-500/30 hover:bg-surface"
+                  className="group flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5 transition hover:border-primary-500 hover:shadow-md"
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="space-y-2">
-                      <p className="text-base font-semibold text-text group-hover:text-primary-700">
+                      <p className="text-base font-bold text-gray-900 group-hover:text-primary-600">
                         {application.jobTitle}
                       </p>
-                      <div className="flex flex-wrap gap-3 text-xs text-muted">
+                      <div className="flex flex-wrap gap-3 text-xs text-gray-600">
                         <span>Nộp ngày {formatDate(application.appliedAt)}</span>
                         {application.source ? <span>Nguồn: {application.source}</span> : null}
                       </div>
                     </div>
-                    <span className="self-start rounded-full bg-primary-600/10 px-3 py-1 text-xs font-semibold text-primary-600">
+                    <span className="self-start rounded-full bg-primary-100 px-3 py-1.5 text-xs font-bold text-primary-700">
                       {formatStatus(application.status)}
                     </span>
                   </div>
-                  <p className="text-xs text-muted line-clamp-2">
+                  <p className="text-sm text-gray-600 line-clamp-2">
                     {application.jobDescription ??
                       "Chúng tôi sẽ hiển thị mô tả công việc ngay khi công ty cập nhật."}
                   </p>
@@ -433,17 +433,17 @@ export default async function CandidatePortalPage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-border bg-surface/80 px-6 py-10 text-sm text-muted">
+            <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-sm text-gray-600 text-center">
               Bạn chưa ứng tuyển vị trí nào. Khám phá các vị trí đang mở và gửi hồ sơ đầu tiên của bạn.
             </div>
           )}
         </Panel>
 
         <div className="space-y-6">
-          <Panel variant="surface" padding="lg" className="space-y-6">
+          <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
             <div>
-              <h2 className="text-lg font-semibold text-text">Bước tiếp theo</h2>
-              <p className="text-sm text-muted">
+              <h2 className="text-xl font-bold text-gray-900">Bước tiếp theo</h2>
+              <p className="text-sm text-gray-600 mt-1">
                 Những gợi ý được cá nhân hóa giúp bạn tiếp tục tìm kiếm đúng hướng.
               </p>
             </div>
@@ -452,14 +452,14 @@ export default async function CandidatePortalPage() {
                 {prioritizedNextSteps.map((step) => (
                   <li
                     key={step.title}
-                    className="rounded-2xl border border-dashed border-border bg-surface p-4"
+                    className="rounded-2xl border border-dashed border-gray-300 bg-gradient-to-br from-primary-50 to-white p-4"
                   >
-                    <p className="font-semibold text-text">{step.title}</p>
-                    <p className="mt-1 text-xs text-muted">{step.description}</p>
+                    <p className="font-bold text-gray-900">{step.title}</p>
+                    <p className="mt-1 text-sm text-gray-600">{step.description}</p>
                     {step.href ? (
                       <Link
                         href={step.href}
-                        className="mt-3 inline-flex text-xs font-semibold text-primary-600 hover:underline"
+                        className="mt-3 inline-flex text-sm font-bold text-primary-600 hover:text-primary-700 hover:underline"
                       >
                         {step.actionLabel ?? "Mở"}
                       </Link>
@@ -468,17 +468,17 @@ export default async function CandidatePortalPage() {
                 ))}
               </ul>
             ) : (
-              <div className="rounded-xl border border-border bg-surface px-4 py-6 text-sm text-muted">
+              <div className="rounded-xl border border-gray-200 bg-white px-4 py-6 text-sm text-gray-600 text-center">
                 Hiện bạn đã hoàn tất. Chúng tôi sẽ hiển thị gợi ý mới ngay khi có thay đổi.
               </div>
             )}
           </Panel>
 
-          <Panel variant="surface" padding="lg" className="space-y-6">
+          <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-semibold text-text">Thư viện CV</h2>
-                <p className="text-sm text-muted">
+                <h2 className="text-xl font-bold text-gray-900">Thư viện CV</h2>
+                <p className="text-sm text-gray-600 mt-1">
                   Lưu trữ các phiên bản CV chỉn chu để đính kèm phù hợp cho từng đơn ứng tuyển.
                 </p>
               </div>
@@ -494,26 +494,26 @@ export default async function CandidatePortalPage() {
                   return (
                     <div
                       key={cv.id}
-                      className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                      className="flex flex-col gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between hover:border-primary-300 transition-colors"
                     >
                       <div>
-                        <p className="font-semibold text-text">
+                        <p className="font-bold text-gray-900">
                           {cv.versionName}
                           {cv.isDefault ? " - Mặc định" : ""}
                         </p>
-                        <p className="text-xs text-muted">Added {formatDate(cv.createdAt)}</p>
+                        <p className="text-xs text-gray-600">Added {formatDate(cv.createdAt)}</p>
                       </div>
                       {downloadHref ? (
                         <a
                           href={downloadHref}
-                          className="text-xs font-semibold text-primary-600 hover:underline"
+                          className="text-sm font-bold text-primary-600 hover:text-primary-700 hover:underline"
                           target="_blank"
                           rel="noreferrer"
                         >
                           Tải xuống
                         </a>
                       ) : (
-                        <span className="text-xs text-text/50">
+                        <span className="text-xs text-gray-500">
                           Đây là bản tạm — hãy tải lên phiên bản cập nhật khi bạn đã sẵn sàng.
                         </span>
                       )}
@@ -521,13 +521,13 @@ export default async function CandidatePortalPage() {
                   );
                 })}
                 {sortedCvs.length > 5 ? (
-                  <p className="text-xs text-text/50">
+                  <p className="text-xs text-gray-500">
                     Hiển thị 5 phiên bản gần nhất. Vào trang quản lý để xem thêm.
                   </p>
                 ) : null}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-border bg-surface/80 px-5 py-8 text-sm text-muted">
+              <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-8 text-sm text-gray-600 text-center">
                 Chưa có CV nào. Tải lên CV phù hợp để đính kèm cùng hồ sơ ứng tuyển.
               </div>
             )}
@@ -536,11 +536,11 @@ export default async function CandidatePortalPage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-        <Panel variant="surface" padding="lg" className="space-y-6">
+        <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-text">Phỏng vấn sắp diễn ra</h2>
-              <p className="text-sm text-muted">
+              <h2 className="text-xl font-bold text-gray-900">Phỏng vấn sắp diễn ra</h2>
+              <p className="text-sm text-gray-600 mt-1">
                 Thông tin sẽ được đồng bộ ngay khi nhà tuyển dụng lên lịch hoặc thay đổi phiên phỏng vấn.
               </p>
             </div>
@@ -557,18 +557,18 @@ export default async function CandidatePortalPage() {
               {upcomingInterviews.map((interview) => (
                 <li
                   key={interview.id}
-                  className="rounded-2xl border border-border bg-surface px-5 py-4"
+                  className="rounded-2xl border border-gray-200 bg-white px-5 py-4 hover:border-primary-300 transition-colors"
                 >
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="font-semibold text-text">
+                      <p className="font-bold text-gray-900">
                         {formatDateTime(interview.scheduleTime, interview.timezone)}
                       </p>
-                      <p className="text-xs text-muted">
+                      <p className="text-sm text-gray-600">
                         Đơn ứng tuyển #{interview.applicationId} - {interview.format ?? "Hình thức chưa xác định"}
                       </p>
                     </div>
-                    <span className="text-xs text-text/50">
+                    <span className="text-sm text-gray-500">
                       {interview.locationOrLink ?? "Địa điểm hoặc đường dẫn sẽ được cập nhật"}
                     </span>
                   </div>
@@ -576,17 +576,17 @@ export default async function CandidatePortalPage() {
               ))}
             </ol>
           ) : (
-            <div className="rounded-2xl border border-dashed border-border bg-surface/80 px-6 py-10 text-sm text-muted">
+            <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-sm text-gray-600 text-center">
               Chưa có buổi phỏng vấn nào được lên lịch. Chúng tôi sẽ thông báo tại đây ngay khi có lịch mới.
             </div>
           )}
         </Panel>
 
-          <Panel variant="surface" padding="lg" className="space-y-6">
+          <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-semibold text-text">Tổng quan hồ sơ</h2>
-                <p className="text-sm text-muted">
+                <h2 className="text-xl font-bold text-gray-900">Tổng quan hồ sơ</h2>
+                <p className="text-sm text-gray-600 mt-1">
                   Xác nhận nhanh các thông tin chính mà nhà tuyển dụng sẽ nhìn thấy trước khi xem chi tiết.
                 </p>
               </div>
@@ -598,35 +598,35 @@ export default async function CandidatePortalPage() {
           <div className="space-y-6 text-sm">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-muted">Họ và tên</p>
-                <p className="mt-1 font-semibold text-text">
+                <p className="text-xs uppercase tracking-[0.28em] text-primary-600 font-semibold">Họ và tên</p>
+                <p className="mt-1 font-bold text-gray-900">
                   {profileData.fullName || "Thêm họ tên"}
                 </p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-muted">Điện thoại</p>
-                <p className="mt-1 font-semibold text-text">
+                <p className="text-xs uppercase tracking-[0.28em] text-primary-600 font-semibold">Điện thoại</p>
+                <p className="mt-1 font-bold text-gray-900">
                   {profileData.phoneNumber || "Thêm số liên hệ"}
                 </p>
               </div>
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-muted">Kinh nghiệm nổi bật</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-primary-600 font-semibold">Kinh nghiệm nổi bật</p>
               {sortedExperiences.length ? (
                 <div className="mt-3 space-y-3">
                   {sortedExperiences.slice(0, 2).map((experience) => (
                     <div
                       key={experience.id}
-                      className="rounded-2xl border border-border bg-surface px-4 py-3"
+                      className="rounded-2xl border border-gray-200 bg-white px-4 py-3"
                       >
-                      <p className="font-semibold text-text">
+                      <p className="font-bold text-gray-900">
                         {experience.title || "Chức danh sẽ cập nhật"}
                       </p>
-                      <p className="text-xs text-muted">
+                      <p className="text-sm text-gray-600">
                         {experience.companyName || "Công ty sẽ cập nhật"}
                       </p>
-                      <p className="text-xs text-text/50">
+                      <p className="text-xs text-gray-500">
                         {formatProfileDate(experience.startDate, "Không rõ")}
                         {" - "}
                         {formatProfileDate(experience.endDate, "Hiện tại")}
@@ -635,26 +635,26 @@ export default async function CandidatePortalPage() {
                   ))}
                 </div>
               ) : (
-                <p className="mt-3 text-xs text-text/50">Thêm các vị trí gần đây để làm nổi bật đóng góp của bạn.</p>
+                <p className="mt-3 text-sm text-gray-500">Thêm các vị trí gần đây để làm nổi bật đóng góp của bạn.</p>
               )}
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-muted">Học vấn</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-primary-600 font-semibold">Học vấn</p>
               {sortedEducation.length ? (
                 <div className="mt-3 space-y-3">
                   {sortedEducation.slice(0, 2).map((education) => (
                     <div
                       key={education.id}
-                      className="rounded-2xl border border-border bg-surface px-4 py-3"
+                      className="rounded-2xl border border-gray-200 bg-white px-4 py-3"
                       >
-                      <p className="font-semibold text-text">
+                      <p className="font-bold text-gray-900">
                         {education.school || "Trường sẽ cập nhật"}
                       </p>
-                      <p className="text-xs text-muted">
+                      <p className="text-sm text-gray-600">
                         {education.degree || "Ngành học sẽ cập nhật"}
                       </p>
-                      <p className="text-xs text-text/50">
+                      <p className="text-xs text-gray-500">
                         {formatProfileDate(education.startDate, "Bắt đầu")}
                         {" - "}
                         {formatProfileDate(education.endDate, "Hiện tại")}
@@ -663,32 +663,32 @@ export default async function CandidatePortalPage() {
                   ))}
                 </div>
               ) : (
-                <p className="mt-3 text-xs text-text/50">
+                <p className="mt-3 text-sm text-gray-500">
                   Ghi lại quá trình học tập để hoàn thiện hồ sơ.
                 </p>
               )}
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-muted">Kỹ năng</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-primary-600 font-semibold">Kỹ năng</p>
               {displaySkills.length ? (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {displaySkills.slice(0, 8).map((skill) =>
                     skill.skillName ? (
                       <span
                         key={skill.id}
-                        className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted"
+                        className="rounded-full border border-primary-200 bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700"
                       >
                         {skill.skillName}
                       </span>
                     ) : null
                   )}
                   {displaySkills.length > 8 ? (
-                    <span className="text-xs text-text/50">+{displaySkills.length - 8} kỹ năng khác</span>
+                    <span className="text-sm text-gray-500">+{displaySkills.length - 8} kỹ năng khác</span>
                   ) : null}
                 </div>
               ) : (
-                <p className="mt-3 text-xs text-text/50">
+                <p className="mt-3 text-sm text-gray-500">
                   Liệt kê kỹ năng cốt lõi để nhà tuyển dụng kết nối với bạn nhanh hơn.
                 </p>
               )}

@@ -24,29 +24,29 @@ export function GenerateCvForm() {
     <form
       ref={formRef}
       action={formAction}
-      className="space-y-3 rounded-xl border border-border bg-bg/80 p-4"
+      className="space-y-4 rounded-2xl border border-primary-200/60 bg-gradient-to-br from-white to-primary-50/20 p-5 shadow-sm"
     >
-      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-        Version name
+      <label className="flex flex-col gap-2 text-sm font-semibold text-gray-900">
+        Tên phiên bản
         <Input
           name="generatedVersionName"
-          placeholder="New grad - condensed"
+          placeholder="Sinh viên mới tốt nghiệp - Rút gọn"
           disabled={pending}
           required
         />
       </label>
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
         </p>
       ) : null}
       {state?.success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           {state.success}
         </p>
       ) : null}
       <Button type="submit" size="sm" disabled={pending}>
-        {pending ? "Generating..." : "Generate CV shell"}
+        {pending ? "Đang tạo..." : "Tạo mẫu CV"}
       </Button>
     </form>
   );

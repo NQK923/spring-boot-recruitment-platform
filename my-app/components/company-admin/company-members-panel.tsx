@@ -76,18 +76,18 @@ export function CompanyMembersPanel({ users }: Props) {
 
   if (users.length === 0) {
     return (
-      <div className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
+      <div className="rounded-2xl border-2 border-blue-100 bg-white px-6 py-8 text-center text-base text-slate-600 shadow-sm">
         Chưa có thành viên nào. Gửi lời mời để nhà tuyển dụng bắt đầu cộng tác.
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 text-sm">
+    <div className="space-y-5 text-sm">
       {alert ? (
         <p
           className={cx(
-            "rounded-xl border px-4 py-2 text-xs font-semibold",
+            "rounded-xl border-2 px-5 py-3 text-sm font-bold",
             alert.type === "success"
               ? "border-emerald-200 bg-emerald-50 text-emerald-700"
               : "border-red-200 bg-red-50 text-red-700"
@@ -97,7 +97,7 @@ export function CompanyMembersPanel({ users }: Props) {
         </p>
       ) : null}
 
-      <p className="rounded-2xl border border-border bg-surface px-5 py-4 text-xs text-muted">
+      <p className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 to-sky-50/50 px-5 py-4 text-sm leading-relaxed text-slate-700">
         Vai trò sẽ cố định khi thành viên tham gia. Nếu cần đổi vai trò, hãy gỡ thành viên và gửi lời mời mới.
       </p>
 
@@ -109,32 +109,25 @@ export function CompanyMembersPanel({ users }: Props) {
         return (
           <div
             key={user.id}
-            className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-4 rounded-2xl border-2 border-blue-100 bg-white px-6 py-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg sm:flex-row sm:items-center sm:justify-between"
           >
-            <div className="space-y-1">
-              <p className="font-semibold text-text">{user.email}</p>
-              <p className="text-xs text-muted">Tham gia {formatJoinedAt(user.joinedAt)}</p>
-              <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em]">
-                <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">{formatRole(user.role)}</span>
+            <div className="space-y-2">
+              <p className="text-base font-bold text-slate-900">{user.email}</p>
+              <p className="text-sm text-slate-600">Tham gia {formatJoinedAt(user.joinedAt)}</p>
+              <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider">
+                <span className="rounded-full border-2 border-blue-200 bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-2 text-white shadow-sm">{formatRole(user.role)}</span>
                 <span
                   className={cx(
-                    "rounded-full px-2 py-1",
-                    user.locked ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-600"
+                    "rounded-full border-2 px-4 py-2 shadow-sm",
+                    user.locked ? "border-red-200 bg-gradient-to-r from-red-600 to-orange-500 text-white" : "border-emerald-200 bg-gradient-to-r from-emerald-600 to-teal-500 text-white"
                   )}
                 >
-                  {user.locked ? "Đã khóa" : "Đang hoạt động"}
+                  {user.locked ? "Đã khóa" : "Hoạt động"}
                 </span>
               </div>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-text/50">
-                <span>Vai trò</span>
-                <span className="rounded-lg bg-foreground/5 px-3 py-1 text-muted">
-                  {formatRole(user.role)}
-                </span>
-              </div>
-
               {isRecruiter ? (
                 <Button
                   type="button"
@@ -142,7 +135,7 @@ export function CompanyMembersPanel({ users }: Props) {
                   size="sm"
                   disabled={isDisabled}
                   className={cx(
-                    "border transition",
+                    "border-2 transition",
                     user.locked
                       ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                       : "border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
@@ -157,7 +150,7 @@ export function CompanyMembersPanel({ users }: Props) {
                   variant="ghost"
                   size="sm"
                   disabled
-                  className="text-muted"
+                  className="text-slate-600"
                 >
                   {isCompanyAdmin ? "Quản trị viên công ty" : "Quản lý bên ngoài"}
                 </Button>

@@ -273,236 +273,282 @@ export default async function CompanyAdminDashboardPage() {
   };
 
   return (
-    <Container className="max-w-5xl space-y-10">
-      <Panel id="overview" variant="glass" padding="lg" className="space-y-8">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-          <div className="space-y-4">
-            <span className="text-xs font-semibold uppercase tracking-[0.32em] text-muted">
-              Bảng điều khiển quản trị công ty
-            </span>
-            <h1 className="text-3xl font-semibold text-text sm:text-4xl">
-              Giữ workspace đồng bộ và sẵn sàng tuyển dụng.
-            </h1>
-            <p className="max-w-2xl text-sm text-muted">
-              Mời đồng đội, chăm chút hình ảnh thương hiệu và theo dõi các vị trí đang mở tại một trung tâm duy nhất.
-            </p>
-            <ul className="space-y-3 text-sm text-muted">
+    <Container className="max-w-5xl space-y-12 py-16">
+      <div id="overview" className="space-y-10 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-10 shadow-sm">
+        <div className="space-y-6 text-center">
+          <div className="mx-auto inline-block rounded-full bg-gradient-to-r from-blue-600 to-sky-500 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-md">
+            Bảng điều khiển quản trị công ty
+          </div>
+          <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight text-slate-900 sm:text-5xl">
+            {profile?.name ?? "Workspace của bạn"}
+          </h1>
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-slate-700">
+            Mời đồng đội, quản lý việc làm và theo dõi tình trạng tuyển dụng tại một nơi.
+          </p>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {metrics.map((metric) => (
+            <div
+              key={metric.label}
+              className="group rounded-2xl border-2 border-blue-100 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300"
+            >
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-600">
+                {metric.label}
+              </p>
+              <p className="mt-5 text-5xl font-bold bg-gradient-to-br from-blue-600 to-sky-500 bg-clip-text text-transparent">{metric.value}</p>
+              <p className="mt-4 text-sm leading-relaxed text-slate-700">{metric.helper}</p>
+              {metric.footnote ? (
+                <p className="mt-3 text-xs text-amber-700 font-medium">{metric.footnote}</p>
+              ) : null}
+            </div>
+          ))}
+        </div>
+        {insights.length > 0 && (
+          <div className="rounded-2xl border-2 border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50/50 p-6">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-amber-800 mb-4">Cần chú ý</h3>
+            <ul className="space-y-2">
               {insights.map((insight, index) => (
-                <li key={`${insight}-${index}`} className="flex items-start gap-3">
-                  <span className="mt-1 h-2.5 w-2.5 rounded-full bg-primary-600/70" aria-hidden />
+                <li key={`${insight}-${index}`} className="flex items-start gap-3 text-sm text-slate-800">
+                  <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-amber-500" aria-hidden />
                   <span>{insight}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-surface via-surface/85 to-surface/95 p-6 shadow-lg">
-            <div className="pointer-events-none absolute -top-14 right-0 h-32 w-32 rounded-full bg-primary-600/20 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-16 left-6 h-28 w-28 rounded-full bg-foreground/10 blur-3xl" />
-            <div className="space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
-                Tình trạng workspace
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <p className="text-xs text-muted">Quy mô đội ngũ</p>
-                  <p className="mt-1 text-2xl font-semibold text-text">{users.length}</p>
-                  <p className="text-xs text-muted">Thành viên đang cộng tác trong hôm nay.</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted">Vị trí đã đăng</p>
-                  <p className="mt-1 text-2xl font-semibold text-text">{publishedJobs.length}</p>
-                  <p className="text-xs text-muted">Đang hiển thị với ứng viên.</p>
-                </div>
-              </div>
-              <div className="rounded-2xl border border-border bg-surface px-4 py-3 text-xs text-muted">
-                {profile?.companySize
-                  ? `Quy mô công ty: ${profile.companySize}.`
-                  : "Chia sẻ quy mô để ứng viên biết kỳ vọng."}
-              </div>
-            </div>
-            <div className="mt-4 rounded-xl border border-border bg-surface/80 px-4 py-3 text-xs text-muted">
-              {profile?.createdAt
-                ? `Đã tham gia từ ${formatDate(profile.createdAt)}.`
-                : "Hoàn thiện hồ sơ công ty để xem phân tích chi tiết hơn."}
-            </div>
-          </div>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {metrics.map((metric) => (
-            <div
-              key={metric.label}
-              className="group rounded-2xl border border-border bg-surface p-5 text-sm text-muted shadow-lg transition hover:border-accent/30 hover:shadow-lg"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted">
-                {metric.label}
-              </p>
-              <p className="mt-3 text-3xl font-semibold text-text">{metric.value}</p>
-              <p className="mt-2 text-xs">{metric.helper}</p>
-              {metric.footnote ? (
-                <p className="mt-3 text-xs text-muted">{metric.footnote}</p>
-              ) : null}
-            </div>
-          ))}
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        )}
+        <div className="grid gap-5 sm:grid-cols-3">
           {quickActions.map((action) => (
             <Link
               key={action.href}
               href={action.href}
-              className="group flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4 text-sm text-muted transition hover:border-accent/40 hover:text-text hover:shadow-lg"
+              className="group flex flex-col gap-3 rounded-2xl border-2 border-blue-100 bg-white px-6 py-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300"
             >
-              <span className="text-sm font-semibold text-text">{action.label}</span>
-              <p className="text-xs text-muted">{action.description}</p>
-              <span className="inline-flex items-center gap-2 text-xs font-semibold text-primary-600 transition group-hover:translate-x-0.5">
-                Đi tới khu vực
+              <span className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{action.label}</span>
+              <p className="text-sm leading-relaxed text-slate-600">{action.description}</p>
+              <span className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-blue-600 transition group-hover:gap-3">
+                Đi tới
                 <span aria-hidden>→</span>
               </span>
             </Link>
           ))}
         </div>
-      </Panel>
+      </div>
 
-      <Panel id="company" variant="surface" padding="lg" className="space-y-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div id="company" className="space-y-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-text">Tổng quan công ty</h2>
-            <p className="text-sm text-muted">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Tổng quan công ty</h2>
+            <p className="mt-3 text-base text-slate-700">
               Kiểm tra lại thông tin thương hiệu, địa điểm tuyển dụng và lộ trình mở vị trí trước khi mời thêm thành viên.
             </p>
           </div>
-          <Link href={ROUTES.docs} className="text-sm font-semibold text-text hover:underline">
+          <Link href={ROUTES.docs} className="group inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all duration-200 hover:shadow-lg hover:scale-105">
             Hướng dẫn cập nhật
+            <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
           </Link>
         </div>
-        <div className="grid gap-6 md:grid-cols-[1.1fr_0.9fr] text-sm text-muted">
-          <div className="space-y-4 rounded-2xl border border-border bg-surface px-5 py-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-muted">Thông tin công ty</p>
-            <div className="space-y-1">
-              <p className="font-semibold text-text">{profile?.name ?? "Chưa cập nhật"}</p>
+        <div className="grid gap-6 md:grid-cols-2 text-sm">
+          <div className="space-y-6 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/20 px-7 py-6 shadow-md transition-all duration-200 hover:shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-gradient-to-r from-blue-600 to-sky-500 p-2">
+                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-600">Thông tin công ty</p>
+            </div>
+            <div className="space-y-3">
+              <p className="text-xl font-bold text-slate-900">{profile?.name ?? "Chưa cập nhật"}</p>
               {profile?.website ? (
                 <a
                   href={profile.website}
-                  className="text-xs font-semibold text-primary-600 hover:underline"
+                  className="block text-sm font-bold text-blue-600 transition hover:text-blue-700 hover:underline"
                   target="_blank"
                   rel="noreferrer"
                 >
                   {profile.website}
                 </a>
               ) : (
-                <p className="text-xs text-text/50">Thêm website để ứng viên tìm hiểu thêm.</p>
+                <p className="text-sm text-slate-500 italic">Thêm website để ứng viên tìm hiểu thêm.</p>
               )}
             </div>
-            <p className="text-xs text-muted">
-              {profile?.description ?? "Thêm mô tả để nhà tuyển dụng có bối cảnh phù hợp."}
-            </p>
-            <p className="text-xs text-muted">
-              <span className="font-semibold text-text">Quy mô công ty:</span>{" "}
-              {profile?.companySize ?? "Chia sẻ quy mô nhân sự để đặt kỳ vọng phù hợp với ứng viên."}
-            </p>
+            <div className="rounded-xl bg-white/80 p-4 border border-blue-100">
+              <p className="text-sm leading-relaxed text-slate-700">
+                {profile?.description ?? "Thêm mô tả để nhà tuyển dụng có bối cảnh phù hợp."}
+              </p>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="mt-0.5 text-blue-600">👥</span>
+              <p className="text-sm text-slate-700">
+                <span className="font-bold text-slate-900">Quy mô:</span>{" "}
+                {profile?.companySize ?? "Chia sẻ quy mô nhân sự để đặt kỳ vọng phù hợp với ứng viên."}
+              </p>
+            </div>
           </div>
-          <div className="space-y-4 rounded-2xl border border-border bg-surface px-5 py-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-muted">Trụ sở</p>
-            <p className="font-semibold text-text">
-              {profile?.companyAddress ?? "Thêm địa chỉ văn phòng chính hoặc trụ sở."}
-            </p>
-            <p className="text-xs text-muted">Gia nhập Talentflow từ {formatDate(profile?.createdAt)}</p>
-            <div>
-              <h3 className="text-xs uppercase tracking-[0.28em] text-muted">Cập nhật chi tiết</h3>
-              <p className="text-xs text-muted">
+          <div className="space-y-6 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/20 px-7 py-6 shadow-md transition-all duration-200 hover:shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-gradient-to-r from-blue-600 to-sky-500 p-2">
+                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-600">Trụ sở</p>
+            </div>
+            <div className="rounded-xl bg-white/80 p-4 border border-blue-100">
+              <p className="text-base font-bold text-slate-900">
+                {profile?.companyAddress ?? "Thêm địa chỉ văn phòng chính hoặc trụ sở."}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-50 to-sky-50 px-4 py-3 border border-blue-100">
+              <span className="text-blue-600">📅</span>
+              <p className="text-sm text-slate-700">Gia nhập Talentflow từ <span className="font-bold text-slate-900">{formatDate(profile?.createdAt)}</span></p>
+            </div>
+            <div className="space-y-3 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50/50 p-5 border-2 border-amber-100">
+              <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-800">
+                <span>💡</span>
+                Cập nhật chi tiết
+              </h3>
+              <p className="text-sm leading-relaxed text-slate-700">
                 Giữ thông điệp thương hiệu luôn mới. Thay đổi sẽ áp dụng ngay cho mọi bài tuyển dụng.
               </p>
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border border-border bg-surface p-5">
+        <div className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/20 p-7 shadow-md">
           <UpdateCompanyForm profile={profileForForm} />
         </div>
-      </Panel>
+      </div>
 
-      <Panel id="team" variant="surface" padding="lg" className="space-y-6">
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-text">Danh sách thành viên</h2>
-          <p className="text-sm text-muted">
+      <div id="team" className="space-y-8 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-10 shadow-sm">
+        <div className="space-y-5">
+          <h2 className="text-3xl font-bold text-slate-900">Danh sách thành viên</h2>
+          <p className="text-base text-slate-600">
             Quản trị viên công ty phụ trách phân quyền, trong khi nhà tuyển dụng quản lý từng vị trí và pipeline.
           </p>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-            <span className="inline-flex items-center rounded-full border border-foreground/15 bg-surface px-3 py-1 font-semibold uppercase tracking-[0.2em] text-muted">
+          <div className="flex flex-wrap items-center gap-3 text-xs">
+            <span className="inline-flex items-center rounded-full border-2 border-blue-200 bg-gradient-to-r from-blue-600 to-sky-500 px-5 py-2 font-bold uppercase tracking-wider text-white shadow-md">
               {users.length} đang hoạt động
             </span>
-            <span className="inline-flex items-center rounded-full border border-foreground/15 bg-surface px-3 py-1 uppercase tracking-[0.2em]">
-              {pendingInvitationCount} lời mời chờ phản hồi
+            <span className="inline-flex items-center rounded-full border-2 border-slate-200 bg-white px-5 py-2 font-semibold uppercase tracking-wider text-slate-700 shadow-sm">
+              {pendingInvitationCount} lời mời chờ
             </span>
             {lockedUsers > 0 ? (
-              <span className="inline-flex items-center rounded-full border border-accent/30 bg-primary-600/10 px-3 py-1 font-semibold uppercase tracking-[0.2em] text-primary-600">
+              <span className="inline-flex items-center rounded-full border-2 border-red-200 bg-gradient-to-r from-red-600 to-orange-500 px-5 py-2 font-bold uppercase tracking-wider text-white shadow-md">
                 {lockedUsers} bị khóa
               </span>
             ) : null}
           </div>
         </div>
-        <div className="rounded-2xl border border-border bg-surface p-5">
+        <div className="rounded-2xl border-2 border-blue-100 bg-white p-7 shadow-sm">
           <InviteMemberForm />
         </div>
         <CompanyMembersPanel users={users} />
-      </Panel>
+      </div>
 
-      <Panel id="jobs" variant="surface" padding="lg" className="space-y-6">
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-text">Danh mục việc làm</h2>
-          <p className="text-sm text-muted">
+      <div id="jobs" className="space-y-8">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-gradient-to-r from-blue-600 to-sky-500 p-2.5">
+              <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Danh mục việc làm</h2>
+          </div>
+          <p className="text-base text-slate-700 ml-14">
             Tạo nháp, đăng hoặc tạm dừng vị trí ngay tại workspace này. Thay đổi sẽ đồng bộ tức thì với bảng việc làm công khai.
           </p>
         </div>
 
-        <CreateJobForm positions={positions} />
+        <div className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/20 p-7 shadow-md">
+          <CreateJobForm positions={positions} />
+        </div>
 
         {jobs.length === 0 ? (
-          <div className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
-            Chưa có việc làm nào được tạo. Hãy tạo nháp để khởi động pipeline tuyển dụng.
+          <div className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 px-8 py-16 text-center shadow-md">
+            <div className="mx-auto max-w-md space-y-4">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-sky-100">
+                <svg className="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <p className="text-base font-semibold text-slate-700">Chưa có việc làm nào được tạo.</p>
+              <p className="text-sm text-slate-600">Hãy tạo nháp để khởi động pipeline tuyển dụng.</p>
+            </div>
           </div>
         ) : (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-6 lg:grid-cols-2">
             {jobs.map((job) => (
               <CompanyJobCard key={job.id} job={job} positions={positions} />
             ))}
           </div>
         )}
-      </Panel>
+      </div>
 
-      <Panel id="invites" variant="surface" padding="lg" className="space-y-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-text">Lời mời đang xử lý</h2>
-            <p className="text-sm text-muted">
+      <div id="invites" className="space-y-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-gradient-to-r from-blue-600 to-sky-500 p-2.5">
+                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Lời mời đang xử lý</h2>
+            </div>
+            <p className="text-base text-slate-700 ml-14">
               Theo dõi lời mời đang chờ để đồng đội không bỏ lỡ email chào mừng.
             </p>
           </div>
-          <Link href="/docs/admin#reminders" className="text-sm font-semibold text-text hover:underline">
+          <Link href="/docs/admin#reminders" className="group inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all duration-200 hover:shadow-lg hover:scale-105">
             Mẫu nhắc nhở
+            <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
           </Link>
         </div>
         {recentInvites.length === 0 ? (
-          <div className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
-            Không có lời mời nào còn tồn đọng. Bạn đang quản lý đội ngũ rất tốt!
+          <div className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 px-8 py-16 text-center shadow-md">
+            <div className="mx-auto max-w-md space-y-4">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-emerald-100">
+                <svg className="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-base font-semibold text-slate-700">Không có lời mời nào còn tồn đọng.</p>
+              <p className="text-sm text-slate-600">Bạn đang quản lý đội ngũ rất tốt!</p>
+            </div>
           </div>
         ) : (
-          <div className="space-y-3 text-sm">
+          <div className="space-y-4 text-sm">
             {recentInvites.map((invite, index) => (
               <div
                 key={`${invite.email}-${index}`}
-                className="flex flex-col gap-2 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                className="group flex flex-col gap-3 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/20 px-7 py-5 shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div>
-                  <p className="font-semibold text-text">{invite.email ?? "pending@email.com"}</p>
-                  <p className="text-xs text-muted">{invite.role ?? "Vai trò sẽ cập nhật"}</p>
+                <div className="flex items-center gap-3">
+                  <div className="rounded-full bg-gradient-to-r from-blue-600 to-sky-500 p-2">
+                    <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-base font-bold text-slate-900">{invite.email ?? "pending@email.com"}</p>
+                    <p className="text-sm text-slate-600">{invite.role ?? "Vai trò sẽ cập nhật"}</p>
+                  </div>
                 </div>
-                <p className="text-xs text-text/50">
-                  Đã gửi {invite.invitedAt ? formatDate(invite.invitedAt) : "gần đây"}
-                </p>
+                <div className="flex items-center gap-2 rounded-lg bg-white/80 px-4 py-2 border border-blue-100">
+                  <svg className="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-sm text-slate-600">
+                    Đã gửi <span className="font-semibold text-slate-900">{invite.invitedAt ? formatDate(invite.invitedAt) : "gần đây"}</span>
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         )}
-      </Panel>
+      </div>
     </Container>
   );
 }

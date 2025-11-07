@@ -35,31 +35,31 @@ export function UpdateJobForm({ job, positions }: Props) {
   );
 
   return (
-    <form action={formAction} className="space-y-4 rounded-xl border border-border bg-bg/80 p-4">
-      <div className="flex flex-col gap-1 text-sm">
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-          Chức danh
+    <form action={formAction} className="space-y-5 rounded-2xl border-2 border-blue-100 bg-white p-5">
+      <div className="flex flex-col gap-2 text-sm">
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Chức danh</span>
           <input
             name="title"
             defaultValue={job.title}
             required
             disabled={pending}
-            className="rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
+            className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
           />
         </label>
-        <p className="text-[11px] uppercase tracking-[0.2em] text-text/40">
+        <p className="text-xs uppercase tracking-wider text-slate-500">
           Cập nhật gần nhất {job.updatedAt ? new Date(job.updatedAt).toLocaleString() : "gần đây"}
         </p>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-          Trạng thái
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Trạng thái</span>
           <select
             name="status"
             defaultValue={job.status ?? "DRAFT"}
             disabled={pending}
-            className="rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
+            className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
           >
             {STATUSES.map((status) => (
               <option key={status} value={status}>
@@ -69,13 +69,13 @@ export function UpdateJobForm({ job, positions }: Props) {
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-          Hình thức làm việc
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Hình thức làm việc</span>
           <select
             name="workType"
             defaultValue={job.workType ?? "REMOTE"}
             disabled={pending}
-            className="rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
+            className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
           >
             {WORK_TYPES.map((type) => (
               <option key={type} value={type}>
@@ -86,23 +86,23 @@ export function UpdateJobForm({ job, positions }: Props) {
         </label>
       </div>
 
-      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-        Địa điểm
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Địa điểm</span>
         <input
           name="location"
           defaultValue={job.location ?? ""}
           disabled={pending}
-          className="rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
+          className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-        Vị trí chuẩn hóa
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Vị trí chuẩn hóa</span>
         <select
           name="positionId"
           defaultValue={job.jobPosition?.id ? String(job.jobPosition.id) : ""}
           disabled={pending}
-          className="rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
+          className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
         >
           <option value="">Chưa gán</option>
           {positions.map((position) => (
@@ -115,56 +115,56 @@ export function UpdateJobForm({ job, positions }: Props) {
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-        Khoảng lương
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Khoảng lương</span>
         <input
           name="salaryRange"
           defaultValue={job.salaryRange ?? ""}
           disabled={pending}
-          className="rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
+          className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-        Mô tả
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Mô tả</span>
         <textarea
           name="description"
           defaultValue={job.description ?? ""}
           rows={3}
           disabled={pending}
-          className="rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
+          className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-        Yêu cầu
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Yêu cầu</span>
         <textarea
           name="requirements"
           defaultValue={job.requirements ?? ""}
           rows={3}
           disabled={pending}
-          className="rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
+          className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-wide text-muted">
-        Phúc lợi
+      <label className="flex flex-col gap-2 text-sm">
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Phúc lợi</span>
         <textarea
           name="benefits"
           defaultValue={job.benefits ?? ""}
           rows={3}
           disabled={pending}
-          className="rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
+          className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
         />
       </label>
 
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+        <p className="rounded-xl border-2 border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
           {state.error}
         </p>
       ) : null}
       {state?.success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+        <p className="rounded-xl border-2 border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
           {state.success}
         </p>
       ) : null}

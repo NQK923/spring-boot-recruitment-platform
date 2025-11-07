@@ -11,9 +11,9 @@ export function InviteMemberForm() {
   const [state, formAction, pending] = useActionState(inviteCompanyMemberAction, initialState);
 
   return (
-    <form className="space-y-4 text-sm" action={formAction}>
-      <div className="space-y-2">
-        <label htmlFor="invite-email" className="font-semibold text-text">
+    <form className="space-y-5 text-sm" action={formAction}>
+      <div className="space-y-3">
+        <label htmlFor="invite-email" className="block font-bold text-slate-900">
           Địa chỉ email
         </label>
         <Input
@@ -25,31 +25,31 @@ export function InviteMemberForm() {
           required
         />
       </div>
-      <div className="space-y-2">
-        <label htmlFor="invite-role" className="font-semibold text-text">
+      <div className="space-y-3">
+        <label htmlFor="invite-role" className="block font-bold text-slate-900">
           Vai trò
         </label>
         <select
           id="invite-role"
           name="role"
           defaultValue="RECRUITER"
-          className="h-9 w-full rounded-2xl border border-border bg-surface px-3 text-sm text-text shadow-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+          className="h-11 w-full rounded-2xl border-2 border-blue-100 bg-white px-4 text-sm text-slate-900 shadow-sm transition focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
         >
           <option value="COMPANY_ADMIN">Quản trị viên công ty</option>
           <option value="RECRUITER">Nhà tuyển dụng</option>
         </select>
       </div>
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+        <p className="rounded-xl border-2 border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
           {state.error}
         </p>
       ) : null}
       {state?.success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+        <p className="rounded-xl border-2 border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
           {state.success}
         </p>
       ) : null}
-      <Button type="submit" size="md" disabled={pending}>
+      <Button type="submit" size="md" disabled={pending} className="w-full sm:w-auto">
         {pending ? "Đang gửi..." : "Gửi lời mời"}
       </Button>
     </form>

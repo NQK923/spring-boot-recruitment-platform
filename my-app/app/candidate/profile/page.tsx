@@ -85,25 +85,25 @@ export default async function CandidateProfilePage() {
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-6 py-16">
-      <header className="space-y-2">
-        <p className="text-sm font-semibold uppercase tracking-wide text-text/50">Candidate</p>
-        <h1 className="text-3xl font-semibold text-text">Profile settings</h1>
-        <p className="text-sm text-muted">
-          Information saved here powers recruiter dashboards, application cards, and interview briefs.
+      <header className="space-y-3">
+        <p className="text-sm font-bold uppercase tracking-wide text-primary-600">Ứng viên</p>
+        <h1 className="text-4xl font-bold text-gray-900">Cài đặt hồ sơ</h1>
+        <p className="text-base text-gray-600 leading-relaxed">
+          Thông tin được lưu ở đây sẽ hiển thị trên bảng điều khiển của nhà tuyển dụng, thẻ ứng tuyển và tóm tắt phỏng vấn.
         </p>
       </header>
 
-      <section className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
         <div>
-          <h2 className="text-lg font-semibold text-text">Personal details</h2>
-          <p className="text-sm text-muted">
-            Update your basic profile attributes. These values populate recruiter-facing summaries.
+          <h2 className="text-xl font-bold text-gray-900">Thông tin cá nhân</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Cập nhật các thuộc tính hồ sơ cơ bản của bạn. Những giá trị này sẽ hiển thị cho nhà tuyển dụng.
           </p>
         </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <AvatarUploader avatarUrl={profile.avatarUrl} fullName={profile.fullName} />
-          <p className="text-xs text-text/50 md:max-w-sm">
-            This photo appears on your candidate dashboard and any recruiter-facing application cards.
+          <p className="text-sm text-gray-600 md:max-w-sm">
+            Ảnh này xuất hiện trên bảng điều khiển ứng viên và bất kỳ thẻ ứng tuyển nào dành cho nhà tuyển dụng.
           </p>
         </div>
         <UpdateProfileForm
@@ -113,11 +113,11 @@ export default async function CandidateProfilePage() {
         />
       </section>
 
-      <section className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
         <div className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold text-text">CV management</h2>
-          <p className="text-sm text-muted">
-            Upload polished CVs or generate lightweight placeholders to tailor submissions for each role.
+          <h2 className="text-xl font-bold text-gray-900">Quản lý CV</h2>
+          <p className="text-sm text-gray-600">
+            Tải lên CV đã được chỉnh sửa hoặc tạo mẫu tạm thời để điều chỉnh các bản gửi cho từng vai trò.
           </p>
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
@@ -125,10 +125,10 @@ export default async function CandidateProfilePage() {
           <GenerateCvForm />
         </div>
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-text">Existing versions</h3>
+          <h3 className="text-base font-bold text-gray-900">Các phiên bản hiện có</h3>
           {cvs.length === 0 ? (
-            <p className="rounded-xl border border-border bg-bg/60 px-4 py-4 text-sm text-muted">
-              No CVs uploaded yet. Add one above to attach it to future applications.
+            <p className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-sm text-gray-600 text-center">
+              Chưa có CV nào được tải lên. Thêm một CV ở trên để đính kèm vào các ứng tuyển trong tương lai.
             </p>
           ) : (
             <div className="space-y-3 text-sm">
@@ -139,26 +139,26 @@ export default async function CandidateProfilePage() {
                 return (
                   <div
                     key={cv.id}
-                    className="flex flex-col gap-2 rounded-xl border border-border bg-bg/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between hover:border-primary-300 transition-colors"
                   >
                     <div>
-                      <p className="font-semibold text-text">{cv.versionName}</p>
-                      <p className="text-xs text-text/50">
-                        Added {formatDate(cv.createdAt, "Unknown date")} {cv.isDefault ? "(default)" : ""}
+                      <p className="font-bold text-gray-900">{cv.versionName}</p>
+                      <p className="text-sm text-gray-600">
+                        Đã thêm {formatDate(cv.createdAt, "Ngày không xác định")} {cv.isDefault ? "(mặc định)" : ""}
                       </p>
                     </div>
                     {downloadHref ? (
                       <a
                         href={downloadHref}
-                        className="text-xs font-semibold text-text hover:underline"
+                        className="text-sm font-bold text-primary-600 hover:text-primary-700 hover:underline"
                         target="_blank"
                         rel="noreferrer"
                       >
-                        Download
+                        Tải xuống
                       </a>
                     ) : (
-                      <span className="text-xs text-text/50">
-                        Generated placeholder - upload an updated version when ready.
+                      <span className="text-sm text-gray-500">
+                        Mẫu tạm - tải lên phiên bản cập nhật khi sẵn sàng.
                       </span>
                     )}
                   </div>
@@ -169,32 +169,31 @@ export default async function CandidateProfilePage() {
         </div>
       </section>
 
-      <section className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
         <div>
-          <h2 className="text-lg font-semibold text-text">Experience</h2>
-          <p className="text-sm text-muted">
-            Chronicle the roles that shaped your journey. Add new entries or update existing ones whenever your
-            story evolves.
+          <h2 className="text-xl font-bold text-gray-900">Kinh nghiệm</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Ghi lại các vai trò đã định hình hành trình của bạn. Thêm mục mới hoặc cập nhật các mục hiện có bất cứ khi nào câu chuyện của bạn phát triển.
           </p>
         </div>
         <ExperiencesForm experiences={experiences} />
       </section>
 
-      <section className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
         <div>
-          <h2 className="text-lg font-semibold text-text">Education</h2>
-          <p className="text-sm text-muted">
-            Keep your academic background current so recruiters understand your foundation and specialties.
+          <h2 className="text-xl font-bold text-gray-900">Học vấn</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Giữ cho nền tảng học thuật của bạn được cập nhật để nhà tuyển dụng hiểu được nền tảng và chuyên môn của bạn.
           </p>
         </div>
         <EducationForm education={education} />
       </section>
 
-      <section className="space-y-6 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
         <div>
-          <h2 className="text-lg font-semibold text-text">Skills</h2>
-          <p className="text-sm text-muted">
-            Spotlight the skills you rely on most. Add hard and soft skills to help recruiters match you quickly.
+          <h2 className="text-xl font-bold text-gray-900">Kỹ năng</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Làm nổi bật các kỹ năng bạn dựa vào nhiều nhất. Thêm kỹ năng cứng và kỹ năng mềm để giúp nhà tuyển dụng kết nối với bạn nhanh chóng.
           </p>
         </div>
         <SkillsForm skills={skills} />

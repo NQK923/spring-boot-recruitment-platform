@@ -30,19 +30,19 @@ export function UpdateProfileForm({ fullName, phoneNumber, summary }: Props) {
   }, [router, state?.success]);
 
   return (
-    <form action={formAction} className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="flex flex-col gap-1 text-sm text-text/80">
-          Full name
+    <form action={formAction} className="space-y-5">
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="flex flex-col gap-2 text-sm font-semibold text-gray-900">
+          Họ và tên
           <Input
             name="fullName"
             defaultValue={fullName ?? ""}
-            placeholder="Nguyen Van A"
+            placeholder="Nguyễn Văn A"
             disabled={pending}
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-text/80">
-          Phone number
+        <label className="flex flex-col gap-2 text-sm font-semibold text-gray-900">
+          Số điện thoại
           <Input
             name="phoneNumber"
             defaultValue={phoneNumber ?? ""}
@@ -51,29 +51,29 @@ export function UpdateProfileForm({ fullName, phoneNumber, summary }: Props) {
           />
         </label>
       </div>
-      <label className="flex flex-col gap-1 text-sm text-text/80">
-        Summary
+      <label className="flex flex-col gap-2 text-sm font-semibold text-gray-900">
+        Tóm tắt bản thân
         <textarea
           name="summary"
           defaultValue={summary ?? ""}
-          placeholder="Share a short bio so recruiters know what motivates you."
+          placeholder="Chia sẻ tóm tắt ngắn gọn để nhà tuyển dụng hiểu động lực của bạn."
           disabled={pending}
           rows={4}
-          className="min-h-[120px] rounded-xl border border-border bg-bg px-3 py-2 text-sm text-text outline-none transition focus:border-foreground/40 focus:ring-0"
+          className="min-h-[120px] rounded-2xl border border-primary-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
         />
       </label>
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
         </p>
       ) : null}
       {state?.success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           {state.success}
         </p>
       ) : null}
-      <Button type="submit" size="lg" disabled={pending}>
-        {pending ? "Saving..." : "Save changes"}
+      <Button type="submit" size="md" disabled={pending}>
+        {pending ? "Đang lưu..." : "Lưu thay đổi"}
       </Button>
     </form>
   );

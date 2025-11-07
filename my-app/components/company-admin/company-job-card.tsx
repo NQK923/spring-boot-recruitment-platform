@@ -8,10 +8,10 @@ import { UpdateJobForm } from "@/components/jobs/update-job-form";
 import type { JobPosting, JobPosition } from "@/lib/types";
 
 const JOB_STATUS_PILLS: Record<JobPosting["status"], string> = {
-  DRAFT: "border border-foreground/15 bg-surface/80 text-text/65",
-  PUBLISHED: "border border-accent/25 bg-primary-600/10 text-primary-600",
-  PAUSED: "border border-foreground/15 bg-foreground/10 text-muted",
-  CLOSED: "border border-border bg-foreground/5 text-muted",
+  DRAFT: "border border-amber-200 bg-amber-50 text-amber-700",
+  PUBLISHED: "border border-emerald-200 bg-emerald-50 text-emerald-700",
+  PAUSED: "border border-orange-200 bg-orange-50 text-orange-700",
+  CLOSED: "border border-gray-200 bg-gray-50 text-gray-600",
 };
 
 const STATUS_LABELS: Record<JobPosting["status"], string> = {
@@ -53,77 +53,88 @@ export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
   const pillClass = JOB_STATUS_PILLS[job.status ?? "DRAFT"] ?? JOB_STATUS_PILLS.DRAFT;
 
   return (
-    <div className="space-y-4 rounded-2xl border border-border bg-surface px-5 py-4 shadow-lg transition hover:border-accent/30 hover:shadow-lg">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-sm font-semibold text-text sm:text-base">{job.title}</p>
-            <span className={["inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize", pillClass].join(" ")}>
+    <div className="flex h-full flex-col rounded-2xl border-2 border-blue-100 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300">
+      <div className="space-y-4 flex-shrink-0">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1 space-y-3">
+            <h3 className="min-h-[3.5rem] text-lg font-bold text-slate-900 leading-tight">{job.title}</h3>
+            <span className={["inline-flex items-center rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wider shadow-sm", pillClass].join(" ")}>
               {formatStatusLabel(job.status ?? "DRAFT")}
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-            {job.jobPosition?.department ? <span>{job.jobPosition.department}</span> : null}
-            {job.location ? (
-              <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-foreground/40">
-                {job.location}
-              </span>
-            ) : null}
-            {job.workType ? (
-              <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-foreground/40">
-                {WORK_TYPE_LABELS[job.workType.toUpperCase()] ?? job.workType}
-              </span>
-            ) : null}
-          </div>
-          <p className="text-xs text-muted">
-            Tạo lúc {formatTimestamp(job.createdAt)} · Cập nhật {formatTimestamp(job.updatedAt)}
-          </p>
-        </div>
-        <div className="flex flex-col items-end gap-2 text-xs">
           <Link
             href={`${ROUTES.jobs}/${job.id}`}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 transition hover:text-text"
+            className="inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-blue-600 transition hover:text-blue-700"
           >
-            Xem bài tuyển dụng
+            Xem
             <span aria-hidden>↗</span>
           </Link>
-          {job.recruiterId ? (
-            <span className="rounded-full border border-border bg-surface px-2 py-1 text-[11px] uppercase tracking-[0.2em] text-muted">
-              Phụ trách #{job.recruiterId}
-            </span>
-          ) : (
-            <span className="rounded-full border border-accent/25 bg-primary-600/10 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-600">
-              Chưa có phụ trách
-            </span>
-          )}
         </div>
+
+        <div className="flex min-h-[2.5rem] flex-wrap items-center gap-3 text-sm text-slate-700">
+          {job.jobPosition?.department ? <span className="font-semibold">{job.jobPosition.department}</span> : null}
+          {job.location ? (
+            <span className="flex items-center gap-2 before:block before:h-2 before:w-2 before:rounded-full before:bg-blue-400">
+              {job.location}
+            </span>
+          ) : null}
+          {job.workType ? (
+            <span className="flex items-center gap-2 before:block before:h-2 before:w-2 before:rounded-full before:bg-sky-400">
+              {WORK_TYPE_LABELS[job.workType.toUpperCase()] ?? job.workType}
+            </span>
+          ) : null}
+        </div>
+
+        {job.recruiterId ? (
+          <span className="inline-flex items-center rounded-full border-2 border-blue-200 bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-sm">
+            Phụ trách #{job.recruiterId}
+          </span>
+        ) : (
+          <span className="inline-flex items-center rounded-full border-2 border-amber-200 bg-gradient-to-r from-amber-500 to-orange-400 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-sm">
+            Chưa có phụ trách
+          </span>
+        )}
       </div>
 
-      {job.description ? (
-        <p className="text-xs text-text/65">{job.description}</p>
-      ) : null}
+      <div className="flex-1 min-h-[5rem] py-4">
+        {job.description ? (
+          <p className="line-clamp-3 text-sm leading-relaxed text-slate-700">{job.description}</p>
+        ) : (
+          <p className="text-sm italic text-slate-500">Chưa có mô tả công việc</p>
+        )}
+      </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-text/50">
-          {job.salaryRange ? <span>{job.salaryRange}</span> : null}
+      <div className="mt-auto space-y-4 border-t-2 border-blue-100 pt-4 flex-shrink-0">
+        <div className="flex min-h-[2.5rem] flex-wrap items-center gap-3 text-xs font-semibold text-slate-700">
+          {job.salaryRange ? (
+            <span className="rounded-lg border-2 border-blue-100 bg-gradient-to-r from-blue-50 to-sky-50 px-4 py-2">
+              {job.salaryRange}
+            </span>
+          ) : null}
           {job.jobPosition?.title ? (
-            <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-foreground/40">
+            <span className="flex items-center gap-2 rounded-lg border-2 border-blue-100 bg-gradient-to-r from-blue-50 to-sky-50 px-4 py-2 before:block before:h-2 before:w-2 before:rounded-full before:bg-blue-500">
               {job.jobPosition.title}
             </span>
           ) : null}
         </div>
-        <Button
-          type="button"
-          variant={editing ? "ghost" : "secondary"}
-          size="sm"
-          onClick={() => setEditing((prev) => !prev)}
-        >
-          {editing ? "Đóng chỉnh sửa" : "Chỉnh sửa vị trí"}
-        </Button>
+
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-xs text-slate-600">
+            Cập nhật {formatTimestamp(job.updatedAt)}
+          </p>
+          <Button
+            type="button"
+            variant={editing ? "ghost" : "secondary"}
+            size="sm"
+            onClick={() => setEditing((prev) => !prev)}
+          >
+            {editing ? "Đóng" : "Chỉnh sửa"}
+          </Button>
+        </div>
       </div>
 
       {editing ? (
-        <div className="border-t border-border pt-4">
+        <div className="border-t-2 border-blue-100 pt-5 mt-5">
           <UpdateJobForm job={job} positions={positions} />
         </div>
       ) : null}
