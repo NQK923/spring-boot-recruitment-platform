@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +35,7 @@ public class RecommendationEngine {
         this.properties = properties;
     }
 
-    public List<JobSuggestion> recommend(UUID userId, String userQuery, int desiredFinalK) {
+    public List<JobSuggestion> recommend(Long userId, String userQuery, int desiredFinalK) {
         float[] queryVector = embeddingService.embedText(userQuery);
         float[] profileVector = profileRepository.findEmbedding(userId).orElse(null);
         List<RecJobRepository.JobHit> hits = jobRepository.search(
@@ -85,7 +84,7 @@ public class RecommendationEngine {
             reasons.add(salaryNote);
         }
         if (reasons.isEmpty()) {
-            reasons.add("Điểm tương đồng cao với câu hỏi của bạn và còn mở tuyển.");
+            reasons.add("Điểm tương đồng cao với câu hỏi của bạn và đang mở tuyển.");
         }
         return String.join(" ", reasons);
     }
@@ -110,10 +109,7 @@ public class RecommendationEngine {
             && lowerWork.contains("on")) {
             return true;
         }
-        if (lowerQuery.contains("hybrid") && lowerWork.contains("hybrid")) {
-            return true;
-        }
-        return false;
+        return lowerQuery.contains("hybrid") && lowerWork.contains("hybrid");
     }
 
     private List<String> matchSkills(JsonNode skillsNode, String query) {
@@ -130,12 +126,11 @@ public class RecommendationEngine {
             return List.of();
         }
         Set<String> queryTokens = extractKeywords(query);
-        List<String> matches = skillTokens.stream()
+        return skillTokens.stream()
             .filter(queryTokens::contains)
             .limit(3)
-            .map(skill -> capitalize(skill))
+            .map(this::capitalize)
             .collect(Collectors.toList());
-        return matches;
     }
 
     private Set<String> extractKeywords(String text) {
@@ -143,7 +138,7 @@ public class RecommendationEngine {
             return Set.of();
         }
         String normalized = text.toLowerCase(Locale.ROOT)
-            .replaceAll("[^a-z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ ]", " ");
+            .replaceAll("[^a-z0-9áàảãạăắằẳẵặâấầẩẫậđéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ ]", " ");
         String[] parts = normalized.split("\\s+");
         Set<String> result = new HashSet<>();
         for (String part : parts) {
@@ -159,6 +154,10 @@ public class RecommendationEngine {
         String max = text(metadata, "salaryMax", null);
         String currency = text(metadata, "salaryCurrency", "");
         if (min == null && max == null) {
+            String salaryText = text(metadata, "salaryText", null);
+            if (salaryText != null) {
+                return "Mức lương tham khảo: " + salaryText + ".";
+            }
             return null;
         }
         if (max != null) {

@@ -1,9 +1,7 @@
 package com.recruitment.platform.chat.recommendation.model;
 
-import java.util.UUID;
-
 public record JobSuggestion(
-    UUID jobId,
+    Long jobId,
     String title,
     String companyName,
     String location,

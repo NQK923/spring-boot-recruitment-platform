@@ -3,6 +3,7 @@ package com.recruitment.platform.chat.recommendation.repository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recruitment.platform.chat.recommendation.vector.PgVectorUtil;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
@@ -12,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
 public class RecJobRepository {
@@ -61,6 +61,8 @@ public class RecJobRepository {
         LIMIT ?
         """;
 
+    private static final String COUNT_SQL = "SELECT COUNT(1) FROM rec_db.rec_jobs";
+
     private final JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
 
@@ -69,7 +71,7 @@ public class RecJobRepository {
         this.objectMapper = objectMapper;
     }
 
-    public void upsert(UUID jobId, UUID companyId, String content, JsonNode metadata, float[] embedding) {
+    public void upsert(Long jobId, Long companyId, String content, JsonNode metadata, float[] embedding) {
         Assert.notNull(jobId, "jobId bắt buộc");
         Assert.notNull(content, "content bắt buộc");
         Assert.notNull(metadata, "metadata bắt buộc");
@@ -77,8 +79,12 @@ public class RecJobRepository {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(UPSERT_SQL);
-            ps.setObject(1, jobId);
-            ps.setObject(2, companyId);
+            ps.setLong(1, jobId);
+            if (companyId != null) {
+                ps.setLong(2, companyId);
+            } else {
+                ps.setNull(2, Types.BIGINT);
+            }
             ps.setString(3, content);
             ps.setString(4, metadata.toString());
             ps.setObject(5, PgVectorUtil.toDatabaseVector(embedding), Types.OTHER);
@@ -103,11 +109,21 @@ public class RecJobRepository {
             ps.setInt(paramIndex++, Math.max(freshnessDays, 1));
             ps.setInt(paramIndex, topK);
             return ps;
-        }, (rs, rowNum) -> mapJobHit(rs));
+        }, this::mapJobHit);
     }
 
-    private JobHit mapJobHit(ResultSet rs) throws SQLException {
-        UUID jobId = rs.getObject("job_id", UUID.class);
+    public boolean hasJobs() {
+        try {
+            Long total = jdbcTemplate.queryForObject(COUNT_SQL, Long.class);
+            return total != null && total > 0;
+        } catch (DataAccessException ex) {
+            return false;
+        }
+    }
+
+    private JobHit mapJobHit(ResultSet rs, int rowNum) throws SQLException {
+        long rawJobId = rs.getLong("job_id");
+        Long jobId = rs.wasNull() ? null : rawJobId;
         String metadata = rs.getString("metadata");
         double score = rs.getDouble("score");
         JsonNode metadataNode;
@@ -119,6 +135,6 @@ public class RecJobRepository {
         return new JobHit(jobId, score, metadataNode);
     }
 
-    public record JobHit(UUID jobId, double score, JsonNode metadata) {
+    public record JobHit(Long jobId, double score, JsonNode metadata) {
     }
 }

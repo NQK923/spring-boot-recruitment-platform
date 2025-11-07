@@ -16,7 +16,7 @@ spring:
       minimum-idle: ${CHAT_HIKARI_MIN_IDLE:1}
       connection-init-sql: >
         CREATE SCHEMA IF NOT EXISTS rec_db;
-        SET search_path TO rec_db;
+        SET search_path TO rec_db, public, extensions;
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
@@ -52,6 +52,7 @@ app:
     topK: ${CHAT_RECOMMEND_TOP_K:50}
     finalK: ${CHAT_RECOMMEND_FINAL_K:5}
     freshnessDays: ${CHAT_RECOMMEND_FRESHNESS_DAYS:21}
+    bootstrapSize: ${CHAT_RECOMMEND_BOOTSTRAP_SIZE:50}
   gateway:
     base-url: ${GATEWAY_BASE_URL:http://gateway-service:8080}
 

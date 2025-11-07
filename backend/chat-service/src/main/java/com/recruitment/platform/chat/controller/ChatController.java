@@ -42,7 +42,6 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -157,7 +156,7 @@ public class ChatController {
     }
 
     private Mono<ChatResponse> handleRecommendationResponse(String query, Authentication authentication, ServerHttpRequest request) {
-        UUID userId = resolveUserId(authentication, request);
+        Long userId = resolveUserId(authentication, request);
         String bearerToken = extractBearerToken(request);
         return jobRecommendationService.recommend(userId, query, bearerToken)
             .map(suggestions -> {
@@ -169,7 +168,7 @@ public class ChatController {
     }
 
     private Flux<ServerSentEvent<String>> streamRecommendations(String query, Authentication authentication, ServerHttpRequest request) {
-        UUID userId = resolveUserId(authentication, request);
+        Long userId = resolveUserId(authentication, request);
         String bearerToken = extractBearerToken(request);
         Flux<ServerSentEvent<String>> intro = Flux.just(ServerSentEvent.<String>builder("Đang tìm việc phù hợp cho bạn...").event("message").build());
         Flux<ServerSentEvent<String>> jobEvents = jobRecommendationService.recommendStream(userId, query, bearerToken)
@@ -201,7 +200,7 @@ public class ChatController {
     private String writeJobEventPayload(JobSuggestion suggestion) {
         try {
             return objectMapper.writeValueAsString(objectMapper.createObjectNode()
-                .put("jobId", suggestion.jobId() != null ? suggestion.jobId().toString() : null)
+                .put("jobId", suggestion.jobId())
                 .put("title", suggestion.title())
                 .put("company", suggestion.companyName())
                 .put("location", suggestion.location())
@@ -215,35 +214,34 @@ public class ChatController {
         }
     }
 
-    private UUID resolveUserId(Authentication authentication, ServerHttpRequest request) {
+    private Long resolveUserId(Authentication authentication, ServerHttpRequest request) {
         if (authentication != null) {
             Object credentials = authentication.getCredentials();
             if (credentials instanceof Jwt jwt) {
-                UUID parsed = parseUuid(jwt.getSubject());
+                Long parsed = parseUserId(jwt.getSubject());
                 if (parsed != null) {
                     return parsed;
                 }
             }
-            UUID parsed = parseUuid(authentication.getName());
+            Long parsed = parseUserId(authentication.getName());
             if (parsed != null) {
                 return parsed;
             }
         }
         String headerUserId = request.getHeaders().getFirst("X-User-ID");
-        return parseUuid(headerUserId);
+        return parseUserId(headerUserId);
     }
 
-    private UUID parseUuid(String value) {
+    private Long parseUserId(String value) {
         if (!StringUtils.hasText(value)) {
             return null;
         }
         try {
-            return UUID.fromString(value.trim());
-        } catch (IllegalArgumentException ex) {
+            return Long.parseLong(value.trim());
+        } catch (NumberFormatException ex) {
             return null;
         }
     }
-
     private String extractBearerToken(ServerHttpRequest request) {
         String header = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         return StringUtils.hasText(header) ? header : null;
@@ -338,3 +336,22 @@ public class ChatController {
         return "anonymous";
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

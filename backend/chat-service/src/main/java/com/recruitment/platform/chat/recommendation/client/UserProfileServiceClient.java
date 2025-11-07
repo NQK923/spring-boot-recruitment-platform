@@ -11,7 +11,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.UUID;
 
 @Component
 public class UserProfileServiceClient {
@@ -27,7 +26,7 @@ public class UserProfileServiceClient {
             .build();
     }
 
-    public ProfileDto getProfile(UUID userId, String bearerToken) {
+    public ProfileDto getProfile(Long userId, String bearerToken) {
         if (userId == null) {
             return null;
         }

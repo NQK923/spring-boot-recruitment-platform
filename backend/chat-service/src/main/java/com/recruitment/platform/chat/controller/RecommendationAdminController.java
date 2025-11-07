@@ -16,7 +16,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Set;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/chat/reindex")
@@ -31,7 +30,7 @@ public class RecommendationAdminController {
     }
 
     @PostMapping("/job/{jobId}")
-    public Mono<ResponseEntity<String>> reindexJob(@PathVariable UUID jobId,
+    public Mono<ResponseEntity<String>> reindexJob(@PathVariable Long jobId,
                                                    Authentication authentication,
                                                    ServerHttpRequest request) {
         ensureAdmin(authentication);
@@ -42,7 +41,7 @@ public class RecommendationAdminController {
     }
 
     @PostMapping("/profile/{userId}")
-    public Mono<ResponseEntity<String>> reindexProfile(@PathVariable UUID userId,
+    public Mono<ResponseEntity<String>> reindexProfile(@PathVariable Long userId,
                                                        Authentication authentication,
                                                        ServerHttpRequest request) {
         ensureAdmin(authentication);
@@ -64,3 +63,13 @@ public class RecommendationAdminController {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+

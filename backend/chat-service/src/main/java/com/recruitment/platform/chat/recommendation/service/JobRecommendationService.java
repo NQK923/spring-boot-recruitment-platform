@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class JobRecommendationService {
@@ -20,19 +19,23 @@ public class JobRecommendationService {
 
     private final RecommendationIndexer indexer;
     private final RecommendationEngine engine;
+    private final RecommendationBootstrapper bootstrapper;
     private final RecommendationProperties properties;
 
     public JobRecommendationService(RecommendationIndexer indexer,
                                     RecommendationEngine engine,
+                                    RecommendationBootstrapper bootstrapper,
                                     RecommendationProperties properties) {
         this.indexer = indexer;
         this.engine = engine;
+        this.bootstrapper = bootstrapper;
         this.properties = properties;
     }
 
-    public Mono<List<JobSuggestion>> recommend(UUID userId, String query, String bearerToken) {
+    public Mono<List<JobSuggestion>> recommend(Long userId, String query, String bearerToken) {
         String sanitizedQuery = StringUtils.hasText(query) ? query : "gợi ý việc làm mới nhất";
         return Mono.fromCallable(() -> {
+                bootstrapper.ensureJobsSeeded(bearerToken);
                 if (userId != null) {
                     try {
                         indexer.upsertProfile(userId, bearerToken);
@@ -45,8 +48,10 @@ public class JobRecommendationService {
             .subscribeOn(Schedulers.boundedElastic());
     }
 
-    public Flux<JobSuggestion> recommendStream(UUID userId, String query, String bearerToken) {
+    public Flux<JobSuggestion> recommendStream(Long userId, String query, String bearerToken) {
         return recommend(userId, query, bearerToken)
             .flatMapMany(Flux::fromIterable);
     }
 }
+
+

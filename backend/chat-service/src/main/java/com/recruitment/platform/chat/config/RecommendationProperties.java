@@ -21,6 +21,9 @@ public class RecommendationProperties {
     @Max(180)
     private int freshnessDays = 21;
 
+    @Positive
+    private int bootstrapSize = 50;
+
     public int getTopK() {
         return topK;
     }
@@ -43,5 +46,13 @@ public class RecommendationProperties {
 
     public void setFreshnessDays(int freshnessDays) {
         this.freshnessDays = freshnessDays;
+    }
+
+    public int getBootstrapSize() {
+        return bootstrapSize;
+    }
+
+    public void setBootstrapSize(int bootstrapSize) {
+        this.bootstrapSize = bootstrapSize;
     }
 }

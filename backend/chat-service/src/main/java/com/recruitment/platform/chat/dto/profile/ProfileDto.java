@@ -1,18 +1,40 @@
 package com.recruitment.platform.chat.dto.profile;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 public record ProfileDto(
-    UUID userId,
-    UUID companyId,
+    Long userId,
+    String fullName,
+    String phoneNumber,
     String summary,
-    List<String> skills,
-    List<String> preferredLocations,
-    boolean remoteOk,
-    BigDecimal salaryExpectation,
-    List<String> industries,
-    List<String> languages
+    String avatarUrl,
+    List<Experience> experiences,
+    List<Education> education,
+    List<Skill> skills
 ) {
+
+    public record Experience(
+        Long id,
+        String title,
+        String companyName,
+        String description,
+        String startDate,
+        String endDate
+    ) {
+    }
+
+    public record Education(
+        Long id,
+        String school,
+        String degree,
+        String startDate,
+        String endDate
+    ) {
+    }
+
+    public record Skill(
+        Long id,
+        String skillName
+    ) {
+    }
 }
