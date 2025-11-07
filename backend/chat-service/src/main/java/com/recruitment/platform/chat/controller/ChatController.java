@@ -9,11 +9,14 @@ import com.recruitment.platform.chat.dto.ChatResponse;
 import com.recruitment.platform.chat.guard.IntentGuard;
 import com.recruitment.platform.chat.model.ChatLanguage;
 import com.recruitment.platform.chat.ratelimit.UserRateLimiter;
+import com.recruitment.platform.chat.recommendation.model.JobSuggestion;
+import com.recruitment.platform.chat.recommendation.service.JobRecommendationService;
 import com.recruitment.platform.chat.service.ChatService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -39,6 +42,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -55,12 +59,18 @@ public class ChatController {
     private final IntentGuard intentGuard;
     private final UserRateLimiter rateLimiter;
     private final ObjectMapper objectMapper;
+    private final JobRecommendationService jobRecommendationService;
 
-    public ChatController(ChatService chatService, IntentGuard intentGuard, UserRateLimiter rateLimiter, ObjectMapper objectMapper) {
+    public ChatController(ChatService chatService,
+                          IntentGuard intentGuard,
+                          UserRateLimiter rateLimiter,
+                          ObjectMapper objectMapper,
+                          JobRecommendationService jobRecommendationService) {
         this.chatService = chatService;
         this.intentGuard = intentGuard;
         this.rateLimiter = rateLimiter;
         this.objectMapper = objectMapper;
+        this.jobRecommendationService = jobRecommendationService;
     }
 
     @PostMapping(value = "/message", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -85,8 +95,14 @@ public class ChatController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user message provided.");
         }
 
-        if (!intentGuard.isAllowed(latestUserMessage.get().content())) {
+        String latestText = latestUserMessage.get().content();
+
+        if (!intentGuard.isAllowed(latestText)) {
             return Mono.just(new ChatResponse(OUT_OF_SCOPE_RESPONSE));
+        }
+
+        if (intentGuard.isRecommendationIntent(latestText)) {
+            return handleRecommendationResponse(latestText, authentication, serverRequest);
         }
 
         ChatLanguage language = ChatLanguage.fromCode(request.getLanguage());
@@ -118,6 +134,10 @@ public class ChatController {
             );
         }
 
+        if (intentGuard.isRecommendationIntent(question)) {
+            return streamRecommendations(question, authentication, serverRequest);
+        }
+
         List<ChatHistoryMessage> contextMessages = decodeContext(encodedContext);
         List<ChatHistoryMessage> trimmed = trimHistory(contextMessages);
         if (trimmed.size() >= HISTORY_LIMIT) {
@@ -134,6 +154,99 @@ public class ChatController {
                 return Flux.just(ServerSentEvent.<String>builder("Xin lỗi, hệ thống đang bận. Vui lòng thử lại sau.").event("message").build());
             })
             .concatWithValues(ServerSentEvent.<String>builder("").event("done").build());
+    }
+
+    private Mono<ChatResponse> handleRecommendationResponse(String query, Authentication authentication, ServerHttpRequest request) {
+        UUID userId = resolveUserId(authentication, request);
+        String bearerToken = extractBearerToken(request);
+        return jobRecommendationService.recommend(userId, query, bearerToken)
+            .map(suggestions -> {
+                if (suggestions.isEmpty()) {
+                    return new ChatResponse("Mình chưa tìm được việc phù hợp. Bạn có thể cho mình biết rõ hơn về kỹ năng, chức danh, địa điểm và mức lương mong muốn nhé!");
+                }
+                return new ChatResponse(formatRecommendationMessage(suggestions));
+            });
+    }
+
+    private Flux<ServerSentEvent<String>> streamRecommendations(String query, Authentication authentication, ServerHttpRequest request) {
+        UUID userId = resolveUserId(authentication, request);
+        String bearerToken = extractBearerToken(request);
+        Flux<ServerSentEvent<String>> intro = Flux.just(ServerSentEvent.<String>builder("Đang tìm việc phù hợp cho bạn...").event("message").build());
+        Flux<ServerSentEvent<String>> jobEvents = jobRecommendationService.recommendStream(userId, query, bearerToken)
+            .map(suggestion -> ServerSentEvent.<String>builder(writeJobEventPayload(suggestion)).event("job").build());
+        Flux<ServerSentEvent<String>> jobOrFallback = jobEvents.switchIfEmpty(
+            Flux.just(ServerSentEvent.<String>builder("Mình chưa tìm thấy việc phù hợp. Bạn có thể mô tả rõ kỹ năng/chức danh, địa điểm hoặc mức lương mong muốn nhé!").event("message").build())
+        );
+        Flux<ServerSentEvent<String>> done = Flux.just(ServerSentEvent.<String>builder("").event("done").build());
+        return Flux.concat(intro, jobOrFallback, done);
+    }
+
+    private String formatRecommendationMessage(List<JobSuggestion> suggestions) {
+        StringBuilder builder = new StringBuilder("Mình gợi ý một vài việc đang mở:\n\n");
+        int index = 1;
+        for (JobSuggestion suggestion : suggestions) {
+            builder.append(index++).append(") ").append(suggestion.title())
+                .append(" – ").append(suggestion.companyName())
+                .append(" (").append(suggestion.location()).append(", ").append(suggestion.workType()).append(")\n")
+                .append("   Phù hợp vì: ").append(suggestion.reason()).append('\n');
+            if (StringUtils.hasText(suggestion.url())) {
+                builder.append("   Link: ").append(suggestion.url()).append('\n');
+            }
+            builder.append('\n');
+        }
+        builder.append("Bạn muốn thu hẹp thêm theo kỹ năng, vị trí hoặc mức lương cụ thể hơn không?");
+        return builder.toString();
+    }
+
+    private String writeJobEventPayload(JobSuggestion suggestion) {
+        try {
+            return objectMapper.writeValueAsString(objectMapper.createObjectNode()
+                .put("jobId", suggestion.jobId() != null ? suggestion.jobId().toString() : null)
+                .put("title", suggestion.title())
+                .put("company", suggestion.companyName())
+                .put("location", suggestion.location())
+                .put("workType", suggestion.workType())
+                .put("reason", suggestion.reason())
+                .put("url", suggestion.url())
+                .put("score", suggestion.score()));
+        } catch (JsonProcessingException ex) {
+            LOG.error("Không thể serialize job suggestion", ex);
+            return "{\"error\":\"Không thể kết xuất dữ liệu job\"}";
+        }
+    }
+
+    private UUID resolveUserId(Authentication authentication, ServerHttpRequest request) {
+        if (authentication != null) {
+            Object credentials = authentication.getCredentials();
+            if (credentials instanceof Jwt jwt) {
+                UUID parsed = parseUuid(jwt.getSubject());
+                if (parsed != null) {
+                    return parsed;
+                }
+            }
+            UUID parsed = parseUuid(authentication.getName());
+            if (parsed != null) {
+                return parsed;
+            }
+        }
+        String headerUserId = request.getHeaders().getFirst("X-User-ID");
+        return parseUuid(headerUserId);
+    }
+
+    private UUID parseUuid(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        try {
+            return UUID.fromString(value.trim());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+    }
+
+    private String extractBearerToken(ServerHttpRequest request) {
+        String header = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        return StringUtils.hasText(header) ? header : null;
     }
 
     private void ensureRateLimit(String userId) {

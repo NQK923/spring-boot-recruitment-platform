@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="rec-0001-create-schema-and-extension" author="codex">
+        <sql>
+            CREATE SCHEMA IF NOT EXISTS rec_db;
+            CREATE EXTENSION IF NOT EXISTS vector;
+        </sql>
+    </changeSet>
+
+    <changeSet id="rec-0002-create-rec-jobs" author="codex">
+        <createTable tableName="rec_jobs" schemaName="rec_db">
+            <column name="job_id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="company_id" type="uuid"/>
+            <column name="content" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="metadata" type="jsonb">
+                <constraints nullable="false"/>
+            </column>
+            <column name="embedding" type="vector(1536)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamptz" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_rec_jobs_updated_at" schemaName="rec_db" tableName="rec_jobs">
+            <column name="updated_at"/>
+        </createIndex>
+
+        <sql>
+            CREATE INDEX IF NOT EXISTS idx_rec_jobs_metadata
+            ON rec_db.rec_jobs
+            USING gin (metadata jsonb_path_ops);
+
+            CREATE INDEX IF NOT EXISTS idx_rec_jobs_embedding
+            ON rec_db.rec_jobs
+            USING ivfflat (embedding vector_cosine_ops);
+        </sql>
+    </changeSet>
+
+    <changeSet id="rec-0003-create-rec-profiles" author="codex">
+        <createTable tableName="rec_profiles" schemaName="rec_db">
+            <column name="user_id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="company_id" type="uuid"/>
+            <column name="summary" type="text"/>
+            <column name="preferences" type="jsonb"/>
+            <column name="embedding" type="vector(1536)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamptz" defaultValueComputed="now()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_rec_profiles_updated_at" schemaName="rec_db" tableName="rec_profiles">
+            <column name="updated_at"/>
+        </createIndex>
+
+        <sql>
+            CREATE INDEX IF NOT EXISTS idx_rec_profiles_embedding
+            ON rec_db.rec_profiles
+            USING ivfflat (embedding vector_cosine_ops);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -6,6 +6,19 @@ spring:
     name: chat-service
   main:
     web-application-type: reactive
+  datasource:
+    url: ${CHAT_DB_URL:jdbc:postgresql://db.supabase.co:5432/postgres?currentSchema=rec_db}
+    username: ${CHAT_DB_USERNAME:postgres}
+    password: ${CHAT_DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+  ai:
+    openai:
+      api-key: ${SPRING_AI_OPENAI_API_KEY:}
+      embedding:
+        options:
+          model: ${SPRING_AI_EMBEDDING_MODEL:text-embedding-3-small}
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
@@ -23,6 +36,12 @@ app:
   chat:
     rate-limit:
       requests-per-minute: ${CHAT_REQUESTS_PER_MINUTE:10}
+  recommend:
+    topK: ${CHAT_RECOMMEND_TOP_K:50}
+    finalK: ${CHAT_RECOMMEND_FINAL_K:5}
+    freshnessDays: ${CHAT_RECOMMEND_FRESHNESS_DAYS:21}
+services:
+  gateway-base-url: ${GATEWAY_BASE_URL:http://gateway-service:8080}
 
 gemini:
   api-key: ${GEMINI_API_KEY:}
