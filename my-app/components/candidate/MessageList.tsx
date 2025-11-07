@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, type ReactNode } from "react";
 import type { ChatStatus } from "@/app/providers/chat-widget-provider";
 import type { ChatMessage } from "@/lib/chat";
 import { cx } from "@/lib/cx";
@@ -178,8 +178,230 @@ function MessageBubble({ message }: { message: ChatMessage }) {
             : "border-2 border-blue-200 bg-gradient-to-br from-white to-blue-50 text-slate-800 font-medium"
         )}
       >
-        <p className="whitespace-pre-wrap break-words">{content}</p>
+        <FormattedMessage content={content} />
       </div>
     </div>
   );
+}
+
+type ParsedBlock =
+  | { type: "paragraph"; content: string }
+  | { type: "list"; ordered: boolean; items: string[]; start?: number };
+
+const INLINE_PATTERNS: Array<{ type: "strong" | "em" | "code"; regex: RegExp }> = [
+  { type: "code", regex: /`([^`]+)`/ },
+  { type: "strong", regex: /\*\*(.+?)\*\*/ },
+  { type: "strong", regex: /__(.+?)__/ },
+  { type: "em", regex: /\*(.+?)\*/ },
+  { type: "em", regex: /_(.+?)_/ },
+];
+
+function FormattedMessage({ content }: { content: string }) {
+  const blocks = useMemo(() => parseMessageContent(content), [content]);
+
+  if (!blocks.length) {
+    return <p className="whitespace-pre-wrap break-words">{content}</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {blocks.map((block, index) => {
+        if (block.type === "list") {
+          return block.ordered ? (
+            <ol
+              key={`list-${index}`}
+              className="list-inside list-decimal space-y-1 pl-4 marker:text-current"
+              start={block.start ?? 1}
+            >
+              {block.items.map((item, itemIndex) => (
+                <li key={`list-${index}-item-${itemIndex}`} className="pl-1">
+                  {renderInlineNodes(item, `list-${index}-${itemIndex}`)}
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <ul key={`list-${index}`} className="list-inside list-disc space-y-1 pl-4 marker:text-current">
+              {block.items.map((item, itemIndex) => (
+                <li key={`list-${index}-item-${itemIndex}`} className="pl-1">
+                  {renderInlineNodes(item, `list-${index}-${itemIndex}`)}
+                </li>
+              ))}
+            </ul>
+          );
+        }
+
+        return (
+          <p key={`paragraph-${index}`} className="whitespace-pre-wrap break-words">
+            {renderInlineNodes(block.content, `paragraph-${index}`)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+function parseMessageContent(content: string): ParsedBlock[] {
+  const blocks: ParsedBlock[] = [];
+  const lines = content.split(/\r?\n/);
+  let currentList: { ordered: boolean; items: string[]; start?: number } | null = null;
+  let paragraphBuffer: string[] = [];
+
+  const flushParagraph = () => {
+    if (!paragraphBuffer.length) {
+      return;
+    }
+    const text = paragraphBuffer.join("\n").trim();
+    if (text) {
+      blocks.push({ type: "paragraph", content: text });
+    }
+    paragraphBuffer = [];
+  };
+
+  const flushList = () => {
+    if (!currentList) {
+      return;
+    }
+    blocks.push({
+      type: "list",
+      ordered: currentList.ordered,
+      items: currentList.items,
+      start: currentList.start,
+    });
+    currentList = null;
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      flushParagraph();
+      flushList();
+      continue;
+    }
+
+    const unorderedMatch = trimmed.match(/^[-*+]\s+(.*)$/);
+    if (unorderedMatch) {
+      flushParagraph();
+      if (!currentList || currentList.ordered) {
+        flushList();
+        currentList = { ordered: false, items: [] };
+      }
+      currentList.items.push(unorderedMatch[1]);
+      continue;
+    }
+
+    const orderedMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
+    if (orderedMatch) {
+      flushParagraph();
+      if (!currentList || !currentList.ordered) {
+        flushList();
+        currentList = { ordered: true, items: [], start: Number(orderedMatch[1]) };
+      } else if (currentList.items.length === 0) {
+        currentList.start = Number(orderedMatch[1]);
+      }
+      currentList.items.push(orderedMatch[2]);
+      continue;
+    }
+
+    flushList();
+    paragraphBuffer.push(line);
+  }
+
+  flushParagraph();
+  flushList();
+  return blocks;
+}
+
+type InlineToken =
+  | { type: "text"; value: string }
+  | { type: "strong"; value: string }
+  | { type: "em"; value: string }
+  | { type: "code"; value: string };
+
+function tokenizeInline(text: string): InlineToken[] {
+  const tokens: InlineToken[] = [];
+  let remaining = text;
+
+  while (remaining.length) {
+    const match = findNextInlineMatch(remaining);
+    if (!match) {
+      tokens.push({ type: "text", value: remaining });
+      break;
+    }
+
+    if (match.index > 0) {
+      tokens.push({ type: "text", value: remaining.slice(0, match.index) });
+    }
+
+    tokens.push({ type: match.type, value: match.value });
+    remaining = remaining.slice(match.index + match.length);
+  }
+
+  return tokens;
+}
+
+function findNextInlineMatch(text: string): { type: "strong" | "em" | "code"; value: string; index: number; length: number } | null {
+  let bestMatch: { type: "strong" | "em" | "code"; value: string; index: number; length: number } | null = null;
+  let bestPriority = Number.POSITIVE_INFINITY;
+
+  INLINE_PATTERNS.forEach((pattern, priority) => {
+    const match = pattern.regex.exec(text);
+    if (!match) {
+      return;
+    }
+
+    const candidate = {
+      type: pattern.type,
+      value: match[1],
+      index: match.index,
+      length: match[0].length,
+    };
+
+    const isBetterIndex = !bestMatch || candidate.index < bestMatch.index;
+    const isSameIndexWithHigherPriority =
+      bestMatch && candidate.index === bestMatch.index && priority < bestPriority;
+
+    if (isBetterIndex || isSameIndexWithHigherPriority) {
+      bestMatch = candidate;
+      bestPriority = priority;
+    }
+  });
+
+  return bestMatch;
+}
+
+function renderInlineNodes(text: string, keyPrefix: string): ReactNode[] {
+  return tokenizeInline(text).map((token, index) => {
+    if (!token.value) {
+      return null;
+    }
+
+    if (token.type === "text") {
+      return token.value;
+    }
+
+    if (token.type === "strong") {
+      return (
+        <strong key={`${keyPrefix}-strong-${index}`} className="font-semibold">
+          {token.value}
+        </strong>
+      );
+    }
+
+    if (token.type === "em") {
+      return (
+        <em key={`${keyPrefix}-em-${index}`} className="italic">
+          {token.value}
+        </em>
+      );
+    }
+
+    return (
+      <code
+        key={`${keyPrefix}-code-${index}`}
+        className="rounded bg-black/10 px-1 py-px font-mono text-[0.85em] text-current"
+      >
+        {token.value}
+      </code>
+    );
+  });
 }
