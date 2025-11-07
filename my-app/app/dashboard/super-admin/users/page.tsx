@@ -9,12 +9,12 @@ const numberFormatter = new Intl.NumberFormat();
 function statusClass(status: string) {
   switch (status.toUpperCase()) {
     case "ACTIVE":
-      return "bg-emerald-100 text-emerald-700";
+      return "bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700";
     case "INACTIVE":
-      return "bg-red-100 text-red-600";
+      return "bg-gradient-to-r from-red-100 to-pink-100 text-red-700";
     case "PENDING":
     default:
-      return "bg-amber-100 text-amber-700";
+      return "bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-700";
   }
 }
 
@@ -42,10 +42,12 @@ export default async function SuperAdminUsersPage({ searchParams }: SuperAdminUs
 
   if (companies.length === 0) {
     return (
-      <Container className="py-10">
-        <Panel className="space-y-4" padding="lg">
-          <h1 className="text-2xl font-semibold text-text sm:text-3xl">Quản lý người dùng</h1>
-          <p className="text-sm text-muted">
+      <Container className="py-12">
+        <Panel className="space-y-4 border-2 border-amber-200 bg-gradient-to-br from-white to-amber-50" padding="lg">
+          <h1 className="text-3xl font-bold text-amber-900 sm:text-4xl flex items-center gap-2">
+            👥 Quản lý người dùng
+          </h1>
+          <p className="text-base leading-relaxed text-slate-700 font-medium">
             Hãy tạo tenant công ty trước, sau đó bạn có thể mời quản trị viên và nhà tuyển dụng quản lý pipeline.
           </p>
         </Panel>
@@ -63,12 +65,14 @@ export default async function SuperAdminUsersPage({ searchParams }: SuperAdminUs
   const activeUsers = users.length - lockedUsers;
 
   return (
-    <Container className="space-y-8 py-10">
-      <Panel className="space-y-6" padding="lg">
+    <Container className="space-y-8 py-12">
+      <Panel className="space-y-6 border-2 border-purple-200 bg-gradient-to-br from-white to-purple-50" padding="lg">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-text sm:text-3xl">Quản lý người dùng</h1>
-            <p className="mt-2 text-sm text-muted">
+            <h1 className="text-3xl font-bold text-purple-900 sm:text-4xl flex items-center gap-2">
+              👥 Quản lý người dùng
+            </h1>
+            <p className="mt-3 text-base leading-relaxed text-slate-700 font-medium">
               Khóa hoặc mở khóa quyền truy cập của quản trị viên và nhà tuyển dụng trên mọi tenant.
             </p>
           </div>
@@ -78,27 +82,31 @@ export default async function SuperAdminUsersPage({ searchParams }: SuperAdminUs
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-text/50">
-          <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">{selectedCompany.name}</span>
-          <span className={`rounded-full px-2 py-1 ${statusClass(selectedCompany.status)}`}>
+        <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-wider font-bold">
+          <span className="rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 px-3 py-1.5 text-blue-700">
+            🏢 {selectedCompany.name}
+          </span>
+          <span className={`rounded-full px-3 py-1.5 ${statusClass(selectedCompany.status)}`}>
             {statusLabel(selectedCompany.status)}
           </span>
-          <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">
-            {numberFormatter.format(users.length)} thành viên
+          <span className="rounded-full bg-gradient-to-r from-slate-100 to-gray-100 px-3 py-1.5 text-slate-700">
+            👤 {numberFormatter.format(users.length)} thành viên
           </span>
-          <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">
-            {numberFormatter.format(activeUsers)} đang hoạt động
+          <span className="rounded-full bg-gradient-to-r from-emerald-100 to-teal-100 px-3 py-1.5 text-emerald-700">
+            ✅ {numberFormatter.format(activeUsers)} đang hoạt động
           </span>
-          <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">
-            {numberFormatter.format(lockedUsers)} bị khóa
+          <span className="rounded-full bg-gradient-to-r from-red-100 to-pink-100 px-3 py-1.5 text-red-700">
+            🔒 {numberFormatter.format(lockedUsers)} bị khóa
           </span>
         </div>
       </Panel>
 
-      <Panel className="space-y-6" padding="lg">
+      <Panel className="space-y-6 border-2 border-indigo-200 bg-gradient-to-br from-white to-indigo-50" padding="lg">
         <div>
-          <h2 className="text-xl font-semibold text-text">Danh sách thành viên</h2>
-          <p className="text-sm text-muted">
+          <h2 className="text-2xl font-bold text-indigo-900 flex items-center gap-2">
+            📋 Danh sách thành viên
+          </h2>
+          <p className="text-sm text-slate-700 font-medium mt-1">
             Đảm bảo quyền truy cập phù hợp với kỳ vọng của công ty. Tài khoản bị khóa sẽ không đăng nhập được cho tới khi bạn mở lại.
           </p>
         </div>

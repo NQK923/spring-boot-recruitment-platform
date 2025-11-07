@@ -22,14 +22,14 @@ export function InviteCompanyUserForm({ companies }: InviteCompanyUserFormProps)
   return (
     <form className="space-y-4 text-sm" action={formAction}>
       <div className="space-y-2">
-        <label htmlFor="invite-company" className="font-semibold text-text">
+        <label htmlFor="invite-company" className="font-bold text-purple-900">
           Công ty
         </label>
         <select
           id="invite-company"
           name="companyId"
           defaultValue=""
-          className="h-9 w-full rounded-2xl border border-border bg-surface px-3 text-sm text-text shadow-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+          className="h-10 w-full rounded-2xl border-2 border-purple-300 bg-white px-3 text-sm text-slate-900 font-medium shadow-md focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400/50"
           required
         >
           <option value="" disabled>
@@ -43,7 +43,7 @@ export function InviteCompanyUserForm({ companies }: InviteCompanyUserFormProps)
         </select>
       </div>
       <div className="space-y-2">
-        <label htmlFor="invite-email" className="font-semibold text-text">
+        <label htmlFor="invite-email" className="font-bold text-purple-900">
           Địa chỉ email
         </label>
         <Input
@@ -56,31 +56,31 @@ export function InviteCompanyUserForm({ companies }: InviteCompanyUserFormProps)
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="invite-role" className="font-semibold text-text">
+        <label htmlFor="invite-role" className="font-bold text-purple-900">
           Vai trò
         </label>
         <select
           id="invite-role"
           name="role"
           defaultValue="COMPANY_ADMIN"
-          className="h-9 w-full rounded-2xl border border-border bg-surface px-3 text-sm text-text shadow-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+          className="h-10 w-full rounded-2xl border-2 border-purple-300 bg-white px-3 text-sm text-slate-900 font-medium shadow-md focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-400/50"
         >
           <option value="COMPANY_ADMIN">Quản trị viên công ty</option>
           <option value="RECRUITER">Nhà tuyển dụng</option>
         </select>
       </div>
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+        <p className="rounded-xl border-2 border-red-300 bg-gradient-to-r from-red-50 to-pink-50 px-4 py-3 text-sm text-red-700 font-medium">
           {state.error}
         </p>
       ) : null}
       {state?.success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+        <p className="rounded-xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3 text-sm text-emerald-800 font-medium">
           {state.success}
         </p>
       ) : null}
       <Button type="submit" size="md" disabled={pending} className="w-full sm:w-auto">
-        {pending ? "Đang gửi..." : "Gửi lời mời"}
+        {pending ? "Đang gửi..." : "📧 Gửi lời mời"}
       </Button>
     </form>
   );

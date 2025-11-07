@@ -33,12 +33,12 @@ function formatDate(value: string | null): string {
 function statusClass(status: string) {
   switch (status.toUpperCase()) {
     case "ACTIVE":
-      return "bg-emerald-100 text-emerald-700";
+      return "bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700";
     case "INACTIVE":
-      return "bg-red-100 text-red-600";
+      return "bg-gradient-to-r from-red-100 to-pink-100 text-red-700";
     case "PENDING":
     default:
-      return "bg-amber-100 text-amber-700";
+      return "bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-700";
   }
 }
 
@@ -81,46 +81,54 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
   const companyOptions = companies.map((company) => ({ id: company.id, name: company.name }));
 
   return (
-    <Container className="space-y-8 py-10">
+    <Container className="space-y-8 py-12">
       <div className="grid gap-6 lg:grid-cols-[2fr,1fr]">
-        <Panel className="space-y-6" padding="lg">
+        <Panel className="space-y-6 border-2 border-indigo-200 bg-gradient-to-br from-white to-indigo-50" padding="lg">
           <div>
-            <h1 className="text-2xl font-semibold text-text sm:text-3xl">Workspace quản trị cấp cao</h1>
-            <p className="mt-2 text-sm text-muted">
+            <h1 className="text-3xl font-bold text-indigo-900 sm:text-4xl">🎯 Workspace Quản Trị Cấp Cao</h1>
+            <p className="mt-3 text-base leading-relaxed text-slate-700 font-medium">
               Giám sát mọi tenant, đảm bảo quy trình onboard thông suốt và mỗi công ty đều có người phụ trách phù hợp.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-border bg-surface px-5 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-text/50">Số công ty</p>
-              <p className="mt-2 text-2xl font-semibold text-text">
+            <div className="rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-white to-blue-50 px-5 py-4 shadow-md hover:shadow-lg transition-shadow">
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1.5">
+                🏢 Số công ty
+              </p>
+              <p className="mt-2 text-3xl font-bold text-slate-900">
                 {numberFormatter.format(dashboard?.totalCompanies ?? companies.length)}
               </p>
-              <p className="text-xs text-muted">Tenant đã đăng ký trên nền tảng</p>
+              <p className="text-sm text-slate-600 font-medium mt-1">Tenant đã đăng ký trên nền tảng</p>
             </div>
-            <div className="rounded-2xl border border-border bg-surface px-5 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-text/50">Vị trí đang mở</p>
-              <p className="mt-2 text-2xl font-semibold text-text">
+            <div className="rounded-2xl border-2 border-purple-200 bg-gradient-to-br from-white to-purple-50 px-5 py-4 shadow-md hover:shadow-lg transition-shadow">
+              <p className="text-xs font-bold uppercase tracking-wider text-purple-600 flex items-center gap-1.5">
+                💼 Vị trí đang mở
+              </p>
+              <p className="mt-2 text-3xl font-bold text-slate-900">
                 {numberFormatter.format(dashboard?.totalJobPostings ?? 0)}
               </p>
-              <p className="text-xs text-muted">Bài tuyển dụng đang hiển thị trên toàn bộ tenant</p>
+              <p className="text-sm text-slate-600 font-medium mt-1">Bài tuyển dụng đang hiển thị</p>
             </div>
-            <div className="rounded-2xl border border-border bg-surface px-5 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-text/50">Hồ sơ ứng tuyển</p>
-              <p className="mt-2 text-2xl font-semibold text-text">
+            <div className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-white to-emerald-50 px-5 py-4 shadow-md hover:shadow-lg transition-shadow">
+              <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
+                📋 Hồ sơ ứng tuyển
+              </p>
+              <p className="mt-2 text-3xl font-bold text-slate-900">
                 {numberFormatter.format(dashboard?.totalApplications ?? 0)}
               </p>
-              <p className="text-xs text-muted">Hồ sơ ứng viên đã nhận</p>
+              <p className="text-sm text-slate-600 font-medium mt-1">Hồ sơ ứng viên đã nhận</p>
             </div>
           </div>
           {topCompanies.length > 0 ? (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-text/50">Công ty tuyển dụng tích cực</p>
-              <ul className="mt-3 space-y-2 text-sm text-muted">
+              <p className="text-sm font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-2">
+                ⭐ Công ty tuyển dụng tích cực
+              </p>
+              <ul className="mt-3 space-y-2">
                 {topCompanies.slice(0, 4).map((company) => (
-                  <li key={company.companyId} className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-2">
-                    <span className="font-medium text-text">{company.companyName}</span>
-                    <span className="text-xs font-semibold uppercase tracking-[0.24em] text-text/50">
+                  <li key={company.companyId} className="flex items-center justify-between rounded-xl border-2 border-indigo-200 bg-gradient-to-r from-white to-indigo-50 px-4 py-3 hover:shadow-md transition-shadow">
+                    <span className="font-bold text-slate-900">{company.companyName}</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
                       {numberFormatter.format(company.openRoles)} vị trí mở
                     </span>
                   </li>
@@ -131,25 +139,29 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
         </Panel>
 
         <div className="space-y-6">
-          <Panel className="space-y-4" padding="lg">
+          <Panel className="space-y-4 border-2 border-blue-200 bg-gradient-to-br from-white to-blue-50" padding="lg">
             <div>
-              <h2 className="text-lg font-semibold text-text">Tạo công ty mới</h2>
-              <p className="text-sm text-muted">Khởi tạo workspace riêng và có thể gán người phụ trách sau.</p>
+              <h2 className="text-xl font-bold text-blue-900 flex items-center gap-2">
+                ✨ Tạo công ty mới
+              </h2>
+              <p className="text-sm text-slate-700 font-medium mt-1">Khởi tạo workspace riêng và có thể gán người phụ trách sau.</p>
             </div>
             <CreateCompanyForm />
           </Panel>
 
-          <Panel className="space-y-4" padding="lg">
+          <Panel className="space-y-4 border-2 border-purple-200 bg-gradient-to-br from-white to-purple-50" padding="lg">
             <div>
-              <h2 className="text-lg font-semibold text-text">Mời quản trị công ty</h2>
-              <p className="text-sm text-muted">
+              <h2 className="text-xl font-bold text-purple-900 flex items-center gap-2">
+                📧 Mời quản trị công ty
+              </h2>
+              <p className="text-sm text-slate-700 font-medium mt-1">
                 Gửi lời mời để chủ công ty cấu hình tenant và thêm thành viên.
               </p>
             </div>
             {companyOptions.length > 0 ? (
               <InviteCompanyUserForm companies={companyOptions} />
             ) : (
-              <p className="rounded-xl border border-dashed border-border bg-surface px-4 py-3 text-sm text-muted">
+              <p className="rounded-xl border-2 border-dashed border-amber-300 bg-gradient-to-r from-white to-amber-50 px-4 py-3 text-sm text-slate-700 font-medium">
                 Hãy tạo công ty trước khi gửi lời mời.
               </p>
             )}
@@ -157,17 +169,19 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
         </div>
       </div>
 
-      <Panel className="space-y-6" padding="lg">
+      <Panel className="space-y-6 border-2 border-emerald-200 bg-gradient-to-br from-white to-emerald-50" padding="lg">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-text">Danh sách công ty</h2>
-            <p className="text-sm text-muted">
+            <h2 className="text-2xl font-bold text-emerald-900 flex items-center gap-2">
+              🏢 Danh sách công ty
+            </h2>
+            <p className="text-sm text-slate-700 font-medium mt-1">
               Rà soát trạng thái và theo dõi tenant nào đã sẵn sàng vận hành.
             </p>
           </div>
           <Suspense
             fallback={
-              <div className="h-10 w-full max-w-sm rounded-2xl bg-surface" />
+              <div className="h-10 w-full max-w-sm rounded-2xl bg-gradient-to-r from-white to-blue-50" />
             }
           >
             <DebouncedSearchInput
@@ -180,7 +194,7 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
         </div>
         <div className="space-y-4">
           {filteredCompanies.length === 0 ? (
-            <p className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
+            <p className="rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-white to-amber-50 px-5 py-6 text-sm text-slate-700 font-medium">
               {searchTerm
                 ? `Không tìm thấy công ty khớp với "${searchTerm}".`
                 : "Chưa có công ty nào. Hãy tạo tenant đầu tiên để bắt đầu."}
@@ -189,44 +203,44 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
             filteredCompanies.map((company) => (
               <div
                 key={company.id}
-                className="flex flex-col gap-6 rounded-2xl border border-border bg-surface px-5 py-5 md:flex-row md:items-center md:justify-between"
+                className="flex flex-col gap-6 rounded-2xl border-2 border-blue-200 bg-gradient-to-r from-white to-blue-50 px-5 py-5 shadow-md hover:shadow-lg transition-shadow md:flex-row md:items-center md:justify-between"
               >
                 <div className="space-y-2">
-                  <h3 className="text-lg font-semibold text-text">{company.name}</h3>
-                  <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em] text-text/50">
-                    <span className={cx("rounded-full px-2 py-1 font-semibold", statusClass(company.status))}>
+                  <h3 className="text-xl font-bold text-slate-900">{company.name}</h3>
+                  <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wider font-bold">
+                    <span className={cx("rounded-full px-3 py-1", statusClass(company.status))}>
                       {statusLabel(company.status)}
                     </span>
-                    <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">
+                    <span className="rounded-full bg-slate-200 px-3 py-1 text-slate-700">
                       Tham gia {formatDate(company.createdAt)}
                     </span>
                   </div>
                   {company.description ? (
-                    <p className="text-sm text-muted">{company.description}</p>
+                    <p className="text-sm text-slate-700 font-medium leading-relaxed">{company.description}</p>
                   ) : (
-                    <p className="text-sm text-text/50">Chưa có mô tả.</p>
+                    <p className="text-sm text-slate-500 italic">Chưa có mô tả.</p>
                   )}
                   {company.website ? (
                     <a
                       href={company.website}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-sm font-semibold text-primary-600 hover:underline"
+                      className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline"
                     >
-                      {company.website}
+                      🌐 {company.website}
                     </a>
                   ) : null}
                 </div>
 
                 <form
                   action={updateCompanyStatusAction}
-                  className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-4 py-4 text-sm text-text/80 md:w-[260px]"
+                  className="flex flex-col gap-3 rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-white to-indigo-50 px-4 py-4 text-sm md:w-[260px]"
                 >
                   <input type="hidden" name="companyId" value={company.id} />
                   <input type="hidden" name="redirectTo" value={redirectPath} />
                   <label
                     htmlFor={`company-status-${company.id}`}
-                    className="text-xs font-semibold uppercase tracking-[0.2em] text-text/50"
+                    className="text-xs font-bold uppercase tracking-wider text-indigo-700"
                   >
                     Trạng thái công ty
                   </label>
@@ -234,7 +248,7 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
                     id={`company-status-${company.id}`}
                     name="status"
                     defaultValue={company.status}
-                    className="h-9 rounded-2xl border border-border bg-surface px-3 text-sm text-text shadow-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+                    className="h-10 rounded-2xl border-2 border-indigo-300 bg-white px-3 text-sm text-slate-900 font-medium shadow-md focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400/50"
                   >
                     {COMPANY_STATUS_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>

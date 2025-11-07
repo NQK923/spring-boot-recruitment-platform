@@ -88,7 +88,7 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
 
   if (users.length === 0) {
     return (
-      <div className="rounded-2xl border border-border bg-surface px-5 py-6 text-sm text-muted">
+      <div className="rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-white to-amber-50 px-5 py-6 text-sm text-slate-700 font-medium">
         {companyName} chưa có thành viên nào. Gửi lời mời để đội tuyển dụng bắt đầu sử dụng.
       </div>
     );
@@ -99,10 +99,10 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
       {alert ? (
         <p
           className={cx(
-            "rounded-xl border px-4 py-2 text-xs font-semibold",
+            "rounded-xl border-2 px-4 py-3 text-sm font-bold",
             alert.type === "success"
-              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-              : "border-red-200 bg-red-50 text-red-700"
+              ? "border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700"
+              : "border-red-300 bg-gradient-to-r from-red-50 to-pink-50 text-red-700"
           )}
         >
           {alert.message}
@@ -117,52 +117,39 @@ export function SuperAdminUsersPanel({ companyId, companyName, users }: SuperAdm
         return (
           <div
             key={`${companyId}-${user.id}`}
-            className="flex flex-col gap-3 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-4 rounded-2xl border-2 border-blue-200 bg-gradient-to-r from-white to-blue-50 px-5 py-5 shadow-md hover:shadow-lg transition-shadow sm:flex-row sm:items-center sm:justify-between"
           >
-            <div className="space-y-1">
-              <p className="font-semibold text-text">{user.email}</p>
-              <p className="text-xs text-muted">Tham gia {describeJoinedAt(user.joinedAt)}</p>
-              <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.24em]">
-                <span className="rounded-full bg-foreground/5 px-2 py-1 text-muted">{formatRole(normalizedRole)}</span>
+            <div className="space-y-2">
+              <p className="font-bold text-slate-900 text-base">{user.email}</p>
+              <p className="text-xs text-slate-600 font-medium">Tham gia {describeJoinedAt(user.joinedAt)}</p>
+              <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wider font-bold">
+                <span className="rounded-full bg-gradient-to-r from-slate-100 to-gray-100 px-3 py-1 text-slate-700">{formatRole(normalizedRole)}</span>
                 <span
                   className={cx(
-                    "rounded-full px-2 py-1",
-                    isLocked ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-600"
+                    "rounded-full px-3 py-1",
+                    isLocked ? "bg-gradient-to-r from-red-100 to-pink-100 text-red-700" : "bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700"
                   )}
                 >
-                  {isLocked ? "Đã khóa" : "Đang hoạt động"}
+                  {isLocked ? "🔒 Đã khóa" : "✅ Đang hoạt động"}
                 </span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-text/50">
-                <span>Trạng thái</span>
-                <span
-                  className={cx(
-                    "rounded-lg px-3 py-1",
-                    isLocked ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-600"
-                  )}
-                >
-                  {isLocked ? "Đã khóa" : "Đang hoạt động"}
-                </span>
-              </div>
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                disabled={isProcessing}
-                onClick={() => toggleLock(user.id, !isLocked)}
-                className={cx(
-                  "min-w-[140px]",
-                  isLocked
-                    ? "border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                    : "border border-red-200 bg-red-50 text-red-600 hover:bg-red-100"
-                )}
-              >
-                {isProcessing ? "Đang cập nhật..." : isLocked ? "Mở khóa tài khoản" : "Khóa tài khoản"}
-              </Button>
-            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              disabled={isProcessing}
+              onClick={() => toggleLock(user.id, !isLocked)}
+              className={cx(
+                "min-w-[160px] font-bold",
+                isLocked
+                  ? "border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 hover:shadow-md"
+                  : "border-2 border-red-300 bg-gradient-to-r from-red-50 to-pink-50 text-red-700 hover:shadow-md"
+              )}
+            >
+              {isProcessing ? "Đang cập nhật..." : isLocked ? "🔓 Mở khóa tài khoản" : "🔒 Khóa tài khoản"}
+            </Button>
           </div>
         );
       })}
