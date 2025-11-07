@@ -211,91 +211,132 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <Container className="space-y-10 py-10">
-      <Panel variant="surface" padding="lg" className="space-y-8 bg-gradient-to-br from-primary-50 to-white">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-          <div className="space-y-4">
-            <span className="text-xs font-bold uppercase tracking-[0.32em] text-primary-600">
+    <Container className="space-y-8 py-12">
+      {/* Hero Section */}
+      <div className="space-y-8 rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-8 shadow-md border border-blue-200">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+          <div className="space-y-5">
+            <span className="inline-block rounded-full bg-blue-600 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow-sm">
               Không gian nhà tuyển dụng
             </span>
-            <h1 className="text-4xl font-bold text-gray-900">
-              Điều phối việc làm, ứng viên và phỏng vấn trên cùng một nền tảng.
+            <h1 className="text-4xl font-bold text-gray-900 leading-tight">
+              Điều phối việc làm, ứng viên và phỏng vấn trên cùng một nền tảng
             </h1>
-            <p className="max-w-2xl text-base text-gray-600 leading-relaxed">
+            <p className="text-lg text-gray-700 leading-relaxed">
               Theo sát pipeline tuyển dụng với ưu tiên rõ ràng, bối cảnh từ hoạt động gần nhất và đường dẫn hành động nhanh nhất.
             </p>
-            <ul className="space-y-2 text-sm text-gray-700">
+            <ul className="space-y-3 text-base text-gray-800">
               {heroHighlights.map((highlight) => (
                 <li key={highlight} className="flex items-start gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-primary-600" aria-hidden />
+                  <span className="mt-1.5 h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" aria-hidden />
                   <span>{highlight}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="space-y-3 rounded-3xl border border-primary-200 bg-white p-6 shadow-md">
-            <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">
-              Trọng tâm hôm nay
-            </p>
-            <p className="text-sm text-gray-600">
-              Bắt đầu với các ứng viên đang chờ liên hệ, sau đó rà soát lịch phỏng vấn để đảm bảo chuẩn bị và người theo dõi.
-            </p>
-            <div className="rounded-2xl border border-primary-200 bg-primary-100 px-4 py-3 text-sm font-semibold text-primary-700">
-              Duy trì tốc độ phản hồi: hãy xác nhận mọi hồ sơ mới trong vòng 24 giờ.
+          <div className="space-y-5 rounded-2xl border border-blue-400 bg-gradient-to-br from-white via-blue-50/50 to-indigo-50 shadow-xl p-6">
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-blue-600 animate-pulse shadow-sm" />
+              <p className="text-sm font-bold uppercase tracking-wider text-blue-800">
+                Trọng tâm hôm nay
+              </p>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 rounded-lg bg-white/80 border border-blue-200 px-4 py-3 shadow-sm">
+                <span className="text-lg flex-shrink-0">✅</span>
+                <div className="space-y-1 flex-1">
+                  <p className="text-sm font-bold text-gray-900">Xử lý hồ sơ đang chờ</p>
+                  <p className="text-xs text-gray-700 leading-relaxed">
+                    Phản hồi {awaitingReview} ứng viên đang chờ để họ không bỏ lỡ cơ hội khác
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 rounded-lg bg-white/80 border border-blue-200 px-4 py-3 shadow-sm">
+                <span className="text-lg flex-shrink-0">📅</span>
+                <div className="space-y-1 flex-1">
+                  <p className="text-sm font-bold text-gray-900">Chuẩn bị phỏng vấn</p>
+                  <p className="text-xs text-gray-700 leading-relaxed">
+                    Rà soát {upcomingInterviews.length} buổi phỏng vấn sắp tới, xác nhận lịch và người tham gia
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 rounded-lg bg-white/80 border border-blue-200 px-4 py-3 shadow-sm">
+                <span className="text-lg flex-shrink-0">🎯</span>
+                <div className="space-y-1 flex-1">
+                  <p className="text-sm font-bold text-gray-900">Kiểm tra pipeline</p>
+                  <p className="text-xs text-gray-700 leading-relaxed">
+                    Phát hiện nút thắt và phân bổ lại công việc cho {activeCandidateIds.size} ứng viên đang theo dõi
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3.5 shadow-lg">
+              <p className="text-sm font-bold text-white flex items-center gap-2">
+                <span className="text-base">💡</span>
+                Mục tiêu: Phản hồi mọi hồ sơ mới trong vòng 24 giờ
+              </p>
             </div>
           </div>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+
+        {/* Summary Metrics */}
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {summaryMetrics.map((metric) => (
             <div
               key={metric.label}
-              className="rounded-2xl border border-primary-200 bg-white p-6 shadow-sm transition hover:shadow-md hover:border-primary-300"
+              className="group rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-6 shadow-md transition-all hover:shadow-xl hover:border-blue-300 hover:-translate-y-0.5"
             >
-              <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-700">
                 {metric.label}
               </p>
-              <p className="mt-3 text-4xl font-bold text-gray-900">{metric.value}</p>
-              <p className="mt-1 text-sm text-gray-600">{metric.helper}</p>
+              <p className="mt-3 text-4xl font-bold text-gray-900">
+                {metric.value}
+              </p>
+              <p className="mt-2 text-sm text-gray-800 leading-relaxed">{metric.helper}</p>
             </div>
           ))}
         </div>
-      </Panel>
+      </div>
 
-      <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
-        <header className="space-y-3">
-          <h2 className="text-xl font-bold text-gray-900">Hành động nhanh</h2>
-          <p className="text-sm text-gray-600">
+      {/* Quick Actions */}
+      <div className="space-y-5 rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100 p-8 shadow-md">
+        <header className="space-y-2">
+          <h2 className="text-2xl font-bold text-gray-900">Hành động nhanh</h2>
+          <p className="text-base text-gray-800">
             Truy cập ngay các khu vực giữ pipeline luôn thông suốt và thúc đẩy ứng viên tiến bước.
           </p>
         </header>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {quickActions.map((action) => (
             <Link
               key={action.label}
               href={action.href}
-              className="group flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-4 text-sm transition hover:border-primary-300 hover:shadow-md"
+              className="group flex flex-col gap-3 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-5 shadow-sm transition-all hover:border-blue-300 hover:shadow-xl hover:-translate-y-0.5"
             >
-              <span className="text-base font-bold text-gray-900">{action.label}</span>
-              <span className="text-sm text-gray-600">{action.description}</span>
-              <span className="inline-flex items-center gap-2 text-sm font-bold text-primary-600 transition group-hover:translate-x-0.5">
+              <span className="text-lg font-bold text-gray-900 group-hover:text-blue-700 transition-colors">
+                {action.label}
+              </span>
+              <span className="text-sm text-gray-800 leading-relaxed flex-grow">{action.description}</span>
+              <span className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 transition group-hover:gap-3">
                 Thực hiện ngay
-                <span aria-hidden>&gt;</span>
+                <span aria-hidden>→</span>
               </span>
             </Link>
           ))}
         </div>
-      </Panel>
+      </div>
 
-      <Panel id="jobs" variant="surface" padding="lg" className="space-y-6 bg-white">
+      {/* Job Listings */}
+      <div id="jobs" className="space-y-5 rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100 p-8 shadow-md">
         <header className="space-y-3">
-          <h2 className="text-xl font-bold text-gray-900">Danh mục việc làm</h2>
-          <p className="text-sm text-gray-600">
+          <h2 className="text-2xl font-bold text-gray-900">Danh mục việc làm</h2>
+          <p className="text-base text-gray-800 leading-relaxed">
             Rà soát các vị trí bạn đang hỗ trợ tuyển dụng. {canAdminJobs
               ? "Chuyển sang workspace quản trị công ty khi cần đăng, tạm dừng hoặc chỉnh sửa bài tuyển dụng."
               : "Chỉ quản trị viên công ty mới có thể tạo hoặc chỉnh sửa bài đăng. Hãy liên hệ quản trị khi cần thay đổi."}
           </p>
           {canAdminJobs ? (
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link href={`${ROUTES.companyAdminDashboard}#jobs`}>
                 <Button size="sm" variant="secondary">
                   Mở trang quản trị việc làm
@@ -310,65 +351,61 @@ export default async function DashboardPage() {
           ) : null}
         </header>
         {jobs.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-6 text-sm text-gray-600 text-center">
-            Chưa có bài đăng. Liên hệ quản trị công ty để mở vị trí đầu tiên.
+          <div className="rounded-2xl border-2 border-dashed border-blue-200 bg-white/50 px-6 py-8 text-center">
+            <p className="text-base text-gray-800">Chưa có bài đăng. Liên hệ quản trị công ty để mở vị trí đầu tiên.</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {jobs.map((job) => (
               <div
                 key={job.id}
-                className="space-y-3 rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm hover:shadow-md transition-shadow"
+                className="space-y-3 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-6 shadow-sm hover:shadow-lg hover:border-blue-300 transition-all"
               >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <p className="font-bold text-gray-900">{job.title}</p>
-                    <p className="text-sm text-gray-600">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <p className="text-lg font-bold text-gray-900">{job.title}</p>
+                    <p className="text-sm text-gray-800">
                       Trạng thái {formatStatus(job.status)} • Cập nhật {formatDate(job.updatedAt)}
                     </p>
                   </div>
                   <Link
                     href={`${ROUTES.jobs}/${job.id}`}
-                    className="inline-flex items-center gap-1 text-sm font-bold text-primary-600 transition hover:text-primary-700"
+                    className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 transition hover:text-blue-700 hover:gap-3"
                   >
                     Xem bài tuyển dụng
-                    <span aria-hidden>&gt;</span>
+                    <span aria-hidden>→</span>
                   </Link>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
-                  {job.location ? <span>{job.location}</span> : null}
+                <div className="flex flex-wrap items-center gap-3 text-sm text-gray-800">
+                  {job.location ? <span className="flex items-center gap-1.5">📍 {job.location}</span> : null}
                   {job.workType ? (
-                    <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-gray-400">
-                      {job.workType.toLowerCase()}
+                    <span className="flex items-center gap-1.5">
+                      💼 {job.workType.toLowerCase()}
                     </span>
                   ) : null}
                   {job.salaryRange ? (
-                    <span className="flex items-center gap-1 before:block before:h-1 before:w-1 before:rounded-full before:bg-gray-400">
-                      {job.salaryRange}
+                    <span className="flex items-center gap-1.5">
+                      💰 {job.salaryRange}
                     </span>
                   ) : null}
                 </div>
-                <p className="text-xs text-text/50">
-                  {canAdminJobs
-                    ? "Cần chỉnh sửa? Vào workspace quản trị công ty để cập nhật bài tuyển dụng."
-                    : "Cần cập nhật? Hãy nhờ quản trị công ty điều chỉnh nội dung."}
-                </p>
               </div>
             ))}
           </div>
         )}
-      </Panel>
+      </div>
 
+      {/* Pipeline & Interviews */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Panel id="pipeline" variant="surface" padding="lg" className="space-y-4">
-          <header>
-            <h2 className="text-lg font-semibold text-text">Tổng quan pipeline</h2>
-            <p className="text-sm text-muted">
+        <div id="pipeline" className="space-y-5 rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100 p-8 shadow-md">
+          <header className="space-y-2">
+            <h2 className="text-xl font-bold text-gray-900">Tổng quan pipeline</h2>
+            <p className="text-sm text-gray-800 leading-relaxed">
               Tổng hợp từ toàn bộ hồ sơ của công ty. Cập nhật trạng thái ở bất kỳ hồ sơ nào, số liệu sẽ tự động thay đổi.
             </p>
           </header>
           {allApplications.length === 0 ? (
-            <div className="rounded-2xl border border-border bg-surface px-4 py-6 text-sm text-muted">
+            <div className="rounded-2xl border-2 border-dashed border-blue-200 bg-white/50 px-5 py-7 text-center text-sm text-gray-800">
               Chưa có hồ sơ nào. Mời ứng viên hoặc đăng tuyển vị trí mới để bắt đầu xây dựng pipeline.
             </div>
           ) : (
@@ -376,120 +413,128 @@ export default async function DashboardPage() {
               {Object.entries(pipelineCounts).map(([status, count]) => (
                 <div
                   key={status}
-                  className="flex items-center justify-between rounded-2xl border border-border bg-surface px-4 py-3 text-sm shadow-lg"
+                  className="flex items-center justify-between rounded-xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 px-5 py-3.5 shadow-sm hover:shadow-lg transition-shadow"
                 >
-                  <span className="text-muted">{formatStatus(status)}</span>
-                  <span className="font-semibold text-text">{count}</span>
+                  <span className="font-medium text-gray-900">{formatStatus(status)}</span>
+                  <span className="text-lg font-bold text-gray-900">{count}</span>
                 </div>
               ))}
             </div>
           )}
-        </Panel>
+        </div>
 
-        <Panel id="interviews" variant="surface" padding="lg" className="space-y-4">
-          <header>
-            <h2 className="text-lg font-semibold text-text">Phỏng vấn sắp diễn ra</h2>
-            <p className="text-sm text-muted">
+        <div id="interviews" className="space-y-5 rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100 p-8 shadow-md">
+          <header className="space-y-2">
+            <h2 className="text-xl font-bold text-gray-900">Phỏng vấn sắp diễn ra</h2>
+            <p className="text-sm text-gray-800 leading-relaxed">
               Xem năm cuộc trao đổi tiếp theo trên lịch của bạn. Có thể đổi lịch hoặc ghi nhận phản hồi ngay tại khu vực phỏng vấn.
             </p>
           </header>
 
           {upcomingInterviews.length === 0 ? (
-            <div className="rounded-2xl border border-border bg-surface px-4 py-6 text-sm text-muted">
+            <div className="rounded-2xl border-2 border-dashed border-blue-200 bg-white/50 px-5 py-7 text-center text-sm text-gray-800">
               Chưa có phỏng vấn nào. Hãy phối hợp với ứng viên để đưa họ tiến lên.
             </div>
           ) : (
-            <div className="space-y-3 text-sm">
+            <div className="space-y-3">
               {upcomingInterviews.map((interview) => (
                 <div
                   key={interview.id}
-                  className="rounded-2xl border border-border bg-surface px-4 py-3 shadow-lg"
+                  className="space-y-2 rounded-xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 px-5 py-4 shadow-sm hover:shadow-lg transition-shadow"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-text">Đơn ứng tuyển #{interview.applicationId}</span>
-                    <span className="text-xs text-muted">
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="font-semibold text-gray-900">Đơn ứng tuyển #{interview.applicationId}</span>
+                    <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
                       {formatDateTime(interview.scheduleTime, interview.timezone)}
                     </span>
                   </div>
-                  <p className="text-xs text-text/55">
-                    {interview.format ?? "Hình thức cập nhật sau"} -{" "}
+                  <p className="text-sm text-gray-800">
+                    {interview.format ?? "Hình thức cập nhật sau"} • {" "}
                     {interview.locationOrLink ? interview.locationOrLink : "Địa điểm sẽ được thông báo"}
                   </p>
                 </div>
               ))}
             </div>
           )}
-        </Panel>
+        </div>
       </div>
 
-      <Panel id="applications" variant="surface" padding="lg" className="space-y-4">
-        <header>
-          <h2 className="text-lg font-semibold text-text">Hồ sơ mới nhất</h2>
-          <p className="text-sm text-muted">
+      {/* Recent Applications */}
+      <div id="applications" className="space-y-5 rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100 p-8 shadow-md">
+        <header className="space-y-2">
+          <h2 className="text-2xl font-bold text-gray-900">Hồ sơ mới nhất</h2>
+          <p className="text-base text-gray-800">
             Hoạt động gần đây trong pipeline. Nhấp để xem ghi chú, cập nhật trạng thái hoặc thêm phản hồi.
           </p>
         </header>
 
         {recentApplications.length === 0 ? (
-          <div className="rounded-2xl border border-border bg-surface px-4 py-6 text-sm text-muted">
+          <div className="rounded-2xl border-2 border-dashed border-blue-200 bg-white/50 px-6 py-8 text-center text-base text-gray-800">
             Chưa có dữ liệu. Hồ sơ sẽ xuất hiện tại đây ngay khi ứng viên nộp.
           </div>
         ) : (
-          <div className="space-y-3 text-sm">
+          <div className="space-y-3">
             {recentApplications.map((application) => (
               <Link
                 key={application.id}
                 href={`${ROUTES.recruiterDashboard}/applications/${application.id}`}
-                className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4 transition hover:border-accent/30 hover:bg-surface/80"
+                className="flex items-center justify-between rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 px-6 py-5 transition-all hover:border-blue-300 hover:shadow-xl hover:-translate-y-0.5"
               >
-                <div>
-                  <p className="font-semibold text-text">Hồ sơ #{application.id}</p>
-                  <p className="text-xs text-text/50">
+                <div className="space-y-1.5">
+                  <p className="font-bold text-gray-900">Hồ sơ #{application.id}</p>
+                  <p className="text-sm text-gray-800">
                     Vị trí #{application.jobPostingId} • Nộp ngày {formatDate(application.appliedAt)}
                   </p>
-                  <p className="text-xs text-text/50">
+                  <p className="text-sm text-gray-800">
                     Ứng viên {application.candidateName ?? `#${application.candidateId}`}
                   </p>
                 </div>
-                <span className="rounded-full bg-primary-600/10 px-3 py-1 text-xs font-semibold text-primary-600">
+                <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700 border border-blue-200">
                   {formatStatus(application.status)}
                 </span>
               </Link>
             ))}
           </div>
         )}
-      </Panel>
+      </div>
 
-      <Panel id="job-health" variant="surface" padding="lg" className="space-y-4">
-        <header>
-          <h2 className="text-lg font-semibold text-text">Sức khỏe tuyển dụng</h2>
-          <p className="text-sm text-muted">
+      {/* Job Health */}
+      <div id="job-health" className="space-y-5 rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100 p-8 shadow-md">
+        <header className="space-y-2">
+          <h2 className="text-2xl font-bold text-gray-900">Sức khỏe tuyển dụng</h2>
+          <p className="text-base text-gray-800">
             Theo dõi số lượng hồ sơ theo từng vị trí và nhận diện các vai trò cần thêm nguồn ứng viên hoặc phản hồi nhanh hơn.
           </p>
         </header>
 
         {jobs.length === 0 ? (
-          <div className="rounded-2xl border border-border bg-surface px-4 py-6 text-sm text-muted">
+          <div className="rounded-2xl border-2 border-dashed border-blue-200 bg-white/50 px-6 py-8 text-center text-base text-gray-800">
             Chưa có vị trí nào cho công ty của bạn. Tạo bài đăng tuyển dụng để hiển thị dữ liệu.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-lg">
-            <table className="min-w-full divide-y divide-foreground/10 text-sm">
-              <thead className="text-left text-xs uppercase tracking-[0.28em] text-text/50">
+          <div className="overflow-hidden rounded-2xl border-2 border-blue-100 shadow-md">
+            <table className="min-w-full divide-y divide-blue-200">
+              <thead className="bg-gradient-to-r from-blue-100 to-indigo-100">
                 <tr>
-                  <th className="px-4 py-3">Vị trí</th>
-                  <th className="px-4 py-3">Trạng thái</th>
-                  <th className="px-4 py-3 text-right">Số hồ sơ</th>
+                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-blue-900">
+                    Vị trí
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-blue-900">
+                    Trạng thái
+                  </th>
+                  <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-blue-900">
+                    Số hồ sơ
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-foreground/10">
+              <tbody className="divide-y divide-blue-100 bg-gradient-to-br from-white to-blue-50/30">
                 {jobs.map((job) => {
                   const applications = applicationsByJob.get(job.id) ?? [];
                   return (
-                    <tr key={job.id}>
-                      <td className="px-4 py-3 text-sm text-text">{job.title}</td>
-                      <td className="px-4 py-3 text-sm text-muted">{formatStatus(job.status)}</td>
-                      <td className="px-4 py-3 text-right text-sm font-semibold text-text">{applications.length}</td>
+                    <tr key={job.id} className="hover:bg-blue-50/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{job.title}</td>
+                      <td className="px-6 py-4 text-sm text-gray-800">{formatStatus(job.status)}</td>
+                      <td className="px-6 py-4 text-right text-sm font-bold text-gray-900">{applications.length}</td>
                     </tr>
                   );
                 })}
@@ -497,7 +542,7 @@ export default async function DashboardPage() {
             </table>
           </div>
         )}
-      </Panel>
+      </div>
     </Container>
   );
 }

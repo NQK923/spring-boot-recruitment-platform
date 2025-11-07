@@ -274,15 +274,15 @@ export default async function CompanyAdminDashboardPage() {
 
   return (
     <Container className="max-w-5xl space-y-12 py-16">
-      <div id="overview" className="space-y-10 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-10 shadow-sm">
+      <div id="overview" className="space-y-10 rounded-3xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-10 shadow-md">
         <div className="space-y-6 text-center">
           <div className="mx-auto inline-block rounded-full bg-gradient-to-r from-blue-600 to-sky-500 px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-md">
             Bảng điều khiển quản trị công ty
           </div>
-          <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight text-slate-900 sm:text-5xl">
+          <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight text-gray-900 sm:text-5xl">
             {profile?.name ?? "Workspace của bạn"}
           </h1>
-          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-slate-700">
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-gray-800">
             Mời đồng đội, quản lý việc làm và theo dõi tình trạng tuyển dụng tại một nơi.
           </p>
         </div>
@@ -290,13 +290,13 @@ export default async function CompanyAdminDashboardPage() {
           {metrics.map((metric) => (
             <div
               key={metric.label}
-              className="group rounded-2xl border-2 border-blue-100 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300"
+              className="group rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300"
             >
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-600">
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-700">
                 {metric.label}
               </p>
-              <p className="mt-5 text-5xl font-bold bg-gradient-to-br from-blue-600 to-sky-500 bg-clip-text text-transparent">{metric.value}</p>
-              <p className="mt-4 text-sm leading-relaxed text-slate-700">{metric.helper}</p>
+              <p className="mt-5 text-5xl font-bold text-gray-900">{metric.value}</p>
+              <p className="mt-4 text-sm leading-relaxed text-gray-800">{metric.helper}</p>
               {metric.footnote ? (
                 <p className="mt-3 text-xs text-amber-700 font-medium">{metric.footnote}</p>
               ) : null}
@@ -304,11 +304,11 @@ export default async function CompanyAdminDashboardPage() {
           ))}
         </div>
         {insights.length > 0 && (
-          <div className="rounded-2xl border-2 border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50/50 p-6">
+          <div className="rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6 shadow-sm">
             <h3 className="text-sm font-bold uppercase tracking-wider text-amber-800 mb-4">Cần chú ý</h3>
             <ul className="space-y-2">
               {insights.map((insight, index) => (
-                <li key={`${insight}-${index}`} className="flex items-start gap-3 text-sm text-slate-800">
+                <li key={`${insight}-${index}`} className="flex items-start gap-3 text-sm text-gray-900">
                   <span className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-amber-500" aria-hidden />
                   <span>{insight}</span>
                 </li>
@@ -321,10 +321,10 @@ export default async function CompanyAdminDashboardPage() {
             <Link
               key={action.href}
               href={action.href}
-              className="group flex flex-col gap-3 rounded-2xl border-2 border-blue-100 bg-white px-6 py-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300"
+              className="group flex flex-col gap-3 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 px-6 py-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300"
             >
-              <span className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{action.label}</span>
-              <p className="text-sm leading-relaxed text-slate-600">{action.description}</p>
+              <span className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{action.label}</span>
+              <p className="text-sm leading-relaxed text-gray-800">{action.description}</p>
               <span className="mt-auto inline-flex items-center gap-2 text-sm font-bold text-blue-600 transition group-hover:gap-3">
                 Đi tới
                 <span aria-hidden>→</span>
@@ -334,11 +334,11 @@ export default async function CompanyAdminDashboardPage() {
         </div>
       </div>
 
-      <div id="company" className="space-y-8">
+      <div id="company" className="space-y-8 rounded-3xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-10 shadow-md">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Tổng quan công ty</h2>
-            <p className="mt-3 text-base text-slate-700">
+            <h2 className="text-3xl font-bold text-slate-900">Tổng quan công ty</h2>
+            <p className="mt-3 text-base text-slate-600">
               Kiểm tra lại thông tin thương hiệu, địa điểm tuyển dụng và lộ trình mở vị trí trước khi mời thêm thành viên.
             </p>
           </div>
@@ -348,14 +348,14 @@ export default async function CompanyAdminDashboardPage() {
           </Link>
         </div>
         <div className="grid gap-6 md:grid-cols-2 text-sm">
-          <div className="space-y-6 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/20 px-7 py-6 shadow-md transition-all duration-200 hover:shadow-lg">
+          <div className="space-y-6 rounded-2xl border-2 border-blue-100 bg-white px-7 py-6 shadow-md transition-all duration-200 hover:shadow-lg">
             <div className="flex items-center gap-3">
               <div className="rounded-full bg-gradient-to-r from-blue-600 to-sky-500 p-2">
                 <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-600">Thông tin công ty</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-700">Thông tin công ty</p>
             </div>
             <div className="space-y-3">
               <p className="text-xl font-bold text-slate-900">{profile?.name ?? "Chưa cập nhật"}</p>
@@ -372,7 +372,7 @@ export default async function CompanyAdminDashboardPage() {
                 <p className="text-sm text-slate-500 italic">Thêm website để ứng viên tìm hiểu thêm.</p>
               )}
             </div>
-            <div className="rounded-xl bg-white/80 p-4 border border-blue-100">
+            <div className="rounded-xl bg-slate-50/80 p-4 border border-blue-100">
               <p className="text-sm leading-relaxed text-slate-700">
                 {profile?.description ?? "Thêm mô tả để nhà tuyển dụng có bối cảnh phù hợp."}
               </p>
@@ -385,7 +385,7 @@ export default async function CompanyAdminDashboardPage() {
               </p>
             </div>
           </div>
-          <div className="space-y-6 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/20 px-7 py-6 shadow-md transition-all duration-200 hover:shadow-lg">
+          <div className="space-y-6 rounded-2xl border-2 border-blue-100 bg-white px-7 py-6 shadow-md transition-all duration-200 hover:shadow-lg">
             <div className="flex items-center gap-3">
               <div className="rounded-full bg-gradient-to-r from-blue-600 to-sky-500 p-2">
                 <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -393,18 +393,18 @@ export default async function CompanyAdminDashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-600">Trụ sở</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-700">Trụ sở</p>
             </div>
-            <div className="rounded-xl bg-white/80 p-4 border border-blue-100">
+            <div className="rounded-xl bg-slate-50/80 p-4 border border-blue-100">
               <p className="text-base font-bold text-slate-900">
                 {profile?.companyAddress ?? "Thêm địa chỉ văn phòng chính hoặc trụ sở."}
               </p>
             </div>
-            <div className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-50 to-sky-50 px-4 py-3 border border-blue-100">
+            <div className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 border border-blue-100">
               <span className="text-blue-600">📅</span>
               <p className="text-sm text-slate-700">Gia nhập Talentflow từ <span className="font-bold text-slate-900">{formatDate(profile?.createdAt)}</span></p>
             </div>
-            <div className="space-y-3 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50/50 p-5 border-2 border-amber-100">
+            <div className="space-y-3 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 p-5 border-2 border-amber-200 shadow-sm">
               <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-800">
                 <span>💡</span>
                 Cập nhật chi tiết
@@ -415,12 +415,12 @@ export default async function CompanyAdminDashboardPage() {
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/20 p-7 shadow-md">
+        <div className="rounded-2xl border-2 border-blue-100 bg-white p-7 shadow-md">
           <UpdateCompanyForm profile={profileForForm} />
         </div>
       </div>
 
-      <div id="team" className="space-y-8 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-10 shadow-sm">
+      <div id="team" className="space-y-8 rounded-3xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-10 shadow-md">
         <div className="space-y-5">
           <h2 className="text-3xl font-bold text-slate-900">Danh sách thành viên</h2>
           <p className="text-base text-slate-600">
@@ -446,7 +446,7 @@ export default async function CompanyAdminDashboardPage() {
         <CompanyMembersPanel users={users} />
       </div>
 
-      <div id="jobs" className="space-y-8">
+      <div id="jobs" className="space-y-8 rounded-3xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-10 shadow-md">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-gradient-to-r from-blue-600 to-sky-500 p-2.5">
@@ -454,19 +454,17 @@ export default async function CompanyAdminDashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Danh mục việc làm</h2>
+            <h2 className="text-3xl font-bold text-slate-900">Danh mục việc làm</h2>
           </div>
-          <p className="text-base text-slate-700 ml-14">
+          <p className="text-base text-slate-600 ml-14">
             Tạo nháp, đăng hoặc tạm dừng vị trí ngay tại workspace này. Thay đổi sẽ đồng bộ tức thì với bảng việc làm công khai.
           </p>
         </div>
 
-        <div className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/20 p-7 shadow-md">
-          <CreateJobForm positions={positions} />
-        </div>
+        <CreateJobForm positions={positions} />
 
         {jobs.length === 0 ? (
-          <div className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 px-8 py-16 text-center shadow-md">
+          <div className="rounded-2xl border-2 border-blue-100 bg-white px-8 py-16 text-center shadow-md">
             <div className="mx-auto max-w-md space-y-4">
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-sky-100">
                 <svg className="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -486,7 +484,7 @@ export default async function CompanyAdminDashboardPage() {
         )}
       </div>
 
-      <div id="invites" className="space-y-8">
+      <div id="invites" className="space-y-8 rounded-3xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-10 shadow-md">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -495,9 +493,9 @@ export default async function CompanyAdminDashboardPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Lời mời đang xử lý</h2>
+              <h2 className="text-3xl font-bold text-slate-900">Lời mời đang xử lý</h2>
             </div>
-            <p className="text-base text-slate-700 ml-14">
+            <p className="text-base text-slate-600 ml-14">
               Theo dõi lời mời đang chờ để đồng đội không bỏ lỡ email chào mừng.
             </p>
           </div>
@@ -507,7 +505,7 @@ export default async function CompanyAdminDashboardPage() {
           </Link>
         </div>
         {recentInvites.length === 0 ? (
-          <div className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 px-8 py-16 text-center shadow-md">
+          <div className="rounded-2xl border-2 border-blue-100 bg-white px-8 py-16 text-center shadow-md">
             <div className="mx-auto max-w-md space-y-4">
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-emerald-100">
                 <svg className="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -523,7 +521,7 @@ export default async function CompanyAdminDashboardPage() {
             {recentInvites.map((invite, index) => (
               <div
                 key={`${invite.email}-${index}`}
-                className="group flex flex-col gap-3 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/20 px-7 py-5 shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300 sm:flex-row sm:items-center sm:justify-between"
+                className="group flex flex-col gap-3 rounded-2xl border-2 border-blue-100 bg-white px-7 py-5 shadow-md transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-blue-300 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="flex items-center gap-3">
                   <div className="rounded-full bg-gradient-to-r from-blue-600 to-sky-500 p-2">
@@ -536,7 +534,7 @@ export default async function CompanyAdminDashboardPage() {
                     <p className="text-sm text-slate-600">{invite.role ?? "Vai trò sẽ cập nhật"}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 rounded-lg bg-white/80 px-4 py-2 border border-blue-100">
+                <div className="flex items-center gap-2 rounded-lg bg-slate-50/80 px-4 py-2 border border-blue-100">
                   <svg className="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>

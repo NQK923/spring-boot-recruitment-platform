@@ -20,10 +20,20 @@ export function AccountMenu() {
     <button
       type="button"
       onClick={handleLogout}
-      className="inline-flex h-9 items-center justify-center rounded-full border border-foreground/30 bg-surface px-4 text-sm font-medium text-text/80 transition hover:border-foreground/45 hover:text-text hover:shadow-md disabled:pointer-events-none disabled:opacity-50"
+      className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border-2 border-red-200 bg-gradient-to-r from-red-50 to-rose-50 px-5 text-sm font-bold text-red-700 shadow-sm transition-all hover:border-red-300 hover:shadow-lg hover:-translate-y-0.5 hover:from-red-100 hover:to-rose-100 disabled:pointer-events-none disabled:opacity-50 disabled:hover:translate-y-0"
       disabled={pending}
     >
-      {pending ? "Đang đăng xuất..." : "Đăng xuất"}
+      {pending ? (
+        <>
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-red-300 border-t-red-600" />
+          Đang đăng xuất...
+        </>
+      ) : (
+        <>
+          <span aria-hidden>🚪</span>
+          Đăng xuất
+        </>
+      )}
     </button>
   );
 }

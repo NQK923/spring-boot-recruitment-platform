@@ -318,383 +318,555 @@ export default async function CandidatePortalPage() {
   const prioritizedNextSteps = nextSteps.slice(0, 4);
 
   return (
-    <Container className="space-y-10 py-10">
-      <Panel variant="surface" padding="lg" className="overflow-hidden relative">
+    <Container className="space-y-6 py-8">
+      <div className="overflow-hidden relative bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border border-primary-200/50 shadow-sm rounded-3xl">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-primary-500/10 via-transparent to-transparent"
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/20 via-transparent to-transparent"
         />
-        <div className="relative flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-          <div className="max-w-2xl space-y-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-primary-600/70 font-semibold">Chào mừng bạn trở lại</p>
-            <h1 className="text-3xl font-bold text-gray-900">
-              {profileData.fullName
-                ? `${profileData.fullName}, tiếp tục duy trì đà tiến nhé`
-                : "Sẵn sàng cho cơ hội tiếp theo?"}
-            </h1>
-            <p className="text-base text-gray-600 leading-relaxed">
-              {profileData.summary ??
-                "Hãy chia sẻ đôi nét để đội ngũ tuyển dụng nắm được trọng tâm và kinh nghiệm của bạn trong nháy mắt."}
-            </p>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Button asChild size="sm">
-                <Link href={ROUTES.candidateProfile}>Cập nhật hồ sơ</Link>
-              </Button>
-              <Button asChild size="sm" variant="secondary">
-                <Link href={`${ROUTES.candidateProfile}#cvs`}>Quản lý CV</Link>
-              </Button>
-              <Button asChild size="sm" variant="ghost">
-                <Link href={ROUTES.jobs}>Xem vị trí tuyển dụng</Link>
-              </Button>
+        <div className="relative px-8 py-10">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex-1 space-y-5 max-w-3xl">
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary-100/70 border border-primary-200 px-4 py-1.5">
+                <svg className="w-4 h-4 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+                <span className="text-xs font-semibold text-primary-700 uppercase tracking-wider">
+                  Không gian ứng viên
+                </span>
+              </div>
+              
+              <div className="space-y-3">
+                <h1 className="text-4xl font-extrabold text-gray-900 leading-tight">
+                  {profileData.fullName
+                    ? `Xin chào ${profileData.fullName}! 👋`
+                    : "Chào mừng đến với hồ sơ của bạn"}
+                </h1>
+                <p className="text-lg text-gray-700 leading-relaxed">
+                  {profileData.summary ??
+                    "Hãy hoàn thiện hồ sơ để tăng cơ hội được nhà tuyển dụng chú ý và mời phỏng vấn."}
+                </p>
+              </div>
+              
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Button asChild size="default" className="rounded-xl shadow-sm bg-gradient-to-r from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500 text-white border-0 px-6 py-2.5 hover:text-white transition-all">
+                  <Link href={ROUTES.candidateProfile} className="flex items-center gap-2.5">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Cập nhật hồ sơ
+                  </Link>
+                </Button>
+                <Button asChild size="default" variant="secondary" className="rounded-xl shadow-sm bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white border-0 px-6 py-2.5 hover:text-white transition-all">
+                  <Link href={`${ROUTES.candidateProfile}#cvs`} className="flex items-center gap-2.5">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Quản lý CV
+                  </Link>
+                </Button>
+                <Button asChild size="default" variant="ghost" className="rounded-xl hover:bg-primary-50 hover:text-primary-700 px-6 py-2.5">
+                  <Link href={ROUTES.jobs} className="flex items-center gap-2.5">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Tìm việc làm
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex flex-col items-center gap-4 rounded-2xl border border-primary-200/50 bg-white/80 backdrop-blur-sm p-6 shadow-sm lg:w-72">
+              <AvatarUploader avatarUrl={profileData.avatarUrl} fullName={profileData.fullName} />
+              <div className="text-center space-y-1">
+                <p className="text-sm font-semibold text-gray-900">
+                  {profileData.fullName || "Chưa cập nhật tên"}
+                </p>
+                <p className="text-xs text-gray-600">
+                  Ảnh đại diện giúp hồ sơ chuyên nghiệp hơn
+                </p>
+              </div>
             </div>
           </div>
-          <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-2xl border border-primary-200 bg-white/80 p-5 text-center backdrop-blur shadow-sm md:w-auto">
-            <AvatarUploader avatarUrl={profileData.avatarUrl} fullName={profileData.fullName} />
-            <p className="text-xs text-gray-600">
-              Một bức ảnh cập nhật giúp nhà tuyển dụng thêm tin tưởng vào hồ sơ của bạn.
+        </div>
+      </div>
+
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border border-primary-200/50 p-6 shadow-sm hover:shadow-md hover:border-primary-300/70 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary-300/30 transition-colors" />
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 rounded-lg bg-primary-100 border border-primary-200">
+                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary-700">Đơn ứng tuyển</p>
+            </div>
+            <p className="text-4xl font-extrabold text-gray-900 mb-2">{activeApplications.length}</p>
+            <p className="text-sm text-gray-700">
+              {lastAppliedAt
+                ? `Cập nhật ${formatDate(lastAppliedAt)}`
+                : "Bắt đầu hành trình của bạn"}
             </p>
           </div>
         </div>
-      </Panel>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-2xl border border-primary-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
-          <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">Đơn đang xử lý</p>
-          <p className="mt-3 text-4xl font-bold text-gray-900">{activeApplications.length}</p>
-          <p className="text-sm text-gray-600 mt-1">
-            {lastAppliedAt
-              ? `Cập nhật gần nhất ${formatDate(lastAppliedAt)}`
-              : "Gửi hồ sơ đầu tiên để bắt đầu hành trình."}
-          </p>
+        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border border-primary-200/50 p-6 shadow-sm hover:shadow-md hover:border-primary-300/70 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary-300/30 transition-colors" />
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 rounded-lg bg-primary-100 border border-primary-200">
+                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary-700">Độ hoàn thiện</p>
+            </div>
+            <p className="text-4xl font-extrabold text-gray-900 mb-2">{profileCompletion}%</p>
+            <p className="text-sm text-gray-700">{profileCompletionLabel}</p>
+          </div>
         </div>
-        <div className="rounded-2xl border border-primary-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
-          <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">Mức độ hoàn thiện hồ sơ</p>
-          <p className="mt-3 text-4xl font-bold text-gray-900">{profileCompletion}%</p>
-          <p className="text-sm text-gray-600 mt-1">{profileCompletionLabel}</p>
+
+        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border border-primary-200/50 p-6 shadow-sm hover:shadow-md hover:border-primary-300/70 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary-300/30 transition-colors" />
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 rounded-lg bg-primary-100 border border-primary-200">
+                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary-700">CV của tôi</p>
+            </div>
+            <p className="text-4xl font-extrabold text-gray-900 mb-2">{sortedCvs.length}</p>
+            <p className="text-sm text-gray-700">
+              {defaultCv ? `Mặc định: ${defaultCv.versionName}` : "Chưa có CV nào"}
+            </p>
+          </div>
         </div>
-        <div className="rounded-2xl border border-primary-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
-          <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">Thư viện CV</p>
-          <p className="mt-3 text-4xl font-bold text-gray-900">{sortedCvs.length}</p>
-          <p className="text-sm text-gray-600 mt-1">
-            {defaultCv ? `Mặc định: ${defaultCv.versionName}` : "Tải lên CV phù hợp để sẵn sàng sử dụng."}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-primary-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
-          <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary-600">Phỏng vấn tiếp theo</p>
-          <p className="mt-3 text-lg font-bold text-gray-900">
-            {nextInterview ? formatDateTime(nextInterview.scheduleTime, nextInterview.timezone) : "Chưa lên lịch"}
-          </p>
-          <p className="text-sm text-gray-600 mt-1">
-            {nextInterview
-              ? `Đơn ứng tuyển #${nextInterview.applicationId} - ${nextInterview.format ?? "Đang cập nhật hình thức"}`
-              : "Phỏng vấn sắp tới sẽ xuất hiện tại đây ngay khi được xác nhận."}
-          </p>
+
+        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border border-primary-200/50 p-6 shadow-sm hover:shadow-md hover:border-primary-300/70 transition-all duration-300">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-200/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary-300/30 transition-colors" />
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 rounded-lg bg-primary-100 border border-primary-200">
+                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary-700">Phỏng vấn</p>
+            </div>
+            <p className="text-lg font-extrabold text-gray-900 mb-2 leading-tight">
+              {nextInterview ? formatDateTime(nextInterview.scheduleTime, nextInterview.timezone) : "Chưa có lịch"}
+            </p>
+            <p className="text-sm text-gray-700 line-clamp-2">
+              {nextInterview
+                ? `${nextInterview.format ?? "Chưa rõ hình thức"}`
+                : "Sẽ thông báo khi có"}
+            </p>
+          </div>
         </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-        <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-5 bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border border-primary-200/50 shadow-sm rounded-3xl p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Đơn ứng tuyển gần đây</h2>
-              <p className="text-sm text-gray-600 mt-1">Theo dõi bạn đang ở giai đoạn nào trong từng quy trình.</p>
+              <h2 className="text-2xl font-bold text-gray-900">Đơn ứng tuyển gần đây</h2>
+              <p className="text-sm text-gray-600 mt-1">Theo dõi tiến độ của từng đơn ứng tuyển</p>
             </div>
-            <Button asChild size="sm" variant="outline">
-              <Link href={ROUTES.candidateApplications}>Xem tất cả</Link>
+            <Button asChild size="sm" variant="outline" className="rounded-lg border-primary-300 hover:bg-primary-50 hover:text-primary-700 hover:border-primary-400 px-4 py-2">
+              <Link href={ROUTES.candidateApplications}>Xem tất cả →</Link>
             </Button>
           </div>
           {recentApplications.length ? (
-            <div className="space-y-3 text-sm">
+            <div className="space-y-3">
               {recentApplications.map((application) => (
                 <Link
                   key={application.id}
                   href={`${ROUTES.candidateApplications}/${application.id}`}
-                  className="group flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5 transition hover:border-primary-500 hover:shadow-md"
+                  className="group block rounded-2xl border border-primary-200/50 bg-white/80 backdrop-blur-sm p-5 transition-all hover:border-primary-300 hover:shadow-md hover:-translate-y-0.5 duration-200"
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="space-y-2">
-                      <p className="text-base font-bold text-gray-900 group-hover:text-primary-600">
-                        {application.jobTitle}
-                      </p>
-                      <div className="flex flex-wrap gap-3 text-xs text-gray-600">
-                        <span>Nộp ngày {formatDate(application.appliedAt)}</span>
-                        {application.source ? <span>Nguồn: {application.source}</span> : null}
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1">
+                          <p className="text-base font-semibold text-gray-900 group-hover:text-primary-600 transition-colors mb-1">
+                            {application.jobTitle}
+                          </p>
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
+                            <span className="flex items-center gap-1">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              {formatDate(application.appliedAt)}
+                            </span>
+                            {application.source ? (
+                              <span className="flex items-center gap-1">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                {application.source}
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                        <span className="shrink-0 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm">
+                          {formatStatus(application.status)}
+                        </span>
                       </div>
+                      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                        {application.jobDescription ?? "Đang cập nhật mô tả công việc..."}
+                      </p>
                     </div>
-                    <span className="self-start rounded-full bg-primary-100 px-3 py-1.5 text-xs font-bold text-primary-700">
-                      {formatStatus(application.status)}
-                    </span>
                   </div>
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {application.jobDescription ??
-                      "Chúng tôi sẽ hiển thị mô tả công việc ngay khi công ty cập nhật."}
-                  </p>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-sm text-gray-600 text-center">
-              Bạn chưa ứng tuyển vị trí nào. Khám phá các vị trí đang mở và gửi hồ sơ đầu tiên của bạn.
+            <div className="rounded-2xl border-2 border-dashed border-primary-300/50 bg-gradient-to-br from-white to-primary-50/30 px-6 py-12 text-center">
+              <svg className="w-16 h-16 mx-auto text-primary-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p className="text-sm text-gray-700 font-medium mb-2">Chưa có đơn ứng tuyển nào</p>
+              <p className="text-xs text-gray-600">Khám phá các vị trí đang tuyển và bắt đầu hành trình của bạn</p>
             </div>
           )}
-        </Panel>
+        </div>
 
         <div className="space-y-6">
-          <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
+          <div className="space-y-5 bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border border-primary-200/50 shadow-sm rounded-3xl p-6">
             <div>
               <h2 className="text-xl font-bold text-gray-900">Bước tiếp theo</h2>
               <p className="text-sm text-gray-600 mt-1">
-                Những gợi ý được cá nhân hóa giúp bạn tiếp tục tìm kiếm đúng hướng.
+                Gợi ý được cá nhân hóa cho bạn
               </p>
             </div>
             {prioritizedNextSteps.length ? (
-              <ul className="space-y-4 text-sm">
+              <ul className="space-y-3">
                 {prioritizedNextSteps.map((step) => (
                   <li
                     key={step.title}
-                    className="rounded-2xl border border-dashed border-gray-300 bg-gradient-to-br from-primary-50 to-white p-4"
+                    className="rounded-xl border border-primary-200/50 bg-white/80 backdrop-blur-sm p-4 hover:shadow-sm hover:border-primary-300 transition-all duration-200"
                   >
-                    <p className="font-bold text-gray-900">{step.title}</p>
-                    <p className="mt-1 text-sm text-gray-600">{step.description}</p>
-                    {step.href ? (
-                      <Link
-                        href={step.href}
-                        className="mt-3 inline-flex text-sm font-bold text-primary-600 hover:text-primary-700 hover:underline"
-                      >
-                        {step.actionLabel ?? "Mở"}
-                      </Link>
-                    ) : null}
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5 p-1.5 rounded-lg bg-primary-100 border border-primary-200 shrink-0">
+                        <svg className="w-3.5 h-3.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-900 text-sm mb-1">{step.title}</p>
+                        <p className="text-xs text-gray-700 leading-relaxed">{step.description}</p>
+                        {step.href ? (
+                          <Link
+                            href={step.href}
+                            className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500 px-4 py-2 text-xs font-semibold text-white hover:text-white shadow-sm transition-all"
+                          >
+                            {step.actionLabel ?? "Mở"}
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+                        ) : null}
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <div className="rounded-xl border border-gray-200 bg-white px-4 py-6 text-sm text-gray-600 text-center">
-                Hiện bạn đã hoàn tất. Chúng tôi sẽ hiển thị gợi ý mới ngay khi có thay đổi.
+              <div className="rounded-xl border border-dashed border-primary-300/50 bg-white/60 px-4 py-8 text-center">
+                <svg className="w-12 h-12 mx-auto text-primary-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-sm text-gray-700 font-medium">Bạn đã hoàn tất!</p>
+                <p className="text-xs text-gray-600 mt-1">Sẽ có gợi ý mới khi cần</p>
               </div>
             )}
-          </Panel>
+          </div>
 
-          <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
-            <div className="flex items-start justify-between gap-4">
+          <div className="space-y-5 bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border border-primary-200/50 shadow-sm rounded-3xl p-6">
+            <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Thư viện CV</h2>
                 <p className="text-sm text-gray-600 mt-1">
-                  Lưu trữ các phiên bản CV chỉn chu để đính kèm phù hợp cho từng đơn ứng tuyển.
+                  Quản lý các phiên bản CV của bạn
                 </p>
               </div>
-              <Button asChild size="sm" variant="ghost">
+              <Button asChild size="sm" variant="ghost" className="rounded-lg hover:bg-primary-50 hover:text-primary-700 px-4 py-2">
                 <Link href={`${ROUTES.candidateProfile}#cvs`}>Quản lý</Link>
               </Button>
             </div>
             {sortedCvs.length ? (
-              <div className="space-y-3 text-sm">
+              <div className="space-y-2.5">
                 {sortedCvs.slice(0, 5).map((cv) => {
                   const downloadHref =
                     cv.downloadUrl ?? (cv.fileId ? `/api/files/${cv.fileId}` : null);
                   return (
                     <div
                       key={cv.id}
-                      className="flex flex-col gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between hover:border-primary-300 transition-colors"
+                      className="flex items-center justify-between gap-3 rounded-xl border border-primary-200/50 bg-white/80 backdrop-blur-sm px-4 py-3 hover:border-primary-300 hover:shadow-sm transition-all duration-200"
                     >
-                      <div>
-                        <p className="font-bold text-gray-900">
-                          {cv.versionName}
-                          {cv.isDefault ? " - Mặc định" : ""}
-                        </p>
-                        <p className="text-xs text-gray-600">Added {formatDate(cv.createdAt)}</p>
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="p-2 rounded-lg bg-primary-50 border border-primary-200 shrink-0">
+                          <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm text-gray-900 truncate">
+                            {cv.versionName}
+                            {cv.isDefault ? (
+                              <span className="ml-2 text-xs text-primary-600">(Mặc định)</span>
+                            ) : null}
+                          </p>
+                          <p className="text-xs text-gray-600">{formatDate(cv.createdAt)}</p>
+                        </div>
                       </div>
                       {downloadHref ? (
                         <a
                           href={downloadHref}
-                          className="text-sm font-bold text-primary-600 hover:text-primary-700 hover:underline"
+                          className="shrink-0 text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors"
                           target="_blank"
                           rel="noreferrer"
                         >
-                          Tải xuống
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
                         </a>
                       ) : (
-                        <span className="text-xs text-gray-500">
-                          Đây là bản tạm — hãy tải lên phiên bản cập nhật khi bạn đã sẵn sàng.
-                        </span>
+                        <span className="text-xs text-gray-500 shrink-0">Đang tạo...</span>
                       )}
                     </div>
                   );
                 })}
                 {sortedCvs.length > 5 ? (
-                  <p className="text-xs text-gray-500">
-                    Hiển thị 5 phiên bản gần nhất. Vào trang quản lý để xem thêm.
+                  <p className="text-xs text-gray-600 text-center pt-2">
+                    Và {sortedCvs.length - 5} CV khác
                   </p>
                 ) : null}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-8 text-sm text-gray-600 text-center">
-                Chưa có CV nào. Tải lên CV phù hợp để đính kèm cùng hồ sơ ứng tuyển.
+              <div className="rounded-xl border border-dashed border-primary-300/50 bg-gradient-to-br from-white to-primary-50/20 px-5 py-10 text-center">
+                <svg className="w-12 h-12 mx-auto text-primary-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <p className="text-sm text-gray-700 font-medium mb-1">Chưa có CV</p>
+                <p className="text-xs text-gray-600">Tải lên CV để sẵn sàng ứng tuyển</p>
               </div>
             )}
-          </Panel>
+          </div>
         </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-        <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-5 bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border border-primary-200/50 shadow-sm rounded-3xl p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Phỏng vấn sắp diễn ra</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Phỏng vấn sắp diễn ra</h2>
               <p className="text-sm text-gray-600 mt-1">
-                Thông tin sẽ được đồng bộ ngay khi nhà tuyển dụng lên lịch hoặc thay đổi phiên phỏng vấn.
+                Lịch phỏng vấn được đồng bộ tự động
               </p>
             </div>
             {nextInterview ? (
-              <Button asChild size="sm" variant="outline">
+              <Button asChild size="sm" variant="outline" className="rounded-lg border-primary-300 hover:bg-primary-50 hover:text-primary-700 hover:border-primary-400 px-4 py-2">
                 <Link href={`${ROUTES.candidateApplications}/${nextInterview.applicationId}`}>
-                  Xem lịch phỏng vấn
+                  Chi tiết →
                 </Link>
               </Button>
             ) : null}
           </div>
           {upcomingInterviews.length ? (
-            <ol className="space-y-4 text-sm">
+            <div className="space-y-3">
               {upcomingInterviews.map((interview) => (
-                <li
+                <div
                   key={interview.id}
-                  className="rounded-2xl border border-gray-200 bg-white px-5 py-4 hover:border-primary-300 transition-colors"
+                  className="rounded-xl border border-primary-200/50 bg-white/80 backdrop-blur-sm p-5 hover:border-primary-300 hover:shadow-sm transition-all duration-200"
                 >
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <p className="font-bold text-gray-900">
+                  <div className="flex items-start gap-4">
+                    <div className="p-2.5 rounded-xl bg-primary-50 border border-primary-200 shrink-0">
+                      <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-gray-900 mb-1">
                         {formatDateTime(interview.scheduleTime, interview.timezone)}
                       </p>
-                      <p className="text-sm text-gray-600">
-                        Đơn ứng tuyển #{interview.applicationId} - {interview.format ?? "Hình thức chưa xác định"}
-                      </p>
+                      <div className="space-y-1">
+                        <p className="text-sm text-gray-700">
+                          <span className="font-medium">Hình thức:</span> {interview.format ?? "Chưa xác định"}
+                        </p>
+                        {interview.locationOrLink ? (
+                          <p className="text-sm text-gray-700 line-clamp-1">
+                            <span className="font-medium">Địa điểm:</span> {interview.locationOrLink}
+                          </p>
+                        ) : null}
+                        <p className="text-xs text-gray-600">
+                          Đơn ứng tuyển #{interview.applicationId}
+                        </p>
+                      </div>
                     </div>
-                    <span className="text-sm text-gray-500">
-                      {interview.locationOrLink ?? "Địa điểm hoặc đường dẫn sẽ được cập nhật"}
-                    </span>
                   </div>
-                </li>
+                </div>
               ))}
-            </ol>
+            </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-sm text-gray-600 text-center">
-              Chưa có buổi phỏng vấn nào được lên lịch. Chúng tôi sẽ thông báo tại đây ngay khi có lịch mới.
+            <div className="rounded-2xl border-2 border-dashed border-primary-300/50 bg-gradient-to-br from-white to-primary-50/30 px-6 py-12 text-center">
+              <svg className="w-16 h-16 mx-auto text-primary-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <p className="text-sm text-gray-700 font-medium mb-2">Chưa có lịch phỏng vấn</p>
+              <p className="text-xs text-gray-600">Sẽ thông báo ngay khi có lịch mới</p>
             </div>
           )}
-        </Panel>
+        </div>
 
-          <Panel variant="surface" padding="lg" className="space-y-6 bg-white">
-            <div className="flex items-start justify-between gap-4">
+          <div className="space-y-5 bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50/30 border border-primary-200/50 shadow-sm rounded-3xl p-6">
+            <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Tổng quan hồ sơ</h2>
                 <p className="text-sm text-gray-600 mt-1">
-                  Xác nhận nhanh các thông tin chính mà nhà tuyển dụng sẽ nhìn thấy trước khi xem chi tiết.
+                  Thông tin nhà tuyển dụng sẽ thấy
                 </p>
               </div>
-              <Button asChild size="sm" variant="ghost">
+              <Button asChild size="sm" variant="ghost" className="rounded-lg hover:bg-primary-50 hover:text-primary-700 px-4 py-2">
                 <Link href={ROUTES.candidateProfile}>Chỉnh sửa</Link>
               </Button>
             </div>
 
-          <div className="space-y-6 text-sm">
+          <div className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-primary-600 font-semibold">Họ và tên</p>
-                <p className="mt-1 font-bold text-gray-900">
-                  {profileData.fullName || "Thêm họ tên"}
+              <div className="p-4 rounded-xl border border-blue-200/50 bg-gradient-to-br from-blue-50/50 to-indigo-50/30 backdrop-blur-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <p className="text-xs uppercase tracking-wider text-blue-700 font-semibold">Họ và tên</p>
+                </div>
+                <p className="font-semibold text-gray-900">
+                  {profileData.fullName || "Chưa cập nhật"}
                 </p>
               </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.28em] text-primary-600 font-semibold">Điện thoại</p>
-                <p className="mt-1 font-bold text-gray-900">
-                  {profileData.phoneNumber || "Thêm số liên hệ"}
+              <div className="p-4 rounded-xl border border-purple-200/50 bg-gradient-to-br from-purple-50/50 to-pink-50/30 backdrop-blur-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <svg className="w-3.5 h-3.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  <p className="text-xs uppercase tracking-wider text-purple-700 font-semibold">Điện thoại</p>
+                </div>
+                <p className="font-semibold text-gray-900">
+                  {profileData.phoneNumber || "Chưa cập nhật"}
                 </p>
               </div>
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-primary-600 font-semibold">Kinh nghiệm nổi bật</p>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 rounded-lg bg-gradient-to-br from-green-100 to-emerald-100 border border-green-200">
+                  <svg className="w-3.5 h-3.5 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-bold text-gray-900">Kinh nghiệm</p>
+              </div>
               {sortedExperiences.length ? (
-                <div className="mt-3 space-y-3">
+                <div className="space-y-2.5">
                   {sortedExperiences.slice(0, 2).map((experience) => (
                     <div
                       key={experience.id}
-                      className="rounded-2xl border border-gray-200 bg-white px-4 py-3"
+                      className="rounded-xl border border-green-200/50 bg-gradient-to-br from-green-50/50 to-emerald-50/30 backdrop-blur-sm px-4 py-3 hover:shadow-sm transition-shadow"
                       >
-                      <p className="font-bold text-gray-900">
-                        {experience.title || "Chức danh sẽ cập nhật"}
+                      <p className="font-semibold text-sm text-gray-900">
+                        {experience.title || "Chức danh"}
                       </p>
-                      <p className="text-sm text-gray-600">
-                        {experience.companyName || "Công ty sẽ cập nhật"}
+                      <p className="text-xs text-gray-700 mt-0.5">
+                        {experience.companyName || "Công ty"}
                       </p>
-                      <p className="text-xs text-gray-500">
-                        {formatProfileDate(experience.startDate, "Không rõ")}
-                        {" - "}
-                        {formatProfileDate(experience.endDate, "Hiện tại")}
+                      <p className="text-xs text-gray-600 mt-1">
+                        {formatProfileDate(experience.startDate, "...")} - {formatProfileDate(experience.endDate, "Hiện tại")}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="mt-3 text-sm text-gray-500">Thêm các vị trí gần đây để làm nổi bật đóng góp của bạn.</p>
-              )}
-            </div>
-
-            <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-primary-600 font-semibold">Học vấn</p>
-              {sortedEducation.length ? (
-                <div className="mt-3 space-y-3">
-                  {sortedEducation.slice(0, 2).map((education) => (
-                    <div
-                      key={education.id}
-                      className="rounded-2xl border border-gray-200 bg-white px-4 py-3"
-                      >
-                      <p className="font-bold text-gray-900">
-                        {education.school || "Trường sẽ cập nhật"}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {education.degree || "Ngành học sẽ cập nhật"}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {formatProfileDate(education.startDate, "Bắt đầu")}
-                        {" - "}
-                        {formatProfileDate(education.endDate, "Hiện tại")}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-3 text-sm text-gray-500">
-                  Ghi lại quá trình học tập để hoàn thiện hồ sơ.
+                <p className="text-sm text-gray-700 bg-white/60 rounded-xl border border-dashed border-primary-300/50 px-4 py-3">
+                  Chưa có kinh nghiệm
                 </p>
               )}
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-primary-600 font-semibold">Kỹ năng</p>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200">
+                  <svg className="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+                  </svg>
+                </div>
+                <p className="text-sm font-bold text-gray-900">Học vấn</p>
+              </div>
+              {sortedEducation.length ? (
+                <div className="space-y-2.5">
+                  {sortedEducation.slice(0, 2).map((education) => (
+                    <div
+                      key={education.id}
+                      className="rounded-xl border border-amber-200/50 bg-gradient-to-br from-amber-50/50 to-orange-50/30 backdrop-blur-sm px-4 py-3 hover:shadow-sm transition-shadow"
+                      >
+                      <p className="font-semibold text-sm text-gray-900">
+                        {education.school || "Trường"}
+                      </p>
+                      <p className="text-xs text-gray-700 mt-0.5">
+                        {education.degree || "Ngành học"}
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        {formatProfileDate(education.startDate, "...")} - {formatProfileDate(education.endDate, "Hiện tại")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-700 bg-white/60 rounded-xl border border-dashed border-primary-300/50 px-4 py-3">
+                  Chưa có học vấn
+                </p>
+              )}
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 rounded-lg bg-gradient-to-br from-cyan-100 to-sky-100 border border-cyan-200">
+                  <svg className="w-3.5 h-3.5 text-cyan-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-bold text-gray-900">Kỹ năng</p>
+              </div>
               {displaySkills.length ? (
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2">
                   {displaySkills.slice(0, 8).map((skill) =>
                     skill.skillName ? (
                       <span
                         key={skill.id}
-                        className="rounded-full border border-primary-200 bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 shadow-sm hover:shadow-md hover:scale-105 transition-all"
                       >
                         {skill.skillName}
                       </span>
                     ) : null
                   )}
                   {displaySkills.length > 8 ? (
-                    <span className="text-sm text-gray-500">+{displaySkills.length - 8} kỹ năng khác</span>
+                    <span className="text-xs text-gray-700 self-center font-medium">+{displaySkills.length - 8}</span>
                   ) : null}
                 </div>
               ) : (
-                <p className="mt-3 text-sm text-gray-500">
-                  Liệt kê kỹ năng cốt lõi để nhà tuyển dụng kết nối với bạn nhanh hơn.
+                <p className="text-sm text-gray-700 bg-white/60 rounded-xl border border-dashed border-primary-300/50 px-4 py-3">
+                  Chưa có kỹ năng
                 </p>
               )}
             </div>
           </div>
-        </Panel>
+        </div>
       </div>
     </Container>
   );
