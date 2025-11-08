@@ -182,17 +182,25 @@ public class ChatController {
         StringBuilder builder = new StringBuilder("Mình gợi ý một vài việc đang mở:\n\n");
         int index = 1;
         for (JobSuggestion suggestion : suggestions) {
-            builder.append(index++).append(") ").append(suggestion.title())
-                .append(" – ").append(suggestion.companyName())
-                .append(" (").append(suggestion.location()).append(", ").append(suggestion.workType()).append(")\n")
-                .append("   Phù hợp vì: ").append(suggestion.reason()).append('\n');
+            String summary = suggestion.title() + " – " + suggestion.companyName()
+                + " (" + suggestion.location() + ", " + suggestion.workType() + ")";
             if (StringUtils.hasText(suggestion.url())) {
-                builder.append("   Link: ").append(suggestion.url()).append('\n');
+                builder.append(index++).append(") [").append(escapeMarkdownLinkLabel(summary)).append("](").append(suggestion.url()).append(")\n");
+            } else {
+                builder.append(index++).append(") ").append(summary).append('\n');
             }
+            builder.append("   Phù hợp vì: ").append(suggestion.reason()).append('\n');
             builder.append('\n');
         }
         builder.append("Bạn muốn thu hẹp thêm theo kỹ năng, vị trí hoặc mức lương cụ thể hơn không?");
         return builder.toString();
+    }
+
+    private String escapeMarkdownLinkLabel(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text.replace("[", "\\[").replace("]", "\\]");
     }
 
     private String writeJobEventPayload(JobSuggestion suggestion) {
@@ -307,8 +315,6 @@ public class ChatController {
         return "anonymous";
     }
 }
-
-
 
 
 

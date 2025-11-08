@@ -1,4 +1,4 @@
-package com.recruitment.platform.chat.recommendation.service;
+﻿package com.recruitment.platform.chat.recommendation.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.recruitment.platform.chat.config.RecommendationProperties;
@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -22,6 +23,20 @@ public class RecommendationEngine {
     private final RecJobRepository jobRepository;
     private final EmbeddingService embeddingService;
     private final RecommendationProperties properties;
+    private static final List<String> KNOWN_LOCATIONS = Arrays.asList(
+        "singapore",
+        "ho chi minh",
+        "ho chi minh city",
+        "viet nam",
+        "vietnam",
+        "hanoi",
+        "da nang",
+        "tokyo",
+        "bangkok",
+        "remote",
+        "onsite",
+        "hybrid"
+    );
 
     public RecommendationEngine(RecJobRepository jobRepository,
                                 EmbeddingService embeddingService,
@@ -41,8 +56,9 @@ public class RecommendationEngine {
         if (hits.isEmpty()) {
             return List.of();
         }
+        List<RecJobRepository.JobHit> prioritizedHits = prioritizeByLocation(hits, userQuery);
         int finalSize = desiredFinalK > 0 ? desiredFinalK : properties.getFinalK();
-        return hits.stream()
+        return prioritizedHits.stream()
             .limit(finalSize)
             .map(hit -> toSuggestion(hit, userQuery))
             .collect(Collectors.toList());
@@ -74,13 +90,67 @@ public class RecommendationEngine {
             reasons.add("Kỹ năng trùng khớp: " + String.join(", ", matchedSkills) + ".");
         }
         String salaryNote = buildSalaryReason(metadata);
-        if (salaryNote != null) {
+        if (queryAsksForSalary(query) && salaryNote != null) {
             reasons.add(salaryNote);
         }
         if (reasons.isEmpty()) {
             reasons.add("Điểm tương đồng cao với câu hỏi của bạn và đang mở tuyển.");
         }
         return String.join(" ", reasons);
+    }
+
+    private List<RecJobRepository.JobHit> prioritizeByLocation(List<RecJobRepository.JobHit> hits, String query) {
+        List<String> preferredLocations = extractPreferredLocations(query);
+        if (preferredLocations.isEmpty()) {
+            return hits;
+        }
+        List<RecJobRepository.JobHit> matched = new ArrayList<>();
+        List<RecJobRepository.JobHit> others = new ArrayList<>();
+        for (RecJobRepository.JobHit hit : hits) {
+            if (matchesPreferredLocation(hit.metadata(), preferredLocations)) {
+                matched.add(hit);
+            } else {
+                others.add(hit);
+            }
+        }
+        if (matched.isEmpty()) {
+            return hits;
+        }
+        List<RecJobRepository.JobHit> reordered = new ArrayList<>(hits.size());
+        reordered.addAll(matched);
+        reordered.addAll(others);
+        return reordered;
+    }
+
+    private List<String> extractPreferredLocations(String query) {
+        if (!StringUtils.hasText(query)) {
+            return List.of();
+        }
+        String normalizedQuery = query.toLowerCase(Locale.ROOT);
+        List<String> matches = new ArrayList<>();
+        for (String location : KNOWN_LOCATIONS) {
+            if (normalizedQuery.contains(location)) {
+                matches.add(location);
+            }
+        }
+        return matches;
+    }
+
+    private boolean matchesPreferredLocation(JsonNode metadata, List<String> preferredLocations) {
+        if (metadata == null || preferredLocations.isEmpty()) {
+            return false;
+        }
+        String location = text(metadata, "location", null);
+        if (!StringUtils.hasText(location)) {
+            return false;
+        }
+        String normalizedLocation = location.toLowerCase(Locale.ROOT);
+        for (String preferred : preferredLocations) {
+            if (normalizedLocation.contains(preferred)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean hasKeyword(String query, String candidate) {
@@ -190,5 +260,22 @@ public class RecommendationEngine {
             return value;
         }
         return Character.toUpperCase(value.charAt(0)) + value.substring(1);
+    }\r\n\r\n    private boolean queryAsksForSalary(String query) {
+        if (!StringUtils.hasText(query)) {
+            return false;
+        }
+        String normalized = query.toLowerCase(Locale.ROOT);
+        return normalized.contains("lương")
+            || normalized.contains("salary")
+            || normalized.contains("thu nhập")
+            || normalized.contains("compensation")
+            || normalized.contains("mức thu nhập")
+            || normalized.contains("range lương")
+            || normalized.contains("pay");
     }
 }
+
+
+
+
+

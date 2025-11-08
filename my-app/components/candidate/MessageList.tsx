@@ -195,6 +195,7 @@ const INLINE_PATTERNS: Array<{ type: "strong" | "em" | "code"; regex: RegExp }> 
   { type: "em", regex: /\*(.+?)\*/ },
   { type: "em", regex: /_(.+?)_/ },
 ];
+const LINK_PATTERN = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/;
 
 function FormattedMessage({ content }: { content: string }) {
   const blocks = useMemo(() => parseMessageContent(content), [content]);
@@ -315,7 +316,8 @@ type InlineToken =
   | { type: "text"; value: string }
   | { type: "strong"; value: string }
   | { type: "em"; value: string }
-  | { type: "code"; value: string };
+  | { type: "code"; value: string }
+  | { type: "link"; value: string; url: string };
 
 function tokenizeInline(text: string): InlineToken[] {
   const tokens: InlineToken[] = [];
@@ -332,16 +334,48 @@ function tokenizeInline(text: string): InlineToken[] {
       tokens.push({ type: "text", value: remaining.slice(0, match.index) });
     }
 
-    tokens.push({ type: match.type, value: match.value });
+    if (match.type === "link") {
+      tokens.push({
+        type: "link",
+        value: match.value,
+        url: match.url ?? match.value,
+      });
+    } else if (match.type === "strong") {
+      tokens.push({ type: "strong", value: match.value });
+    } else if (match.type === "em") {
+      tokens.push({ type: "em", value: match.value });
+    } else {
+      tokens.push({ type: "code", value: match.value });
+    }
     remaining = remaining.slice(match.index + match.length);
   }
 
   return tokens;
 }
 
-function findNextInlineMatch(text: string): { type: "strong" | "em" | "code"; value: string; index: number; length: number } | null {
-  let bestMatch: { type: "strong" | "em" | "code"; value: string; index: number; length: number } | null = null;
+type InlineMatch = {
+  type: "strong" | "em" | "code" | "link";
+  value: string;
+  index: number;
+  length: number;
+  url?: string;
+};
+
+function findNextInlineMatch(text: string): InlineMatch | null {
+  let bestMatch: InlineMatch | null = null;
   let bestPriority = Number.POSITIVE_INFINITY;
+
+  const linkMatch = LINK_PATTERN.exec(text);
+  if (linkMatch) {
+    bestMatch = {
+      type: "link",
+      value: linkMatch[1],
+      url: linkMatch[2],
+      index: linkMatch.index,
+      length: linkMatch[0].length,
+    };
+    bestPriority = -1;
+  }
 
   INLINE_PATTERNS.forEach((pattern, priority) => {
     const match = pattern.regex.exec(text);
@@ -349,7 +383,7 @@ function findNextInlineMatch(text: string): { type: "strong" | "em" | "code"; va
       return;
     }
 
-    const candidate = {
+    const candidate: InlineMatch = {
       type: pattern.type,
       value: match[1],
       index: match.index,
@@ -392,6 +426,20 @@ function renderInlineNodes(text: string, keyPrefix: string): ReactNode[] {
         <em key={`${keyPrefix}-em-${index}`} className="italic">
           {token.value}
         </em>
+      );
+    }
+
+    if (token.type === "link" && token.url) {
+      return (
+        <a
+          key={`${keyPrefix}-link-${index}`}
+          href={token.url}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="text-indigo-600 underline decoration-indigo-400 decoration-2 underline-offset-2 hover:text-indigo-700"
+        >
+          {token.value}
+        </a>
       );
     }
 

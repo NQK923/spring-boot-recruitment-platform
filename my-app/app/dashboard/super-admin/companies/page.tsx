@@ -16,8 +16,13 @@ const COMPANY_STATUS_OPTIONS = [
   { value: "INACTIVE", label: "Ngưng hoạt động" },
 ];
 
-const numberFormatter = new Intl.NumberFormat();
-const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
+const DEFAULT_LOCALE = "vi-VN";
+const DEFAULT_TIME_ZONE = "Asia/Ho_Chi_Minh";
+const numberFormatter = new Intl.NumberFormat(DEFAULT_LOCALE);
+const dateFormatter = new Intl.DateTimeFormat(DEFAULT_LOCALE, {
+  dateStyle: "medium",
+  timeZone: DEFAULT_TIME_ZONE,
+});
 
 function formatDate(value: string | null): string {
   if (!value) {

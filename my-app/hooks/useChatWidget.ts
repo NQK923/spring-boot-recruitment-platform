@@ -218,12 +218,20 @@ export function useChatWidget() {
         let buffer = "";
         let receivedContent = false;
         let shouldStop = false;
+        const jobSuggestions: JobSuggestionEventPayload[] = [];
 
         const processEvent = (eventName: string, data: string) => {
           if (eventName === "chunk" || eventName === "message") {
             receivedContent = receivedContent || Boolean(data);
             if (data) {
               updateMessageContent(assistantId, (prev) => `${prev}${data}`);
+            }
+          } else if (eventName === "job") {
+            const parsed = parseJobSuggestionEvent(data);
+            if (parsed) {
+              jobSuggestions.push(parsed);
+              receivedContent = true;
+              updateMessageContent(assistantId, () => formatJobSuggestionMessage(jobSuggestions));
             }
           } else if (eventName === "done") {
             if (data) {
@@ -566,4 +574,70 @@ function extractMessage(payload: unknown): string | null {
     return record.text.trim();
   }
   return null;
+}
+
+type JobSuggestionEventPayload = {
+  jobId?: number;
+  title?: string;
+  company?: string;
+  location?: string;
+  workType?: string;
+  reason?: string;
+  url?: string;
+};
+
+function parseJobSuggestionEvent(data: string): JobSuggestionEventPayload | null {
+  if (!data) {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(data);
+    if (!parsed || typeof parsed !== "object") {
+      return null;
+    }
+    const record = parsed as Record<string, unknown>;
+    const asString = (value: unknown) => (typeof value === "string" ? value : undefined);
+    const asNumber = (value: unknown) => (typeof value === "number" ? value : undefined);
+    return {
+      jobId: asNumber(record.jobId),
+      title: asString(record.title),
+      company: asString(record.company),
+      location: asString(record.location),
+      workType: asString(record.workType),
+      reason: asString(record.reason),
+      url: asString(record.url),
+    };
+  } catch (error) {
+    console.warn("[chat-widget] invalid job suggestion payload", error);
+    return null;
+  }
+}
+
+function formatJobSuggestionMessage(items: JobSuggestionEventPayload[]): string {
+  if (!items.length) {
+    return "";
+  }
+  const lines: string[] = ["Mình gợi ý một vài việc đang mở:", ""];
+  items.forEach((item, index) => {
+    const title = item.title?.trim() || "Vị trí chưa đặt tên";
+    const company = item.company?.trim() || "Doanh nghiệp ẩn danh";
+    const location = item.location?.trim() || "Nhiều địa điểm";
+    const workType = item.workType?.trim() || "Chưa cập nhật";
+    const reason = item.reason?.trim() || "Điểm tương đồng cao với câu hỏi của bạn và đang mở tuyển.";
+    const summary = `${title} – ${company} (${location}, ${workType})`;
+    const url = item.url?.trim();
+    if (url) {
+      lines.push(`${index + 1}) [${escapeMarkdownLinkLabel(summary)}](${url})`);
+    } else {
+      lines.push(`${index + 1}) ${summary}`);
+    }
+    lines.push(`   Phù hợp vì: ${reason}`);
+    lines.push("");
+  });
+  lines.push("Bạn muốn thu hẹp thêm theo kỹ năng, vị trí hoặc mức lương cụ thể hơn không?");
+  return lines.join("\n");
+}
+
+function escapeMarkdownLinkLabel(text: string): string {
+  return text.replace(/\[/g, "\\[").replace(/\]/g, "\\]");
 }
