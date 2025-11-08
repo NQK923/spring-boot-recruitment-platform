@@ -1,8 +1,9 @@
-package com.recruitment.platform.chat.recommendation.service;
+﻿package com.recruitment.platform.chat.recommendation.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.recruitment.platform.chat.config.RecommendationProperties;
 import com.recruitment.platform.chat.dto.job.JobDto;
 import com.recruitment.platform.chat.recommendation.client.JobServiceClient;
 import com.recruitment.platform.chat.recommendation.repository.RecJobRepository;
@@ -24,15 +25,18 @@ public class RecommendationIndexer {
     private final RecJobRepository jobRepository;
     private final EmbeddingService embeddingService;
     private final ObjectMapper objectMapper;
+    private final RecommendationProperties properties;
 
     public RecommendationIndexer(JobServiceClient jobServiceClient,
                                  RecJobRepository jobRepository,
                                  EmbeddingService embeddingService,
-                                 ObjectMapper objectMapper) {
+                                 ObjectMapper objectMapper,
+                                 RecommendationProperties properties) {
         this.jobServiceClient = jobServiceClient;
         this.jobRepository = jobRepository;
         this.embeddingService = embeddingService;
         this.objectMapper = objectMapper;
+        this.properties = properties;
     }
 
     public void upsertJob(Long jobId, String bearerToken) {
@@ -79,7 +83,7 @@ public class RecommendationIndexer {
         node.put("level", clean(job.level()));
         node.put("status", clean(job.status()));
         node.put("postedAt", job.postedAt() != null ? job.postedAt().toString() : null);
-        node.put("jobUrl", clean(job.url()));
+        node.put("jobUrl", clean(resolveJobUrl(job)));
         node.put("salaryText", clean(job.salaryRange()));
 
         ArrayNode benefitsNode = node.putArray("benefits");
@@ -106,4 +110,24 @@ public class RecommendationIndexer {
     private String clean(String value) {
         return StringUtils.hasText(value) ? value.trim() : null;
     }
+
+    private String resolveJobUrl(JobDto job) {
+        if (job == null) {
+            return null;
+        }
+        if (StringUtils.hasText(job.url())) {
+            return job.url().trim();
+        }
+        if (job.id() == null) {
+            return null;
+        }
+        String base = properties.getJobDetailBaseUrl();
+        if (!StringUtils.hasText(base)) {
+            return null;
+        }
+        String trimmedBase = base.trim();
+        String separator = trimmedBase.endsWith("/") ? "" : "/";
+        return trimmedBase + separator + job.id();
+    }
+
 }

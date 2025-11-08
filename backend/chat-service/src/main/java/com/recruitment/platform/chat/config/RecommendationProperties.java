@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
 @Setter
@@ -27,5 +28,8 @@ public class RecommendationProperties {
 
     @Positive
     private int bootstrapSize = 50;
+
+    @NotBlank
+    private String jobDetailBaseUrl = "http://localhost:3000/jobs";
 
 }

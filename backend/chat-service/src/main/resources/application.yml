@@ -53,6 +53,7 @@ app:
     finalK: ${CHAT_RECOMMEND_FINAL_K:5}
     freshnessDays: ${CHAT_RECOMMEND_FRESHNESS_DAYS:21}
     bootstrapSize: ${CHAT_RECOMMEND_BOOTSTRAP_SIZE:50}
+    jobDetailBaseUrl: ${CHAT_JOB_DETAIL_BASE_URL:http://localhost:3000/jobs}
   gateway:
     base-url: ${GATEWAY_BASE_URL:http://gateway-service:8080}
 
