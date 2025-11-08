@@ -2,6 +2,7 @@ package com.recruitment.platform.company.controller;
 
 import com.recruitment.platform.company.dto.AddUserToCompanyRequest;
 import com.recruitment.platform.company.dto.CompanyStatusResponse;
+import com.recruitment.platform.company.model.Company;
 import com.recruitment.platform.company.model.CompanyStatus;
 import com.recruitment.platform.company.model.CompanyUser;
 import com.recruitment.platform.company.service.CompanyService;
@@ -9,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -40,9 +40,13 @@ public class InternalCompanyController {
 
     @GetMapping("/status")
     public ResponseEntity<List<CompanyStatusResponse>> getCompanyStatuses(@RequestParam("ids") List<Long> companyIds) {
-        Map<Long, CompanyStatus> statuses = companyService.getCompanyStatuses(companyIds);
-        List<CompanyStatusResponse> response = statuses.entrySet().stream()
-                .map(entry -> new CompanyStatusResponse(entry.getKey(), entry.getValue()))
+        List<Company> companies = companyService.findCompanies(companyIds);
+        List<CompanyStatusResponse> response = companies.stream()
+                .map(company -> new CompanyStatusResponse(
+                        company.getId(),
+                        company.getStatus(),
+                        company.getName()
+                ))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }

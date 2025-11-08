@@ -187,6 +187,13 @@ public class CompanyService {
                 ));
     }
 
+    public List<Company> findCompanies(List<Long> companyIds) {
+        if (companyIds == null || companyIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return companyRepository.findAllById(companyIds);
+    }
+
     public List<Long> findCompanyIdsByStatus(CompanyStatus status) {
         if (status == null) {
             return Collections.emptyList();

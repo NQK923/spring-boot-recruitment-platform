@@ -21,8 +21,8 @@ const QUICK_PROMPTS: Array<{ label: string; prompt: string }> = [
     prompt: "Quy trình tuyển dụng hiện tại gồm những vòng nào và mất bao lâu?",
   },
   {
-    label: "Trạng thái hồ sơ",
-    prompt: "Bạn có thể kiểm tra giúp mình trạng thái hồ sơ ứng tuyển gần nhất không?",
+    label: "Gợi ý việc làm",
+    prompt: "Bạn có thể gợi ý vài vị trí đang tuyển phù hợp với kỹ năng và kinh nghiệm của mình không?",
   },
   {
     label: "Chuẩn bị phỏng vấn",

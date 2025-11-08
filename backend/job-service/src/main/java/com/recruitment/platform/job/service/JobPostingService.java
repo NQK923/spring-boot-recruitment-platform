@@ -25,9 +25,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -135,7 +138,7 @@ public class JobPostingService {
         Pageable pageable = resolvePageable(page, size);
         List<Long> activeCompanyIds = fetchActiveCompanyIds();
         if (activeCompanyIds.isEmpty()) {
-            return new PageImpl<JobPosting>(Collections.emptyList(), pageable, 0).map(this::convertToDto);
+            return new PageImpl<>(Collections.<JobPostingPublicDto>emptyList(), pageable, 0);
         }
 
         Page<JobPosting> resultPage;
@@ -152,7 +155,7 @@ public class JobPostingService {
             );
         }
 
-        return resultPage.map(this::convertToDto);
+        return mapToPublicDtoPage(resultPage);
     }
 
     public Optional<JobPosting> findJobById(Long id) {
@@ -163,10 +166,10 @@ public class JobPostingService {
         return jobPostingRepository.findById(id)
                 .filter(job -> job.getStatus() == JobStatus.PUBLISHED)
                 .filter(job -> isCompanyActive(job.getCompanyId()))
-                .map(this::convertToDto);
+                .map(job -> convertToDto(job, resolveCompanyName(job.getCompanyId())));
     }
 
-    private JobPostingPublicDto convertToDto(JobPosting jobPosting) {
+    private JobPostingPublicDto convertToDto(JobPosting jobPosting, String companyName) {
         JobPosition jobPosition = jobPosting.getJobPosition();
         String department = jobPosition != null ? jobPosition.getDepartment() : null;
         String level = jobPosition != null ? jobPosition.getLevel() : null;
@@ -174,6 +177,7 @@ public class JobPostingService {
         return new JobPostingPublicDto(
                 jobPosting.getId(),
                 jobPosting.getCompanyId(),
+                companyName,
                 jobPosting.getTitle(),
                 jobPosting.getDescription(),
                 jobPosting.getRequirements(),
@@ -185,6 +189,57 @@ public class JobPostingService {
                 level,
                 jobPosting.getStatus() != null ? jobPosting.getStatus().name() : null
         );
+    }
+
+    private Page<JobPostingPublicDto> mapToPublicDtoPage(Page<JobPosting> page) {
+        if (page.isEmpty()) {
+            return new PageImpl<>(Collections.<JobPostingPublicDto>emptyList(), page.getPageable(), page.getTotalElements());
+        }
+        Map<Long, String> companyNames = fetchCompanyNames(
+                page.getContent().stream()
+                        .map(JobPosting::getCompanyId)
+                        .collect(Collectors.toList())
+        );
+        List<JobPostingPublicDto> dtos = page.getContent().stream()
+                .map(job -> convertToDto(job, companyNames.get(job.getCompanyId())))
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtos, page.getPageable(), page.getTotalElements());
+    }
+
+    private String resolveCompanyName(Long companyId) {
+        if (companyId == null) {
+            return null;
+        }
+        return fetchCompanyNames(List.of(companyId)).get(companyId);
+    }
+
+    private Map<Long, String> fetchCompanyNames(Collection<Long> companyIds) {
+        if (companyIds == null || companyIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> distinctIds = companyIds.stream()
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+        if (distinctIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        try {
+            List<CompanyStatusResponse> responses = companyServiceClient.getCompanyStatuses(distinctIds);
+            if (responses == null || responses.isEmpty()) {
+                return Collections.emptyMap();
+            }
+            return responses.stream()
+                    .filter(response -> response.companyId() != null && hasText(response.companyName()))
+                    .collect(Collectors.toMap(
+                            CompanyStatusResponse::companyId,
+                            CompanyStatusResponse::companyName,
+                            (existing, replacement) -> existing
+                    ));
+        } catch (FeignException ex) {
+            log.warn("Unable to fetch company names for {}: {}", distinctIds, ex.getMessage());
+            return Collections.emptyMap();
+        }
     }
 
     private JobPosition resolveJobPosition(Long positionId, Long companyId) {

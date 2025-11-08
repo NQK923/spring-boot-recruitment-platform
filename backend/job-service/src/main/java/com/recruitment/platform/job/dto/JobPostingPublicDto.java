@@ -4,6 +4,7 @@ package com.recruitment.platform.job.dto;
 public record JobPostingPublicDto(
         Long id,
         Long companyId,
+        String companyName,
         String title,
         String description,
         String requirements,
