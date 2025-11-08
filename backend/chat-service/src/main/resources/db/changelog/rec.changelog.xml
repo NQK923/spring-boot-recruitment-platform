@@ -42,36 +42,10 @@
         </sql>
     </changeSet>
 
-    <changeSet id="rec-0003-create-rec-profiles" author="codex">
-        <createTable tableName="rec_profiles" schemaName="rec_db">
-            <column name="user_id" type="uuid">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="company_id" type="uuid"/>
-            <column name="summary" type="text"/>
-            <column name="preferences" type="jsonb"/>
-            <column name="embedding" type="vector(3072)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="updated_at" type="timestamptz" defaultValueComputed="now()">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <createIndex indexName="idx_rec_profiles_updated_at" schemaName="rec_db" tableName="rec_profiles">
-            <column name="updated_at"/>
-        </createIndex>
-
-        <sql>
-            -- Bỏ index embedding do pgvector ivfflat giới hạn 2000 chiều; Gemini embedding 3072 chiều.
-        </sql>
-    </changeSet>
-
     <changeSet id="rec-0004-reset-id-types-to-bigint" author="codex">
         <comment>Align recommendation tables với định danh BIGINT của hệ thống lõi</comment>
         <sql>
             DROP TABLE IF EXISTS rec_db.rec_jobs CASCADE;
-            DROP TABLE IF EXISTS rec_db.rec_profiles CASCADE;
         </sql>
 
         <createTable tableName="rec_jobs" schemaName="rec_db">
@@ -102,25 +76,6 @@
             ON rec_db.rec_jobs
             USING gin (metadata jsonb_path_ops);
         </sql>
-
-        <createTable tableName="rec_profiles" schemaName="rec_db">
-            <column name="user_id" type="bigint">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="company_id" type="bigint"/>
-            <column name="summary" type="text"/>
-            <column name="preferences" type="jsonb"/>
-            <column name="embedding" type="vector(768)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="updated_at" type="timestamptz" defaultValueComputed="now()">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <createIndex indexName="idx_rec_profiles_updated_at" schemaName="rec_db" tableName="rec_profiles">
-            <column name="updated_at"/>
-        </createIndex>
     </changeSet>
 
 </databaseChangeLog>

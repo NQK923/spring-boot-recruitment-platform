@@ -40,17 +40,6 @@ public class RecommendationAdminController {
             .thenReturn(ResponseEntity.accepted().body("Đã cập nhật embedding cho job " + jobId));
     }
 
-    @PostMapping("/profile/{userId}")
-    public Mono<ResponseEntity<String>> reindexProfile(@PathVariable Long userId,
-                                                       Authentication authentication,
-                                                       ServerHttpRequest request) {
-        ensureAdmin(authentication);
-        String token = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        return Mono.fromRunnable(() -> indexer.upsertProfile(userId, token))
-            .subscribeOn(Schedulers.boundedElastic())
-            .thenReturn(ResponseEntity.accepted().body("Đã cập nhật embedding hồ sơ cho user " + userId));
-    }
-
     private void ensureAdmin(Authentication authentication) {
         if (authentication == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Chỉ admin mới được reindex dữ liệu.");

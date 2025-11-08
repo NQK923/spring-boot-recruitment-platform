@@ -28,24 +28,7 @@ public class RecJobRepository {
             updated_at = now()
         """;
 
-    private static final String SEARCH_SQL_WITH_PROFILE = """
-        SELECT job_id,
-               metadata,
-               0.50 * (1 - (embedding <=> ?::vector)) +
-               0.35 * COALESCE(1 - (embedding <=> ?::vector), 0) +
-               0.15 * EXP(
-                   - GREATEST(
-                       EXTRACT(EPOCH FROM (now() - COALESCE((metadata->>'postedAt')::timestamptz, updated_at))) / 86400,
-                       0
-                   ) / ?
-               ) AS score
-        FROM rec_db.rec_jobs
-        WHERE COALESCE(UPPER(metadata->>'status'), 'OPEN') IN ('OPEN', 'PUBLISHED', 'ACTIVE')
-        ORDER BY score DESC
-        LIMIT ?
-        """;
-
-    private static final String SEARCH_SQL_NO_PROFILE = """
+    private static final String SEARCH_SQL = """
         SELECT job_id,
                metadata,
                0.50 * (1 - (embedding <=> ?::vector)) +
@@ -92,22 +75,15 @@ public class RecJobRepository {
         });
     }
 
-    public List<JobHit> search(int topK, float[] queryVector, float[] profileVector, int freshnessDays) {
+    public List<JobHit> search(int topK, float[] queryVector, int freshnessDays) {
         Assert.isTrue(topK > 0, "topK phải lớn hơn 0");
         Assert.notNull(queryVector, "queryVector bắt buộc");
 
-        boolean hasProfileVector = profileVector != null && profileVector.length > 0;
-        String sql = hasProfileVector ? SEARCH_SQL_WITH_PROFILE : SEARCH_SQL_NO_PROFILE;
-
         return jdbcTemplate.query(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(SEARCH_SQL);
             ps.setObject(1, PgVectorUtil.toDatabaseVector(queryVector), Types.OTHER);
-            int paramIndex = 2;
-            if (hasProfileVector) {
-                ps.setObject(paramIndex++, PgVectorUtil.toDatabaseVector(profileVector), Types.OTHER);
-            }
-            ps.setInt(paramIndex++, Math.max(freshnessDays, 1));
-            ps.setInt(paramIndex, topK);
+            ps.setInt(2, Math.max(freshnessDays, 1));
+            ps.setInt(3, topK);
             return ps;
         }, this::mapJobHit);
     }

@@ -101,7 +101,7 @@ public class ChatController {
         }
 
         if (intentGuard.isRecommendationIntent(latestText)) {
-            return handleRecommendationResponse(latestText, authentication, serverRequest);
+            return handleRecommendationResponse(latestText, serverRequest);
         }
 
         ChatLanguage language = ChatLanguage.fromCode(request.getLanguage());
@@ -134,7 +134,7 @@ public class ChatController {
         }
 
         if (intentGuard.isRecommendationIntent(question)) {
-            return streamRecommendations(question, authentication, serverRequest);
+            return streamRecommendations(question, serverRequest);
         }
 
         List<ChatHistoryMessage> contextMessages = decodeContext(encodedContext);
@@ -155,10 +155,9 @@ public class ChatController {
             .concatWithValues(ServerSentEvent.builder("").event("done").build());
     }
 
-    private Mono<ChatResponse> handleRecommendationResponse(String query, Authentication authentication, ServerHttpRequest request) {
-        Long userId = resolveUserId(authentication, request);
+    private Mono<ChatResponse> handleRecommendationResponse(String query, ServerHttpRequest request) {
         String bearerToken = extractBearerToken(request);
-        return jobRecommendationService.recommend(userId, query, bearerToken)
+        return jobRecommendationService.recommend(query, bearerToken)
             .map(suggestions -> {
                 if (suggestions.isEmpty()) {
                     return new ChatResponse("Mình chưa tìm được việc phù hợp. Bạn có thể cho mình biết rõ hơn về kỹ năng, chức danh, địa điểm và mức lương mong muốn nhé!");
@@ -167,11 +166,10 @@ public class ChatController {
             });
     }
 
-    private Flux<ServerSentEvent<String>> streamRecommendations(String query, Authentication authentication, ServerHttpRequest request) {
-        Long userId = resolveUserId(authentication, request);
+    private Flux<ServerSentEvent<String>> streamRecommendations(String query, ServerHttpRequest request) {
         String bearerToken = extractBearerToken(request);
         Flux<ServerSentEvent<String>> intro = Flux.just(ServerSentEvent.builder("Đang tìm việc phù hợp cho bạn...").event("message").build());
-        Flux<ServerSentEvent<String>> jobEvents = jobRecommendationService.recommendStream(userId, query, bearerToken)
+        Flux<ServerSentEvent<String>> jobEvents = jobRecommendationService.recommendStream(query, bearerToken)
             .map(suggestion -> ServerSentEvent.builder(writeJobEventPayload(suggestion)).event("job").build());
         Flux<ServerSentEvent<String>> jobOrFallback = jobEvents.switchIfEmpty(
             Flux.just(ServerSentEvent.builder("Mình chưa tìm thấy việc phù hợp. Bạn có thể mô tả rõ kỹ năng/chức danh, địa điểm hoặc mức lương mong muốn nhé!").event("message").build())
@@ -214,34 +212,6 @@ public class ChatController {
         }
     }
 
-    private Long resolveUserId(Authentication authentication, ServerHttpRequest request) {
-        if (authentication != null) {
-            Object credentials = authentication.getCredentials();
-            if (credentials instanceof Jwt jwt) {
-                Long parsed = parseUserId(jwt.getSubject());
-                if (parsed != null) {
-                    return parsed;
-                }
-            }
-            Long parsed = parseUserId(authentication.getName());
-            if (parsed != null) {
-                return parsed;
-            }
-        }
-        String headerUserId = request.getHeaders().getFirst("X-User-ID");
-        return parseUserId(headerUserId);
-    }
-
-    private Long parseUserId(String value) {
-        if (!StringUtils.hasText(value)) {
-            return null;
-        }
-        try {
-            return Long.parseLong(value.trim());
-        } catch (NumberFormatException ex) {
-            return null;
-        }
-    }
     private String extractBearerToken(ServerHttpRequest request) {
         String header = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         return StringUtils.hasText(header) ? header : null;
@@ -337,9 +307,6 @@ public class ChatController {
         return "anonymous";
     }
 }
-
-
-
 
 
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.recruitment.platform.chat.config.RecommendationProperties;
 import com.recruitment.platform.chat.recommendation.model.JobSuggestion;
 import com.recruitment.platform.chat.recommendation.repository.RecJobRepository;
-import com.recruitment.platform.chat.recommendation.repository.RecProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -21,27 +20,22 @@ import java.util.stream.Collectors;
 public class RecommendationEngine {
 
     private final RecJobRepository jobRepository;
-    private final RecProfileRepository profileRepository;
     private final EmbeddingService embeddingService;
     private final RecommendationProperties properties;
 
     public RecommendationEngine(RecJobRepository jobRepository,
-                                RecProfileRepository profileRepository,
                                 EmbeddingService embeddingService,
                                 RecommendationProperties properties) {
         this.jobRepository = jobRepository;
-        this.profileRepository = profileRepository;
         this.embeddingService = embeddingService;
         this.properties = properties;
     }
 
-    public List<JobSuggestion> recommend(Long userId, String userQuery, int desiredFinalK) {
+    public List<JobSuggestion> recommend(String userQuery, int desiredFinalK) {
         float[] queryVector = embeddingService.embedText(userQuery);
-        float[] profileVector = profileRepository.findEmbedding(userId).orElse(null);
         List<RecJobRepository.JobHit> hits = jobRepository.search(
             properties.getTopK(),
             queryVector,
-            profileVector,
             properties.getFreshnessDays()
         );
         if (hits.isEmpty()) {
