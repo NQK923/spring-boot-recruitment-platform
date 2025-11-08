@@ -40,7 +40,7 @@ public class RecJobRepository {
                    ) / ?
                ) AS score
         FROM rec_db.rec_jobs
-        WHERE COALESCE(metadata->>'status', 'OPEN') = 'OPEN'
+        WHERE COALESCE(UPPER(metadata->>'status'), 'OPEN') IN ('OPEN', 'PUBLISHED', 'ACTIVE')
         ORDER BY score DESC
         LIMIT ?
         """;
@@ -56,7 +56,7 @@ public class RecJobRepository {
                    ) / ?
                ) AS score
         FROM rec_db.rec_jobs
-        WHERE COALESCE(metadata->>'status', 'OPEN') = 'OPEN'
+        WHERE COALESCE(UPPER(metadata->>'status'), 'OPEN') IN ('OPEN', 'PUBLISHED', 'ACTIVE')
         ORDER BY score DESC
         LIMIT ?
         """;

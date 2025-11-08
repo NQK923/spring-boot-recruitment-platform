@@ -85,7 +85,7 @@
             <column name="metadata" type="jsonb">
                 <constraints nullable="false"/>
             </column>
-            <column name="embedding" type="vector(3072)">
+            <column name="embedding" type="vector(768)">
                 <constraints nullable="false"/>
             </column>
             <column name="updated_at" type="timestamptz" defaultValueComputed="now()">
@@ -110,7 +110,7 @@
             <column name="company_id" type="bigint"/>
             <column name="summary" type="text"/>
             <column name="preferences" type="jsonb"/>
-            <column name="embedding" type="vector(3072)">
+            <column name="embedding" type="vector(768)">
                 <constraints nullable="false"/>
             </column>
             <column name="updated_at" type="timestamptz" defaultValueComputed="now()">

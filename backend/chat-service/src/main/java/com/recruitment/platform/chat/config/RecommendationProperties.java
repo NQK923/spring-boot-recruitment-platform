@@ -1,5 +1,7 @@
 package com.recruitment.platform.chat.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -7,6 +9,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 
+@Setter
+@Getter
 @Validated
 @ConfigurationProperties(prefix = "app.recommend")
 public class RecommendationProperties {
@@ -24,35 +28,4 @@ public class RecommendationProperties {
     @Positive
     private int bootstrapSize = 50;
 
-    public int getTopK() {
-        return topK;
-    }
-
-    public void setTopK(int topK) {
-        this.topK = topK;
-    }
-
-    public int getFinalK() {
-        return finalK;
-    }
-
-    public void setFinalK(int finalK) {
-        this.finalK = finalK;
-    }
-
-    public int getFreshnessDays() {
-        return freshnessDays;
-    }
-
-    public void setFreshnessDays(int freshnessDays) {
-        this.freshnessDays = freshnessDays;
-    }
-
-    public int getBootstrapSize() {
-        return bootstrapSize;
-    }
-
-    public void setBootstrapSize(int bootstrapSize) {
-        this.bootstrapSize = bootstrapSize;
-    }
 }

@@ -128,8 +128,8 @@ public class ChatController {
 
         if (!intentGuard.isAllowed(question)) {
             return Flux.just(
-                ServerSentEvent.<String>builder(OUT_OF_SCOPE_RESPONSE).event("message").build(),
-                ServerSentEvent.<String>builder("").event("done").build()
+                ServerSentEvent.builder(OUT_OF_SCOPE_RESPONSE).event("message").build(),
+                ServerSentEvent.builder("").event("done").build()
             );
         }
 
@@ -147,12 +147,12 @@ public class ChatController {
         ChatHistoryMessage currentQuestion = new ChatHistoryMessage("user", question);
 
         return chatService.streamResponse(trimmed, currentQuestion, chatLanguage)
-            .map(chunk -> ServerSentEvent.<String>builder(chunk).event("message").build())
+            .map(chunk -> ServerSentEvent.builder(chunk).event("message").build())
             .onErrorResume(error -> {
                 LOG.error("Streaming chat failed", error);
-                return Flux.just(ServerSentEvent.<String>builder("Xin lỗi, hệ thống đang bận. Vui lòng thử lại sau.").event("message").build());
+                return Flux.just(ServerSentEvent.builder("Xin lỗi, hệ thống đang bận. Vui lòng thử lại sau.").event("message").build());
             })
-            .concatWithValues(ServerSentEvent.<String>builder("").event("done").build());
+            .concatWithValues(ServerSentEvent.builder("").event("done").build());
     }
 
     private Mono<ChatResponse> handleRecommendationResponse(String query, Authentication authentication, ServerHttpRequest request) {
@@ -170,13 +170,13 @@ public class ChatController {
     private Flux<ServerSentEvent<String>> streamRecommendations(String query, Authentication authentication, ServerHttpRequest request) {
         Long userId = resolveUserId(authentication, request);
         String bearerToken = extractBearerToken(request);
-        Flux<ServerSentEvent<String>> intro = Flux.just(ServerSentEvent.<String>builder("Đang tìm việc phù hợp cho bạn...").event("message").build());
+        Flux<ServerSentEvent<String>> intro = Flux.just(ServerSentEvent.builder("Đang tìm việc phù hợp cho bạn...").event("message").build());
         Flux<ServerSentEvent<String>> jobEvents = jobRecommendationService.recommendStream(userId, query, bearerToken)
-            .map(suggestion -> ServerSentEvent.<String>builder(writeJobEventPayload(suggestion)).event("job").build());
+            .map(suggestion -> ServerSentEvent.builder(writeJobEventPayload(suggestion)).event("job").build());
         Flux<ServerSentEvent<String>> jobOrFallback = jobEvents.switchIfEmpty(
-            Flux.just(ServerSentEvent.<String>builder("Mình chưa tìm thấy việc phù hợp. Bạn có thể mô tả rõ kỹ năng/chức danh, địa điểm hoặc mức lương mong muốn nhé!").event("message").build())
+            Flux.just(ServerSentEvent.builder("Mình chưa tìm thấy việc phù hợp. Bạn có thể mô tả rõ kỹ năng/chức danh, địa điểm hoặc mức lương mong muốn nhé!").event("message").build())
         );
-        Flux<ServerSentEvent<String>> done = Flux.just(ServerSentEvent.<String>builder("").event("done").build());
+        Flux<ServerSentEvent<String>> done = Flux.just(ServerSentEvent.builder("").event("done").build());
         return Flux.concat(intro, jobOrFallback, done);
     }
 
@@ -290,7 +290,8 @@ public class ChatController {
             } catch (IllegalArgumentException ex) {
                 decoded = Base64.getDecoder().decode(encodedContext);
             }
-            List<ChatHistoryMessage> history = objectMapper.readValue(decoded, new TypeReference<List<ChatHistoryMessage>>() {});
+            List<ChatHistoryMessage> history = objectMapper.readValue(decoded, new TypeReference<>() {
+            });
             return trimHistory(history);
         } catch (JsonProcessingException ex) {
             LOG.warn("Failed to decode chat context", ex);
