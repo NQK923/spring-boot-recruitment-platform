@@ -2,6 +2,7 @@ package com.recruitment.platform.job.service;
 
 import com.recruitment.platform.common.exception.ForbiddenException;
 import com.recruitment.platform.common.exception.NotFoundException;
+import com.recruitment.platform.job.client.ChatServiceClient;
 import com.recruitment.platform.job.client.CompanyServiceClient;
 import com.recruitment.platform.job.client.dto.CompanyStatusResponse;
 import com.recruitment.platform.job.dto.CreateJobPositionRequest;
@@ -43,13 +44,16 @@ public class JobPostingService {
     private final JobPostingRepository jobPostingRepository;
     private final JobPositionRepository jobPositionRepository;
     private final CompanyServiceClient companyServiceClient;
+    private final ChatServiceClient chatServiceClient;
 
     public JobPostingService(JobPostingRepository jobPostingRepository,
                              JobPositionRepository jobPositionRepository,
-                             CompanyServiceClient companyServiceClient) {
+                             CompanyServiceClient companyServiceClient,
+                             ChatServiceClient chatServiceClient) {
         this.jobPostingRepository = jobPostingRepository;
         this.jobPositionRepository = jobPositionRepository;
         this.companyServiceClient = companyServiceClient;
+        this.chatServiceClient = chatServiceClient;
     }
 
     @Transactional
@@ -71,7 +75,9 @@ public class JobPostingService {
             newJob.setJobPosition(jobPosition);
         }
 
-        return jobPostingRepository.save(newJob);
+        JobPosting saved = jobPostingRepository.save(newJob);
+        triggerRecommendationSync(saved);
+        return saved;
     }
 
     @Transactional
@@ -113,7 +119,9 @@ public class JobPostingService {
         }
 
         job.setUpdatedAt(Instant.now());
-        return jobPostingRepository.save(job);
+        JobPosting savedJob = jobPostingRepository.save(job);
+        triggerRecommendationSync(savedJob);
+        return savedJob;
     }
 
     public List<JobPosting> findJobsByCompany(Long companyId) {
@@ -303,6 +311,17 @@ public class JobPostingService {
         } catch (FeignException ex) {
             log.warn("Unable to fetch status for company {}", companyId, ex);
             return false;
+        }
+    }
+
+    private void triggerRecommendationSync(JobPosting jobPosting) {
+        if (jobPosting == null || jobPosting.getStatus() != JobStatus.PUBLISHED) {
+            return;
+        }
+        try {
+            chatServiceClient.reindexJob(jobPosting.getId());
+        } catch (Exception ex) {
+            log.warn("Không thể gọi chat-service để reindex job {}", jobPosting.getId(), ex);
         }
     }
 }

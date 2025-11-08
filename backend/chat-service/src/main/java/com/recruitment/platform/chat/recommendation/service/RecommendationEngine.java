@@ -1,4 +1,4 @@
-﻿package com.recruitment.platform.chat.recommendation.service;
+package com.recruitment.platform.chat.recommendation.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.recruitment.platform.chat.config.RecommendationProperties;
@@ -260,7 +260,8 @@ public class RecommendationEngine {
             return value;
         }
         return Character.toUpperCase(value.charAt(0)) + value.substring(1);
-    }\r\n\r\n    private boolean queryAsksForSalary(String query) {
+    }
+    private boolean queryAsksForSalary(String query) {
         if (!StringUtils.hasText(query)) {
             return false;
         }
