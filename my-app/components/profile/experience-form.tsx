@@ -33,6 +33,10 @@ const employmentOptions: Array<{ label: string; value: EmploymentType }> = [
 
 const initialState: ProfileFormState = {};
 
+const normalizeEmploymentType = (
+  value: Experience["employmentType"]
+): ExperienceInput["employmentType"] => value ?? "";
+
 export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
   const initial = useMemo(
     () =>
@@ -44,7 +48,7 @@ export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
             startDate: experience.startDate ?? "",
             endDate: experience.endDate ?? "",
             location: experience.location ?? "",
-            employmentType: experience.employmentType ?? "",
+            employmentType: normalizeEmploymentType(experience.employmentType),
             isCurrent: Boolean(experience.current),
             achievements: experience.achievements ?? "",
             techStack: experience.techStack ?? [],
@@ -198,7 +202,7 @@ export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
               label="Công nghệ / Công cụ chính"
               placeholder="Ví dụ: React, Spring Boot, OKR..."
               values={experience.techStack}
-              onChange={(stack) => handleChange(index, "techStack", stack)}
+              onChangeAction={(stack) => handleChange(index, "techStack", stack)}
               disabled={pending}
             />
 

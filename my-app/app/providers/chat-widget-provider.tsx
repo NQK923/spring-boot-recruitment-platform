@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, createContext, useContext, useEffect, useMemo, useReducer, useRef } from "react";
+import React, { Dispatch, createContext, useContext, useEffect, useMemo, useReducer, useRef } from "react";
 import type { ChatMessage } from "@/lib/chat";
 
 export type ChatStatus = "idle" | "loading" | "streaming" | "error";
@@ -18,6 +18,7 @@ type ChatWidgetState = {
   info: string | null;
   messages: ChatMessage[];
   isStreamingPreferred: boolean;
+  storageHydrated: boolean;
 };
 
 type HydratePayload = Partial<Pick<ChatWidgetState, "language" | "messages" | "isStreamingPreferred">>;
@@ -47,6 +48,7 @@ const initialState: ChatWidgetState = {
   info: null,
   messages: [],
   isStreamingPreferred: true,
+  storageHydrated: false,
 };
 
 function reducer(state: ChatWidgetState, action: ChatWidgetAction): ChatWidgetState {
@@ -55,6 +57,7 @@ function reducer(state: ChatWidgetState, action: ChatWidgetAction): ChatWidgetSt
       return {
         ...state,
         ...action.payload,
+        storageHydrated: true,
       };
     }
     case "OPEN": {
@@ -180,31 +183,31 @@ export function ChatWidgetProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !hydratedRef.current) {
+    if (typeof window === "undefined" || !state.storageHydrated) {
       return;
     }
     window.sessionStorage.setItem(CHAT_HISTORY_STORAGE_KEY, JSON.stringify(state.messages));
-  }, [state.messages]);
+  }, [state.messages, state.storageHydrated]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !hydratedRef.current) {
+    if (typeof window === "undefined" || !state.storageHydrated) {
       return;
     }
     window.localStorage.setItem(CHAT_LANGUAGE_STORAGE_KEY, state.language);
-  }, [state.language]);
+  }, [state.language, state.storageHydrated]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !hydratedRef.current) {
+    if (typeof window === "undefined" || !state.storageHydrated) {
       return;
     }
     window.localStorage.setItem(CHAT_STREAM_PREF_STORAGE_KEY, state.isStreamingPreferred ? "1" : "0");
-  }, [state.isStreamingPreferred]);
+  }, [state.isStreamingPreferred, state.storageHydrated]);
 
   const value = useMemo<ChatWidgetStoreValue>(
     () => ({
       state,
       dispatch,
-      storageHydrated: hydratedRef.current,
+      storageHydrated: state.storageHydrated,
       storageKeys: {
         messages: CHAT_HISTORY_STORAGE_KEY,
         language: CHAT_LANGUAGE_STORAGE_KEY,

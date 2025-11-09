@@ -269,8 +269,8 @@ function ChatWidgetInner() {
                 status={status}
                 error={error}
                 retryAvailable={retryAvailable}
-                onRetry={retryLastAttempt}
-                sendMessage={sendMessage}
+                onRetryAction={retryLastAttempt}
+                sendMessageAction={sendMessage}
               />
             </div>
             {info ? <Toast message={info} /> : null}
@@ -278,9 +278,9 @@ function ChatWidgetInner() {
               <Composer
                 status={status}
                 language={language}
-                sendMessage={sendMessage}
+                sendMessageAction={sendMessage}
                 retryAvailable={retryAvailable}
-                onRetry={retryLastAttempt}
+                retryAction={retryLastAttempt}
               />
             </div>
             <WidgetFooter

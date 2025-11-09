@@ -62,7 +62,7 @@ export function MobileNav({ items }: MobileNavProps) {
                   </button>
                 </div>
                 <div className="mt-6">
-                  <SiteNavbar items={items} orientation="vertical" onNavigate={() => setOpen(false)} />
+                  <SiteNavbar items={items} orientation="vertical" onNavigateAction={() => setOpen(false)} />
                 </div>
               </div>
             </div>,

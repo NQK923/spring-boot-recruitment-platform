@@ -390,11 +390,6 @@ function JobMetaChip({ label }: { label: string }) {
     </span>
   );
 }
-
-function pluralize(count: number) {
-  return count === 1 ? "" : "s";
-}
-
 function normalize(value: string | null | undefined) {
   if (!value) {
     return null;

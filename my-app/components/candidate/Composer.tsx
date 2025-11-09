@@ -1,15 +1,15 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import type { ChatStatus } from "@/app/providers/chat-widget-provider";
 import { cx } from "@/lib/cx";
 
 type ComposerProps = {
   status: ChatStatus;
   language: "vi" | "en";
-  sendMessage: (text: string) => void | Promise<void>;
+  sendMessageAction: (text: string) => void | Promise<void>;
   retryAvailable: boolean;
-  onRetry: () => void;
+  retryAction: () => void;
 };
 
 const PLACEHOLDER = {
@@ -20,7 +20,13 @@ const PLACEHOLDER = {
 const SEND_LABEL = { vi: "Gửi", en: "Gửi" } as const;
 const RETRY_LABEL = { vi: "Thử lại", en: "Thử lại" } as const;
 
-export function Composer({ status, language, sendMessage, retryAvailable, onRetry }: ComposerProps) {
+export function Composer({
+  status,
+  language,
+  sendMessageAction,
+  retryAvailable,
+  retryAction,
+}: ComposerProps) {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const disabled = status === "loading" || status === "streaming";
@@ -54,8 +60,8 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
     }
     const text = trimmed;
     resetComposer();
-    void sendMessage(text);
-  }, [canSend, resetComposer, sendMessage, trimmed]);
+    void sendMessageAction(text);
+  }, [canSend, resetComposer, sendMessageAction, trimmed]);
 
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -98,6 +104,15 @@ export function Composer({ status, language, sendMessage, retryAvailable, onRetr
           autoCorrect="on"
         />
       </div>
+      {retryAvailable ? (
+        <button
+          type="button"
+          onClick={retryAction}
+          className="rounded-full border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-slate-400 hover:text-slate-800"
+        >
+          {RETRY_LABEL[language]}
+        </button>
+      ) : null}
       <button
         type="submit"
         disabled={!canSend}

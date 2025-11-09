@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { Panel } from "@/components/ui/panel";
 import { UpdateCompanyForm } from "@/components/company-admin/update-company-form";
 import { InviteMemberForm } from "@/components/company-admin/invite-member-form";
 import { CompanyMembersPanel } from "@/components/company-admin/company-members-panel";

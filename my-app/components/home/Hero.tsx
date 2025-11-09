@@ -10,22 +10,6 @@ const STATS = [
   { value: "30%", label: "Giảm thời gian phản hồi" },
   { value: "14 ngày", label: "Chu trình tuyển trung bình" },
 ] as const;
-
-const HIGHLIGHTS = [
-  {
-    title: "Đăng job đa kênh",
-    description: "Đẩy tin lên Career site, mạng xã hội và TalentFlow chỉ trong một thao tác.",
-  },
-  {
-    title: "Phối hợp phỏng vấn",
-    description: "Kéo thả lịch, mời hội đồng phỏng vấn, nhận feedback theo thời gian thực.",
-  },
-  {
-    title: "Đo lường chính xác",
-    description: "Dashboard trực quan: tỷ lệ chuyển đổi, nguồn ứng viên và hiệu suất recruiter.",
-  },
-] as const;
-
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pb-20 pt-24 md:pb-24 md:pt-28">

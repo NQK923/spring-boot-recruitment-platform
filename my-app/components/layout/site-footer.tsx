@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { ROUTES } from "@/lib/routes";
 

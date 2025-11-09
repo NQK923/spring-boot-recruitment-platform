@@ -49,7 +49,7 @@ export function Testimonials() {
                         >
                             <div className="flex items-center justify-between">
                 <span className="text-4xl leading-none text-purple-400" aria-hidden="true">
-                  "
+                  &#34;
                 </span>
                                 <div className="flex items-center gap-0.5 text-base text-amber-400" aria-hidden="true">
                                     {Array.from({ length: 5 }).map((_, index) => (

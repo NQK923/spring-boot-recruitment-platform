@@ -11,8 +11,8 @@ type MessageListProps = {
   status: ChatStatus;
   error: string | null;
   retryAvailable: boolean;
-  onRetry: () => void;
-  sendMessage: (text: string) => void | Promise<void>;
+  retryAction: () => void;
+  sendMessageAction: (text: string) => void | Promise<void>;
 };
 
 const QUICK_PROMPTS: Array<{ label: string; prompt: string }> = [
@@ -49,8 +49,8 @@ export function MessageList({
   status,
   error,
   retryAvailable,
-  onRetry,
-  sendMessage,
+  retryAction,
+  sendMessageAction,
 }: MessageListProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
@@ -120,7 +120,7 @@ export function MessageList({
               <button
                 key={item.prompt}
                 type="button"
-                onClick={() => sendMessage(item.prompt)}
+              onClick={() => sendMessageAction(item.prompt)}
                 disabled={status === "loading" || status === "streaming"}
                 className={cx(
                   "cursor-pointer rounded-xl border-2 border-blue-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm transition-all hover:border-indigo-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-indigo-700 hover:shadow-md",
@@ -151,7 +151,7 @@ export function MessageList({
             <div className="flex justify-center pt-2">
               <button
                 type="button"
-                onClick={onRetry}
+                onClick={retryAction}
                 className="cursor-pointer rounded-xl border-2 border-blue-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all hover:border-indigo-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-indigo-700 hover:shadow-md"
               >
                 🔄 Thử lại

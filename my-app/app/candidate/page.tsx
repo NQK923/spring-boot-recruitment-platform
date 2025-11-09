@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { AvatarUploader } from "@/components/profile/avatar-uploader";
 import { Container } from "@/components/ui/container";
-import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";

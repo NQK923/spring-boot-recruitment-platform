@@ -21,13 +21,16 @@ const emptySkill: SkillInput = { skillName: "", proficiency: "", years: "" };
 
 const initialState: ProfileFormState = {};
 
+const normalizeProficiency = (value: Skill["proficiency"]): SkillInput["proficiency"] =>
+  value ?? "";
+
 export function SkillsForm({ skills }: SkillsFormProps) {
   const initial = useMemo(
     () =>
       skills.length > 0
         ? skills.map((skill) => ({
             skillName: skill.skillName ?? "",
-            proficiency: skill.proficiency ?? "",
+            proficiency: normalizeProficiency(skill.proficiency),
             years: skill.years?.toString() ?? "",
           }))
         : [emptySkill],

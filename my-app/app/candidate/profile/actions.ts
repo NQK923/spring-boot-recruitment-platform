@@ -344,41 +344,52 @@ export async function createProjectAction(
   return { success: "Đã thêm dự án." };
 }
 
-export function updateProjectAction(projectId: number) {
-  return async function (
-    _prevState: ProfileFormState,
-    formData: FormData
-  ): Promise<ProfileFormState> {
-    const payload = buildProjectPayload(formData);
+export async function updateProjectAction(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const projectIdValue = formData.get("projectId");
+  const projectId = Number(projectIdValue);
+  if (!Number.isFinite(projectId)) {
+    return { error: "Thiếu thông tin dự án cần cập nhật." };
+  }
 
-    try {
-      await apiFetch(`/api/profiles/me/projects/${projectId}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Không thể cập nhật dự án.";
-      return { error: message };
-    }
+  const payload = buildProjectPayload(formData);
 
-    revalidateCandidateViews();
-    return { success: "Đã lưu dự án." };
-  };
+  try {
+    await apiFetch(`/api/profiles/me/projects/${projectId}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Không thể cập nhật dự án.";
+    return { error: message };
+  }
+
+  revalidateCandidateViews();
+  return { success: "Đã lưu dự án." };
 }
 
-export function deleteProjectAction(projectId: number) {
-  return async function (): Promise<ProfileFormState> {
-    try {
-      await apiFetch(`/api/profiles/me/projects/${projectId}`, { method: "DELETE" });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Không thể xoá dự án vào lúc này.";
-      return { error: message };
-    }
-    revalidateCandidateViews();
-    return { success: "Đã xoá dự án." };
-  };
+export async function deleteProjectAction(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const projectIdValue = formData.get("projectId");
+  const projectId = Number(projectIdValue);
+  if (!Number.isFinite(projectId)) {
+    return { error: "Thiếu thông tin dự án cần xoá." };
+  }
+
+  try {
+    await apiFetch(`/api/profiles/me/projects/${projectId}`, { method: "DELETE" });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Không thể xoá dự án vào lúc này.";
+    return { error: message };
+  }
+  revalidateCandidateViews();
+  return { success: "Đã xoá dự án." };
 }
 
 export async function createCertificationAction(
@@ -402,43 +413,54 @@ export async function createCertificationAction(
   return { success: "Đã thêm chứng chỉ." };
 }
 
-export function updateCertificationAction(certificationId: number) {
-  return async function (
-    _prevState: ProfileFormState,
-    formData: FormData
-  ): Promise<ProfileFormState> {
-    const payload = buildCertificationPayload(formData);
+export async function updateCertificationAction(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const certificationIdValue = formData.get("certificationId");
+  const certificationId = Number(certificationIdValue);
+  if (!Number.isFinite(certificationId)) {
+    return { error: "Thiếu thông tin chứng chỉ cần cập nhật." };
+  }
 
-    try {
-      await apiFetch(`/api/profiles/me/certifications/${certificationId}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Không thể cập nhật chứng chỉ.";
-      return { error: message };
-    }
+  const payload = buildCertificationPayload(formData);
 
-    revalidateCandidateViews();
-    return { success: "Đã lưu chứng chỉ." };
-  };
+  try {
+    await apiFetch(`/api/profiles/me/certifications/${certificationId}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Không thể cập nhật chứng chỉ.";
+    return { error: message };
+  }
+
+  revalidateCandidateViews();
+  return { success: "Đã lưu chứng chỉ." };
 }
 
-export function deleteCertificationAction(certificationId: number) {
-  return async function (): Promise<ProfileFormState> {
-    try {
-      await apiFetch(`/api/profiles/me/certifications/${certificationId}`, {
-        method: "DELETE",
-      });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Không thể xoá chứng chỉ.";
-      return { error: message };
-    }
-    revalidateCandidateViews();
-    return { success: "Đã xoá chứng chỉ." };
-  };
+export async function deleteCertificationAction(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const certificationIdValue = formData.get("certificationId");
+  const certificationId = Number(certificationIdValue);
+  if (!Number.isFinite(certificationId)) {
+    return { error: "Thiếu thông tin chứng chỉ cần xoá." };
+  }
+
+  try {
+    await apiFetch(`/api/profiles/me/certifications/${certificationId}`, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Không thể xoá chứng chỉ.";
+    return { error: message };
+  }
+  revalidateCandidateViews();
+  return { success: "Đã xoá chứng chỉ." };
 }
 
 export async function createLanguageAction(
@@ -462,43 +484,54 @@ export async function createLanguageAction(
   return { success: "Đã thêm ngoại ngữ." };
 }
 
-export function updateLanguageAction(languageId: number) {
-  return async function (
-    _prevState: ProfileFormState,
-    formData: FormData
-  ): Promise<ProfileFormState> {
-    const payload = buildLanguagePayload(formData);
+export async function updateLanguageAction(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const languageIdValue = formData.get("languageId");
+  const languageId = Number(languageIdValue);
+  if (!Number.isFinite(languageId)) {
+    return { error: "Thiếu thông tin ngoại ngữ cần cập nhật." };
+  }
 
-    try {
-      await apiFetch(`/api/profiles/me/languages/${languageId}`, {
-        method: "PUT",
-        body: JSON.stringify(payload),
-      });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Không thể cập nhật ngoại ngữ.";
-      return { error: message };
-    }
+  const payload = buildLanguagePayload(formData);
 
-    revalidateCandidateViews();
-    return { success: "Đã lưu ngoại ngữ." };
-  };
+  try {
+    await apiFetch(`/api/profiles/me/languages/${languageId}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Không thể cập nhật ngoại ngữ.";
+    return { error: message };
+  }
+
+  revalidateCandidateViews();
+  return { success: "Đã lưu ngoại ngữ." };
 }
 
-export function deleteLanguageAction(languageId: number) {
-  return async function (): Promise<ProfileFormState> {
-    try {
-      await apiFetch(`/api/profiles/me/languages/${languageId}`, {
-        method: "DELETE",
-      });
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Không thể xoá ngoại ngữ.";
-      return { error: message };
-    }
-    revalidateCandidateViews();
-    return { success: "Đã xoá ngoại ngữ." };
-  };
+export async function deleteLanguageAction(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const languageIdValue = formData.get("languageId");
+  const languageId = Number(languageIdValue);
+  if (!Number.isFinite(languageId)) {
+    return { error: "Thiếu thông tin ngoại ngữ cần xoá." };
+  }
+
+  try {
+    await apiFetch(`/api/profiles/me/languages/${languageId}`, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Không thể xoá ngoại ngữ.";
+    return { error: message };
+  }
+  revalidateCandidateViews();
+  return { success: "Đã xoá ngoại ngữ." };
 }
 
 function buildProjectPayload(formData: FormData) {

@@ -22,7 +22,7 @@ const defaultNavigation: NavItem[] = [
 type SiteNavbarProps = {
   className?: string;
   orientation?: "horizontal" | "vertical";
-  onNavigate?: () => void;
+  onNavigateAction?: () => void;
   items?: NavItem[];
   variant?: "default" | "inverse";
 };
@@ -30,7 +30,7 @@ type SiteNavbarProps = {
 export function SiteNavbar({
   className,
   orientation = "horizontal",
-  onNavigate,
+  onNavigateAction,
   items,
   variant = "default",
 }: SiteNavbarProps) {
@@ -168,7 +168,7 @@ export function SiteNavbar({
           ? matchesBase && (activeHash === targetHash || (!activeHash && anchor === "overview"))
           : matchesBase;
         const handleClick = () => {
-          onNavigate?.();
+          onNavigateAction?.();
           if (targetHash) {
             setActiveHash(targetHash);
           } else {
