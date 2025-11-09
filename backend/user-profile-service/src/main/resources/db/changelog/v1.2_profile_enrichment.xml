@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20241109-01-extend-profiles" author="codex">
+        <addColumn tableName="profiles">
+            <column name="email_for_cv" type="VARCHAR(255)"/>
+            <column name="location" type="VARCHAR(255)"/>
+            <column name="website" type="VARCHAR(512)"/>
+            <column name="linkedin" type="VARCHAR(512)"/>
+            <column name="github" type="VARCHAR(512)"/>
+            <column name="portfolio" type="VARCHAR(512)"/>
+            <column name="years_of_experience" type="INT"/>
+            <column name="desired_position" type="VARCHAR(255)"/>
+            <column name="work_authorization" type="VARCHAR(128)"/>
+            <column name="open_to_relocate" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="preferred_cv_language" type="VARCHAR(8)" defaultValue="vi"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20241109-02-extend-nested-sections" author="codex">
+        <addColumn tableName="experiences">
+            <column name="location" type="VARCHAR(255)"/>
+            <column name="employment_type" type="VARCHAR(32)"/>
+            <column name="is_current" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="achievements" type="TEXT"/>
+            <column name="tech_stack" type="TEXT"/>
+        </addColumn>
+
+        <addColumn tableName="education">
+            <column name="major" type="VARCHAR(255)"/>
+            <column name="gpa" type="NUMERIC(3,2)"/>
+            <column name="honors" type="TEXT"/>
+            <column name="activities" type="TEXT"/>
+        </addColumn>
+
+        <addColumn tableName="skills">
+            <column name="proficiency" type="VARCHAR(16)"/>
+            <column name="years" type="INT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20241109-03-create-projects" author="codex">
+        <createTable tableName="projects">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="profile_user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_projects_profile"
+                            references="profiles(user_id)" deleteCascade="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(255)"/>
+            <column name="summary" type="TEXT"/>
+            <column name="responsibilities" type="TEXT"/>
+            <column name="achievements" type="TEXT"/>
+            <column name="tech_stack" type="TEXT"/>
+            <column name="project_url" type="VARCHAR(512)"/>
+            <column name="repo_url" type="VARCHAR(512)"/>
+            <column name="start_date" type="DATE"/>
+            <column name="end_date" type="DATE"/>
+            <column name="is_current" type="BOOLEAN" defaultValueBoolean="false"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20241109-04-create-certifications" author="codex">
+        <createTable tableName="certifications">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="profile_user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_certifications_profile"
+                            references="profiles(user_id)" deleteCascade="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="issuer" type="VARCHAR(255)"/>
+            <column name="issue_date" type="DATE"/>
+            <column name="expire_date" type="DATE"/>
+            <column name="credential_id" type="VARCHAR(255)"/>
+            <column name="credential_url" type="VARCHAR(512)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20241109-05-create-languages" author="codex">
+        <createTable tableName="languages">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="profile_user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_languages_profile"
+                            references="profiles(user_id)" deleteCascade="true"/>
+            </column>
+            <column name="language" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="proficiency" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
