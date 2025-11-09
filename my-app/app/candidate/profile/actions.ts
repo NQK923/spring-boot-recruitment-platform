@@ -211,31 +211,6 @@ export async function uploadCvAction(
   return { success: "Đã tải lên CV mới." };
 }
 
-export async function generateCvAction(
-  _prevState: ProfileFormState,
-  formData: FormData
-): Promise<ProfileFormState> {
-  const versionName = String(formData.get("generatedVersionName") ?? "").trim();
-
-  if (!versionName) {
-    return { error: "Vui lòng đặt tên cho phiên bản CV được tạo." };
-  }
-
-  try {
-    await apiFetch("/api/profiles/me/cvs/generate", {
-      method: "POST",
-      body: JSON.stringify({ versionName }),
-    });
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Không thể tạo CV tự động vào lúc này.";
-    return { error: message };
-  }
-
-  revalidateCandidateViews();
-  return { success: "Đã thêm bản nháp CV mới." };
-}
-
 export async function updateExperiencesAction(
   _prevState: ProfileFormState,
   formData: FormData

@@ -32,7 +32,6 @@ import com.recruitment.platform.userprofile.repository.CvRepository;
 import com.recruitment.platform.userprofile.repository.ProfileLanguageRepository;
 import com.recruitment.platform.userprofile.repository.ProfileRepository;
 import com.recruitment.platform.userprofile.repository.ProjectRepository;
-import com.recruitment.platform.userprofile.service.prompt.PromptFactory;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +73,6 @@ public class ProfileService {
     private final ProfileLanguageRepository profileLanguageRepository;
     private final ApplicationServiceClient applicationServiceClient;
     private final FileStorageClient fileStorageClient;
-    private final PromptFactory promptFactory;
 
     public ProfileService(ProfileRepository profileRepository,
                           CvRepository cvRepository,
@@ -82,8 +80,7 @@ public class ProfileService {
                           CertificationRepository certificationRepository,
                           ProfileLanguageRepository profileLanguageRepository,
                           ApplicationServiceClient applicationServiceClient,
-                          FileStorageClient fileStorageClient,
-                          PromptFactory promptFactory) {
+                          FileStorageClient fileStorageClient) {
         this.profileRepository = profileRepository;
         this.cvRepository = cvRepository;
         this.projectRepository = projectRepository;
@@ -91,7 +88,6 @@ public class ProfileService {
         this.profileLanguageRepository = profileLanguageRepository;
         this.applicationServiceClient = applicationServiceClient;
         this.fileStorageClient = fileStorageClient;
-        this.promptFactory = promptFactory;
     }
 
     public void createProfileForNewUser(UserRegisteredEvent event) {
@@ -236,22 +232,6 @@ public class ProfileService {
                 .sorted(Comparator.comparing(Cv::getCreatedAt).reversed())
                 .map(this::mapCv)
                 .toList();
-    }
-
-    @Transactional
-    public CvResponse generateCv(Long userId, String versionName) {
-        Profile profile = getOrCreateProfileEntity(userId);
-        String promptPayload = promptFactory.buildCvPrompt(profile);
-        log.debug("Đã tạo prompt CV dài {} ký tự cho user {}", promptPayload.length(), userId);
-
-        Cv cv = new Cv();
-        cv.setProfile(profile);
-        cv.setVersionName(versionName);
-        cv.setDefault(false);
-
-        Cv saved = cvRepository.save(cv);
-        profile.getCvs().add(saved);
-        return mapCv(saved);
     }
 
     public boolean recruiterCanAccessCandidate(Long candidateId, Long companyId) {

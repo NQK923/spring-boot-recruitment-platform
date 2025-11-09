@@ -2,7 +2,7 @@ package com.recruitment.platform.userprofile.controller;
 
 import com.recruitment.platform.userprofile.dto.CertificationRequest;
 import com.recruitment.platform.userprofile.dto.CvResponse;
-import com.recruitment.platform.userprofile.dto.GenerateCvRequest;
+import com.recruitment.platform.userprofile.dto.CvGenerateRequest;
 import com.recruitment.platform.userprofile.dto.LanguageRequest;
 import com.recruitment.platform.userprofile.dto.ProfileResponse;
 import com.recruitment.platform.userprofile.dto.ProjectRequest;
@@ -12,6 +12,12 @@ import com.recruitment.platform.userprofile.model.Certification;
 import com.recruitment.platform.userprofile.model.ProfileLanguage;
 import com.recruitment.platform.userprofile.model.Project;
 import com.recruitment.platform.userprofile.service.ProfileService;
+import com.recruitment.platform.userprofile.service.cv.model.CvGenerationResult;
+import com.recruitment.platform.userprofile.service.cv.CvGeneratorService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,16 +36,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/profiles")
 public class ProfileController {
 
-    private final ProfileService profileService;
+    private static final Logger LOG = LoggerFactory.getLogger(ProfileController.class);
 
-    public ProfileController(ProfileService profileService) {
+    private final ProfileService profileService;
+    private final CvGeneratorService cvGeneratorService;
+
+    public ProfileController(ProfileService profileService,
+                             CvGeneratorService cvGeneratorService) {
         this.profileService = profileService;
+        this.cvGeneratorService = cvGeneratorService;
     }
 
     @GetMapping("/me")
@@ -102,13 +114,25 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.listCvs(userId));
     }
 
-    @PostMapping("/me/cvs/generate")
+    @PostMapping(value = "/me/cvs/generate", produces = MediaType.APPLICATION_PDF_VALUE)
     @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
-    public ResponseEntity<CvResponse> generateCv(@AuthenticationPrincipal Jwt jwt,
-                                                 @RequestBody GenerateCvRequest request) {
+    public ResponseEntity<byte[]> generateCv(@AuthenticationPrincipal Jwt jwt,
+                                             @RequestBody(required = false) CvGenerateRequest request,
+                                             @RequestParam(name = "save", defaultValue = "false") boolean save) {
         Long userId = Long.valueOf(jwt.getSubject());
-        CvResponse generatedCv = profileService.generateCv(userId, request.versionName());
-        return new ResponseEntity<>(generatedCv, HttpStatus.CREATED);
+        if (save) {
+            LOG.info("Chế độ save=true chưa được triển khai, chỉ trả file PDF cho user {}", userId);
+        }
+        CvGenerationResult result = cvGeneratorService.generate(userId, request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        ContentDisposition disposition = ContentDisposition.builder("attachment")
+                .filename(result.fileName(), StandardCharsets.UTF_8)
+                .build();
+        headers.setContentDisposition(disposition);
+        headers.add("Access-Control-Expose-Headers", "Content-Disposition");
+        headers.setContentLength(result.pdfBytes().length);
+        return new ResponseEntity<>(result.pdfBytes(), headers, HttpStatus.OK);
     }
 
     @GetMapping("/me/projects")

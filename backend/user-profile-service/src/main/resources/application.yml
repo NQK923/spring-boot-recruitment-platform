@@ -62,3 +62,19 @@ app:
   jwt:
     secret: ${APP_JWT_SECRET:}
 
+gemini:
+  api-key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:gemini-1.5-pro}
+  temperature: 0.7
+  top-k: 40
+  top-p: 0.9
+  prompt-version: v1
+
+cv:
+  default:
+    template: modern-1
+    language: vi
+    tone: neutral
+  pdf:
+    font-path: ${CV_FONT_PATH:/fonts/NotoSans-Regular.ttf}
+

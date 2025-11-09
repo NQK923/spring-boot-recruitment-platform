@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, MutableRefObject, PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { cx } from "@/lib/cx";
@@ -269,7 +269,7 @@ function ChatWidgetInner() {
                 status={status}
                 error={error}
                 retryAvailable={retryAvailable}
-                onRetryAction={retryLastAttempt}
+                retryAction={retryLastAttempt}
                 sendMessageAction={sendMessage}
               />
             </div>
