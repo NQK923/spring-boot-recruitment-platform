@@ -11,6 +11,7 @@ public record JobPostingPublicDto(
         String benefits,
         String salaryRange,
         Integer hiringQuantity,
+        Integer availableSlots,
         String location,
         String workType,
         String department,

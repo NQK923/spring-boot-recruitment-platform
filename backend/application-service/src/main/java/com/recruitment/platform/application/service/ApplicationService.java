@@ -214,6 +214,14 @@ public class ApplicationService {
         return false;
     }
 
+    @Transactional(readOnly = true)
+    public long countHiredApplications(Long jobPostingId) {
+        if (jobPostingId == null) {
+            return 0;
+        }
+        return applicationRepository.countByJobPostingIdAndStatus(jobPostingId, ApplicationStatus.HIRED);
+    }
+
     private Map<Long, String> fetchCandidateNames(List<Long> candidateIds) {
         if (candidateIds == null || candidateIds.isEmpty()) {
             return Collections.emptyMap();

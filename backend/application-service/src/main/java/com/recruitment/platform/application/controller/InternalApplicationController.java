@@ -22,4 +22,9 @@ public class InternalApplicationController {
                                                                       @PathVariable Long companyId) {
         return ResponseEntity.ok(applicationService.candidateHasApplicationsForCompany(candidateId, companyId));
     }
+
+    @GetMapping("/jobs/{jobPostingId}/hired-count")
+    public ResponseEntity<Long> countHiredApplications(@PathVariable Long jobPostingId) {
+        return ResponseEntity.ok(applicationService.countHiredApplications(jobPostingId));
+    }
 }

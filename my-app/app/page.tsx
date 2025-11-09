@@ -75,6 +75,7 @@ function StructuredData({ jobs }: { jobs: JobPostingPublic[] }) {
       name: BRAND_NAME,
       sameAs: "https://talentflow.app",
     },
+    totalJobOpenings: job.availableSlots ?? job.hiringQuantity ?? 1,
     employmentType: job.workType ?? "FULL_TIME",
     jobLocation: job.location
       ? {

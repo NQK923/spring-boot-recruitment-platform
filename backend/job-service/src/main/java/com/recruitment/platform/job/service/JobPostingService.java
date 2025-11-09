@@ -2,6 +2,7 @@ package com.recruitment.platform.job.service;
 
 import com.recruitment.platform.common.exception.ForbiddenException;
 import com.recruitment.platform.common.exception.NotFoundException;
+import com.recruitment.platform.job.client.ApplicationServiceClient;
 import com.recruitment.platform.job.client.ChatServiceClient;
 import com.recruitment.platform.job.client.CompanyServiceClient;
 import com.recruitment.platform.job.client.dto.CompanyStatusResponse;
@@ -45,15 +46,18 @@ public class JobPostingService {
     private final JobPositionRepository jobPositionRepository;
     private final CompanyServiceClient companyServiceClient;
     private final ChatServiceClient chatServiceClient;
+    private final ApplicationServiceClient applicationServiceClient;
 
     public JobPostingService(JobPostingRepository jobPostingRepository,
                              JobPositionRepository jobPositionRepository,
                              CompanyServiceClient companyServiceClient,
-                             ChatServiceClient chatServiceClient) {
+                             ChatServiceClient chatServiceClient,
+                             ApplicationServiceClient applicationServiceClient) {
         this.jobPostingRepository = jobPostingRepository;
         this.jobPositionRepository = jobPositionRepository;
         this.companyServiceClient = companyServiceClient;
         this.chatServiceClient = chatServiceClient;
+        this.applicationServiceClient = applicationServiceClient;
     }
 
     @Transactional
@@ -178,13 +182,18 @@ public class JobPostingService {
         return jobPostingRepository.findById(id)
                 .filter(job -> job.getStatus() == JobStatus.PUBLISHED)
                 .filter(job -> isCompanyActive(job.getCompanyId()))
-                .map(job -> convertToDto(job, resolveCompanyName(job.getCompanyId())));
+                .map(job -> convertToDto(job, resolveCompanyName(job.getCompanyId()), fetchHiredCount(job.getId())));
     }
 
-    private JobPostingPublicDto convertToDto(JobPosting jobPosting, String companyName) {
+    private JobPostingPublicDto convertToDto(JobPosting jobPosting, String companyName, Integer hiredCount) {
         JobPosition jobPosition = jobPosting.getJobPosition();
         String department = jobPosition != null ? jobPosition.getDepartment() : null;
         String level = jobPosition != null ? jobPosition.getLevel() : null;
+        int totalSlots = jobPosting.getHiringQuantity() == null ? 1 : jobPosting.getHiringQuantity();
+        int availableSlots = hiredCount == null ? totalSlots : calculateAvailableSlots(totalSlots, hiredCount);
+        if (hiredCount != null) {
+            maybeCloseJobWhenSlotsFilled(jobPosting, availableSlots);
+        }
 
         return new JobPostingPublicDto(
                 jobPosting.getId(),
@@ -195,7 +204,8 @@ public class JobPostingService {
                 jobPosting.getRequirements(),
                 jobPosting.getBenefits(),
                 jobPosting.getSalaryRange(),
-                jobPosting.getHiringQuantity(),
+                totalSlots,
+                availableSlots,
                 jobPosting.getLocation(),
                 jobPosting.getWorkType(),
                 department,
@@ -214,7 +224,7 @@ public class JobPostingService {
                         .collect(Collectors.toList())
         );
         List<JobPostingPublicDto> dtos = page.getContent().stream()
-                .map(job -> convertToDto(job, companyNames.get(job.getCompanyId())))
+                .map(job -> convertToDto(job, companyNames.get(job.getCompanyId()), null))
                 .collect(Collectors.toList());
         return new PageImpl<>(dtos, page.getPageable(), page.getTotalElements());
     }
@@ -328,6 +338,34 @@ public class JobPostingService {
         } catch (Exception ex) {
             log.warn("Không thể gọi chat-service để reindex job {}", jobPosting.getId(), ex);
         }
+    }
+
+    private int fetchHiredCount(Long jobPostingId) {
+        if (jobPostingId == null) {
+            return 0;
+        }
+        try {
+            Long response = applicationServiceClient.countHiredApplications(jobPostingId);
+            return response == null ? 0 : Math.max(response.intValue(), 0);
+        } catch (Exception ex) {
+            log.warn("Không thể lấy số lượng ứng viên đã nhận offer cho job {}", jobPostingId, ex);
+            return 0;
+        }
+    }
+
+    private int calculateAvailableSlots(int totalSlots, Integer hiredCount) {
+        int hires = hiredCount == null ? 0 : Math.max(hiredCount, 0);
+        int remaining = totalSlots - hires;
+        return remaining < 0 ? 0 : remaining;
+    }
+
+    private void maybeCloseJobWhenSlotsFilled(JobPosting jobPosting, int availableSlots) {
+        if (jobPosting == null || availableSlots > 0 || jobPosting.getStatus() == JobStatus.CLOSED) {
+            return;
+        }
+        jobPosting.setStatus(JobStatus.CLOSED);
+        jobPosting.setUpdatedAt(Instant.now());
+        jobPostingRepository.save(jobPosting);
     }
 
     private int normalizeHiringQuantity(Integer rawQuantity) {
