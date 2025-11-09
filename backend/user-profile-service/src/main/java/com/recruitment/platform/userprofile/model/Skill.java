@@ -1,5 +1,6 @@
 package com.recruitment.platform.userprofile.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,4 +22,9 @@ public class Skill {
 
     @Column(name = "years")
     private Integer years;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_user_id", nullable = false)
+    @JsonIgnore
+    private Profile profile;
 }

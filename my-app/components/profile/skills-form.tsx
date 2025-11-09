@@ -76,7 +76,7 @@ export function SkillsForm({ skills }: SkillsFormProps) {
                 onChange={(event) => handleChange(index, "skillName", event.target.value)}
                 placeholder="Product discovery"
                 disabled={pending}
-                className="flex-1"
+                className="flex-[2] min-w-0"
               />
               <select
                 value={item.proficiency}
@@ -99,7 +99,7 @@ export function SkillsForm({ skills }: SkillsFormProps) {
                 onChange={(event) => handleChange(index, "years", event.target.value)}
                 placeholder="Số năm"
                 disabled={pending}
-                className="w-28"
+                className="w-20 sm:w-24"
               />
             </div>
             <div className="flex justify-end">

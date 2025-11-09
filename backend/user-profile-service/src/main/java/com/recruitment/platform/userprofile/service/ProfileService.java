@@ -143,12 +143,12 @@ public class ProfileService {
 
         if (request.education() != null) {
             profile.getEducation().clear();
-            profile.getEducation().addAll(mapEducation(request.education()));
+            profile.getEducation().addAll(mapEducation(request.education(), profile));
         }
 
         if (request.skills() != null) {
             profile.getSkills().clear();
-            profile.getSkills().addAll(mapSkills(request.skills()));
+            profile.getSkills().addAll(mapSkills(request.skills(), profile));
         }
 
         Profile saved = profileRepository.save(profile);
@@ -545,7 +545,7 @@ public class ProfileService {
         return experiences;
     }
 
-    private List<Education> mapEducation(List<EducationRequest> requests) {
+    private List<Education> mapEducation(List<EducationRequest> requests, Profile profile) {
         List<Education> educationList = new ArrayList<>();
         for (EducationRequest request : requests) {
             if (request == null) {
@@ -565,12 +565,13 @@ public class ProfileService {
             }
             entry.setStartDate(startDate);
             entry.setEndDate(endDate);
+            entry.setProfile(profile);
             educationList.add(entry);
         }
         return educationList;
     }
 
-    private List<Skill> mapSkills(List<SkillRequest> requests) {
+    private List<Skill> mapSkills(List<SkillRequest> requests, Profile profile) {
         Map<String, Skill> deduplicated = new LinkedHashMap<>();
         for (SkillRequest request : requests) {
             if (request == null) {
@@ -590,6 +591,7 @@ public class ProfileService {
             } else {
                 skill.setYears(null);
             }
+            skill.setProfile(profile);
             deduplicated.put(key, skill);
         }
         return new ArrayList<>(deduplicated.values());
