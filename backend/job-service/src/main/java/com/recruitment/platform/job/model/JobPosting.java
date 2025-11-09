@@ -27,6 +27,8 @@ public class JobPosting {
     private String location;
     private String workType;
     private String benefits;
+    @Column(name = "hiring_quantity", nullable = false)
+    private Integer hiringQuantity = 1;
 
     @Enumerated(EnumType.STRING)
     private JobStatus status;

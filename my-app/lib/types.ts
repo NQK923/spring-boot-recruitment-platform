@@ -18,6 +18,7 @@ export type JobPostingPublic = {
   requirements: string | null;
   benefits: string | null;
   salaryRange: string | null;
+  hiringQuantity: number;
   location: string | null;
   workType: string | null;
   department: string | null;
@@ -42,6 +43,7 @@ export type JobPosting = {
   requirements: string | null;
   benefits: string | null;
   salaryRange: string | null;
+  hiringQuantity: number;
   location: string | null;
   workType: string | null;
   status: JobStatus;
@@ -253,6 +255,7 @@ export type JobSpotlight = {
   requirements: string | null;
   benefits: string | null;
   salaryRange: string | null;
+  hiringQuantity: number;
   location: string | null;
   workType: string | null;
   department: string | null;

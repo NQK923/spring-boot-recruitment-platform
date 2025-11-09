@@ -10,6 +10,7 @@ public record JobPostingPublicDto(
         String requirements,
         String benefits,
         String salaryRange,
+        Integer hiringQuantity,
         String location,
         String workType,
         String department,

@@ -69,6 +69,7 @@ public class JobPostingService {
         newJob.setCompanyId(companyId);
         newJob.setRecruiterId(recruiterId);
         newJob.setStatus(JobStatus.DRAFT);
+        newJob.setHiringQuantity(normalizeHiringQuantity(request.hiringQuantity()));
 
         if (request.positionId() != null) {
             JobPosition jobPosition = resolveJobPosition(request.positionId(), companyId);
@@ -112,6 +113,9 @@ public class JobPostingService {
         }
         if (request.status() != null) {
             job.setStatus(JobStatus.valueOf(request.status().toUpperCase()));
+        }
+        if (request.hiringQuantity() != null) {
+            job.setHiringQuantity(normalizeHiringQuantity(request.hiringQuantity()));
         }
         if (request.positionId() != null) {
             JobPosition jobPosition = resolveJobPosition(request.positionId(), companyId);
@@ -191,6 +195,7 @@ public class JobPostingService {
                 jobPosting.getRequirements(),
                 jobPosting.getBenefits(),
                 jobPosting.getSalaryRange(),
+                jobPosting.getHiringQuantity(),
                 jobPosting.getLocation(),
                 jobPosting.getWorkType(),
                 department,
@@ -323,5 +328,12 @@ public class JobPostingService {
         } catch (Exception ex) {
             log.warn("Không thể gọi chat-service để reindex job {}", jobPosting.getId(), ex);
         }
+    }
+
+    private int normalizeHiringQuantity(Integer rawQuantity) {
+        if (rawQuantity == null || rawQuantity < 1) {
+            return 1;
+        }
+        return rawQuantity;
     }
 }

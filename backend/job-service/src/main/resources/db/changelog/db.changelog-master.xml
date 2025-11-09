@@ -7,5 +7,6 @@
 
     <include file="v1.0_init_schema.xml" relativeToChangelogFile="true"/>
     <include file="v1.1_seed_data.xml" relativeToChangelogFile="true"/>
+    <include file="v1.2_add_hiring_quantity.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -9,6 +9,7 @@ public record UpdateJobRequest(
         String location,
         String workType,
         String status,
-        Long positionId
+        Long positionId,
+        Integer hiringQuantity
 ) {
 }
