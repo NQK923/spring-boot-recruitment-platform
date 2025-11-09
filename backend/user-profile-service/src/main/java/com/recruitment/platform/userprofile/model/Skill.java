@@ -15,4 +15,10 @@ public class Skill {
 
     @Column(name = "skill_name")
     private String skillName;
+
+    @Enumerated(EnumType.STRING)
+    private SkillProficiency proficiency;
+
+    @Column(name = "years")
+    private Integer years;
 }

@@ -6,11 +6,18 @@ import type { Skill } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+const SKILL_OPTIONS = [
+  { label: "Mới bắt đầu", value: "BEGINNER" },
+  { label: "Trung cấp", value: "INTERMEDIATE" },
+  { label: "Nâng cao", value: "ADVANCED" },
+  { label: "Chuyên gia", value: "EXPERT" },
+];
+
 type SkillsFormProps = {
   skills: Skill[];
 };
 
-const emptySkill: SkillInput = { skillName: "" };
+const emptySkill: SkillInput = { skillName: "", proficiency: "", years: "" };
 
 const initialState: ProfileFormState = {};
 
@@ -18,7 +25,11 @@ export function SkillsForm({ skills }: SkillsFormProps) {
   const initial = useMemo(
     () =>
       skills.length > 0
-        ? skills.map((skill) => ({ skillName: skill.skillName ?? "" }))
+        ? skills.map((skill) => ({
+            skillName: skill.skillName ?? "",
+            proficiency: skill.proficiency ?? "",
+            years: skill.years?.toString() ?? "",
+          }))
         : [emptySkill],
     [skills]
   );
@@ -30,9 +41,9 @@ export function SkillsForm({ skills }: SkillsFormProps) {
     setItems(initial);
   }, [initial]);
 
-  const handleChange = (index: number, value: string) => {
+  const handleChange = (index: number, key: keyof SkillInput, value: string) => {
     setItems((prev) =>
-      prev.map((item, idx) => (idx === index ? { ...item, skillName: value } : item))
+      prev.map((item, idx) => (idx === index ? { ...item, [key]: value } : item))
     );
   };
 
@@ -54,42 +65,70 @@ export function SkillsForm({ skills }: SkillsFormProps) {
         {items.map((item, index) => (
           <div
             key={`skill-${index}`}
-            className="flex flex-col gap-2 rounded-2xl border border-border bg-bg/70 px-4 py-3 sm:flex-row sm:items-center"
+            className="space-y-3 rounded-2xl border border-primary-200/60 bg-white/80 px-4 py-4 shadow-sm"
           >
-            <Input
-              value={item.skillName}
-              onChange={(event) => handleChange(index, event.target.value)}
-              placeholder="Product discovery"
-              disabled={pending}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => removeSkill(index)}
-              disabled={pending || items.length === 1}
-            >
-              Remove
-            </Button>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <Input
+                value={item.skillName}
+                onChange={(event) => handleChange(index, "skillName", event.target.value)}
+                placeholder="Product discovery"
+                disabled={pending}
+                className="flex-1"
+              />
+              <select
+                value={item.proficiency}
+                onChange={(event) => handleChange(index, "proficiency", event.target.value)}
+                disabled={pending}
+                className="flex-1 rounded-2xl border border-border bg-white px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+              >
+                <option value="">Trình độ</option>
+                {SKILL_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <Input
+                type="number"
+                min={0}
+                max={60}
+                value={item.years}
+                onChange={(event) => handleChange(index, "years", event.target.value)}
+                placeholder="Số năm"
+                disabled={pending}
+                className="w-28"
+              />
+            </div>
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => removeSkill(index)}
+                disabled={pending || items.length === 1}
+              >
+                Xoá mục này
+              </Button>
+            </div>
           </div>
         ))}
       </div>
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {state.error}
         </p>
       ) : null}
       {state?.success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
           {state.success}
         </p>
       ) : null}
       <div className="flex flex-wrap items-center gap-3">
         <Button type="submit" size="sm" disabled={pending}>
-          {pending ? "Saving..." : "Save skills"}
+          {pending ? "Đang lưu..." : "Lưu kỹ năng"}
         </Button>
         <Button type="button" size="sm" variant="ghost" onClick={addSkill} disabled={pending}>
-          Add skill
+          Thêm kỹ năng
         </Button>
       </div>
     </form>

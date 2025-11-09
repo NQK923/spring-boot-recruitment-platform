@@ -81,10 +81,7 @@ async function getInterviews(): Promise<Interview[]> {
 
 async function getProfile(): Promise<Profile | null> {
   try {
-    const response = await apiFetch("/api/profiles/me", { method: "GET" });
-    if (!response.ok) {
-      return null;
-    }
+    const response = await apiFetch("/api/profiles/me/enriched", { method: "GET" });
     const data = await response.json();
     return data && typeof data === "object" ? (data as Profile) : null;
   } catch {
@@ -176,9 +173,23 @@ export default async function CandidatePortalPage() {
       avatarUrl: null,
       phoneNumber: null,
       summary: null,
+      emailForCv: null,
+      location: null,
+      website: null,
+      linkedin: null,
+      github: null,
+      portfolio: null,
+      yearsOfExperience: null,
+      desiredPosition: null,
+      workAuthorization: null,
+      openToRelocate: false,
+      preferredCvLanguage: "vi",
       experiences: [],
       education: [],
       skills: [],
+      projects: [],
+      certifications: [],
+      languages: [],
       cvs: [],
     };
 
@@ -245,8 +256,14 @@ export default async function CandidatePortalPage() {
     Boolean(profileData.fullName),
     Boolean(profileData.summary),
     Boolean(profileData.phoneNumber),
+    Boolean(profileData.emailForCv),
+    Boolean(profileData.location),
+    Boolean(profileData.desiredPosition),
     sortedExperiences.length > 0,
+    profileData.projects.length > 0,
     sortedEducation.length > 0,
+    profileData.certifications.length > 0,
+    profileData.languages.length > 0,
     displaySkills.length > 0,
     sortedCvs.length > 0,
   ];
@@ -285,6 +302,24 @@ export default async function CandidatePortalPage() {
       description: "Giữ sẵn bản CV chỉn chu để đính kèm vào hồ sơ ứng tuyển chỉ với một cú nhấp chuột.",
       href: ROUTES.candidateProfile,
       actionLabel: "Mở quản lý CV",
+    });
+  }
+
+  if (!profileData.projects.length) {
+    addNextStep({
+      title: "Chia sẻ dự án tiêu biểu",
+      description: "Thêm 2-3 dự án có số liệu rõ ràng để Gemini sử dụng khi tạo CV ATS.",
+      href: ROUTES.candidateProfile,
+      actionLabel: "Thêm dự án",
+    });
+  }
+
+  if (!profileData.languages.length) {
+    addNextStep({
+      title: "Cập nhật ngoại ngữ",
+      description: "Liệt kê trình độ ngoại ngữ theo thang CEFR để ATS đánh giá chính xác.",
+      href: ROUTES.candidateProfile,
+      actionLabel: "Thêm ngoại ngữ",
     });
   }
 
@@ -346,6 +381,28 @@ export default async function CandidatePortalPage() {
                   {profileData.summary ??
                     "Hãy hoàn thiện hồ sơ để tăng cơ hội được nhà tuyển dụng chú ý và mời phỏng vấn."}
                 </p>
+                <div className="flex flex-wrap gap-3 text-sm text-gray-600">
+                  {profileData.desiredPosition ? (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-primary-50 px-3 py-1 font-medium text-primary-700">
+                      🎯 {profileData.desiredPosition}
+                    </span>
+                  ) : null}
+                  {profileData.location ? (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 font-medium text-gray-800">
+                      📍 {profileData.location}
+                    </span>
+                  ) : null}
+                  {profileData.yearsOfExperience != null ? (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 font-medium text-amber-800">
+                      ⏱ {profileData.yearsOfExperience}+ năm kinh nghiệm
+                    </span>
+                  ) : null}
+                  {profileData.preferredCvLanguage ? (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 font-medium text-emerald-800">
+                      📝 CV: {profileData.preferredCvLanguage === "vi" ? "Tiếng Việt" : "Tiếng Anh"}
+                    </span>
+                  ) : null}
+                </div>
               </div>
               
               <div className="flex flex-wrap gap-3 pt-2">
@@ -385,6 +442,34 @@ export default async function CandidatePortalPage() {
                 <p className="text-xs text-gray-600">
                   Ảnh đại diện giúp hồ sơ chuyên nghiệp hơn
                 </p>
+              </div>
+              <div className="w-full space-y-2 text-sm text-gray-700">
+                {profileData.emailForCv ? (
+                  <p className="flex items-center gap-2 break-all">
+                    <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l9 6 9-6" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    {profileData.emailForCv}
+                  </p>
+                ) : null}
+                {profileData.phoneNumber ? (
+                  <p className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h1.28a2 2 0 011.94 1.515l1.387 5.015a2 2 0 01-.53 1.938l-1.293 1.293a16 16 0 007.586 7.586l1.293-1.293a2 2 0 011.938-.53l5.015 1.387A2 2 0 0121 19.72V21a2 2 0 01-2 2h-.25C9.44 23 1 14.56 1 3.25V3a2 2 0 012-2z" />
+                    </svg>
+                    {profileData.phoneNumber}
+                  </p>
+                ) : null}
+                {profileData.location ? (
+                  <p className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11a3 3 0 110-6 3 3 0 010 6z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.5 11c0 7.5-7.5 10.5-7.5 10.5S4.5 18.5 4.5 11a7.5 7.5 0 1115 0z" />
+                    </svg>
+                    {profileData.location}
+                  </p>
+                ) : null}
               </div>
             </div>
           </div>

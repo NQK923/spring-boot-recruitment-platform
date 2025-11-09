@@ -65,6 +65,18 @@ export type ApplicationDetails = Application & {
   candidateName: string | null;
 };
 
+export type EmploymentType = "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERN";
+export type SkillProficiency = "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT";
+export type LanguageProficiency =
+  | "A1"
+  | "A2"
+  | "B1"
+  | "B2"
+  | "C1"
+  | "C2"
+  | "FLUENT"
+  | "NATIVE";
+
 export type ApplicationNote = {
   id: number;
   applicationId: number;
@@ -89,9 +101,23 @@ export type Profile = {
   phoneNumber: string | null;
   summary: string | null;
   avatarUrl: string | null;
+  emailForCv: string | null;
+  location: string | null;
+  website: string | null;
+  linkedin: string | null;
+  github: string | null;
+  portfolio: string | null;
+  yearsOfExperience: number | null;
+  desiredPosition: string | null;
+  workAuthorization: string | null;
+  openToRelocate: boolean;
+  preferredCvLanguage: "vi" | "en" | null;
   experiences: Experience[];
   education: Education[];
   skills: Skill[];
+  projects: Project[];
+  certifications: Certification[];
+  languages: ProfileLanguage[];
   cvs: Cv[];
 };
 
@@ -102,12 +128,21 @@ export type Experience = {
   description: string | null;
   startDate: string | null;
   endDate: string | null;
+  location: string | null;
+  employmentType: EmploymentType | null;
+  current: boolean;
+  achievements: string | null;
+  techStack: string[];
 };
 
 export type Education = {
   id: number;
   school: string | null;
   degree: string | null;
+  major: string | null;
+  gpa: string | null;
+  honors: string | null;
+  activities: string | null;
   startDate: string | null;
   endDate: string | null;
 };
@@ -115,6 +150,39 @@ export type Education = {
 export type Skill = {
   id: number;
   skillName: string | null;
+  proficiency: SkillProficiency | null;
+  years: number | null;
+};
+
+export type Project = {
+  id: number;
+  name: string | null;
+  role: string | null;
+  summary: string | null;
+  responsibilities: string | null;
+  achievements: string | null;
+  techStack: string[];
+  projectUrl: string | null;
+  repoUrl: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  current: boolean;
+};
+
+export type Certification = {
+  id: number;
+  name: string | null;
+  issuer: string | null;
+  issueDate: string | null;
+  expireDate: string | null;
+  credentialId: string | null;
+  credentialUrl: string | null;
+};
+
+export type ProfileLanguage = {
+  id: number;
+  language: string | null;
+  proficiency: LanguageProficiency | null;
 };
 
 export type Cv = {
