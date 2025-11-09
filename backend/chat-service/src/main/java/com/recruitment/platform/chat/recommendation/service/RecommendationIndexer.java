@@ -1,4 +1,4 @@
-﻿package com.recruitment.platform.chat.recommendation.service;
+package com.recruitment.platform.chat.recommendation.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

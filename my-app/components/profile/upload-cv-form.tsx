@@ -25,7 +25,6 @@ export function UploadCvForm() {
       ref={formRef}
       action={formAction}
       className="space-y-4 rounded-2xl border border-primary-200/60 bg-gradient-to-br from-white to-primary-50/20 p-5 shadow-sm"
-      encType="multipart/form-data"
     >
       <div className="grid gap-4 md:grid-cols-[2fr,3fr]">
         <label className="flex flex-col gap-2 text-sm font-semibold text-gray-900">
