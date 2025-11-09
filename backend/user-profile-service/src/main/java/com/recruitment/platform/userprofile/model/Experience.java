@@ -1,5 +1,6 @@
 package com.recruitment.platform.userprofile.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.recruitment.platform.userprofile.model.converter.StringListConverter;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -34,4 +35,9 @@ public class Experience {
     @Convert(converter = StringListConverter.class)
     @Column(name = "tech_stack", columnDefinition = "TEXT")
     private List<String> techStack = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_user_id", nullable = false)
+    @JsonIgnore
+    private Profile profile;
 }

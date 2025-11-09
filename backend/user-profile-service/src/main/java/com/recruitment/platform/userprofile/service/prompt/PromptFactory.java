@@ -39,7 +39,7 @@ Bạn là chuyên gia viết CV. Viết nội dung CV ngắn gọn, dùng tiến
 }
 NGUYÊN TẮC:
 - Không bịa dữ liệu; chỉ dùng thông tin đã cung cấp ở phần DỮ LIỆU HỒ SƠ dưới đây.
-- Dùng bullet bắt đầu bằng động từ mạnh (Thiết kế, Tối ưu, Triển khai, Dẫn dắt...), ưu tiên lượng hoá (%/số liệu).
+- Dùng bullet bắt đầu bằng động từ mạnh (Thiết kế, Tối ưu, Triển khai, Dẫn dắt...), ưu tiên lượng hoá (%%/số liệu).
 - Nếu thiếu mục nào thì bỏ qua mục đó trong JSON (không để null/chuỗi rỗng).
 - Format ngày tháng trong "period" là MM/yyyy - MM/yyyy hoặc "MM/yyyy - Hiện tại".
 - Không thêm text giải thích, không kèm ```json.

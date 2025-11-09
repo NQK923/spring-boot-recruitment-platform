@@ -138,7 +138,7 @@ public class ProfileService {
 
         if (request.experiences() != null) {
             profile.getExperiences().clear();
-            profile.getExperiences().addAll(mapExperiences(request.experiences()));
+            profile.getExperiences().addAll(mapExperiences(request.experiences(), profile));
         }
 
         if (request.education() != null) {
@@ -518,7 +518,7 @@ public class ProfileService {
         );
     }
 
-    private List<Experience> mapExperiences(List<ExperienceRequest> requests) {
+    private List<Experience> mapExperiences(List<ExperienceRequest> requests, Profile profile) {
         List<Experience> experiences = new ArrayList<>();
         for (ExperienceRequest request : requests) {
             if (request == null) {
@@ -539,6 +539,7 @@ public class ProfileService {
             experience.setCurrent(isCurrent);
             experience.setAchievements(trimToNull(request.achievements()));
             experience.setTechStack(normalizeTechStack(request.techStack()));
+            experience.setProfile(profile);
             experiences.add(experience);
         }
         return experiences;

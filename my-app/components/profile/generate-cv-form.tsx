@@ -8,8 +8,6 @@ type GenerateStatus =
   | { type: "error"; message: string }
   | { type: "success"; message: string };
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 export function GenerateCvForm() {
   const [templateCode, setTemplateCode] = useState("modern-1");
   const [language, setLanguage] = useState<"vi" | "en">("vi");
@@ -112,12 +110,8 @@ async function downloadCv(opts: {
   language?: string;
   tone?: string;
 }) {
-  if (!API_BASE_URL) {
-    throw new Error("Chưa cấu hình NEXT_PUBLIC_API_BASE_URL.");
-  }
-  const response = await fetch(`${API_BASE_URL}/api/profiles/me/cvs/generate`, {
+  const response = await fetch("/api/profile/cvs/generate", {
     method: "POST",
-    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -139,8 +133,7 @@ async function downloadCv(opts: {
 
   const blob = await response.blob();
   const disposition = response.headers.get("Content-Disposition") ?? "";
-  const match = disposition.match(/filename="(.+?)"/i);
-  const filename = match?.[1] ?? "CV.pdf";
+  const filename = extractFilename(disposition);
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
@@ -149,4 +142,80 @@ async function downloadCv(opts: {
   anchor.click();
   anchor.remove();
   URL.revokeObjectURL(url);
+}
+
+function extractFilename(disposition: string | null): string {
+  if (!disposition) {
+    return "CV.pdf";
+  }
+
+  const filenameStarMatch = disposition.match(/filename\*=([^;]+)/i);
+  if (filenameStarMatch) {
+    let value = filenameStarMatch[1].trim();
+    value = value.replace(/^"(.*)"$/, "$1");
+    if (value.toLowerCase().startsWith("utf-8''")) {
+      value = value.substring(7);
+    }
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      // fall back to other strategies
+    }
+  }
+
+  const quotedMatch = disposition.match(/filename="([^"]*)"/i);
+  if (quotedMatch) {
+    return decodeMimeWord(quotedMatch[1]);
+  }
+
+  const bareMatch = disposition.match(/filename=([^;]+)/i);
+  if (bareMatch) {
+    return decodeMimeWord(bareMatch[1].trim());
+  }
+
+  return "CV.pdf";
+}
+
+function decodeMimeWord(value: string): string {
+  const trimmed = value.replace(/^"(.*)"$/, "$1");
+  const mimeMatch = trimmed.match(/^=\?([^?]+)\?([bBqQ])\?([^?]+)\?=$/);
+  if (!mimeMatch) {
+    return trimmed;
+  }
+
+  const encoding = mimeMatch[2].toUpperCase();
+  const encodedText = mimeMatch[3];
+
+  if (encoding === "B") {
+    return decodeBase64Mime(encodedText);
+  }
+
+  let decoded = encodedText.replace(/_/g, " ");
+  decoded = decoded.replace(/=([0-9A-F]{2})/gi, (_match, hex) =>
+    String.fromCharCode(parseInt(hex, 16))
+  );
+  return decoded;
+}
+
+function decodeBase64Mime(text: string): string {
+  if (typeof atob === "undefined") {
+    return text;
+  }
+  try {
+    const binary = atob(text);
+    if (typeof TextDecoder !== "undefined") {
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return new TextDecoder("utf-8").decode(bytes);
+    }
+    return decodeURIComponent(
+      Array.from(binary)
+        .map((char) => "%" + char.charCodeAt(0).toString(16).padStart(2, "0"))
+        .join("")
+    );
+  } catch {
+    return text;
+  }
 }
