@@ -56,7 +56,8 @@ export function GenerateCvForm() {
             onChange={(event) => setTemplateCode(event.target.value)}
             disabled={pending}
           >
-            <option value="modern-1">Modern 01 - ATS</option>
+            <option value="modern-1">Modern 01 · Chuẩn ATS</option>
+            <option value="modern-visual">Modern Visual · Đẹp cho người đọc</option>
           </select>
         </label>
 

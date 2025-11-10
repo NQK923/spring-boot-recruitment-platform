@@ -1,4 +1,4 @@
-package com.recruitment.platform.userprofile.service.prompt;
+﻿package com.recruitment.platform.userprofile.service.prompt;
 
 import com.recruitment.platform.userprofile.model.Certification;
 import com.recruitment.platform.userprofile.model.Education;
@@ -23,26 +23,61 @@ public class PromptFactory {
     private static final DateTimeFormatter MONTH_YEAR = DateTimeFormatter.ofPattern("MM/yyyy");
 
     private static final String PROMPT_TEMPLATE = """
-Bạn là chuyên gia viết CV. Viết nội dung CV ngắn gọn, dùng tiếng %s, giọng điệu %s, đúng chính tả tiếng Việt có dấu.
-ĐẦU RA CHỈ GỒM JSON THEO SCHEMA SAU, KHÔNG THÊM BẤT KỲ CHỮ NÀO BÊN NGOÀI:
+Kiểm tra các trường đề phòng sai sót:
+Bạn là chuyên gia viết CV theo phong cách Harvard, chuẩn ATS. Viết nội dung CV ngắn gọn, dùng tiếng %s, giọng điệu %s, đúng chính tả tiếng Việt khi tiếng Việt được chọn.
+ĐẦU RA CHỈ GỒM JSON THEO SCHEMA SAU, KHÔNG THÊM BẤT KỲ CHỮ NÀO BÊN NGOÀI (không tiền tố/hậu tố, không ```):
+
 {
   "fullName": string,
   "title": string,
-  "summary": string,
+  "email": string?,
+  "phone": string?,
+  "location": string?,
   "links": { "linkedin": string?, "github": string?, "website": string? },
-  "experiences": [{ "company": string, "title": string, "period": "MM/yyyy - MM/yyyy|Hiện tại", "bullets": [string,...], "tech": [string,...] }],
-  "education": [{ "school": string, "degree": string, "period": "MM/yyyy - MM/yyyy|Hiện tại" }],
-  "projects": [{ "name": string, "role": string, "bullets": [string,...], "tech": [string,...], "link": string? }],
-  "certifications": [{ "name": string, "issuer": string, "issueDate": "MM/yyyy" }],
-  "languages": [{ "language": string, "level": "A1|A2|B1|B2|C1|C2|Native|Fluent" }],
-  "skills": [string,...]
+  "summary": string,
+  "experiences": [
+    {
+      "company": string,
+      "title": string,
+      "period": "MM/yyyy - MM/yyyy|Hiện tại|Present",
+      "bullets": [string, ...],
+      "tech": [string, ...]
+    }
+  ],
+  "education": [
+    {
+      "school": string,
+      "degree": string,
+      "period": "MM/yyyy - MM/yyyy|Hiện tại|Present",
+      "gpa": string?
+    }
+  ],
+  "projects": [
+    {
+      "name": string,
+      "role": string,
+      "period": "MM/yyyy - MM/yyyy|Hiện tại|Present",
+      "bullets": [string, ...],
+      "tech": [string, ...],
+      "link": string?
+    }
+  ],
+  "certifications": [
+    { "name": string, "issuer": string, "issueDate": "MM/yyyy" }
+  ],
+  "languages": [
+    { "language": string, "level": "A1|A2|B1|B2|C1|C2|Fluent|Native" }
+  ],
+  "skills": [string, ...]
 }
-NGUYÊN TẮC:
-- Không bịa dữ liệu; chỉ dùng thông tin đã cung cấp ở phần DỮ LIỆU HỒ SƠ dưới đây.
-- Dùng bullet bắt đầu bằng động từ mạnh (Thiết kế, Tối ưu, Triển khai, Dẫn dắt...), ưu tiên lượng hoá (%%/số liệu).
-- Nếu thiếu mục nào thì bỏ qua mục đó trong JSON (không để null/chuỗi rỗng).
-- Format ngày tháng trong "period" là MM/yyyy - MM/yyyy hoặc "MM/yyyy - Hiện tại".
-- Không thêm text giải thích, không kèm ```json.
+
+NGUYÊN TẮC NGHIÊM NGẶT:
+- KHÔNG bịa dữ liệu; nếu thiếu thông tin thì BỎ HẲN TRƯỜNG tương ứng (không để null, không để chuỗi rỗng).
+- Bullet: 3–5 ý cho mỗi kinh nghiệm/dự án; mỗi ý ngắn gọn (≈ tối đa 22 từ), mở đầu bằng ĐỘNG TỪ MẠNH; ưu tiên lượng hoá với số liệu (%%, số, tốc độ, chi phí, quy mô).
+- Period: định dạng đúng "MM/yyyy - MM/yyyy". Nếu đang làm hiện tại, dùng "MM/yyyy - Hiện tại" khi ngôn ngữ là tiếng Việt, hoặc "MM/yyyy - Present" khi là tiếng Anh.
+- Liên kết (linkedin/github/website/link) nếu có phải là URL hợp lệ bắt đầu bằng http hoặc https. KHÔNG tự bịa URL.
+- Ngôn từ trung tính, chuyên nghiệp, tránh sáo rỗng; không emoji, không ký tự trang trí.
+- ĐẦU RA PHẢI LÀ JSON HỢP LỆ. KHÔNG in giải thích, KHÔNG bao JSON trong khối mã.
 
 DỮ LIỆU HỒ SƠ:
 %s
