@@ -11,6 +11,10 @@ import java.util.List;
 public class CvDocument {
     private String fullName;
     private String title;
+    private String email;
+    private String phone;
+    private String location;
+    private String language;
     private String summary;
     private Links links = new Links();
     private List<Experience> experiences = new ArrayList<>();
@@ -44,6 +48,7 @@ public class CvDocument {
         private String school;
         private String degree;
         private String period;
+        private String gpa;
     }
 
     @Data
@@ -51,6 +56,7 @@ public class CvDocument {
     public static class Project {
         private String name;
         private String role;
+        private String period;
         private List<String> bullets = new ArrayList<>();
         private List<String> tech = new ArrayList<>();
         private String link;

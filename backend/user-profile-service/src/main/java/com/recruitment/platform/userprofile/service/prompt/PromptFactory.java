@@ -1,4 +1,4 @@
-﻿package com.recruitment.platform.userprofile.service.prompt;
+package com.recruitment.platform.userprofile.service.prompt;
 
 import com.recruitment.platform.userprofile.model.Certification;
 import com.recruitment.platform.userprofile.model.Education;

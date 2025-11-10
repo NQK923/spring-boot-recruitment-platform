@@ -24,19 +24,27 @@
     <header>
         <h1>${doc.fullName!''}</h1>
         <div class="subtitle">${doc.title!''}</div>
-        <div class="details">
-            <#if doc.email?has_content> Email: ${doc.email}</#if>
-            <#if doc.phone?has_content> | Điện thoại: ${doc.phone}</#if>
-            <#if doc.location?has_content> | Địa điểm: ${doc.location}</#if>
-        </div>
-        <#if doc.links?has_content && (doc.links.linkedin?has_content || doc.links.github?has_content || doc.links.website?has_content)>
-            <div class="details">
-                <#if doc.links.linkedin?has_content>LinkedIn: <a href="${doc.links.linkedin}">${doc.links.linkedin}</a></#if>
-                <#if doc.links.linkedin?has_content && (doc.links.github?has_content || doc.links.website?has_content)> | </#if>
-                <#if doc.links.github?has_content>GitHub: <a href="${doc.links.github}">${doc.links.github}</a></#if>
-                <#if doc.links.github?has_content && doc.links.website?has_content> | </#if>
-                <#if doc.links.website?has_content>Website: <a href="${doc.links.website}">${doc.links.website}</a></#if>
-            </div>
+        <#assign contactParts = []>
+        <#if doc.email?has_content>
+            <#assign contactParts = contactParts + ["Email: ${doc.email}"]>
+        </#if>
+        <#if doc.phone?has_content>
+            <#assign contactParts = contactParts + ["Điện thoại: ${doc.phone}"]>
+        </#if>
+        <#if doc.location?has_content>
+            <#assign contactParts = contactParts + ["Địa điểm: ${doc.location}"]>
+        </#if>
+        <#if doc.links?? && doc.links.linkedin?has_content>
+            <#assign contactParts = contactParts + ["LinkedIn: <a href=\"${doc.links.linkedin}\">${doc.links.linkedin}</a>"]>
+        </#if>
+        <#if doc.links?? && doc.links.github?has_content>
+            <#assign contactParts = contactParts + ["GitHub: <a href=\"${doc.links.github}\">${doc.links.github}</a>"]>
+        </#if>
+        <#if doc.links?? && doc.links.website?has_content>
+            <#assign contactParts = contactParts + ["Website: <a href=\"${doc.links.website}\">${doc.links.website}</a>"]>
+        </#if>
+        <#if contactParts?size gt 0>
+            <div class="details">${contactParts?join(" | ")}</div>
         </#if>
     </header>
 

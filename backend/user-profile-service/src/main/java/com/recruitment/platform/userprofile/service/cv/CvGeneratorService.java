@@ -66,6 +66,7 @@ public class CvGeneratorService {
         LOG.debug("Đã tạo prompt CV dài {} ký tự cho user {}", prompt.length(), userId);
 
         CvDocument document = geminiCvWriter.generateDocument(prompt);
+        document.setLanguage(language);
         backfillDocument(document, profile);
         byte[] pdf = cvRenderer.render(templateCode, document);
         String fileName = buildFileName(document.getFullName());
@@ -84,6 +85,15 @@ public class CvGeneratorService {
         }
         if (StringUtils.isBlank(document.getSummary()) && StringUtils.isNotBlank(profile.getSummary())) {
             document.setSummary(profile.getSummary());
+        }
+        if (StringUtils.isBlank(document.getEmail()) && StringUtils.isNotBlank(profile.getEmailForCv())) {
+            document.setEmail(profile.getEmailForCv());
+        }
+        if (StringUtils.isBlank(document.getPhone()) && StringUtils.isNotBlank(profile.getPhoneNumber())) {
+            document.setPhone(profile.getPhoneNumber());
+        }
+        if (StringUtils.isBlank(document.getLocation()) && StringUtils.isNotBlank(profile.getLocation())) {
+            document.setLocation(profile.getLocation());
         }
         if (document.getLinks() != null) {
             if (StringUtils.isBlank(document.getLinks().getLinkedin()) && StringUtils.isNotBlank(profile.getLinkedin())) {
