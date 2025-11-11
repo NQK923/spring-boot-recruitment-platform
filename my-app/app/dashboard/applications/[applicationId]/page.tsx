@@ -102,6 +102,12 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   REJECTED: "Đã từ chối",
 };
 
+const OFFER_STATUS_LABELS: Record<string, string> = {
+  PENDING: "Chờ ứng viên phản hồi",
+  ACCEPTED: "Ứng viên đã chấp nhận",
+  DECLINED: "Ứng viên đã từ chối",
+};
+
 function formatStatus(status: string) {
   const upper = status.toUpperCase() as ApplicationStatus;
   if (upper in STATUS_LABELS) {
@@ -136,6 +142,25 @@ function formatProfileDate(value: string | null | undefined, fallback: string) {
   }
 }
 
+function formatMoney(value: number | null | undefined, currency: string | null | undefined) {
+  if (typeof value !== "number") {
+    return "Đang cập nhật";
+  }
+  const fallback = `${value.toLocaleString("vi-VN")} ${currency ?? ""}`.trim();
+  if (!currency) {
+    return fallback;
+  }
+  try {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 2,
+    }).format(value);
+  } catch {
+    return fallback;
+  }
+}
+
 type ApplicationDetailsPageProps = {
   params: Promise<{ applicationId: string }> | { applicationId: string };
 };
@@ -160,6 +185,11 @@ export default async function ApplicationDetailsPage({
   const attachedCvLink =
     attachedCv?.downloadUrl ?? (attachedCv?.fileId ? `/api/files/${attachedCv.fileId}` : null);
   const attachedCvFallback = profileCvs.length > 0 ? "Đang cập nhật" : "Chưa đính kèm";
+  const interviewDetails = application.interviewDetails ?? null;
+  const offerDetails = application.offerDetails ?? null;
+  const offerStatusLabel = offerDetails
+    ? OFFER_STATUS_LABELS[offerDetails.status] ?? offerDetails.status
+    : null;
 
   const sortedExperiences = profile?.experiences
     ? profile.experiences
@@ -405,6 +435,115 @@ export default async function ApplicationDetailsPage({
                 currentStatus={application.status as ApplicationStatus}
               />
             </div>
+          </div>
+        </article>
+
+        {/* Lịch phỏng vấn & Đề nghị */}
+        <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <section className="space-y-3 rounded-2xl border border-blue-100/80 bg-blue-50/40 p-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-7 9h6M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">Phỏng vấn</p>
+                  <h3 className="text-lg font-bold text-gray-900">Thông tin lịch hẹn</h3>
+                </div>
+              </div>
+              {interviewDetails ? (
+                <dl className="space-y-3 text-sm text-gray-700">
+                  <div>
+                    <dt className="text-xs font-semibold uppercase tracking-wider text-blue-600">Thời gian</dt>
+                    <dd className="font-semibold text-gray-900">
+                      {formatDateTime(interviewDetails.scheduledAt)}{" "}
+                      {interviewDetails.timezone ? `(${interviewDetails.timezone})` : ""}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-semibold uppercase tracking-wider text-blue-600">Địa điểm / liên kết</dt>
+                    <dd className="font-semibold text-gray-900">
+                      {interviewDetails.location ?? "Chưa cập nhật"}
+                    </dd>
+                  </div>
+                  {interviewDetails.instructions ? (
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wider text-blue-600">Ghi chú gửi ứng viên</dt>
+                      <dd className="rounded-xl border border-blue-100/70 bg-white/80 px-3 py-2 font-medium text-gray-800">
+                        {interviewDetails.instructions}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
+              ) : (
+                <p className="text-sm text-blue-800">
+                  Chưa có lịch phỏng vấn. Khi chuyển sang trạng thái <strong>Phỏng vấn</strong>, hãy nhập thời gian và địa điểm để hệ thống gửi email cho ứng viên.
+                </p>
+              )}
+            </section>
+
+            <section className="space-y-3 rounded-2xl border border-amber-200/80 bg-amber-50/40 p-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-white">
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3-1.343-3-3s1.343-3 3-3 3 1.343 3 3-1.343 3-3 3zm0 1c2.761 0 5 2.239 5 5v6H7v-6c0-2.761 2.239-5 5-5z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-amber-700">Đề nghị</p>
+                  <h3 className="text-lg font-bold text-gray-900">Chi tiết offer</h3>
+                </div>
+              </div>
+              {offerDetails ? (
+                <div className="space-y-3 text-sm text-gray-800">
+                  <div className="flex items-center justify-between rounded-xl bg-white/80 px-3 py-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-amber-600">Mức lương</span>
+                    <span className="text-base font-bold text-amber-700">
+                      {formatMoney(offerDetails.salaryAmount, offerDetails.currency)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-xl bg-white/80 px-3 py-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-amber-600">Trạng thái</span>
+                    <span className="font-semibold text-gray-900">{offerStatusLabel ?? offerDetails.status}</span>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-amber-600">Hạn phản hồi</p>
+                      <p className="font-medium text-gray-900">
+                        {offerDetails.expiresAt ? formatDateTime(offerDetails.expiresAt) : "Đang phổ biến"}
+                      </p>
+                    </div>
+                    {offerDetails.respondedAt ? (
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-amber-600">Ứng viên phản hồi</p>
+                        <p className="font-medium text-gray-900">{formatDateTime(offerDetails.respondedAt)}</p>
+                      </div>
+                    ) : null}
+                  </div>
+                  {offerDetails.notes ? (
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-amber-600">Ghi chú gửi ứng viên</p>
+                      <p className="rounded-xl border border-amber-100/70 bg-white/80 px-3 py-2 font-medium text-gray-800">
+                        {offerDetails.notes}
+                      </p>
+                    </div>
+                  ) : null}
+                  <p className="text-xs text-amber-800">
+                    {offerDetails.status === "PENDING"
+                      ? "Đợi ứng viên xác nhận trong không gian Ứng viên. Sau khi họ đồng ý, trạng thái sẽ tự động chuyển ĐÃ TUYỂN."
+                      : offerDetails.status === "ACCEPTED"
+                        ? "Ứng viên đã chấp thuận đề nghị. Hãy hoàn tất thủ tục nhận việc."
+                        : "Ứng viên đã từ chối đề nghị. Hãy cập nhật lý do và tiếp tục pipeline."}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-amber-800">
+                  Chưa có đề nghị. Khi chuyển hồ sơ sang trạng thái <strong>Đề nghị</strong>, hãy nhập mức lương và ghi chú để hệ thống gửi email yêu cầu xác nhận cho ứng viên.
+                </p>
+              )}
+            </section>
           </div>
         </article>
 

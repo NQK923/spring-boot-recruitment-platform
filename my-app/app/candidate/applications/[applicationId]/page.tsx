@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import { dateFormatter, dateTimeFormatter } from "@/lib/dates";
+import { OfferDecisionForm } from "@/components/candidate/OfferDecisionForm";
 import type { ApplicationDetails, Interview, JobPostingPublic } from "@/lib/types";
 
 async function getApplication(applicationId: string): Promise<ApplicationDetails | null> {
@@ -55,6 +56,12 @@ function formatStatus(status: string) {
     .join(" ");
 }
 
+const OFFER_STATUS_LABELS: Record<string, string> = {
+  PENDING: "Đang chờ bạn phản hồi",
+  ACCEPTED: "Bạn đã nhận lời",
+  DECLINED: "Bạn đã từ chối",
+};
+
 function formatDate(value: string | null | undefined, includeTime = false) {
   if (!value) {
     return "Unknown";
@@ -94,6 +101,20 @@ export default async function CandidateApplicationDetailsPage({
     })[0];
 
   const calendarHref = nextInterview ? `/api/interviews/${nextInterview.id}/calendar` : null;
+  const structuredInterview = application.interviewDetails ?? null;
+  const offerDetails = application.offerDetails ?? null;
+  const offerStatusLabel = offerDetails
+    ? OFFER_STATUS_LABELS[offerDetails.status] ?? formatStatus(offerDetails.status)
+    : null;
+  const canRespondOffer = offerDetails?.status === "PENDING";
+  const offerSalaryDisplay =
+    offerDetails != null
+      ? Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: offerDetails.currency ?? "VND",
+          maximumFractionDigits: 2,
+        }).format(Number(offerDetails.salaryAmount ?? 0))
+      : null;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-6 py-16">
@@ -158,11 +179,30 @@ export default async function CandidateApplicationDetailsPage({
 
       <section className="space-y-4 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
         <h2 className="text-lg font-semibold text-text">Phỏng vấn</h2>
-        {interviews.length === 0 ? (
+        {structuredInterview ? (
+          <div className="space-y-2 rounded-2xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-text">
+            <p className="text-xs font-semibold uppercase tracking-widest text-blue-700">Buổi phỏng vấn tiếp theo</p>
+            <p className="text-base font-semibold text-text">
+              {formatDate(structuredInterview.scheduledAt, true)}{" "}
+              {structuredInterview.timezone ? `(${structuredInterview.timezone})` : ""}
+            </p>
+            <p className="font-medium text-text/80">
+              Địa điểm / liên kết: {structuredInterview.location ?? "Sẽ được thông báo "}
+            </p>
+            {structuredInterview.instructions ? (
+              <p className="rounded-xl border border-blue-100 bg-white/80 px-3 py-2 text-sm text-text/80">
+                {structuredInterview.instructions}
+              </p>
+            ) : null}
+            <p className="text-xs text-blue-800">Bạn cũng sẽ nhận email nhắc nhở trước giờ phỏng vấn.</p>
+          </div>
+        ) : null}
+        {!structuredInterview && interviews.length === 0 ? (
           <p className="text-sm text-muted">
-            Chưa có lịch phỏng vấn nào. Bạn sẽ nhận được email khi nhà tuyển dụng sắp xếp lịch.
+            Chưa có lịch phỏng vấn nào. Bạn sẽ nhận được email và thông báo ngay khi nhà tuyển dụng sắp xếp lịch.
           </p>
-        ) : (
+        ) : null}
+        {interviews.length > 0 ? (
           <div className="space-y-3 text-sm">
             {interviews.map((interview) => (
               <div key={interview.id} className="rounded-xl border border-border px-4 py-3">
@@ -181,12 +221,57 @@ export default async function CandidateApplicationDetailsPage({
               </div>
             ))}
           </div>
-        )}
+        ) : null}
         {calendarHref ? (
           <Link href={calendarHref} className="text-sm font-semibold text-text hover:underline">
             Tải lịch phỏng vấn (.ics)
           </Link>
         ) : null}
+      </section>
+
+      <section className="space-y-4 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
+        <h2 className="text-lg font-semibold text-text">Đề nghị tuyển dụng</h2>
+        {offerDetails ? (
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600">Mức lương</p>
+                <p className="text-base font-bold text-text">{offerSalaryDisplay}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600">Trạng thái</p>
+                <p className="text-base font-bold text-text">{offerStatusLabel}</p>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600">Hạn phản hồi</p>
+                <p className="text-sm font-medium text-text">
+                  {offerDetails.expiresAt ? formatDate(offerDetails.expiresAt, true) : "Không giới hạn"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600">Ghi chú</p>
+                <p className="text-sm font-medium text-text">
+                  {offerDetails.notes ?? "Không có ghi chú thêm"}
+                </p>
+              </div>
+            </div>
+            {canRespondOffer ? (
+              <OfferDecisionForm applicationId={application.id} />
+            ) : (
+              <p className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+                {offerDetails.status === "ACCEPTED"
+                  ? "Cảm ơn bạn đã xác nhận. Bộ phận nhân sự sẽ gửi hướng dẫn nhận việc trong email tiếp theo."
+                  : "Bạn đã từ chối đề nghị này. Nếu muốn thay đổi quyết định, hãy liên hệ trực tiếp với nhà tuyển dụng."}
+              </p>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-muted">
+            Chưa có đề nghị chính thức. Khi nhà tuyển dụng gửi offer, bạn sẽ thấy chi tiết và có thể xác nhận hoặc từ chối ngay tại đây.
+          </p>
+        )}
       </section>
     </div>
   );

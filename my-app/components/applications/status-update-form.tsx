@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import { updateStatusAction, type ActionState } from "@/app/dashboard/applications/[applicationId]/actions";
 import type { ApplicationStatus } from "@/lib/types";
 
@@ -27,12 +27,23 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
     updateStatusAction.bind(null, applicationId),
     initialState
   );
+  const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus>(currentStatus);
+  const defaultTimezone = useMemo(() => {
+    if (typeof Intl !== "undefined" && typeof Intl.DateTimeFormat === "function") {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone ?? "Asia/Ho_Chi_Minh";
+    }
+    return "Asia/Ho_Chi_Minh";
+  }, []);
+
+  const needsInterviewDetails = selectedStatus === "INTERVIEWING";
+  const needsOfferDetails = selectedStatus === "OFFERED";
 
   return (
     <form className="flex flex-col gap-4" action={formAction}>
       <select
         name="status"
-        defaultValue={currentStatus}
+        value={selectedStatus}
+        onChange={(event) => setSelectedStatus(event.target.value as ApplicationStatus)}
         className="h-12 rounded-xl border border-gray-300 bg-white px-4 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={pending}
       >
@@ -42,6 +53,108 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
           </option>
         ))}
       </select>
+
+      {needsInterviewDetails ? (
+        <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-slate-800 shadow-inner">
+          <p className="mb-3 font-semibold text-blue-900">Thông tin phỏng vấn bắt buộc</p>
+          <label className="mb-3 flex flex-col gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-blue-700">Thời gian phỏng vấn *</span>
+            <input
+              type="datetime-local"
+              name="interviewScheduledAt"
+              required
+              className="rounded-xl border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              disabled={pending}
+            />
+          </label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-blue-700">Múi giờ *</span>
+              <input
+                type="text"
+                name="interviewTimezone"
+                defaultValue={defaultTimezone}
+                required
+                className="rounded-xl border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                disabled={pending}
+              />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-blue-700">Địa điểm / liên kết *</span>
+              <input
+                type="text"
+                name="interviewLocation"
+                required
+                placeholder="Phòng họp, Google Meet..."
+                className="rounded-xl border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                disabled={pending}
+              />
+            </label>
+          </div>
+          <label className="mt-3 flex flex-col gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-blue-700">Ghi chú cho ứng viên</span>
+            <textarea
+              name="interviewInstructions"
+              rows={3}
+              placeholder="Chuẩn bị tài liệu, người liên hệ..."
+              className="rounded-xl border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              disabled={pending}
+            />
+          </label>
+        </div>
+      ) : null}
+
+      {needsOfferDetails ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-slate-800 shadow-inner">
+          <p className="mb-3 font-semibold text-amber-900">Thông tin đề nghị bắt buộc</p>
+          <div className="grid gap-3 sm:grid-cols-[2fr_1fr]">
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-amber-700">Mức lương đề nghị *</span>
+              <input
+                type="number"
+                name="offerSalaryAmount"
+                min="0"
+                step="0.01"
+                required
+                placeholder="Ví dụ: 25000000"
+                className="rounded-xl border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                disabled={pending}
+              />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-amber-700">Tiền tệ *</span>
+              <input
+                type="text"
+                name="offerCurrency"
+                defaultValue="VND"
+                required
+                className="rounded-xl border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                disabled={pending}
+              />
+            </label>
+          </div>
+          <label className="mt-3 flex flex-col gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-amber-700">Hạn phản hồi</span>
+            <input
+              type="datetime-local"
+              name="offerExpiresAt"
+              className="rounded-xl border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+              disabled={pending}
+            />
+          </label>
+          <label className="mt-3 flex flex-col gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-amber-700">Ghi chú gửi ứng viên</span>
+            <textarea
+              name="offerNotes"
+              rows={3}
+              placeholder="Chi tiết phúc lợi, thời gian nhận việc..."
+              className="rounded-xl border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+              disabled={pending}
+            />
+          </label>
+        </div>
+      ) : null}
+
       <button
         type="submit"
         disabled={pending}

@@ -64,8 +64,30 @@ export type Application = {
   appliedAt: string | null;
 };
 
+export type ApplicationInterviewDetails = {
+  scheduledAt: string;
+  timezone: string | null;
+  location: string | null;
+  instructions: string | null;
+};
+
+export type ApplicationOfferStatus = "PENDING" | "ACCEPTED" | "DECLINED";
+
+export type ApplicationOfferDetails = {
+  salaryAmount: number;
+  currency: string;
+  notes: string | null;
+  status: ApplicationOfferStatus;
+  expiresAt: string | null;
+  respondedAt: string | null;
+  respondedByCandidateId: number | null;
+  decisionNote: string | null;
+};
+
 export type ApplicationDetails = Application & {
   candidateName: string | null;
+  interviewDetails?: ApplicationInterviewDetails | null;
+  offerDetails?: ApplicationOfferDetails | null;
 };
 
 export type EmploymentType = "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERN";

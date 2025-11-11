@@ -326,7 +326,7 @@ export default async function DashboardPage() {
   ];
 
   const heroHighlights = [
-    <span>{`Có ${allApplications.length} hồ sơ trong quy trình của bạn.`}</span>,
+    `Có ${allApplications.length} hồ sơ trong quy trình của bạn.`,
     `${awaitingReview} ứng viên đang chờ phản hồi.`,
     `${upcomingInterviews.length} buổi phỏng vấn sắp diễn ra cần chuẩn bị.`,
   ];
@@ -347,8 +347,8 @@ export default async function DashboardPage() {
               Theo sát quy trình tuyển dụng với ưu tiên rõ ràng, bối cảnh từ hoạt động gần nhất và đường dẫn hành động nhanh nhất.
             </p>
             <ul className="space-y-3 text-base text-gray-800">
-              {heroHighlights.map((highlight) => (
-                <li key={highlight} className="flex items-start gap-3">
+              {heroHighlights.map((highlight, index) => (
+                <li key={`highlight-${index}`} className="flex items-start gap-3">
                   <span className="mt-1.5 h-2 w-2 rounded-full bg-blue-600 flex-shrink-0" aria-hidden />
                   <span>{highlight}</span>
                 </li>

@@ -18,11 +18,65 @@ export async function updateStatusAction(
   if (!newStatus) {
     return { error: "Vui lòng chọn trạng thái." };
   }
+  if (newStatus === "HIRED") {
+    return { error: "Ứng viên chỉ chuyển sang ĐÃ TUYỂN sau khi tự xác nhận đề nghị." };
+  }
+
+  const payload: Record<string, unknown> = { newStatus };
+
+  if (newStatus === "INTERVIEWING") {
+    const scheduledAtRaw = String(formData.get("interviewScheduledAt") ?? "").trim();
+    const timezone = String(formData.get("interviewTimezone") ?? "").trim();
+    const location = String(formData.get("interviewLocation") ?? "").trim();
+    const instructions = String(formData.get("interviewInstructions") ?? "").trim();
+    if (!scheduledAtRaw || !timezone || !location) {
+      return { error: "Vui lòng nhập đầy đủ thời gian, múi giờ và địa điểm phỏng vấn." };
+    }
+    const isoDate = new Date(scheduledAtRaw);
+    if (Number.isNaN(isoDate.getTime())) {
+      return { error: "Thời gian phỏng vấn không hợp lệ." };
+    }
+    payload.interview = {
+      scheduledAt: isoDate.toISOString(),
+      timezone,
+      location,
+      instructions: instructions || null,
+    };
+  }
+
+  if (newStatus === "OFFERED") {
+    const salaryRaw = String(formData.get("offerSalaryAmount") ?? "").trim();
+    const currency = String(formData.get("offerCurrency") ?? "VND").trim().toUpperCase();
+    const notes = String(formData.get("offerNotes") ?? "").trim();
+    const expiresAtRaw = String(formData.get("offerExpiresAt") ?? "").trim();
+
+    const salaryNumber = Number(salaryRaw);
+    if (!salaryRaw || Number.isNaN(salaryNumber) || salaryNumber <= 0) {
+      return { error: "Mức lương đề nghị phải lớn hơn 0." };
+    }
+    if (!currency) {
+      return { error: "Vui lòng nhập đơn vị tiền tệ." };
+    }
+    let expiresAt: string | null = null;
+    if (expiresAtRaw) {
+      const expiresDate = new Date(expiresAtRaw);
+      if (Number.isNaN(expiresDate.getTime())) {
+        return { error: "Hạn phản hồi không hợp lệ." };
+      }
+      expiresAt = expiresDate.toISOString();
+    }
+    payload.offer = {
+      salaryAmount: salaryNumber,
+      currency,
+      notes: notes || null,
+      expiresAt,
+    };
+  }
 
   try {
     await apiFetch(`/api/applications/${applicationId}/status`, {
       method: "PATCH",
-      body: JSON.stringify({ newStatus }),
+      body: JSON.stringify(payload),
     });
   } catch (error) {
     const message =

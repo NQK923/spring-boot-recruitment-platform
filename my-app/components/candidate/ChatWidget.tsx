@@ -59,20 +59,10 @@ function ChatWidgetInner() {
     retryLastAttempt,
   } = useChatWidget();
 
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-    return window.innerWidth < 640;
-  });
-  const [position, setPosition] = useState<Position>(() => {
-    if (typeof window === "undefined") {
-      return { top: EDGE_PADDING, left: EDGE_PADDING };
-    }
-    return {
-      top: Math.max(EDGE_PADDING, window.innerHeight - PANEL_HEIGHT - EDGE_PADDING),
-      left: Math.max(EDGE_PADDING, window.innerWidth - PANEL_WIDTH - EDGE_PADDING),
-    };
+  const [isMobile, setIsMobile] = useState(false);
+  const [position, setPosition] = useState<Position>({
+    top: EDGE_PADDING,
+    left: EDGE_PADDING,
   });
   const panelRef = useRef<HTMLDivElement | null>(null);
   const dragDataRef = useRef<{ offsetX: number; offsetY: number } | null>(null);
@@ -87,6 +77,7 @@ function ChatWidgetInner() {
       const nextMobile = window.innerWidth < 640;
       setIsMobile((previous) => (previous === nextMobile ? previous : nextMobile));
     };
+    updateIsMobile();
     window.addEventListener("resize", updateIsMobile);
     return () => {
       window.removeEventListener("resize", updateIsMobile);
