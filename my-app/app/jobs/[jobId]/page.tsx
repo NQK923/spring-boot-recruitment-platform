@@ -7,7 +7,7 @@ import { apiFetch } from "@/lib/api";
 import { getAccessTokenFromCookies } from "@/lib/session";
 import { ROUTES } from "@/lib/routes";
 import { ApplyForm } from "@/components/jobs/apply-form";
-import type { CompanyPublicProfile, JobPostingPublic, MeResponse } from "@/lib/types";
+import type { CompanyPublicProfile, JobPostingPublic, MeResponse, Cv } from "@/lib/types";
 
 async function getJob(jobId: string): Promise<JobPostingPublic | null> {
   try {
@@ -56,6 +56,31 @@ async function getCompanyProfile(companyId: number): Promise<CompanyPublicProfil
   }
 }
 
+type CandidateCvSummary = {
+  id: number;
+  versionName: string;
+  isDefault: boolean;
+  createdAt: string | null;
+};
+
+async function getCandidateCvs(): Promise<CandidateCvSummary[]> {
+  try {
+    const response = await apiFetch("/api/profiles/me/cvs", { method: "GET" });
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      return [];
+    }
+    return (data as Cv[]).map((cv) => ({
+      id: cv.id,
+      versionName: (cv.versionName ?? "").trim() || `CV #${cv.id}`,
+      isDefault: Boolean(cv.isDefault),
+      createdAt: cv.createdAt ?? null,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 type JobDetailsPageProps = {
   params: Promise<{ jobId: string }> | { jobId: string };
 };
@@ -76,10 +101,15 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
   const companyProfile = job.companyId ? await getCompanyProfile(job.companyId) : null;
 
   let canApply = false;
+  let candidateCvs: CandidateCvSummary[] = [];
   const token = await getAccessTokenFromCookies();
   if (token) {
     const me = await getCurrentUser();
-    canApply = me?.roles?.includes("CANDIDATE") ?? false;
+    const isCandidate = me?.roles?.includes("CANDIDATE") ?? false;
+    canApply = isCandidate;
+    if (isCandidate) {
+      candidateCvs = await getCandidateCvs();
+    }
   }
 
   const companyWebsiteRaw = companyProfile?.website ?? null;
@@ -246,7 +276,7 @@ export default async function JobDetailsPage({ params }: JobDetailsPageProps) {
                 </p>
               )}
             </div>
-            <ApplyForm jobPostingId={job.id} />
+            <ApplyForm jobPostingId={job.id} candidateCvs={candidateCvs} />
           </div>
         </Panel>
       ) : (

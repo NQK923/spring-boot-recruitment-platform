@@ -234,6 +234,36 @@ public class ProfileService {
                 .toList();
     }
 
+    @Transactional
+    public void deleteCv(Long userId, Long cvId) {
+        Cv cv = cvRepository.findByIdAndProfile_UserId(cvId, userId)
+                .orElseThrow(() -> new BadRequestException("Không tìm thấy CV cần xoá."));
+        boolean wasDefault = cv.isDefault();
+        cvRepository.delete(cv);
+
+        if (wasDefault) {
+            cvRepository.findByProfile_UserId(userId).stream()
+                    .max((a, b) -> {
+                        if (a.getCreatedAt() == null && b.getCreatedAt() == null) {
+                            return 0;
+                        }
+                        if (a.getCreatedAt() == null) {
+                            return -1;
+                        }
+                        if (b.getCreatedAt() == null) {
+                            return 1;
+                        }
+                        return a.getCreatedAt().compareTo(b.getCreatedAt());
+                    })
+                    .ifPresent(next -> {
+                        if (!next.isDefault()) {
+                            next.setDefault(true);
+                            cvRepository.save(next);
+                        }
+                    });
+        }
+    }
+
     public boolean recruiterCanAccessCandidate(Long candidateId, Long companyId) {
         if (candidateId == null || companyId == null) {
             return false;

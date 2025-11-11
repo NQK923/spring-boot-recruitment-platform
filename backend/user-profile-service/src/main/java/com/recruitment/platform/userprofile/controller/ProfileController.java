@@ -114,6 +114,15 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.listCvs(userId));
     }
 
+    @DeleteMapping("/me/cvs/{cvId}")
+    @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
+    public ResponseEntity<Void> deleteCv(@AuthenticationPrincipal Jwt jwt,
+                                         @PathVariable Long cvId) {
+        Long userId = Long.valueOf(jwt.getSubject());
+        profileService.deleteCv(userId, cvId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping(value = "/me/cvs/generate", produces = MediaType.APPLICATION_PDF_VALUE)
     @PreAuthorize("hasAuthority('SCOPE_CANDIDATE')")
     public ResponseEntity<byte[]> generateCv(@AuthenticationPrincipal Jwt jwt,

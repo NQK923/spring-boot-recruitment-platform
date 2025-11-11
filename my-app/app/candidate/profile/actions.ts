@@ -211,6 +211,29 @@ export async function uploadCvAction(
   return { success: "Đã tải lên CV mới." };
 }
 
+export async function deleteCvAction(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const cvIdValue = formData.get("cvId");
+  const cvId = Number(cvIdValue);
+  if (!Number.isFinite(cvId)) {
+    return { error: "Thiếu thông tin CV cần xoá." };
+  }
+
+  try {
+    await apiFetch(`/api/profiles/me/cvs/${cvId}`, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Không thể xoá CV vào lúc này.";
+    return { error: message };
+  }
+
+  revalidateCandidateViews();
+  return { success: "Đã xoá CV." };
+}
+
 export async function updateExperiencesAction(
   _prevState: ProfileFormState,
   formData: FormData

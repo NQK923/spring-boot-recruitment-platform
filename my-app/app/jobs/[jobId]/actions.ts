@@ -18,8 +18,8 @@ export async function applyToJobAction(
   const source = String(formData.get("source") ?? "").trim() || null;
 
   let cvId: number | null = null;
-  if (cvIdRaw) {
-    const parsed = Number(cvIdRaw);
+  if (typeof cvIdRaw === "string" && cvIdRaw.trim().length > 0) {
+    const parsed = Number(cvIdRaw.trim());
     if (Number.isNaN(parsed)) {
       return { error: "Mã CV phải là số." };
     }

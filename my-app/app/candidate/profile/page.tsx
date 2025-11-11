@@ -1,5 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import type { Profile } from "@/lib/types";
+import { deleteCvAction } from "@/app/candidate/profile/actions";
 import { AvatarUploader } from "@/components/profile/avatar-uploader";
 import { UpdateProfileForm } from "@/components/profile/update-profile-form";
 import { UploadCvForm } from "@/components/profile/upload-cv-form";
@@ -166,7 +167,7 @@ export default async function CandidateProfilePage() {
                 return (
                   <div
                     key={cv.id}
-                    className="flex flex-col gap-2 rounded-xl border border-primary-100 bg-gradient-to-br from-white via-blue-50/40 to-indigo-50/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-3 rounded-xl border border-primary-100 bg-gradient-to-br from-white via-blue-50/40 to-indigo-50/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
                       <p className="font-semibold text-gray-900">{cv.versionName}</p>
@@ -174,18 +175,31 @@ export default async function CandidateProfilePage() {
                         {formatDate(cv.createdAt, "Chưa rõ thời gian")} {cv.isDefault ? "(mặc định)" : ""}
                       </p>
                     </div>
-                    {downloadHref ? (
-                      <a
-                        href={downloadHref}
-                        className="text-sm font-semibold text-primary-600 hover:text-primary-700"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Tải xuống
-                      </a>
-                    ) : (
-                      <span className="text-sm text-gray-600">Bản nháp – cần tải file sau khi hoàn thiện.</span>
-                    )}
+                    <div className="flex flex-wrap items-center gap-3">
+                      {downloadHref ? (
+                        <a
+                          href={downloadHref}
+                          className="text-sm font-semibold text-primary-600 hover:text-primary-700"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Tải xuống
+                        </a>
+                      ) : (
+                        <span className="text-sm text-gray-600">
+                          Bản nháp – cần tải file sau khi hoàn thiện.
+                        </span>
+                      )}
+                      <form action={deleteCvAction}>
+                        <input type="hidden" name="cvId" value={cv.id} />
+                        <button
+                          type="submit"
+                          className="text-sm font-semibold text-red-600 transition hover:text-red-700"
+                        >
+                          Xoá
+                        </button>
+                      </form>
+                    </div>
                   </div>
                 );
               })}
