@@ -19,17 +19,21 @@ public class ApplicationDetailsDto {
     private Long cvId;
     private String status;
     private Instant appliedAt;
+    private ApplicationInterviewDetailsDto interviewDetails;
+    private ApplicationOfferDetailsDto offerDetails;
 
     public static ApplicationDetailsDto fromApplication(Application app) {
         return new ApplicationDetailsDto(
                 app.getId(),
                 app.getJobPostingId(),
                 app.getCandidateId(),
-                null, // Will be enriched later
+                null,
                 app.getOwnerUserId(),
                 app.getCvId(),
                 app.getStatus().name(),
-                app.getAppliedAt()
+                app.getAppliedAt(),
+                null,
+                null
         );
     }
 }

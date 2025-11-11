@@ -1,5 +1,7 @@
 package com.recruitment.platform.application.event;
 
+import java.util.Map;
+
 // Published when an application's status changes.
 public record ApplicationStatusChangedEvent(
     Long applicationId,
@@ -7,5 +9,6 @@ public record ApplicationStatusChangedEvent(
     Long jobPostingId,
     String oldStatus,
     String newStatus,
-    Long changedByUserId // Can be null if changed by the system
+    Long changedByUserId,
+    Map<String, Object> metadata
 ) {}

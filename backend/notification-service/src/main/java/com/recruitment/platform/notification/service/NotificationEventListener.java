@@ -16,6 +16,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -93,8 +94,7 @@ public class NotificationEventListener {
     public Consumer<ApplicationStatusChangedEvent> applicationStatusChangedEventConsumer() {
         return event -> {
             log.info("Received ApplicationStatusChangedEvent for application ID: {}", event.applicationId());
-            
-            // Fetch the candidate's email
+
             List<AuthServiceClient.UserEmailInfo> users = authServiceClient.getUsersByIds(new AuthServiceClient.BatchUserIdsRequest(List.of(event.candidateId())));
             if (users.isEmpty()) {
                 log.error("Could not find user with ID: {}", event.candidateId());
@@ -102,8 +102,99 @@ public class NotificationEventListener {
             }
             String candidateEmail = users.get(0).email();
 
-            String subject = String.format("Update on your application for Job #%d", event.jobPostingId());
-            String text = String.format("Hello!\n\nThe status of your application for job #%d has been updated to: %s", event.jobPostingId(), event.newStatus());
+            String normalizedStatus = event.newStatus() != null ? event.newStatus().toUpperCase() : "UNKNOWN";
+            Map<String, Object> metadata = event.metadata() != null ? event.metadata() : Map.of();
+
+            String subject;
+            String text;
+            switch (normalizedStatus) {
+                case "INTERVIEWING" -> {
+                    String timeText = formatIso(metadata.get("interviewScheduledAt"));
+                    String timezone = safeString(metadata.get("interviewTimezone"));
+                    String location = safeString(metadata.get("interviewLocation"));
+                    String instructions = safeString(metadata.get("interviewInstructions"));
+                    subject = String.format("Lịch phỏng vấn cho hồ sơ #%d", event.applicationId());
+                    text = """
+                            Xin chào!
+
+                            Đội ngũ tuyển dụng đã lên lịch phỏng vấn cho vị trí #%d.
+
+                            • Thời gian: %s %s
+                            • Địa điểm / liên kết: %s
+                            %s
+
+                            Nếu bạn cần thay đổi lịch, vui lòng trả lời email này hoặc liên hệ với nhà tuyển dụng.
+                            """.formatted(
+                            event.jobPostingId(),
+                            timeText,
+                            timezone.isBlank() ? "" : "(" + timezone + ")",
+                            location.isBlank() ? "Sẽ được cập nhật" : location,
+                            instructions.isBlank() ? "" : ("• Ghi chú: " + instructions)
+                    );
+                }
+                case "OFFERED" -> {
+                    String salaryAmount = safeString(metadata.get("offerSalaryAmount"));
+                    String currency = safeString(metadata.get("offerCurrency"));
+                    String notes = safeString(metadata.get("offerNotes"));
+                    String expires = formatIso(metadata.get("offerExpiresAt"));
+                    subject = String.format("Đề nghị cho hồ sơ #%d", event.applicationId());
+                    text = """
+                            Xin chào!
+
+                            Chúng tôi rất vui được gửi tới bạn đề nghị làm việc cho vị trí #%d.
+
+                            • Mức lương đề nghị: %s %s
+                            • Thời hạn phản hồi: %s
+                            %s
+
+                            Hãy đăng nhập TalentFlow để chấp nhận hoặc từ chối đề nghị.
+                            """.formatted(
+                            event.jobPostingId(),
+                            salaryAmount.isBlank() ? "Đang cập nhật" : salaryAmount,
+                            currency.isBlank() ? "VND" : currency,
+                            expires.isBlank() ? "Sẽ được thông báo" : expires,
+                            notes.isBlank() ? "" : ("• Ghi chú thêm: " + notes)
+                    );
+                }
+                case "HIRED" -> {
+                    String decision = safeString(metadata.get("offerDecision"));
+                    boolean accepted = "ACCEPTED".equalsIgnoreCase(decision);
+                    subject = "Chúc mừng bạn đã nhận việc!";
+                    text = accepted
+                            ? """
+                            Xin chúc mừng!
+
+                            Bạn đã xác nhận đồng ý với đề nghị tuyển dụng và hồ sơ hiện ở trạng thái ĐÃ TUYỂN.
+                            Bộ phận nhân sự sẽ sớm liên hệ để hoàn tất các bước tiếp theo.
+                            """
+                            : """
+                            Xin chúc mừng!
+
+                            Đội ngũ tuyển dụng đã chuyển hồ sơ sang trạng thái ĐÃ TUYỂN.
+                            Chúng tôi sẽ tiếp tục đồng hành cùng bạn trong quá trình nhận việc.
+                            """;
+                }
+                case "REJECTED" -> {
+                    String decision = safeString(metadata.get("offerDecision"));
+                    if ("DECLINED".equalsIgnoreCase(decision)) {
+                        subject = "Bạn đã từ chối đề nghị";
+                        text = """
+                                Cảm ơn bạn đã phản hồi!
+
+                                Chúng tôi đã ghi nhận quyết định từ chối đề nghị tuyển dụng.
+                                Nếu muốn ứng tuyển vị trí khác trong tương lai, bạn luôn được chào đón quay lại TalentFlow.
+                                """;
+                    } else {
+                        subject = String.format("Cập nhật hồ sơ #%d", event.applicationId());
+                        text = String.format("Xin chào!%n%nHồ sơ của bạn cho vị trí #%d đã chuyển sang trạng thái: %s.", event.jobPostingId(), normalizedStatus);
+                    }
+                }
+                default -> {
+                    subject = String.format("Cập nhật hồ sơ #%d", event.applicationId());
+                    text = String.format("Xin chào!%n%nTrạng thái hồ sơ của bạn cho vị trí #%d đã cập nhật thành: %s.", event.jobPostingId(), normalizedStatus);
+                }
+            }
+
             sendEmail(candidateEmail, subject, text);
         };
     }
@@ -186,6 +277,26 @@ public class NotificationEventListener {
                     e.getMessage(),
                     e
             );
+        }
+    }
+
+    private String safeString(Object value) {
+        if (value == null) {
+            return "";
+        }
+        String str = String.valueOf(value).trim();
+        return "null".equalsIgnoreCase(str) ? "" : str;
+    }
+
+    private String formatIso(Object value) {
+        String raw = safeString(value);
+        if (raw.isBlank()) {
+            return "";
+        }
+        try {
+            return OTP_EXPIRY_FORMATTER.format(Instant.parse(raw));
+        } catch (Exception ex) {
+            return raw;
         }
     }
 }

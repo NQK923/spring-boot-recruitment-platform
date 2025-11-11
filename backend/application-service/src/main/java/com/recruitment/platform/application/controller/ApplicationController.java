@@ -1,8 +1,11 @@
 package com.recruitment.platform.application.controller;
 
 import com.recruitment.platform.application.dto.ApplicationDetailsDto;
+import com.recruitment.platform.application.dto.ApplicationInterviewDetailsDto;
+import com.recruitment.platform.application.dto.ApplicationOfferDetailsDto;
 import com.recruitment.platform.application.dto.ApplyRequest;
 import com.recruitment.platform.application.dto.CreateApplicationNoteRequest;
+import com.recruitment.platform.application.dto.OfferDecisionRequest;
 import com.recruitment.platform.application.dto.UpdateApplicationStatusRequest;
 import com.recruitment.platform.application.model.Application;
 import com.recruitment.platform.application.model.ApplicationNote;
@@ -15,6 +18,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/applications")
@@ -100,6 +104,63 @@ public class ApplicationController {
         return new ResponseEntity<>(note, HttpStatus.CREATED);
     }
 
+    @GetMapping("/{applicationId}/interview")
+    @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN', 'SCOPE_CANDIDATE') or hasAnyRole('RECRUITER', 'COMPANY_ADMIN', 'CANDIDATE')")
+    public ResponseEntity<ApplicationInterviewDetailsDto> getInterviewDetails(@PathVariable Long applicationId,
+                                                                              @AuthenticationPrincipal Jwt jwt,
+                                                                              @RequestHeader(value = "X-Company-ID", required = false) Long companyId) {
+        if (isCandidate(jwt)) {
+            if (!candidateOwnsApplication(applicationId, jwt)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } else {
+            if (companyId == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            service.assertRecruiterAccessToApplication(applicationId, companyId);
+        }
+
+        return service.getInterviewDetails(applicationId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
+    }
+
+    @GetMapping("/{applicationId}/offer")
+    @PreAuthorize("hasAnyAuthority('SCOPE_RECRUITER', 'SCOPE_COMPANY_ADMIN', 'SCOPE_CANDIDATE') or hasAnyRole('RECRUITER', 'COMPANY_ADMIN', 'CANDIDATE')")
+    public ResponseEntity<ApplicationOfferDetailsDto> getOfferDetails(@PathVariable Long applicationId,
+                                                                      @AuthenticationPrincipal Jwt jwt,
+                                                                      @RequestHeader(value = "X-Company-ID", required = false) Long companyId) {
+        if (isCandidate(jwt)) {
+            if (!candidateOwnsApplication(applicationId, jwt)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        } else {
+            if (companyId == null) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            service.assertRecruiterAccessToApplication(applicationId, companyId);
+        }
+
+        return service.getOfferDetails(applicationId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
+    }
+
+    @PostMapping("/{applicationId}/offer/response")
+    @PreAuthorize("hasAuthority('SCOPE_CANDIDATE') or hasRole('CANDIDATE')")
+    public ResponseEntity<ApplicationOfferDetailsDto> respondOffer(@PathVariable Long applicationId,
+                                                                   @AuthenticationPrincipal Jwt jwt,
+                                                                   @RequestBody OfferDecisionRequest request) {
+        if (request == null || request.decision() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        Long candidateId = Long.valueOf(jwt.getSubject());
+        service.respondToOffer(applicationId, request, candidateId);
+        return service.getOfferDetails(applicationId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    }
+
     private boolean isCandidate(Jwt jwt) {
         if (jwt == null) {
             return false;
@@ -112,5 +173,15 @@ public class ApplicationController {
             return rolesString.contains("CANDIDATE");
         }
         return false;
+    }
+
+    private boolean candidateOwnsApplication(Long applicationId, Jwt jwt) {
+        if (jwt == null) {
+            return false;
+        }
+        Long candidateId = Long.valueOf(jwt.getSubject());
+        return service.findById(applicationId)
+                .map(app -> Objects.equals(app.getCandidateId(), candidateId))
+                .orElse(false);
     }
 }
