@@ -9,7 +9,7 @@ const guides = [
   {
     title: "Sổ tay quản trị viên",
     description:
-      "Thiết lập doanh nghiệp, cấu hình luồng khởi tạo và phối hợp gửi lời mời cho những đội tenants mới.",
+      "Thiết lập doanh nghiệp, cấu hình luồng khởi tạo và phối hợp gửi lời mời cho những đội khách hàng mới.",
     href: "/docs/admin",
     cta: "Mở sổ tay quản trị",
   },
@@ -46,7 +46,7 @@ export default async function DocsPage() {
             <>
               <Link href={defaultRoute}>
                 <Button size="sm" variant="secondary" className="font-semibold">
-                  ← Quay lại workspace
+                  ← Quay lại không gian làm việc
                 </Button>
               </Link>
               <Link href="/docs/admin">

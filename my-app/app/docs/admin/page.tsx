@@ -10,7 +10,7 @@ const checklist = [
     items: [
       "Xác nhận bộ nhận diện doanh nghiệp, địa điểm và các giai đoạn tuyển dụng mặc định.",
       "Tạo mẫu tin tuyển dụng và phiếu chấm điểm phỏng vấn để đội ngũ sử dụng ngay.",
-      "Tài liệu hóa chính sách tuyển dụng (phê duyệt offer, khung lương) trước khi triển khai.",
+      "Tài liệu hóa chính sách tuyển dụng (phê duyệt lời mời làm việc, khung lương) trước khi triển khai.",
     ],
   },
   {
@@ -34,7 +34,7 @@ const checklist = [
 const escalations = [
   {
     label: "Onboarding",
-    description: "Kích hoạt tenant, kiểm tra luồng mời tham gia, nhập dữ liệu tin tuyển dụng ban đầu.",
+    description: "Kích hoạt tài khoản khách hàng, kiểm tra luồng mời tham gia, nhập dữ liệu tin tuyển dụng ban đầu.",
     contact: "talentflow-onboarding@company.com",
   },
   {
@@ -61,14 +61,14 @@ export default function AdminDocsPage() {
             Vận hành TalentFlow an toàn và ở quy mô lớn.
           </h1>
           <p className="max-w-3xl text-base leading-relaxed text-slate-600 font-medium">
-            Quản trị viên chịu trách nhiệm quản lý tenant, onboarding và giữ môi trường vận hành sạch. Hãy sử dụng sổ
+            Quản trị viên chịu trách nhiệm quản lý khách hàng, onboarding và giữ môi trường vận hành sạch. Hãy sử dụng sổ
             tay này mỗi ngày và cập nhật khi quy trình nội bộ thay đổi.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Link href={ROUTES.recruiterDashboard}>
             <Button size="sm" variant="secondary" className="font-semibold">
-              ← Quay lại workspace
+              ← Quay lại không gian làm việc
             </Button>
           </Link>
           <Link href="/docs/candidate">

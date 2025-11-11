@@ -101,7 +101,7 @@ export default async function CandidateApplicationDetailsPage({
         href={ROUTES.candidatePortal}
         className="text-sm font-semibold text-muted hover:text-text"
       >
-        Back to applications
+        Quay lại danh sách đơn ứng tuyển
       </Link>
 
       <header className="space-y-2">
@@ -112,55 +112,55 @@ export default async function CandidateApplicationDetailsPage({
           {job?.title ?? `Application #${application.id}`}
         </h1>
         <p className="text-sm text-muted">
-          Job #{application.jobPostingId} - Applied {formatDate(application.appliedAt, true)}
+          Công việc #{application.jobPostingId} - Đã nộp {formatDate(application.appliedAt, true)}
         </p>
       </header>
 
       <section className="space-y-4 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
-        <h2 className="text-lg font-semibold text-text">Job overview</h2>
+        <h2 className="text-lg font-semibold text-text">Tổng quan công việc</h2>
         <p className="whitespace-pre-wrap text-sm text-muted">
           {job?.description ??
-            "The hiring team is preparing a detailed description, including responsibilities, qualifications, and benefits."}
+            "Đội ngũ tuyển dụng đang chuẩn bị mô tả chi tiết, bao gồm trách nhiệm, trình độ chuyên môn và quyền lợi."}
         </p>
       </section>
 
       <section className="space-y-4 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
-        <h2 className="text-lg font-semibold text-text">Application info</h2>
+        <h2 className="text-lg font-semibold text-text">Thông tin đơn ứng tuyển</h2>
         <dl className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <dt className="text-muted">Status</dt>
+            <dt className="text-muted">Trạng thái</dt>
             <dd className="font-semibold text-text">{formatStatus(application.status)}</dd>
           </div>
           <div>
-            <dt className="text-muted">Applied on</dt>
+            <dt className="text-muted">Ngày nộp</dt>
             <dd className="font-semibold text-text">{formatDate(application.appliedAt, true)}</dd>
           </div>
           <div>
-            <dt className="text-muted">CV reference</dt>
+            <dt className="text-muted">CV tham chiếu</dt>
             <dd className="font-semibold text-text">{application.cvId ?? "N/A"}</dd>
           </div>
           <div>
-            <dt className="text-muted">Source</dt>
+            <dt className="text-muted">Nguồn</dt>
             <dd className="font-semibold text-text">{application.source ?? "N/A"}</dd>
           </div>
           <div>
-            <dt className="text-muted">Owner</dt>
-            <dd className="font-semibold text-text">{application.ownerUserId ?? "Unassigned"}</dd>
+            <dt className="text-muted">Người phụ trách</dt>
+            <dd className="font-semibold text-text">{application.ownerUserId ?? "Chưa được giao"}</dd>
           </div>
           <div>
-            <dt className="text-muted">Candidate name</dt>
+            <dt className="text-muted">Tên ứng viên</dt>
             <dd className="font-semibold text-text">
-              {application.candidateName ?? `Candidate #${application.candidateId}`}
+              {application.candidateName ?? `Ứng viên #${application.candidateId}`}
             </dd>
           </div>
         </dl>
       </section>
 
       <section className="space-y-4 rounded-2xl border border-border bg-bg/70 p-8 shadow-sm">
-        <h2 className="text-lg font-semibold text-text">Interviews</h2>
+        <h2 className="text-lg font-semibold text-text">Phỏng vấn</h2>
         {interviews.length === 0 ? (
           <p className="text-sm text-muted">
-            No interviews scheduled yet. You will receive an email when a recruiter sets one up.
+            Chưa có lịch phỏng vấn nào. Bạn sẽ nhận được email khi nhà tuyển dụng sắp xếp lịch.
           </p>
         ) : (
           <div className="space-y-3 text-sm">
@@ -170,13 +170,13 @@ export default async function CandidateApplicationDetailsPage({
                   <span className="font-medium text-text">
                     {formatDate(interview.scheduleTime, true)}
                   </span>
-                  <span className="text-xs text-muted">{interview.format ?? "Format TBD"}</span>
+                  <span className="text-xs text-muted">{interview.format ?? "Chưa có hình thức"}</span>
                 </div>
                 <p className="text-xs text-text/50">
-                  {interview.locationOrLink ? interview.locationOrLink : "Location or link will be shared"}
+                  {interview.locationOrLink ? interview.locationOrLink : "Địa điểm hoặc liên kết sẽ được chia sẻ"}
                 </p>
                 {interview.outcome ? (
-                  <p className="mt-1 text-xs text-text/50">Outcome: {interview.outcome}</p>
+                  <p className="mt-1 text-xs text-text/50">Kết quả: {interview.outcome}</p>
                 ) : null}
               </div>
             ))}
@@ -184,7 +184,7 @@ export default async function CandidateApplicationDetailsPage({
         )}
         {calendarHref ? (
           <Link href={calendarHref} className="text-sm font-semibold text-text hover:underline">
-            Download interview calendar (.ics)
+            Tải lịch phỏng vấn (.ics)
           </Link>
         ) : null}
       </section>

@@ -229,7 +229,7 @@ export default async function CompanyAdminDashboardPage() {
       helper: "Lời mời đã gửi nhưng chưa được chấp nhận.",
     },
     {
-      label: "Việc chưa có phụ trách",
+      label: "Việc chưa có người phụ trách",
       value: unassignedJobs,
       helper: "Bài đăng chưa có nhà tuyển dụng phụ trách.",
     },
@@ -266,7 +266,7 @@ export default async function CompanyAdminDashboardPage() {
   ].filter(Boolean) as string[];
 
   if (insights.length === 0) {
-    insights.push("Workspace của bạn đang hoạt động rất tốt. Tiếp tục cập nhật thường xuyên để đáp ứng nhu cầu tuyển dụng.");
+    insights.push("Không gian làm việc của bạn đang hoạt động rất tốt. Tiếp tục cập nhật thường xuyên để đáp ứng nhu cầu tuyển dụng.");
   }
 
   const recentInvites = dashboard?.recentInvites ?? [];
@@ -288,7 +288,7 @@ export default async function CompanyAdminDashboardPage() {
             Bảng điều khiển quản trị công ty
           </div>
           <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-tight text-gray-900 sm:text-5xl">
-            {profile?.name ?? "Workspace của bạn"}
+            {profile?.name ?? "Không gian làm việc của bạn"}
           </h1>
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-gray-800">
             Mời đồng đội, quản lý việc làm và theo dõi tình trạng tuyển dụng tại một nơi.
@@ -432,7 +432,7 @@ export default async function CompanyAdminDashboardPage() {
         <div className="space-y-5">
           <h2 className="text-3xl font-bold text-slate-900">Danh sách thành viên</h2>
           <p className="text-base text-slate-600">
-            Quản trị viên công ty phụ trách phân quyền, trong khi nhà tuyển dụng quản lý từng vị trí và pipeline.
+            Quản trị viên công ty phụ trách phân quyền, trong khi nhà tuyển dụng quản lý từng vị trí và quy trình.
           </p>
           <div className="flex flex-wrap items-center gap-3 text-xs">
             <span className="inline-flex items-center rounded-full border-2 border-blue-200 bg-gradient-to-r from-blue-600 to-sky-500 px-5 py-2 font-bold uppercase tracking-wider text-white shadow-md">
@@ -480,7 +480,7 @@ export default async function CompanyAdminDashboardPage() {
                 </svg>
               </div>
               <p className="text-base font-semibold text-slate-700">Chưa có việc làm nào được tạo.</p>
-              <p className="text-sm text-slate-600">Hãy tạo nháp để khởi động pipeline tuyển dụng.</p>
+              <p className="text-sm text-slate-600">Hãy tạo nháp để khởi động quy trình tuyển dụng.</p>
             </div>
           </div>
         ) : (

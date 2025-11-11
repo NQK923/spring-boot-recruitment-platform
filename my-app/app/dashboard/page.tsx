@@ -95,7 +95,7 @@ const STATUS_LABELS: Record<string, string> = {
   SCREENING: "Đang sàng lọc",
   INTERVIEW: "Phỏng vấn",
   INTERVIEW_SCHEDULED: "Đã lên lịch phỏng vấn",
-  OFFERED: "Đề nghị",
+  OFFERED: "Đã nhận offer",
   HIRED: "Đã nhận việc",
   REJECTED: "Bị từ chối",
   WITHDRAWN: "Đã rút",
@@ -182,7 +182,7 @@ export default async function DashboardPage() {
                 <Link href={ROUTES.candidateProfile}>Thư viện CV</Link>
               </Button>
               <Button asChild size="sm">
-                <Link href={ROUTES.jobs}>Khám phá job mới</Link>
+                <Link href={ROUTES.jobs}>Khám phá công việc mới</Link>
               </Button>
             </div>
           </div>
@@ -212,7 +212,7 @@ export default async function DashboardPage() {
                       <Link href={ROUTES.candidateProfile}>Xem hồ sơ</Link>
                     </Button>
                     <Button asChild size="sm">
-                      <Link href={`${ROUTES.jobs}/${application.jobPostingId}`}>Xem job</Link>
+                      <Link href={`${ROUTES.jobs}/${application.jobPostingId}`}>Xem công việc</Link>
                     </Button>
                   </div>
                 </div>
@@ -286,7 +286,7 @@ export default async function DashboardPage() {
       helper: "Các vị trí hiện đang hiển thị cho ứng viên.",
     },
     {
-      label: "Ứng viên trong pipeline",
+      label: "Ứng viên trong quy trình",
       value: activeCandidateIds.size,
       helper: "Hồ sơ bạn đang theo dõi và chăm sóc.",
     },
@@ -309,7 +309,7 @@ export default async function DashboardPage() {
       description: "Duyệt các hồ sơ vừa nộp và ghi chú cho quản lý tuyển dụng.",
     },
     {
-      label: "Xử lý điểm tắc pipeline",
+      label: "Xử lý điểm tắc quy trình",
       href: "#pipeline",
       description: "Phát hiện nút thắt giữa các giai đoạn và phân bổ lại công việc.",
     },
@@ -326,7 +326,7 @@ export default async function DashboardPage() {
   ];
 
   const heroHighlights = [
-    `Có ${allApplications.length} hồ sơ trong pipeline của bạn.`,
+    <span>{`Có ${allApplications.length} hồ sơ trong quy trình của bạn.`}</span>,
     `${awaitingReview} ứng viên đang chờ phản hồi.`,
     `${upcomingInterviews.length} buổi phỏng vấn sắp diễn ra cần chuẩn bị.`,
   ];
@@ -344,7 +344,7 @@ export default async function DashboardPage() {
               Điều phối việc làm, ứng viên và phỏng vấn trên cùng một nền tảng
             </h1>
             <p className="text-lg text-gray-700 leading-relaxed">
-              Theo sát pipeline tuyển dụng với ưu tiên rõ ràng, bối cảnh từ hoạt động gần nhất và đường dẫn hành động nhanh nhất.
+              Theo sát quy trình tuyển dụng với ưu tiên rõ ràng, bối cảnh từ hoạt động gần nhất và đường dẫn hành động nhanh nhất.
             </p>
             <ul className="space-y-3 text-base text-gray-800">
               {heroHighlights.map((highlight) => (
@@ -384,7 +384,7 @@ export default async function DashboardPage() {
               <div className="flex items-start gap-3 rounded-lg bg-white/80 border border-blue-200 px-4 py-3 shadow-sm">
                 <span className="text-lg flex-shrink-0">🎯</span>
                 <div className="space-y-1 flex-1">
-                  <p className="text-sm font-bold text-gray-900">Kiểm tra pipeline</p>
+                  <p className="text-sm font-bold text-gray-900">Kiểm tra quy trình</p>
                   <p className="text-xs text-gray-700 leading-relaxed">
                     Phát hiện nút thắt và phân bổ lại công việc cho {activeCandidateIds.size} ứng viên đang theo dõi
                   </p>
@@ -424,7 +424,7 @@ export default async function DashboardPage() {
         <header className="space-y-2">
           <h2 className="text-2xl font-bold text-gray-900">Hành động nhanh</h2>
           <p className="text-base text-gray-800">
-            Truy cập ngay các khu vực giữ pipeline luôn thông suốt và thúc đẩy ứng viên tiến bước.
+            Truy cập ngay các khu vực giữ quy trình luôn thông suốt và thúc đẩy ứng viên tiến bước.
           </p>
         </header>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -453,7 +453,7 @@ export default async function DashboardPage() {
           <h2 className="text-2xl font-bold text-gray-900">Danh mục việc làm</h2>
           <p className="text-base text-gray-800 leading-relaxed">
             Rà soát các vị trí bạn đang hỗ trợ tuyển dụng. {canAdminJobs
-              ? "Chuyển sang workspace quản trị công ty khi cần đăng, tạm dừng hoặc chỉnh sửa bài tuyển dụng."
+              ? "Chuyển sang không gian làm việc quản trị công ty khi cần đăng, tạm dừng hoặc chỉnh sửa bài tuyển dụng."
               : "Chỉ quản trị viên công ty mới có thể tạo hoặc chỉnh sửa bài đăng. Hãy liên hệ quản trị khi cần thay đổi."}
           </p>
           {canAdminJobs ? (
@@ -520,14 +520,14 @@ export default async function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <div id="pipeline" className="space-y-5 rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100 p-8 shadow-md">
           <header className="space-y-2">
-            <h2 className="text-xl font-bold text-gray-900">Tổng quan pipeline</h2>
+            <h2 className="text-xl font-bold text-gray-900">Tổng quan quy trình</h2>
             <p className="text-sm text-gray-800 leading-relaxed">
               Tổng hợp từ toàn bộ hồ sơ của công ty. Cập nhật trạng thái ở bất kỳ hồ sơ nào, số liệu sẽ tự động thay đổi.
             </p>
           </header>
           {allApplications.length === 0 ? (
             <div className="rounded-2xl border-2 border-dashed border-blue-200 bg-white/50 px-5 py-7 text-center text-sm text-gray-800">
-              Chưa có hồ sơ nào. Mời ứng viên hoặc đăng tuyển vị trí mới để bắt đầu xây dựng pipeline.
+              Chưa có hồ sơ nào. Mời ứng viên hoặc đăng tuyển vị trí mới để bắt đầu xây dựng quy trình.
             </div>
           ) : (
             <div className="space-y-3">
@@ -585,7 +585,7 @@ export default async function DashboardPage() {
         <header className="space-y-2">
           <h2 className="text-2xl font-bold text-gray-900">Hồ sơ mới nhất</h2>
           <p className="text-base text-gray-800">
-            Hoạt động gần đây trong pipeline. Nhấp để xem ghi chú, cập nhật trạng thái hoặc thêm phản hồi.
+            Hoạt động gần đây trong quy trình. Nhấp để xem ghi chú, cập nhật trạng thái hoặc thêm phản hồi.
           </p>
         </header>
 

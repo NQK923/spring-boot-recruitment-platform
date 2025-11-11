@@ -97,7 +97,7 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   APPLIED: "Đã nộp",
   SCREENING: "Sàng lọc",
   INTERVIEWING: "Phỏng vấn",
-  OFFERED: "Đề nghị",
+  OFFERED: "Đã nhận offer",
   HIRED: "Đã tuyển",
   REJECTED: "Đã từ chối",
 };

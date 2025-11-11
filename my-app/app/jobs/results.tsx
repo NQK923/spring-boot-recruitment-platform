@@ -190,11 +190,11 @@ export function JobsResults({
 
                 <p className="line-clamp-4 text-sm leading-relaxed text-slate-600 font-medium">
                   {job.description ??
-                    "The hiring team is preparing a detailed description. Check back soon for responsibilities and requirements."}
+                    "Đội ngũ tuyển dụng đang chuẩn bị mô tả chi tiết. Vui lòng quay lại sau để xem trách nhiệm và yêu cầu."}
                 </p>
 
                 <div className="flex flex-wrap gap-2 pt-2">
-                  <JobMetaChip label={normalize(job.location) ?? "Multiple locations"} />
+                  <JobMetaChip label={normalize(job.location) ?? "Nhiều địa điểm"} />
                   <JobMetaChip label={normalize(job.workType) ?? "Flexible work style"} />
                   {job.department && (
                     <JobMetaChip label={job.level ? `${job.department} / ${job.level}` : job.department} />

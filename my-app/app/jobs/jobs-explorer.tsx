@@ -13,7 +13,7 @@ type JobsExplorerProps = {
 };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const FALLBACK_ERROR = "Không thể tải danh sách công việc. Vui lòng thử lại.";
+const FALLBACK_ERROR = "Không thể tải danh sách công việc. Vui lòng thử lại sau.";
 
 export function JobsExplorer({ initialQuery, initialPageData, pageSize }: JobsExplorerProps) {
   const router = useRouter();
