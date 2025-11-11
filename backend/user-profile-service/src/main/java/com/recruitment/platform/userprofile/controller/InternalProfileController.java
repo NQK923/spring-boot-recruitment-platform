@@ -1,7 +1,7 @@
 package com.recruitment.platform.userprofile.controller;
 
 import com.recruitment.platform.userprofile.dto.BatchUserIdsRequest;
-import com.recruitment.platform.userprofile.model.Profile;
+import com.recruitment.platform.userprofile.dto.ProfileSummaryResponse;
 import com.recruitment.platform.userprofile.service.ProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +22,7 @@ public class InternalProfileController {
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<List<Profile>> getProfilesInBatch(@RequestBody BatchUserIdsRequest request) {
+    public ResponseEntity<List<ProfileSummaryResponse>> getProfilesInBatch(@RequestBody BatchUserIdsRequest request) {
         return ResponseEntity.ok(profileService.getProfilesInBatch(request.userIds()));
     }
 }

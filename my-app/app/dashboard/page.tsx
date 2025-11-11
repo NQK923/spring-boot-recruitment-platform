@@ -6,6 +6,7 @@ import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import { getCurrentUser } from "@/lib/current-user";
 import type {
+  Application,
   ApplicationDetails,
   Interview,
   JobPosting,
@@ -13,9 +14,17 @@ import type {
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
 
-async function getCompanyJobs(): Promise<JobPosting[]> {
+async function getCompanyJobs(companyId: number | null): Promise<JobPosting[]> {
+  if (!companyId) {
+    return [];
+  }
   try {
-    const response = await apiFetch("/api/jobs", { method: "GET" });
+    const response = await apiFetch("/api/jobs", {
+      method: "GET",
+      headers: {
+        "X-Company-ID": String(companyId),
+      },
+    });
     const data = await response.json();
     return Array.isArray(data) ? (data as JobPosting[]) : [];
   } catch {
@@ -23,9 +32,17 @@ async function getCompanyJobs(): Promise<JobPosting[]> {
   }
 }
 
-async function getApplicationsForJob(jobId: number): Promise<ApplicationDetails[]> {
+async function getApplicationsForJob(jobId: number, companyId: number | null): Promise<ApplicationDetails[]> {
+  if (!companyId) {
+    return [];
+  }
   try {
-    const response = await apiFetch(`/api/jobs/${jobId}/applications`, { method: "GET" });
+    const response = await apiFetch(`/api/jobs/${jobId}/applications`, {
+      method: "GET",
+      headers: {
+        "X-Company-ID": String(companyId),
+      },
+    });
     const data = await response.json();
     return Array.isArray(data) ? (data as ApplicationDetails[]) : [];
   } catch {
@@ -33,9 +50,17 @@ async function getApplicationsForJob(jobId: number): Promise<ApplicationDetails[
   }
 }
 
-async function getRecruiterInterviews(): Promise<Interview[]> {
+async function getRecruiterInterviews(companyId: number | null): Promise<Interview[]> {
+  if (!companyId) {
+    return [];
+  }
   try {
-    const response = await apiFetch("/api/interviews/my", { method: "GET" });
+    const response = await apiFetch("/api/interviews/my", {
+      method: "GET",
+      headers: {
+        "X-Company-ID": String(companyId),
+      },
+    });
     const data = await response.json();
     return Array.isArray(data) ? (data as Interview[]) : [];
   } catch {
@@ -107,25 +132,102 @@ export default async function DashboardPage() {
     redirect(ROUTES.companyAdminDashboard);
   }
 
-  const canAdminJobs = Boolean(viewer?.roles.includes("COMPANY_ADMIN"));
-  const jobs = await getCompanyJobs();
-  const applicationsByJob = new Map<number, ApplicationDetails[]>();
+  const isCompanyAdmin = viewer?.roles.includes("COMPANY_ADMIN") ?? false;
+  const isRecruiter = viewer?.roles.includes("RECRUITER") ?? false;
+  const isCandidate = viewer?.roles.includes("CANDIDATE") ?? false;
+  const viewerCompanyId = await getViewerCompanyId(viewer?.id);
+  const companyIdHeader = viewerCompanyId ?? null;
+  const showRecruiterDashboard = isCompanyAdmin || isRecruiter;
 
-  const [jobApplications, interviews] = await Promise.all([
-    Promise.all(
-      jobs.map(async (job) => ({
-        jobId: job.id,
-        applications: await getApplicationsForJob(job.id),
-      }))
-    ),
-    getRecruiterInterviews(),
-  ]);
+  if (!showRecruiterDashboard && isCandidate) {
+    const candidateApplications = await getCandidateApplications();
+    return (
+      <Container className="space-y-8 py-12">
+        <header className="space-y-3">
+          <p className="text-sm font-bold uppercase tracking-[0.3em] text-blue-600">Bảng điều khiển</p>
+          <h1 className="text-3xl font-bold text-slate-900">Tổng quan hồ sơ của bạn</h1>
+          <p className="text-base text-slate-600">
+            Theo dõi trạng thái các lần ứng tuyển và truy cập nhanh vào thư viện CV hoặc hồ sơ ứng viên.
+          </p>
+        </header>
 
-  for (const entry of jobApplications) {
-    applicationsByJob.set(entry.jobId, entry.applications);
+        <section className="space-y-4 rounded-3xl border-2 border-blue-100 bg-gradient-to-br from-white via-blue-50 to-indigo-50 p-8 shadow-md">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Hồ sơ đã nộp</h2>
+              <p className="text-sm text-gray-700">Danh sách các vị trí bạn đã ứng tuyển gần đây.</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild variant="secondary" size="sm">
+                <Link href={ROUTES.candidateProfile}>Thư viện CV</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href={ROUTES.jobs}>Khám phá job mới</Link>
+              </Button>
+            </div>
+          </div>
+
+          {candidateApplications.length === 0 ? (
+            <div className="rounded-2xl border-2 border-dashed border-blue-200 bg-white/60 px-5 py-6 text-center text-sm text-slate-700">
+              Bạn chưa nộp hồ sơ nào. Hãy cập nhật CV và ứng tuyển để bắt đầu theo dõi tiến trình tại đây.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {candidateApplications.map((application) => (
+                <div
+                  key={application.id}
+                  className="flex flex-col gap-2 rounded-2xl border-2 border-blue-100 bg-white/90 px-5 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <p className="text-base font-semibold text-slate-900">
+                      Hồ sơ #{application.id} • Vị trí #{application.jobPostingId}
+                    </p>
+                    <p className="text-sm text-slate-600">
+                      Nộp ngày {formatDate(application.appliedAt)} • Trạng thái hiện tại:{" "}
+                      <span className="font-semibold text-blue-700">{formatStatus(application.status)}</span>
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={ROUTES.candidateProfile}>Xem hồ sơ</Link>
+                    </Button>
+                    <Button asChild size="sm">
+                      <Link href={`${ROUTES.jobs}/${application.jobPostingId}`}>Xem job</Link>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </Container>
+    );
   }
 
-  const allApplications = jobApplications.flatMap((entry) => entry.applications);
+  const canAdminJobs = Boolean(isCompanyAdmin);
+  const applicationsByJob = new Map<number, ApplicationDetails[]>();
+  let jobs: JobPosting[] = [];
+  let allApplications: ApplicationDetails[] = [];
+  let interviews: Interview[] = [];
+
+  if (showRecruiterDashboard) {
+    jobs = await getCompanyJobs(companyIdHeader);
+    const [jobApplications, fetchedInterviews] = await Promise.all([
+      Promise.all(
+        jobs.map(async (job) => ({
+          jobId: job.id,
+          applications: await getApplicationsForJob(job.id, companyIdHeader),
+        }))
+      ),
+      getRecruiterInterviews(companyIdHeader),
+    ]);
+
+    for (const entry of jobApplications) {
+      applicationsByJob.set(entry.jobId, entry.applications);
+    }
+    allApplications = jobApplications.flatMap((entry) => entry.applications);
+    interviews = fetchedInterviews;
+  }
   const openJobs = jobs.filter((job) => job.status === "PUBLISHED");
   const activeCandidateIds = new Set(allApplications.map((app) => app.candidateId));
 
@@ -546,3 +648,27 @@ export default async function DashboardPage() {
   );
 }
 
+async function getCandidateApplications(): Promise<Application[]> {
+  try {
+    const response = await apiFetch("/api/applications/my", { method: "GET" });
+    const data = await response.json();
+    return Array.isArray(data) ? (data as Application[]) : [];
+  } catch {
+    return [];
+  }
+}
+async function getViewerCompanyId(userId?: number | null): Promise<number | null> {
+  if (!userId) {
+    return null;
+  }
+  try {
+    const response = await apiFetch(`/api/internal/companies/users/${userId}/company`, {
+      method: "GET",
+    });
+    const data = await response.json();
+    const companyId = data?.id?.companyId ?? data?.companyId ?? null;
+    return typeof companyId === "number" ? companyId : null;
+  } catch {
+    return null;
+  }
+}

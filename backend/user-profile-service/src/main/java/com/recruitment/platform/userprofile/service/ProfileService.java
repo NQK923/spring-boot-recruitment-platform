@@ -12,6 +12,7 @@ import com.recruitment.platform.userprofile.dto.EducationRequest;
 import com.recruitment.platform.userprofile.dto.ExperienceRequest;
 import com.recruitment.platform.userprofile.dto.LanguageRequest;
 import com.recruitment.platform.userprofile.dto.ProfileResponse;
+import com.recruitment.platform.userprofile.dto.ProfileSummaryResponse;
 import com.recruitment.platform.userprofile.dto.ProjectRequest;
 import com.recruitment.platform.userprofile.dto.SkillRequest;
 import com.recruitment.platform.userprofile.dto.UpdateEnrichedProfileRequest;
@@ -107,11 +108,13 @@ public class ProfileService {
     }
 
     @Transactional(readOnly = true)
-    public List<Profile> getProfilesInBatch(List<Long> userIds) {
+    public List<ProfileSummaryResponse> getProfilesInBatch(List<Long> userIds) {
         if (userIds == null || userIds.isEmpty()) {
             return List.of();
         }
-        return profileRepository.findByUserIdIn(userIds);
+        return profileRepository.findByUserIdIn(userIds).stream()
+                .map(profile -> new ProfileSummaryResponse(profile.getUserId(), profile.getFullName()))
+                .toList();
     }
 
     @Transactional(readOnly = true)
