@@ -12,7 +12,7 @@ const TESTIMONIALS: Testimonial[] = [
         name: "Nguyễn Khánh Linh",
         role: "Talent Acquisition Lead · FintechX",
         quote:
-            "TalentFlow giúp đội tuyển dụng của chúng tôi rút ngắn 30% thời gian phản hồi ứng viên và luôn giữ pipeline minh bạch với ban lãnh đạo.",
+            "TalentFlow giúp đội tuyển dụng của chúng tôi rút ngắn 30% thời gian phản hồi ứng viên và luôn giữ quy trình minh bạch với ban lãnh đạo.",
     },
     {
         name: "Trần Duy Minh",

@@ -8,9 +8,9 @@ const FAQ_ITEMS = [
       "Có, TalentFlow hoàn toàn miễn phí cho ứng viên. Bạn có thể tạo hồ sơ, ứng tuyển và theo dõi trạng thái không giới hạn.",
   },
   {
-    question: "Doanh nghiệp có gói dùng thử không?",
+    question: "Doanh nghiệp có được dùng thử không?",
     answer:
-      "Có, doanh nghiệp được dùng thử 14 ngày với đầy đủ tính năng pipeline, báo cáo và tự động hoá thông báo.",
+      "Có, doanh nghiệp được dùng thử 14 ngày với đầy đủ tính năng của quy trình, báo cáo và tự động hoá thông báo.",
   },
   {
     question: "Dữ liệu cá nhân được bảo vệ thế nào?",
@@ -25,12 +25,12 @@ const FAQ_ITEMS = [
   {
     question: "Tôi có thể theo dõi tiến độ của đội tuyển dụng ra sao?",
     answer:
-      "Bảng điều khiển cho phép xem trạng thái từng job, KPI theo ngày và nhật ký hoạt động chi tiết của từng thành viên.",
+      "Bảng điều khiển cho phép xem trạng thái từng công việc, KPI theo ngày và nhật ký hoạt động chi tiết của từng thành viên.",
   },
   {
     question: "Hỗ trợ khách hàng hoạt động vào thời gian nào?",
     answer:
-      "Đội ngũ thành công khách hàng hỗ trợ 24/7 qua email và live chat, đảm bảo giải quyết mọi vấn đề trong vòng 6 giờ.",
+      "Đội ngũ hỗ trợ khách hàng của chúng tôi hỗ trợ 24/7 qua email và trò chuyện trực tuyến, đảm bảo giải quyết mọi vấn đề trong vòng 6 giờ.",
   },
 ] as const;
 

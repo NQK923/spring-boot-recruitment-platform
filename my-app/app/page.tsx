@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `Tuyển đúng người – Nhanh hơn và minh bạch hơn | ${BRAND_NAME}`,
     description:
-      "TalentFlow giúp doanh nghiệp tự động hoá pipeline tuyển dụng, cải thiện trải nghiệm ứng viên và quản trị minh bạch.",
+      "TalentFlow giúp doanh nghiệp tự động hoá quy trình tuyển dụng, cải thiện trải nghiệm ứng viên và quản trị minh bạch.",
     type: "website",
     locale: "vi_VN",
     images: [

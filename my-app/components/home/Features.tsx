@@ -4,7 +4,7 @@ import { Container } from "@/components/ui/container";
 const FEATURES = [
   {
     icon: "🧩",
-    title: "Tự động hoá pipeline",
+    title: "Tự động hoá quy trình",
     description:
       "Chuẩn hoá các bước từ đăng tin, phân luồng, gán người phụ trách đến gửi thông báo – mọi thứ chạy tự động theo quy tắc bạn đặt ra.",
     gradient: "from-primary-500/20 via-primary-500/10 to-surface-2",
@@ -12,7 +12,7 @@ const FEATURES = [
   },
   {
     icon: "📇",
-    title: "Hồ sơ ứng viên giàu dữ liệu",
+    title: "Hồ sơ ứng viên toàn diện",
     description:
       "Tổng hợp kinh nghiệm, kỹ năng, CV, ghi chú nội bộ và lịch sử tương tác trong một hồ sơ duy nhất, giúp quyết định nhanh và chính xác.",
     gradient: "from-accent-600/20 via-accent-500/12 to-surface-2",
@@ -28,9 +28,9 @@ const FEATURES = [
   },
   {
     icon: "📈",
-    title: "Dashboard tức thời",
+    title: "Bảng điều khiển tức thời",
     description:
-      "Theo dõi tỷ lệ chuyển đổi, thời gian tuyển, nguồn ứng viên và hiệu suất từng recruiter với các widget trực quan cập nhật mỗi giờ.",
+      "Theo dõi tỷ lệ chuyển đổi, thời gian tuyển, nguồn ứng viên và hiệu suất từng nhà tuyển dụng với các tiện ích trực quan cập nhật mỗi giờ.",
     gradient: "from-success-600/22 via-success-500/14 to-surface-2",
     chip: "bg-success-600/20 text-success-200",
   },
@@ -59,7 +59,7 @@ export function Features() {
             Thiết kế cho đội tuyển dụng hiện đại
           </h2>
           <p className="text-base text-slate-600">
-            TalentFlow kết hợp công nghệ và UX: nhẹ nhàng, dễ dùng nhưng đủ mạnh mẽ cho doanh nghiệp.
+            TalentFlow kết hợp công nghệ và trải nghiệm người dùng: nhẹ nhàng, dễ dùng nhưng đủ mạnh mẽ cho doanh nghiệp.
           </p>
         </div>
 

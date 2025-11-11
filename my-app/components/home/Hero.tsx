@@ -8,7 +8,7 @@ import { ROUTES } from "@/lib/routes";
 const STATS = [
   { value: "4,8 / 5", label: "Điểm hài lòng ứng viên" },
   { value: "30%", label: "Giảm thời gian phản hồi" },
-  { value: "14 ngày", label: "Chu trình tuyển trung bình" },
+  { value: "14 ngày", label: "Thời gian tuyển trung bình" },
 ] as const;
 export function Hero() {
   return (
@@ -34,11 +34,11 @@ export function Hero() {
           </div>
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent leading-tight">
-            Tuyển đúng người, minh bạch toàn bộ pipeline
+            Tuyển đúng người, minh bạch toàn bộ quy trình
           </h1>
           
           <p className="max-w-2xl mx-auto text-lg md:text-xl text-slate-600 leading-relaxed">
-            Từ đăng job đa kênh, sàng lọc, phối hợp phỏng vấn đến gửi offer — mọi bước diễn ra trên một nền tảng hiện đại
+            Từ đăng tin đa kênh, sàng lọc, phối hợp phỏng vấn đến gửi lời mời làm việc — mọi bước diễn ra trên một nền tảng hiện đại
           </p>
           
           <div className="flex flex-wrap justify-center items-center gap-4">
@@ -90,9 +90,9 @@ export function Hero() {
                 <span className="text-2xl">📋</span>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">Đăng job đa kênh</h3>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Đăng tin đa kênh</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Đẩy tin lên Career site, mạng xã hội và TalentFlow chỉ trong một thao tác
+                  Đẩy tin lên trang tuyển dụng, mạng xã hội và TalentFlow chỉ trong một thao tác
                 </p>
               </div>
             </div>
@@ -107,7 +107,7 @@ export function Hero() {
               <div>
                 <h3 className="text-lg font-bold text-slate-900 mb-2">Phối hợp phỏng vấn</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Kéo thả lịch, mời hội đồng phỏng vấn, nhận feedback theo thời gian thực
+                  Kéo thả lịch, mời hội đồng phỏng vấn, nhận phản hồi theo thời gian thực
                 </p>
               </div>
             </div>
@@ -127,16 +127,16 @@ export function Hero() {
               <div>
                 <h3 className="text-lg font-bold text-slate-900 mb-2">Đo lường chính xác</h3>
                 <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                  Dashboard trực quan với tỷ lệ chuyển đổi realtime
+                  Bảng điều khiển trực quan với tỷ lệ chuyển đổi theo thời gian thực
                 </p>
                 <div className="space-y-2.5 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 p-3 border border-purple-200">
                   <div className="flex items-center justify-between text-xs text-purple-900 font-bold">
-                    <span>Pipeline hiện tại</span>
+                    <span>Quy trình hiện tại</span>
                     <span className="bg-purple-100 px-2 py-0.5 rounded-full">+37</span>
                   </div>
                   <Progress label="Sàng lọc" value={72} tone="primary" />
                   <Progress label="Phỏng vấn" value={48} tone="accent" />
-                  <Progress label="Đề nghị" value={18} tone="success" />
+                  <Progress label="Lời mời" value={18} tone="success" />
                 </div>
               </div>
             </div>

@@ -3,8 +3,8 @@
 const STATS = [
   { value: "10.000+", label: "Ứng viên đang hoạt động", context: "Nguồn nhân lực chất lượng cao trên toàn quốc." },
   { value: "1.200+", label: "Doanh nghiệp tin dùng", context: "Từ start-up tăng trưởng nhanh đến tập đoàn đa quốc gia." },
-  { value: "4,8 / 5", label: "Mức độ hài lòng", context: "Điểm trung bình từ khảo sát 1.200 ứng viên + recruiter." },
-  { value: "24 giờ", label: "Phản hồi trung bình", context: "Nhờ workflow tự động & nhắc việc thông minh." },
+  { value: "4,8 / 5", label: "Mức độ hài lòng", context: "Điểm trung bình từ khảo sát 1.200 ứng viên + nhà tuyển dụng." },
+  { value: "24 giờ", label: "Phản hồi trung bình", context: "Nhờ quy trình tự động & nhắc việc thông minh." },
 ] as const;
 
 export function Stats() {

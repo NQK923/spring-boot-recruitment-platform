@@ -32,7 +32,7 @@ export function JobGrid({ jobs }: JobGridProps) {
         <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full border-2 border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-1.5 text-xs text-amber-700 font-bold">
-              ⭐ Tuyển chọn mới nhất
+              ⭐ Tin tuyển dụng mới nhất
             </div>
             <h2 id="home-jobs" className="text-3xl md:text-4xl font-bold text-slate-900">
               Việc làm nổi bật
