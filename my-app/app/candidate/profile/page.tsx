@@ -1,6 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import type { Profile } from "@/lib/types";
-import { deleteCvAction } from "@/app/candidate/profile/actions";
+import { deleteCvFormAction } from "@/app/candidate/profile/actions";
 import { AvatarUploader } from "@/components/profile/avatar-uploader";
 import { UpdateProfileForm } from "@/components/profile/update-profile-form";
 import { UploadCvForm } from "@/components/profile/upload-cv-form";
@@ -190,7 +190,7 @@ export default async function CandidateProfilePage() {
                           Bản nháp – cần tải file sau khi hoàn thiện.
                         </span>
                       )}
-                      <form action={deleteCvAction}>
+                      <form action={deleteCvFormAction}>
                         <input type="hidden" name="cvId" value={cv.id} />
                         <button
                           type="submit"

@@ -239,144 +239,10 @@ export default async function ApplicationDetailsPage({
               </p>
             </div>
           </article>
-          <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-500">
-                  <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12h3m-3 4h3m-6-4h.01M9 16h.01M5 8h14M5 12h14M5 16h14M9 8v-.01M15 8v-.01" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900">CV Ä‘Ã£ lÆ°u</h3>
-              </div>
-              {profileCvs.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-600">
-                  ChÆ°a cÃ³ CV Ä‘Æ°á»£c táº£i lÃªn. HÃ£y yÃªu cáº§u á»©ng viÃªn cÃºng cáº¥p má»™t bÃ¡n cÃ­nh cáº­p nháº­t.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {profileCvs.map((cv) => {
-                    const downloadHref = cv.downloadUrl ?? (cv.fileId ? `/api/files/${cv.fileId}` : null);
-                    return (
-                      <div
-                        key={cv.id ?? cv.versionName}
-                        className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white/90 px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between"
-                      >
-                        <div>
-                          <p className="font-semibold text-gray-900">
-                            {cv.versionName}
-                            {cv.isDefault ? (
-                              <span className="ml-2 rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-emerald-700">
-                                MÆ°u mÆ·c Ä‘á»‹nh
-                              </span>
-                            ) : null}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Táº£o ngÃ y {formatProfileDate(cv.createdAt, "ChÆ°a rÃµ thá»i gian")}
-                          </p>
-                        </div>
-                        {downloadHref ? (
-                          <a
-                            href={downloadHref}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center justify-center rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:border-purple-300 hover:bg-purple-100"
-                          >
-                            TÃ¡i xuá»‘ng
-                          </a>
-                        ) : (
-                          <span className="text-sm font-medium text-gray-500">ChÆ°a cÃ³ file Ä‘Ã­nh kÃ¨m</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </article>
-
-          {/* Cập nhật trạng thái */}
-          <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
-                  <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Trạng thái</h3>
-                  <p className="text-sm text-gray-600">
-                    Cập nhật giai đoạn quy trình sau khi đánh giá tiến độ của ứng viên.
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4">
-                <StatusUpdateForm
-                  applicationId={application.id}
-                  currentStatus={application.status as ApplicationStatus}
-                />
-              </div>
-            </div>
-          </article>
-
-          {/* Ghi chú */}
-          <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600">
-                  <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">Ghi chú</h3>
-                  <p className="text-sm text-gray-600">
-                    Ghi chú hiển thị với quản trị viên công ty và nhà tuyển dụng để giữ thông tin nhất quán.
-                  </p>
-                </div>
-              </div>
-              <div className="mt-6 space-y-4">
-                <AddNoteForm applicationId={application.id} />
-                <div className="space-y-3">
-                  {notes.length === 0 ? (
-                    <div className="rounded-xl border border-blue-200/50 bg-blue-50/50 px-6 py-5 text-sm text-blue-700">
-                      <div className="flex items-start gap-3">
-                        <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p>Chưa có ghi chú nào. Hãy lưu lại phản hồi phỏng vấn hoặc các đầu việc cần theo dõi tại đây.</p>
-                      </div>
-                    </div>
-                  ) : (
-                    notes.map((note) => (
-                      <div
-                        key={note.id}
-                        className="rounded-xl border border-gray-200/50 bg-gradient-to-br from-gray-50 to-gray-100/50 px-6 py-4 transition-all hover:shadow-md"
-                      >
-                        <p className="text-sm leading-relaxed text-gray-800">{note.content}</p>
-                        <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
-                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                          <span>Người tạo {note.authorUserId ? "Thành viên tuyển dụng" : "Hệ thống"}</span>
-                          <span>•</span>
-                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span>{formatDateTime(note.createdAt)}</span>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-          </article>
         </div>
 
-        {/* Sidebar - Thông tin ứng viên */}
         <div className="space-y-6">
+          {/* Thông tin ứng viên */}
           <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
             <div className="space-y-6">
               <div className="flex items-center gap-3">
@@ -427,6 +293,7 @@ export default async function ApplicationDetailsPage({
             </div>
           </article>
 
+          {/* Tóm tắt hồ sơ */}
           <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
             <div className="space-y-6">
               <div className="flex items-center gap-3">
@@ -463,7 +330,7 @@ export default async function ApplicationDetailsPage({
 
                   {primarySkills.length > 0 ? (
                     <div className="rounded-lg bg-gradient-to-br from-gray-50 to-gray-100/50 p-4">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Kỹ năng</span>
+                      <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Kỹ năng nổi bật</span>
                       <div className="mt-3 flex flex-wrap gap-2">
                         {primarySkills.map((skill) => (
                           <span
@@ -494,8 +361,7 @@ export default async function ApplicationDetailsPage({
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <span>
-                          {formatProfileDate(latestExperience.startDate, "Không rõ")} -{" "}
-                          {formatProfileDate(latestExperience.endDate, "Hiện tại")}
+                          {formatProfileDate(latestExperience.startDate, "Không rõ")} - {formatProfileDate(latestExperience.endDate, "Hiện tại")}
                         </span>
                       </div>
                     </div>
@@ -507,13 +373,91 @@ export default async function ApplicationDetailsPage({
                     <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <p>Chưa có hồ sơ ứng viên. Hãy nhắc ứng viên hoàn thiện thông tin của họ.</p>
+                    <p>Chưa có hồ sơ ứng viên. Hãy nhắc ứng viên bổ sung đầy đủ thông tin.</p>
                   </div>
                 </div>
               )}
             </div>
           </article>
         </div>
+      </section>
+
+      <section className="mt-6 grid gap-6 lg:grid-cols-2">
+        {/* Cập nhật trạng thái */}
+        <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
+                <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Trạng thái</h3>
+                <p className="text-sm text-gray-600">
+                  Cập nhật giai đoạn quy trình ngay sau khi đánh giá tiến độ của ứng viên.
+                </p>
+              </div>
+            </div>
+            <div className="mt-4">
+              <StatusUpdateForm
+                applicationId={application.id}
+                currentStatus={application.status as ApplicationStatus}
+              />
+            </div>
+          </div>
+        </article>
+
+        {/* Ghi chú */}
+        <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600">
+                <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Ghi chú</h3>
+                <p className="text-sm text-gray-600">
+                  Lưu lại thảo luận nội bộ, phản hồi phỏng vấn hoặc đầu việc tiếp theo cho nhóm tuyển dụng.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 space-y-4">
+              <AddNoteForm applicationId={application.id} />
+              <div className="space-y-3">
+                {notes.length === 0 ? (
+                  <div className="rounded-xl border border-blue-200/50 bg-blue-50/50 px-6 py-5 text-sm text-blue-700">
+                    <div className="flex items-start gap-3">
+                      <svg className="h-5 w-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p>Chưa có ghi chú nào. Hãy thêm cập nhật đầu tiên cho hồ sơ này.</p>
+                    </div>
+                  </div>
+                ) : (
+                  notes.map((note) => (
+                    <div key={note.id} className="rounded-xl border border-gray-200/70 bg-gray-50/60 px-5 py-4">
+                      <p className="text-sm text-gray-800">{note.content}</p>
+                      <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Người tạo {note.authorUserId ? "Thành viên tuyển dụng" : "Hệ thống"}</span>
+                        <span>•</span>
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>{formatDateTime(note.createdAt)}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </article>
       </section>
     </div>
     </div>

@@ -18,9 +18,17 @@ export default async function CandidateLayout({
   try {
     const response = await apiFetch("/api/auth/me", { method: "GET" });
     const data = await response.json();
+    const rawCompanyId = data?.companyId ?? data?.company_id ?? null;
+    const companyId =
+      typeof rawCompanyId === "number"
+        ? rawCompanyId
+        : Number.isFinite(Number(rawCompanyId))
+          ? Number(rawCompanyId)
+          : null;
     currentUser = {
       id: Number(data.id),
       email: String(data.email ?? ""),
+      companyId,
       roles: Array.isArray(data.roles) ? (data.roles as Role[]) : [],
     };
   } catch {

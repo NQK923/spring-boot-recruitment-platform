@@ -211,6 +211,8 @@ export async function uploadCvAction(
   return { success: "Đã tải lên CV mới." };
 }
 
+const EMPTY_FORM_STATE: ProfileFormState = {};
+
 export async function deleteCvAction(
   _prevState: ProfileFormState,
   formData: FormData
@@ -232,6 +234,10 @@ export async function deleteCvAction(
 
   revalidateCandidateViews();
   return { success: "Đã xoá CV." };
+}
+
+export async function deleteCvFormAction(formData: FormData): Promise<void> {
+  await deleteCvAction(EMPTY_FORM_STATE, formData);
 }
 
 export async function updateExperiencesAction(

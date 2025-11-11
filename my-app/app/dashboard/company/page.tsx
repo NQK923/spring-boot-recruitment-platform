@@ -125,23 +125,32 @@ async function getCompanyJobs(): Promise<JobPosting[]> {
       updatedAt?: string | null;
       salary_range?: string | null;
       work_type?: string | null;
+      hiring_quantity?: number | string | null;
+      hiring_count?: number | string | null;
     };
-    return (data as JobPostingApi[]).map((job, index) => ({
-      id: Number(job.id ?? index),
-      companyId: Number(job.companyId ?? job.company_id ?? 0),
-      title: String(job.title ?? "Untitled role"),
-      description: job.description ?? null,
-      requirements: job.requirements ?? null,
-      salaryRange: job.salaryRange ?? job.salary_range ?? null,
-      benefits: job.benefits ?? null,
-      location: job.location ?? null,
-      workType: job.workType ?? job.work_type ?? null,
-      status: normalizeJobStatus(job.status),
-      recruiterId: job.recruiterId ?? job.recruiter_id ?? null,
-      jobPosition: job.jobPosition ?? job.job_position ?? null,
-      createdAt: job.createdAt ?? job.created_at ?? "",
-      updatedAt: job.updatedAt ?? job.updated_at ?? "",
-    }));
+    return (data as JobPostingApi[]).map((job, index) => {
+      const rawHiringQuantity = job.hiringQuantity ?? job.hiring_quantity ?? job.hiring_count ?? 1;
+      return {
+        id: Number(job.id ?? index),
+        companyId: Number(job.companyId ?? job.company_id ?? 0),
+        title: String(job.title ?? "Untitled role"),
+        description: job.description ?? null,
+        requirements: job.requirements ?? null,
+        salaryRange: job.salaryRange ?? job.salary_range ?? null,
+        benefits: job.benefits ?? null,
+        location: job.location ?? null,
+        workType: job.workType ?? job.work_type ?? null,
+        status: normalizeJobStatus(job.status),
+        recruiterId: job.recruiterId ?? job.recruiter_id ?? null,
+        jobPosition: job.jobPosition ?? job.job_position ?? null,
+        createdAt: job.createdAt ?? job.created_at ?? "",
+        updatedAt: job.updatedAt ?? job.updated_at ?? "",
+        hiringQuantity:
+          typeof rawHiringQuantity === "number"
+            ? rawHiringQuantity
+            : Number(rawHiringQuantity) || 1,
+      } satisfies JobPosting;
+    });
   } catch {
     return [];
   }

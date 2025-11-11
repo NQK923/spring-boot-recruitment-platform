@@ -26,7 +26,26 @@ async function getCompanyJobs(companyId: number | null): Promise<JobPosting[]> {
       },
     });
     const data = await response.json();
-    return Array.isArray(data) ? (data as JobPosting[]) : [];
+    if (!Array.isArray(data)) {
+      return [];
+    }
+    return data.map((job) => {
+      const rawHiringQuantity =
+        job.hiringQuantity ?? job.hiring_quantity ?? job.hiring_count ?? 1;
+      return {
+        ...job,
+        hiringQuantity:
+          typeof rawHiringQuantity === "number"
+            ? rawHiringQuantity
+            : Number(rawHiringQuantity) || 1,
+        jobPosition: job.jobPosition ?? job.job_position ?? null,
+        recruiterId:
+          job.recruiterId ??
+          job.recruiter_id ??
+          (typeof job.recruiter === "object" ? job.recruiter?.id ?? null : null),
+        updatedAt: job.updatedAt ?? job.updated_at ?? null,
+      } as JobPosting;
+    });
   } catch {
     return [];
   }
