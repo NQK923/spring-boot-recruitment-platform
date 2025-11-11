@@ -135,7 +135,8 @@ export default async function DashboardPage() {
   const isCompanyAdmin = viewer?.roles.includes("COMPANY_ADMIN") ?? false;
   const isRecruiter = viewer?.roles.includes("RECRUITER") ?? false;
   const isCandidate = viewer?.roles.includes("CANDIDATE") ?? false;
-  const viewerCompanyId = await getViewerCompanyId(viewer?.id);
+  const viewerCompanyId =
+    viewer?.companyId ?? (viewer?.id ? await getViewerCompanyId(viewer.id) : null);
   const companyIdHeader = viewerCompanyId ?? null;
   const showRecruiterDashboard = isCompanyAdmin || isRecruiter;
 

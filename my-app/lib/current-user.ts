@@ -12,9 +12,17 @@ export async function getCurrentUser(): Promise<MeResponse | null> {
   try {
     const response = await apiFetch("/api/auth/me", { method: "GET" });
     const data = await response.json();
+    const companyIdValue = data?.companyId ?? data?.company_id ?? null;
+    const companyId =
+      typeof companyIdValue === "number"
+        ? companyIdValue
+        : Number.isFinite(Number(companyIdValue))
+          ? Number(companyIdValue)
+          : null;
     return {
       id: Number(data.id),
       email: String(data.email ?? ""),
+      companyId,
       roles: Array.isArray(data.roles) ? (data.roles as Role[]) : [],
     };
   } catch {

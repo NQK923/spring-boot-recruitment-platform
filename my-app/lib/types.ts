@@ -201,6 +201,7 @@ export type Cv = {
 export type MeResponse = {
   id: number;
   email: string;
+  companyId: number | null;
   roles: Role[];
 };
 

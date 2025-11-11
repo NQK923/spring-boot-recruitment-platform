@@ -80,6 +80,9 @@ async function getViewerCompanyId(): Promise<number | null> {
   if (!viewer) {
     return null;
   }
+  if (typeof viewer.companyId === "number") {
+    return viewer.companyId;
+  }
   try {
     const response = await apiFetch(`/api/internal/companies/users/${viewer.id}/company`, { method: "GET" });
     const data = await response.json();

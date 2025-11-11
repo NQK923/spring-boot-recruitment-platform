@@ -10,6 +10,7 @@ import com.recruitment.platform.auth.client.CompanyServiceClient;
 import com.recruitment.platform.auth.client.UserProfileServiceClient;
 import com.recruitment.platform.auth.client.dto.AddUserToCompanyRequest;
 import com.recruitment.platform.auth.client.dto.AvatarSyncRequest;
+import com.recruitment.platform.auth.client.dto.CompanyMembershipResponse;
 import com.recruitment.platform.auth.client.dto.UserInvitedEvent;
 import com.recruitment.platform.auth.dto.*;
 import com.recruitment.platform.auth.event.PasswordResetRequestedEvent;
@@ -25,6 +26,7 @@ import com.recruitment.platform.auth.repository.InvitationRepository;
 import com.recruitment.platform.auth.repository.PasswordResetTokenRepository;
 import com.recruitment.platform.auth.repository.RoleRepository;
 import com.recruitment.platform.auth.repository.UserRepository;
+import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -432,11 +434,31 @@ public class AuthService {
         User user = userOptional
                 .orElseThrow(() -> new IllegalStateException("User not found"));
 
+        Long companyId = resolveCompanyForUser(user.getId());
         return new MeResponse(
                 user.getId(),
                 user.getEmail(),
+                companyId,
                 user.getRoles().stream().map(Role::getName).collect(Collectors.toList())
         );
+    }
+
+    private Long resolveCompanyForUser(Long userId) {
+        try {
+            CompanyMembershipResponse membership = companyServiceClient.getCompanyMembership(userId);
+            if (membership == null || membership.getId() == null) {
+                return null;
+            }
+            return membership.getId().getCompanyId();
+        } catch (FeignException.NotFound notFound) {
+            return null;
+        } catch (FeignException ex) {
+            log.warn("Unable to load company membership for user {}: status={}", userId, ex.status());
+            return null;
+        } catch (Exception ex) {
+            log.warn("Unexpected error while loading company for user {}: {}", userId, ex.getMessage());
+            return null;
+        }
     }
 
     @Transactional
