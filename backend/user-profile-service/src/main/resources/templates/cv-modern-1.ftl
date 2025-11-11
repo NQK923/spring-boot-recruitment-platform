@@ -3,6 +3,9 @@
 <head>
     <meta charset="utf-8"/>
     <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Noto Sans', Arial, sans-serif;
             margin: 0;
@@ -12,7 +15,7 @@
             line-height: 1.5;
         }
         .page {
-            width: 210mm;
+            width: 190mm;
             min-height: 297mm;
             padding: 32px 40px;
             margin: 0 auto;
@@ -65,48 +68,70 @@
             font-size: 14px;
             color: #111827;
         }
+        p, li, .contact, .meta, .skills-line, .subtitle, h1, h2, h3 {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
     </style>
 </head>
 <body>
+<#assign languageCode = (doc.language!'vi')?lower_case>
+<#assign isEnglish = (languageCode == 'en')>
+<#assign currentLabel = isEnglish?string('Present', 'Hiện tại')>
+<#assign phoneLabel = isEnglish?string('Phone', 'Điện thoại')>
+<#assign locationLabel = isEnglish?string('Location', 'Địa điểm')>
+<#assign sectionLabels = {
+    "summary": isEnglish?string("Summary", "Tóm tắt"),
+    "experience": isEnglish?string("Experience", "Kinh nghiệm"),
+    "projects": isEnglish?string("Projects", "Dự án"),
+    "tech": isEnglish?string("Tech stack", "Công nghệ"),
+    "education": isEnglish?string("Education", "Học vấn"),
+    "certifications": isEnglish?string("Certifications", "Chứng chỉ"),
+    "skills": isEnglish?string("Skills", "Kỹ năng"),
+    "languages": isEnglish?string("Languages", "Ngoại ngữ")
+}>
 <div class="page">
     <header>
         <h1>${doc.fullName!''}</h1>
         <div class="subtitle">${doc.title!''}</div>
-        <#assign contactParts = []>
+        <#assign primaryContacts = []>
+        <#assign linkContacts = []>
         <#if doc.email?has_content>
-            <#assign contactParts = contactParts + ["Email: ${doc.email}"]>
+            <#assign primaryContacts = primaryContacts + ["Email: ${doc.email}"]>
         </#if>
         <#if doc.phone?has_content>
-            <#assign contactParts = contactParts + ["Điện thoại: ${doc.phone}"]>
+            <#assign primaryContacts = primaryContacts + ["${phoneLabel}: ${doc.phone}"]>
         </#if>
         <#if doc.location?has_content>
-            <#assign contactParts = contactParts + ["Địa điểm: ${doc.location}"]>
+            <#assign primaryContacts = primaryContacts + ["${locationLabel}: ${doc.location}"]>
         </#if>
         <#if doc.links?? && doc.links.linkedin?has_content>
-            <#assign contactParts = contactParts + ["LinkedIn: ${doc.links.linkedin}"]>
+            <#assign linkContacts = linkContacts + ["LinkedIn: ${doc.links.linkedin}"]>
         </#if>
         <#if doc.links?? && doc.links.github?has_content>
-            <#assign contactParts = contactParts + ["GitHub: ${doc.links.github}"]>
+            <#assign linkContacts = linkContacts + ["GitHub: ${doc.links.github}"]>
         </#if>
         <#if doc.links?? && doc.links.website?has_content>
-            <#assign contactParts = contactParts + ["Website: ${doc.links.website}"]>
+            <#assign linkContacts = linkContacts + ["Website: ${doc.links.website}"]>
         </#if>
-        <div class="contact">${contactParts?join(" | ")}</div>
+        <#if primaryContacts?has_content>
+            <div class="contact">${primaryContacts?join(" | ")}</div>
+        </#if>
+        <#if linkContacts?has_content>
+            <div class="contact">${linkContacts?join(" | ")}</div>
+        </#if>
     </header>
 
     <#if doc.summary?has_content>
         <section>
-            <h2>Tóm tắt</h2>
+            <h2>${sectionLabels.summary}</h2>
             <p>${doc.summary}</p>
         </section>
     </#if>
 
-    <#assign languageCode = (doc.language!'vi')?lower_case>
-    <#assign currentLabel = (languageCode == 'en')?string('Present', 'Hiện tại')>
-
     <#if doc.experiences?has_content>
         <section>
-            <h2>Kinh nghiệm</h2>
+            <h2>${sectionLabels.experience}</h2>
             <#list doc.experiences as exp>
                 <div class="section-item">
                     <h3>${exp.title!''}<#if exp.company?has_content> · ${exp.company}</#if></h3>
@@ -122,7 +147,7 @@
                         </ul>
                     </#if>
                     <#if exp.tech?has_content>
-                        <div class="skills-line">Công nghệ: ${exp.tech?join(", ")}</div>
+                        <div class="skills-line">${sectionLabels.tech}: ${exp.tech?join(", ")}</div>
                     </#if>
                 </div>
             </#list>
@@ -131,7 +156,7 @@
 
     <#if doc.projects?has_content>
         <section>
-            <h2>Dự án</h2>
+            <h2>${sectionLabels.projects}</h2>
             <#list doc.projects as project>
                 <div class="section-item">
                     <h3>${project.name!''}<#if project.role?has_content> · ${project.role}</#if></h3>
@@ -146,7 +171,7 @@
                         </ul>
                     </#if>
                     <#if project.tech?has_content>
-                        <div class="skills-line">Công nghệ: ${project.tech?join(", ")}</div>
+                        <div class="skills-line">${sectionLabels.tech}: ${project.tech?join(", ")}</div>
                     </#if>
                 </div>
             </#list>
@@ -155,7 +180,7 @@
 
     <#if doc.education?has_content>
         <section>
-            <h2>Học vấn</h2>
+            <h2>${sectionLabels.education}</h2>
             <#list doc.education as edu>
                 <div class="section-item">
                     <h3>${edu.degree!''}<#if edu.school?has_content> · ${edu.school}</#if></h3>
@@ -173,7 +198,7 @@
 
     <#if doc.certifications?has_content>
         <section>
-            <h2>Chứng chỉ</h2>
+            <h2>${sectionLabels.certifications}</h2>
             <#list doc.certifications as cert>
                 <div class="section-item">
                     <h3>${cert.name!''}</h3>
@@ -188,14 +213,14 @@
 
     <#if doc.skills?has_content>
         <section>
-            <h2>Kỹ năng</h2>
+            <h2>${sectionLabels.skills}</h2>
             <div class="skills-line">${doc.skills?join(", ")}</div>
         </section>
     </#if>
 
     <#if doc.languages?has_content>
         <section>
-            <h2>Ngoại ngữ</h2>
+            <h2>${sectionLabels.languages}</h2>
             <div class="skills-line">
                 <#list doc.languages as lang>
                     ${lang.language!''}<#if lang.level?has_content> (${lang.level})</#if><#if lang_has_next>, </#if>

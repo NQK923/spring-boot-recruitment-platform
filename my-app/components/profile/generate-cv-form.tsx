@@ -57,7 +57,7 @@ export function GenerateCvForm() {
             disabled={pending}
           >
             <option value="modern-1">Modern 01 · Chuẩn ATS</option>
-            <option value="modern-visual">Modern Visual · Đẹp cho người đọc</option>
+            <option value="ats-harvard">ATS Harvard</option>
           </select>
         </label>
 

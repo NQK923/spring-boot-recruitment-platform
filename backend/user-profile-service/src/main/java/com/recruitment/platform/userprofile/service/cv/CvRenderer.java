@@ -74,7 +74,7 @@ public class CvRenderer {
         String code = StringUtils.hasText(templateCode) ? templateCode.trim().toLowerCase() : properties.getDefaults().getTemplate();
         return switch (code) {
             case "modern-1" -> "cv-modern-1.ftl";
-            case "modern-visual" -> "cv-modern-visual.ftl";
+            case "ats-harvard" -> "cv-ats-harvard.ftl";
             default -> throw new BadRequestException("Template CV không được hỗ trợ.");
         };
     }

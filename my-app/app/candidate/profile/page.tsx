@@ -106,9 +106,9 @@ export default async function CandidateProfilePage() {
         <p className="text-sm font-bold uppercase tracking-wide text-primary-700">
           Hồ sơ ứng viên
         </p>
-        <h1 className="text-4xl font-bold">Nuôi dữ liệu hồ sơ chuẩn ATS</h1>
+        <h1 className="text-4xl font-bold">Cập nhật dữ liệu hồ sơ chuẩn ATS</h1>
         <p className="text-base text-gray-700 leading-relaxed">
-          Điền đầy đủ thông tin định lượng, đường dẫn và thành tựu để Gemini có thể tạo CV chuẩn ATS,
+          Điền đầy đủ thông tin, đường dẫn và thành tựu để có thể tạo CV chuẩn ATS,
           đồng thời giúp nhà tuyển dụng hiểu rõ bối cảnh của bạn ngay từ vòng sàng lọc.
         </p>
       </header>
