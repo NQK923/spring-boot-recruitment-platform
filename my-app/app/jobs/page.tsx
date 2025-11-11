@@ -1,10 +1,7 @@
-import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
-import { ROUTES } from "@/lib/routes";
 import type { JobPostingPublic, PaginatedResponse } from "@/lib/types";
-import { JobsResults } from "./results";
+import { JobsExplorer } from "./jobs-explorer";
 
 export const dynamic = "force-dynamic";
 
@@ -103,15 +100,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
               Khám phá cơ hội mới
             </span>
             <h1 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">Các vị trí đang tuyển</h1>
-            <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-600">
-              Duyệt các cơ hội tuyển dụng từ những đội ngũ đang sử dụng TalentFlow. Bản tin được cập nhật liên tục khi nhà tuyển dụng thay đổi yêu cầu, địa điểm hay mức lương, giúp bạn luôn thấy thông tin mới nhất.
-            </p>
           </div>
-          <Link href={ROUTES.register}>
-            <Button variant="secondary" size="md" className="whitespace-nowrap font-semibold">
-              📝 Tạo hồ sơ ứng viên
-            </Button>
-          </Link>
         </div>
         <div className="flex flex-wrap gap-3 text-xs">
           <span className="rounded-full border-2 border-blue-200 bg-blue-50 px-4 py-2 font-semibold text-blue-700">
@@ -126,7 +115,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         </div>
       </header>
 
-      <JobsResults pageData={jobsPage} hasQuery={hasQuery} initialQuery={rawSearch} currentUiPage={effectiveUiPage} />
+      <JobsExplorer initialQuery={rawSearch} initialPageData={jobsPage} pageSize={DEFAULT_PAGE_SIZE} />
     </Container>
   );
 }
