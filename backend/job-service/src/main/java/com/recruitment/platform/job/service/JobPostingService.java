@@ -60,77 +60,182 @@ public class JobPostingService {
         this.applicationServiceClient = applicationServiceClient;
     }
 
+//    @Transactional
+//    public JobPosting createJob(CreateJobRequest request, Long companyId, Long recruiterId) {
+//        JobPosting newJob = new JobPosting();
+//        newJob.setTitle(request.title());
+//        newJob.setDescription(request.description());
+//        newJob.setRequirements(request.requirements());
+//        newJob.setSalaryRange(request.salaryRange());
+//        newJob.setBenefits(request.benefits());
+//        newJob.setLocation(request.location());
+//        newJob.setWorkType(request.workType());
+//        newJob.setCompanyId(companyId);
+//        newJob.setRecruiterId(recruiterId);
+//        newJob.setStatus(JobStatus.DRAFT);
+//        newJob.setHiringQuantity(normalizeHiringQuantity(request.hiringQuantity()));
+//
+//        if (request.positionId() != null) {
+//            JobPosition jobPosition = resolveJobPosition(request.positionId(), companyId);
+//            newJob.setJobPosition(jobPosition);
+//        }
+//
+//        JobPosting saved = jobPostingRepository.save(newJob);
+//        triggerRecommendationSync(saved);
+//        return saved;
+//    }
+
     @Transactional
     public JobPosting createJob(CreateJobRequest request, Long companyId, Long recruiterId) {
-        JobPosting newJob = new JobPosting();
-        newJob.setTitle(request.title());
-        newJob.setDescription(request.description());
-        newJob.setRequirements(request.requirements());
-        newJob.setSalaryRange(request.salaryRange());
-        newJob.setBenefits(request.benefits());
-        newJob.setLocation(request.location());
-        newJob.setWorkType(request.workType());
-        newJob.setCompanyId(companyId);
-        newJob.setRecruiterId(recruiterId);
-        newJob.setStatus(JobStatus.DRAFT);
-        newJob.setHiringQuantity(normalizeHiringQuantity(request.hiringQuantity()));
+        try{
+            JobPosting newJob = new JobPosting();
+            newJob.setTitle(request.title());
+            newJob.setDescription(request.description());
+            newJob.setRequirements(request.requirements());
+            newJob.setSalaryRange(request.salaryRange());
+            newJob.setBenefits(request.benefits());
+            newJob.setLocation(request.location());
+            newJob.setWorkType(request.workType());
+            newJob.setCompanyId(companyId);
+            newJob.setRecruiterId(recruiterId);
+            newJob.setStatus(JobStatus.DRAFT);
+            newJob.setHiringQuantity(normalizeHiringQuantity(request.hiringQuantity()));
 
-        if (request.positionId() != null) {
-            JobPosition jobPosition = resolveJobPosition(request.positionId(), companyId);
-            newJob.setJobPosition(jobPosition);
+            if (request.positionId() != null) {
+                JobPosition jobPosition = resolveJobPosition(request.positionId(), companyId);
+                newJob.setJobPosition(jobPosition);
+            }
+
+            JobPosting saved = jobPostingRepository.save(newJob);
+            triggerRecommendationSync(saved);
+            return saved;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
-        JobPosting saved = jobPostingRepository.save(newJob);
-        triggerRecommendationSync(saved);
-        return saved;
     }
 
-    @Transactional
+//    @Transactional
+//    public JobPosting updateJob(Long jobId, UpdateJobRequest request, Long companyId) {
+//        JobPosting job = jobPostingRepository.findById(jobId)
+//                .orElseThrow(() -> new NotFoundException("Job not found"));
+//
+//        if (!job.getCompanyId().equals(companyId)) {
+//            throw new ForbiddenException("Cannot modify a job that belongs to a different company.");
+//        }
+//
+//        if (request.title() != null) {
+//            job.setTitle(request.title());
+//        }
+//        if (request.description() != null) {
+//            job.setDescription(request.description());
+//        }
+//        if (request.requirements() != null) {
+//            job.setRequirements(request.requirements());
+//        }
+//        if (request.salaryRange() != null) {
+//            job.setSalaryRange(request.salaryRange());
+//        }
+//        if (request.benefits() != null) {
+//            job.setBenefits(request.benefits());
+//        }
+//        if (request.location() != null) {
+//            job.setLocation(request.location());
+//        }
+//        if (request.workType() != null) {
+//            job.setWorkType(request.workType());
+//        }
+//        if (request.status() != null) {
+//            job.setStatus(JobStatus.valueOf(request.status().toUpperCase()));
+//        }
+//        if (request.hiringQuantity() != null) {
+//            job.setHiringQuantity(normalizeHiringQuantity(request.hiringQuantity()));
+//        }
+//        if (request.positionId() != null) {
+//            JobPosition jobPosition = resolveJobPosition(request.positionId(), companyId);
+//            job.setJobPosition(jobPosition);
+//        }
+//
+//        job.setUpdatedAt(Instant.now());
+//        JobPosting savedJob = jobPostingRepository.save(job);
+//        triggerRecommendationSync(savedJob);
+//        return savedJob;
+//    }
+
+        @Transactional
     public JobPosting updateJob(Long jobId, UpdateJobRequest request, Long companyId) {
-        JobPosting job = jobPostingRepository.findById(jobId)
-                .orElseThrow(() -> new NotFoundException("Job not found"));
+        try {
+            JobPosting job = jobPostingRepository.findById(jobId)
+                    .orElseThrow(() -> new NotFoundException("Job not found"));
 
-        if (!job.getCompanyId().equals(companyId)) {
-            throw new ForbiddenException("Cannot modify a job that belongs to a different company.");
-        }
+            if (!job.getCompanyId().equals(companyId)) {
+                throw new ForbiddenException("Cannot modify a job that belongs to a different company.");
+            }
 
-        if (request.title() != null) {
-            job.setTitle(request.title());
-        }
-        if (request.description() != null) {
-            job.setDescription(request.description());
-        }
-        if (request.requirements() != null) {
-            job.setRequirements(request.requirements());
-        }
-        if (request.salaryRange() != null) {
-            job.setSalaryRange(request.salaryRange());
-        }
-        if (request.benefits() != null) {
-            job.setBenefits(request.benefits());
-        }
-        if (request.location() != null) {
-            job.setLocation(request.location());
-        }
-        if (request.workType() != null) {
-            job.setWorkType(request.workType());
-        }
-        if (request.status() != null) {
-            job.setStatus(JobStatus.valueOf(request.status().toUpperCase()));
-        }
-        if (request.hiringQuantity() != null) {
-            job.setHiringQuantity(normalizeHiringQuantity(request.hiringQuantity()));
-        }
-        if (request.positionId() != null) {
-            JobPosition jobPosition = resolveJobPosition(request.positionId(), companyId);
-            job.setJobPosition(jobPosition);
-        }
+            if (request.title() != null) {
+                job.setTitle(request.title());
+            }
+            if (request.description() != null) {
+                job.setDescription(request.description());
+            }
+            if (request.requirements() != null) {
+                job.setRequirements(request.requirements());
+            }
+            if (request.salaryRange() != null) {
+                job.setSalaryRange(request.salaryRange());
+            }
+            if (request.benefits() != null) {
+                job.setBenefits(request.benefits());
+            }
+            if (request.location() != null) {
+                job.setLocation(request.location());
+            }
+            if (request.workType() != null) {
+                job.setWorkType(request.workType());
+            }
+            if (request.status() != null) {
+                job.setStatus(JobStatus.valueOf(request.status().toUpperCase()));
+            }
+            if (request.hiringQuantity() != null) {
+                job.setHiringQuantity(normalizeHiringQuantity(request.hiringQuantity()));
+            }
+            if (request.positionId() != null) {
+                JobPosition jobPosition = resolveJobPosition(request.positionId(), companyId);
+                job.setJobPosition(jobPosition);
+            }
 
-        job.setUpdatedAt(Instant.now());
-        JobPosting savedJob = jobPostingRepository.save(job);
-        triggerRecommendationSync(savedJob);
-        return savedJob;
+            job.setUpdatedAt(Instant.now());
+            JobPosting savedJob = jobPostingRepository.save(job);
+            triggerRecommendationSync(savedJob);
+            return savedJob;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+@Transactional
+public JobPosting createJob(CreateJobRequest request, Long companyId, Long recruiterId) {
+    JobPosting newJob = new JobPosting();
+    newJob.setTitle(request.title());
+    newJob.setDescription(request.description());
+    newJob.setRequirements(request.requirements());
+    newJob.setSalaryRange(request.salaryRange());
+    newJob.setBenefits(request.benefits());
+    newJob.setLocation(request.location());
+    newJob.setWorkType(request.workType());
+    newJob.setCompanyId(companyId);
+    newJob.setRecruiterId(recruiterId);
+    newJob.setStatus(JobStatus.DRAFT);
+    newJob.setHiringQuantity(normalizeHiringQuantity(request.hiringQuantity()));
+
+    if (request.positionId() != null) {
+        JobPosition jobPosition = resolveJobPosition(request.positionId(), companyId);
+        newJob.setJobPosition(jobPosition);
+    }
+
+    JobPosting saved = jobPostingRepository.save(newJob);
+    triggerRecommendationSync(saved);
+    return saved;
+}
 
     public List<JobPosting> findJobsByCompany(Long companyId) {
         return jobPostingRepository.findByCompanyId(companyId);
