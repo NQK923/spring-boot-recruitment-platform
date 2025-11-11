@@ -56,7 +56,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       <header className="space-y-3 text-center">
         <h1 className="text-3xl font-bold text-slate-900">Đăng nhập</h1>
         <p className="text-sm text-slate-600 font-medium">
-          Nhập thông tin để truy cập workspace tuyển dụng của bạn.
+          Nhập thông tin để truy cập không gian làm việc tuyển dụng của bạn.
         </p>
       </header>
 

@@ -93,7 +93,7 @@ const STATUS_LABELS: Record<string, string> = {
   IN_REVIEW: "Đang xem xét",
   INTERVIEW_SCHEDULED: "Đã lên lịch phỏng vấn",
   INTERVIEW: "Phỏng vấn",
-  OFFERED: "Nhận đề nghị",
+  OFFERED: "Đã nhận offer",
   HIRED: "Đã nhận việc",
   REJECTED: "Bị từ chối",
   WITHDRAWN: "Đã rút đơn",
@@ -114,7 +114,7 @@ function formatStatus(status: string) {
 
 function formatDate(value: string | null | undefined) {
   if (!value) {
-    return "vừa cập nhật";
+    return "Mới đây";
   }
   try {
     return dateFormatter.format(new Date(value));
@@ -289,7 +289,7 @@ export default async function CandidatePortalPage() {
   if (!profileData.summary) {
     addNextStep({
       title: "Thêm bản tóm tắt ngắn",
-      description: "Tóm tắt giúp nhà tuyển dụng hiểu nhanh trọng tâm và mở đầu cuộc trao đổi thuận lợi hơn.",
+      description: "Tóm tắt giúp nhà tuyển dụng hiểu nhanh về bạn và bắt đầu cuộc trao đổi thuận lợi hơn.",
       href: ROUTES.candidateProfile,
       actionLabel: "Cập nhật hồ sơ",
     });
@@ -298,7 +298,7 @@ export default async function CandidatePortalPage() {
   if (!sortedCvs.length) {
     addNextStep({
       title: "Tải lên CV đầu tiên",
-      description: "Giữ sẵn bản CV chỉn chu để đính kèm vào hồ sơ ứng tuyển chỉ với một cú nhấp chuột.",
+      description: "Chuẩn bị sẵn một CV chuyên nghiệp để có thể ứng tuyển nhanh chóng.",
       href: ROUTES.candidateProfile,
       actionLabel: "Mở quản lý CV",
     });
@@ -307,7 +307,7 @@ export default async function CandidatePortalPage() {
   if (!profileData.projects.length) {
     addNextStep({
       title: "Chia sẻ dự án tiêu biểu",
-      description: "Thêm 2-3 dự án có số liệu rõ ràng để Gemini sử dụng khi tạo CV ATS.",
+      description: "Thêm 2-3 dự án tiêu biểu với số liệu rõ ràng để AI của chúng tôi có thể tạo CV chuẩn ATS cho bạn.",
       href: ROUTES.candidateProfile,
       actionLabel: "Thêm dự án",
     });
@@ -316,7 +316,7 @@ export default async function CandidatePortalPage() {
   if (!profileData.languages.length) {
     addNextStep({
       title: "Cập nhật ngoại ngữ",
-      description: "Liệt kê trình độ ngoại ngữ theo thang CEFR để ATS đánh giá chính xác.",
+      description: "Liệt kê trình độ ngoại ngữ của bạn theo thang CEFR để hệ thống ATS đánh giá chính xác hơn.",
       href: ROUTES.candidateProfile,
       actionLabel: "Thêm ngoại ngữ",
     });
@@ -325,7 +325,7 @@ export default async function CandidatePortalPage() {
   if (!applications.length) {
     addNextStep({
       title: "Khám phá vị trí đang tuyển",
-      description: "Duyệt các tin tuyển dụng phù hợp với bạn và gửi hồ sơ đầu tiên.",
+      description: "Tìm kiếm các công việc phù hợp và gửi hồ sơ ứng tuyển đầu tiên của bạn.",
       href: ROUTES.jobs,
       actionLabel: "Tìm việc",
     });
@@ -334,7 +334,7 @@ export default async function CandidatePortalPage() {
   if (profileCompletion < 80) {
     addNextStep({
       title: "Hoàn thiện hồ sơ",
-      description: "Bổ sung kinh nghiệm, học vấn và kỹ năng để làm nổi bật thế mạnh trước nhà tuyển dụng.",
+      description: "Bổ sung kinh nghiệm, học vấn và kỹ năng để gây ấn tượng với nhà tuyển dụng.",
       href: ROUTES.candidateProfile,
       actionLabel: "Bổ sung thông tin",
     });
@@ -343,7 +343,7 @@ export default async function CandidatePortalPage() {
   if (nextInterview) {
     addNextStep({
       title: "Chuẩn bị cho buổi phỏng vấn tiếp theo",
-      description: `Xem lại kế hoạch và thông tin tham gia của đơn ứng tuyển #${nextInterview.applicationId}.`,
+      description: `Xem lại kế hoạch và thông tin chi tiết cho buổi phỏng vấn của đơn ứng tuyển #${nextInterview.applicationId}.`,
       href: `${ROUTES.candidateApplications}/${nextInterview.applicationId}`,
       actionLabel: "Xem chi tiết phỏng vấn",
     });

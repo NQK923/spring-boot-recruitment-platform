@@ -46,7 +46,7 @@ export function AcceptInviteForm({ token, email, role, expiresAt }: AcceptInvite
         <div className="rounded-xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-green-50 px-4 py-4 text-sm">
           <p className="font-bold text-emerald-800">✓ Đã chấp nhận lời mời</p>
           <p className="mt-2 font-semibold text-emerald-700">
-            Tài khoản <span className="font-bold">{email}</span> đã sẵn sàng. Đăng nhập để bắt đầu phối hợp cùng đội ngũ.
+            Tài khoản <span className="font-bold">{email}</span> đã sẵn sàng. Đăng nhập để bắt đầu làm việc cùng đội ngũ.
           </p>
         </div>
         <Button

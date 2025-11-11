@@ -17,7 +17,7 @@ export async function resetPasswordAction(
   const newPassword = String(formData.get("newPassword") ?? "");
 
   if (!email || !otp || !newPassword) {
-    return { error: "Vui lòng nhập email, mã đặt lại và mật khẩu mới." };
+    return { error: "Vui lòng nhập email, mã khôi phục và mật khẩu mới." };
   }
 
   try {
@@ -28,7 +28,7 @@ export async function resetPasswordAction(
     await response.text();
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Hiện không thể đặt lại mật khẩu.";
+      error instanceof Error ? error.message : "Hiện không thể đặt lại mật khẩu. Vui lòng thử lại.";
     return { error: message };
   }
 

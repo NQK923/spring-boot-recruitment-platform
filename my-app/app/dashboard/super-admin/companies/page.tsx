@@ -12,7 +12,7 @@ import { cx } from "@/lib/cx";
 
 const COMPANY_STATUS_OPTIONS = [
   { value: "ACTIVE", label: "Hoạt động" },
-  { value: "PENDING", label: "Đang xét" },
+  { value: "PENDING", label: "Chờ duyệt" },
   { value: "INACTIVE", label: "Ngưng hoạt động" },
 ];
 
@@ -55,7 +55,7 @@ function statusLabel(status: string) {
       return "Ngưng hoạt động";
     case "PENDING":
     default:
-      return "Đang xét";
+      return "Chờ duyệt";
   }
 }
 
@@ -90,9 +90,9 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
       <div className="grid gap-6 lg:grid-cols-[2fr,1fr]">
         <Panel className="space-y-6 border-2 border-indigo-200 bg-gradient-to-br from-white to-indigo-50" padding="lg">
           <div>
-            <h1 className="text-3xl font-bold text-indigo-900 sm:text-4xl">🎯 Workspace Quản Trị Cấp Cao</h1>
+            <h1 className="text-3xl font-bold text-indigo-900 sm:text-4xl">🎯 Không gian làm việc Quản trị cấp cao</h1>
             <p className="mt-3 text-base leading-relaxed text-slate-700 font-medium">
-              Giám sát mọi tenant, đảm bảo quy trình onboard thông suốt và mỗi công ty đều có người phụ trách phù hợp.
+              Giám sát mọi khách hàng, đảm bảo quy trình tiếp nhận thông suốt và mỗi công ty đều có người phụ trách phù hợp.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
@@ -103,7 +103,7 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
               <p className="mt-2 text-3xl font-bold text-slate-900">
                 {numberFormatter.format(dashboard?.totalCompanies ?? companies.length)}
               </p>
-              <p className="text-sm text-slate-600 font-medium mt-1">Tenant đã đăng ký trên nền tảng</p>
+              <p className="text-sm text-slate-600 font-medium mt-1">Khách hàng đã đăng ký trên nền tảng</p>
             </div>
             <div className="rounded-2xl border-2 border-purple-200 bg-gradient-to-br from-white to-purple-50 px-5 py-4 shadow-md hover:shadow-lg transition-shadow">
               <p className="text-xs font-bold uppercase tracking-wider text-purple-600 flex items-center gap-1.5">
@@ -112,7 +112,7 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
               <p className="mt-2 text-3xl font-bold text-slate-900">
                 {numberFormatter.format(dashboard?.totalJobPostings ?? 0)}
               </p>
-              <p className="text-sm text-slate-600 font-medium mt-1">Bài tuyển dụng đang hiển thị</p>
+              <p className="text-sm text-slate-600 font-medium mt-1">Bài đăng tuyển dụng đang hiển thị</p>
             </div>
             <div className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-white to-emerald-50 px-5 py-4 shadow-md hover:shadow-lg transition-shadow">
               <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
@@ -149,7 +149,7 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
               <h2 className="text-xl font-bold text-blue-900 flex items-center gap-2">
                 ✨ Tạo công ty mới
               </h2>
-              <p className="text-sm text-slate-700 font-medium mt-1">Khởi tạo workspace riêng và có thể gán người phụ trách sau.</p>
+              <p className="text-sm text-slate-700 font-medium mt-1">Khởi tạo không gian làm việc riêng và có thể gán người phụ trách sau.</p>
             </div>
             <CreateCompanyForm />
           </Panel>
@@ -160,7 +160,7 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
                 📧 Mời quản trị công ty
               </h2>
               <p className="text-sm text-slate-700 font-medium mt-1">
-                Gửi lời mời để chủ công ty cấu hình tenant và thêm thành viên.
+                Gửi lời mời để chủ công ty cấu hình không gian làm việc và thêm thành viên.
               </p>
             </div>
             {companyOptions.length > 0 ? (
@@ -181,7 +181,7 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
               🏢 Danh sách công ty
             </h2>
             <p className="text-sm text-slate-700 font-medium mt-1">
-              Rà soát trạng thái và theo dõi tenant nào đã sẵn sàng vận hành.
+              Rà soát trạng thái và theo dõi khách hàng nào đã sẵn sàng vận hành.
             </p>
           </div>
           <Suspense
@@ -202,7 +202,7 @@ export default async function SuperAdminCompaniesPage({ searchParams }: SuperAdm
             <p className="rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-white to-amber-50 px-5 py-6 text-sm text-slate-700 font-medium">
               {searchTerm
                 ? `Không tìm thấy công ty khớp với "${searchTerm}".`
-                : "Chưa có công ty nào. Hãy tạo tenant đầu tiên để bắt đầu."}
+                : "Chưa có công ty nào. Hãy tạo khách hàng đầu tiên để bắt đầu."}
             </p>
           ) : (
             filteredCompanies.map((company) => (

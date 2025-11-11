@@ -16,11 +16,11 @@ const FLOWS = {
       },
       {
         title: "Ứng tuyển và theo dõi",
-        detail: "Chọn job phù hợp, nộp hồ sơ và theo dõi tiến độ realtime qua timeline minh bạch.",
+        detail: "Chọn job phù hợp, nộp hồ sơ và theo dõi tiến độ theo thời gian thực qua lịch trình minh bạch.",
       },
       {
         title: "Nhận thông báo kịp thời",
-        detail: "Nhận email/SMS khi có lịch phỏng vấn, kết quả vòng và offer cuối cùng.",
+        detail: "Nhận email/SMS khi có lịch phỏng vấn, kết quả từng vòng và thư mời nhận việc.",
       },
     ],
   },
@@ -29,16 +29,16 @@ const FLOWS = {
     color: "from-purple-500 to-pink-500",
     steps: [
       {
-        title: "Đăng job đa kênh",
-        detail: "Sử dụng template hoặc AI gợi ý JD, xuất bản tới Career site & mạng xã hội.",
+        title: "Đăng tin tuyển dụng đa kênh",
+        detail: "Sử dụng mẫu hoặc AI gợi ý bản mô tả công việc, xuất bản tới trang tuyển dụng & mạng xã hội.",
       },
       {
         title: "Sàng lọc & phối hợp",
-        detail: "Drag & drop ứng viên qua các stage, giao việc cho team và ghi chú ngay trên card.",
+        detail: "Kéo & thả ứng viên qua các giai đoạn, giao việc cho nhóm và ghi chú ngay trên thẻ.",
       },
       {
         title: "Phỏng vấn & báo cáo",
-        detail: "Đặt lịch, thu thập feedback, phát hành offer và theo dõi KPI tuyển dụng tức thời.",
+        detail: "Đặt lịch, thu thập phản hồi, gửi thư mời nhận việc và theo dõi KPI tuyển dụng tức thời.",
       },
     ],
   },
@@ -65,9 +65,9 @@ export function HowItWorks() {
           <p className="text-xs uppercase tracking-wider text-purple-600 font-bold">
             Quy trình làm việc
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Một pipeline cho tất cả</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Một quy trình cho tất cả</h2>
           <p className="text-base text-slate-600">
-            Chọn vai trò của bạn để xem hành trình tối ưu tương ứng
+            Chọn vai trò của bạn để xem quy trình làm việc tương ứng
           </p>
         </div>
 

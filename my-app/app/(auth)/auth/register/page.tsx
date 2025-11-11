@@ -13,7 +13,7 @@ export default async function RegisterPage() {
       <header className="space-y-3 text-center">
         <h1 className="text-3xl font-bold text-slate-900">Tạo tài khoản mới</h1>
         <p className="text-sm text-slate-600 font-medium">
-          Đăng ký với vai trò ứng viên để quản lý hồ sơ, CV và theo dõi trạng thái ứng tuyển.
+          Đăng ký tài khoản ứng viên để quản lý hồ sơ và theo dõi quá trình ứng tuyển.
         </p>
       </header>
 

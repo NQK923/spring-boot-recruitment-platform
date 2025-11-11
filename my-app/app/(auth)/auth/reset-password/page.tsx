@@ -6,7 +6,7 @@ export default function ResetPasswordPage() {
       <header className="space-y-3 text-center">
         <h1 className="text-3xl font-bold text-slate-900">Đặt lại mật khẩu</h1>
         <p className="text-sm text-slate-600 font-medium">
-          Nhập mã sáu chữ số trong email và tạo mật khẩu mới để hoàn tất quá trình đặt lại.
+          Nhập mã 6 chữ số được gửi đến email của bạn và tạo mật khẩu mới để hoàn tất.
         </p>
       </header>
 

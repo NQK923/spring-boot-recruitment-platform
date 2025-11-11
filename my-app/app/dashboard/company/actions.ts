@@ -20,7 +20,7 @@ export async function updateCompanyAction(
   const companyAddress = String(formData.get("companyAddress") ?? "").trim();
 
   if (!name) {
-    return { error: "Tên công ty là bắt buộc." };
+    return { error: "Vui lòng nhập tên công ty." };
   }
 
   try {
@@ -36,7 +36,7 @@ export async function updateCompanyAction(
       }),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Không thể cập nhật thông tin công ty.";
+    const message = error instanceof Error ? error.message : "Không thể cập nhật thông tin công ty. Vui lòng thử lại.";
     return { error: message };
   }
 
@@ -57,10 +57,10 @@ export async function inviteCompanyMemberAction(
   const role = String(formData.get("role") ?? "").trim();
 
   if (!email) {
-    return { error: "Email là bắt buộc." };
+    return { error: "Vui lòng nhập email." };
   }
   if (!role) {
-    return { error: "Hãy chọn vai trò cho lời mời." };
+    return { error: "Vui lòng chọn vai trò cho thành viên." };
   }
 
   try {
@@ -69,7 +69,7 @@ export async function inviteCompanyMemberAction(
       body: JSON.stringify({ email, role }),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Không thể gửi lời mời.";
+    const message = error instanceof Error ? error.message : "Không thể gửi lời mời. Vui lòng thử lại.";
     return { error: message };
   }
 
@@ -113,7 +113,7 @@ export async function updateCompanyUserAction(
       body: JSON.stringify(payload),
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Không thể cập nhật thành viên.";
+    const message = error instanceof Error ? error.message : "Không thể cập nhật thành viên. Vui lòng thử lại.";
     return { error: message };
   }
 

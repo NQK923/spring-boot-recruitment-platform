@@ -29,7 +29,9 @@ export async function registerAction(
     });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Không thể tạo tài khoản của bạn.";
+      error instanceof Error
+        ? error.message
+        : "Đã có lỗi xảy ra. Không thể tạo tài khoản của bạn. Vui lòng thử lại.";
     return { error: message };
   }
 
