@@ -250,27 +250,7 @@ export default async function ApplicationDetailsPage({
           </div>
         </header>
 
-      <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
-        <div className="space-y-6">
-          {/* Thông tin việc làm */}
-          <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600">
-                  <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h2 className="text-xl font-bold text-gray-900">Thông tin việc làm</h2>
-              </div>
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
-                {job?.description ??
-                  "Chưa có mô tả chi tiết cho việc làm này. Có thể tin tuyển dụng đã được lưu trữ hoặc nhóm tuyển dụng chưa cập nhật nội dung mới."}
-              </p>
-            </div>
-          </article>
-        </div>
-
+      <section className="space-y-6">
         <div className="space-y-6">
           {/* Thông tin ứng viên */}
           <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
@@ -412,9 +392,26 @@ export default async function ApplicationDetailsPage({
         </div>
       </section>
 
-      <section className="mt-6 grid gap-6 lg:grid-cols-2">
-        {/* Cập nhật trạng thái */}
-        <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
+      <section className="mt-8 space-y-6">
+        <article className="rounded-2xl border border-gray-200/60 bg-white/90 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">Pipeline</p>
+                <h3 className="text-2xl font-bold text-gray-900">Tiến trình xử lý hồ sơ</h3>
+                <p className="text-sm text-gray-600">
+                  Theo dõi trạng thái hiện tại và các bước đã hoàn thành. Bạn chỉ có thể tiến từng bước một (trừ khi từ chối).
+                </p>
+              </div>
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-4 py-1.5 text-sm font-semibold text-slate-600">
+                {formatStatus(application.status)}
+              </span>
+            </div>
+            <PipelineTimeline currentStatus={application.status as ApplicationStatus} />
+          </div>
+        </article>
+
+        <article className="rounded-2xl border border-gray-200/60 bg-white/90 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
@@ -423,23 +420,20 @@ export default async function ApplicationDetailsPage({
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Trạng thái</h3>
+                <h3 className="text-xl font-bold text-gray-900">Cập nhật trạng thái</h3>
                 <p className="text-sm text-gray-600">
-                  Cập nhật giai đoạn quy trình ngay sau khi đánh giá tiến độ của ứng viên.
+                  Điền thông tin bắt buộc rồi nhấn chuyển bước để hệ thống gửi thông báo tự động.
                 </p>
               </div>
             </div>
-            <div className="mt-4">
-              <StatusUpdateForm
-                applicationId={application.id}
-                currentStatus={application.status as ApplicationStatus}
-              />
-            </div>
+            <StatusUpdateForm
+              applicationId={application.id}
+              currentStatus={application.status as ApplicationStatus}
+            />
           </div>
         </article>
 
-        {/* Lịch phỏng vấn & Đề nghị */}
-        <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
+        <article className="rounded-2xl border border-gray-200/60 bg-white/90 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
           <div className="grid gap-6 lg:grid-cols-2">
             <section className="space-y-3 rounded-2xl border border-blue-100/80 bg-blue-50/40 p-5">
               <div className="flex items-center gap-3">
@@ -479,7 +473,7 @@ export default async function ApplicationDetailsPage({
                 </dl>
               ) : (
                 <p className="text-sm text-blue-800">
-                  Chưa có lịch phỏng vấn. Khi chuyển sang trạng thái <strong>Phỏng vấn</strong>, hãy nhập thời gian và địa điểm để hệ thống gửi email cho ứng viên.
+                  Chưa có lịch phỏng vấn nào. Bạn sẽ nhận được email khi nhà tuyển dụng sắp xếp lịch.
                 </p>
               )}
             </section>
@@ -547,8 +541,7 @@ export default async function ApplicationDetailsPage({
           </div>
         </article>
 
-        {/* Ghi chú */}
-        <article className="rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
+        <article className="rounded-2xl border border-gray-200/60 bg-white/90 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600">
@@ -586,7 +579,7 @@ export default async function ApplicationDetailsPage({
                         <span>Người tạo {note.authorUserId ? "Thành viên tuyển dụng" : "Hệ thống"}</span>
                         <span>•</span>
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 0 0 0118 0z" />
                         </svg>
                         <span>{formatDateTime(note.createdAt)}</span>
                       </div>
@@ -597,6 +590,7 @@ export default async function ApplicationDetailsPage({
             </div>
           </div>
         </article>
+      </section>
       </section>
     </div>
     </div>

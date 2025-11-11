@@ -45,6 +45,13 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class ApplicationService {
 
+    private static final List<ApplicationStatus> LINEAR_PIPELINE = List.of(
+            ApplicationStatus.APPLIED,
+            ApplicationStatus.SCREENING,
+            ApplicationStatus.INTERVIEWING,
+            ApplicationStatus.OFFERED,
+            ApplicationStatus.HIRED
+    );
     private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_INSTANT;
     private static final Logger log = LoggerFactory.getLogger(ApplicationService.class);
     private final ApplicationRepository applicationRepository;
@@ -123,6 +130,10 @@ public class ApplicationService {
 
         if (oldStatus == newStatus) {
             return application;
+        }
+
+        if (!isAllowedLinearTransition(oldStatus, newStatus)) {
+            throw new IllegalStateException("Trạng thái chỉ có thể thay đổi tuần tự từng bước, trừ khi chuyển sang ĐÃ TỪ CHỐI.");
         }
 
         Map<String, Object> metadata = Map.of();
@@ -479,5 +490,17 @@ public class ApplicationService {
         }
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private boolean isAllowedLinearTransition(ApplicationStatus from, ApplicationStatus to) {
+        if (to == ApplicationStatus.REJECTED) {
+            return true;
+        }
+        if (from == ApplicationStatus.REJECTED || from == ApplicationStatus.HIRED) {
+            return false;
+        }
+        int fromIdx = LINEAR_PIPELINE.indexOf(from);
+        int toIdx = LINEAR_PIPELINE.indexOf(to);
+        return fromIdx >= 0 && toIdx == fromIdx + 1;
     }
 }
