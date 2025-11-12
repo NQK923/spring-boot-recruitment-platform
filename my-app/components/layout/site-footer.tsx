@@ -46,7 +46,7 @@ export function SiteFooter() {
           <div className="space-y-4">
             <Link
               href={ROUTES.home}
-              className="inline-flex items-center gap-2 group"
+              className="inline-flex cursor-pointer items-center gap-2 group"
             >
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 text-sm font-bold uppercase text-white shadow-md">
                 TF
@@ -61,7 +61,7 @@ export function SiteFooter() {
                 <span className="text-base">📧</span>
                 <a
                   href="mailto:support@talentflow.app"
-                  className="font-bold text-indigo-600 hover:text-indigo-700 transition"
+                  className="cursor-pointer font-bold text-indigo-600 hover:text-indigo-700 transition"
                 >
                   support@talentflow.app
                 </a>
@@ -87,7 +87,7 @@ export function SiteFooter() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="text-slate-800 font-semibold hover:text-indigo-600 transition-colors"
+                      className="cursor-pointer text-slate-800 font-semibold hover:text-indigo-600 transition-colors"
                     >
                       {item.label}
                     </Link>
@@ -110,7 +110,7 @@ export function SiteFooter() {
                 href={link.href}
                 target="_blank"
                 rel="noreferrer"
-                className="text-sm font-bold text-slate-800 hover:text-indigo-600 transition-colors"
+                className="cursor-pointer text-sm font-bold text-slate-800 hover:text-indigo-600 transition-colors"
               >
                 {link.label}
               </a>

@@ -50,17 +50,18 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
   return (
     <div className="space-y-6">
       {nextStatus ? (
-        <form className="space-y-4 rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-sm" action={formAction}>
-          <input type="hidden" name="status" value={nextStatus} />
-          <header className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">Bước tiếp theo</p>
-            <h4 className="text-xl font-bold text-slate-900">
-              {STATUS_LABELS[currentStatus]} &rarr; {STATUS_LABELS[nextStatus]}
-            </h4>
-            <p className="text-sm text-slate-600">
-              Bạn chỉ có thể tiến một bước mỗi lần; hệ thống sẽ gửi email tự động khi cập nhật.
-            </p>
-          </header>
+        <div className="space-y-4 rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-sm">
+          <form className="space-y-4" action={formAction}>
+            <input type="hidden" name="status" value={nextStatus} />
+            <header className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">Bước tiếp theo</p>
+              <h4 className="text-xl font-bold text-slate-900">
+                {STATUS_LABELS[currentStatus]} &rarr; {STATUS_LABELS[nextStatus]}
+              </h4>
+              <p className="text-sm text-slate-600">
+                Bạn chỉ có thể tiến một bước mỗi lần; hệ thống sẽ gửi email tự động khi cập nhật.
+              </p>
+            </header>
 
           {needsInterviewDetails ? (
             <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-slate-800 shadow-inner">
@@ -163,50 +164,43 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
             </div>
           ) : null}
 
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {pending ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Đang cập nhật...
-              </span>
-            ) : (
-              `Chuyển sang ${STATUS_LABELS[nextStatus]}`
-            )}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={pending}
+              className="w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {pending ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Đang cập nhật...
+                </span>
+              ) : (
+                `Chuyển sang ${STATUS_LABELS[nextStatus]}`
+              )}
+            </button>
+          </form>
+
+          <div className="border-t border-slate-200 pt-4">
+            <form action={formAction}>
+              <input type="hidden" name="status" value="REJECTED" />
+              <button
+                type="submit"
+                disabled={pending}
+                className="w-full cursor-pointer rounded-xl border border-rose-300 bg-white px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-sm transition hover:border-rose-400 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Từ chối ứng viên
+              </button>
+            </form>
+          </div>
+        </div>
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
           Hồ sơ đã ở bước cuối cùng hoặc đã bị đánh dấu từ chối. Không thể tiến thêm trạng thái nào khác.
         </div>
       )}
-
-      <form
-        className="space-y-3 rounded-2xl border border-rose-200 bg-rose-50/80 p-5 shadow-sm"
-        action={formAction}
-      >
-        <input type="hidden" name="status" value="REJECTED" />
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-rose-600">Ngoại lệ</p>
-          <h4 className="text-lg font-bold text-rose-800">Đánh dấu ĐÃ TỪ CHỐI</h4>
-          <p className="text-sm text-rose-700">
-            Dùng khi ứng viên chủ động rút lui hoặc bạn cần kết thúc hồ sơ sớm.
-          </p>
-        </div>
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full rounded-xl border border-rose-300 bg-white px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-sm transition hover:border-rose-400 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          Đánh dấu ĐÃ TỪ CHỐI
-        </button>
-      </form>
 
       {state?.error ? (
         <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

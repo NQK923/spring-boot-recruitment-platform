@@ -102,6 +102,17 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   REJECTED: "Đã từ chối",
 };
 
+const PIPELINE_STEPS: ApplicationStatus[] = ["APPLIED", "SCREENING", "INTERVIEWING", "OFFERED", "HIRED"];
+
+const PIPELINE_DESCRIPTIONS: Record<ApplicationStatus, string> = {
+  APPLIED: "Hồ sơ đã ghi nhận trong hệ thống.",
+  SCREENING: "Đang sàng lọc và xem CV.",
+  INTERVIEWING: "Đang lên lịch phỏng vấn.",
+  OFFERED: "Đã gửi offer cho ứng viên.",
+  HIRED: "Ứng viên đã nhận việc.",
+  REJECTED: "Hồ sơ bị từ chối.",
+};
+
 const OFFER_STATUS_LABELS: Record<string, string> = {
   PENDING: "Chờ ứng viên phản hồi",
   ACCEPTED: "Ứng viên đã chấp nhận",
@@ -140,6 +151,65 @@ function formatProfileDate(value: string | null | undefined, fallback: string) {
   } catch {
     return value;
   }
+}
+
+function PipelineTimeline({ currentStatus }: { currentStatus: ApplicationStatus }) {
+  const isRejected = currentStatus === "REJECTED";
+  const currentIndex = PIPELINE_STEPS.indexOf(currentStatus);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-4">
+        {PIPELINE_STEPS.map((step, index) => {
+          const reached = !isRejected && currentIndex >= index;
+          const active = !isRejected && currentIndex === index;
+          const isLast = index === PIPELINE_STEPS.length - 1;
+          return (
+            <div key={step} className="flex items-center gap-2">
+              <div
+                className={[
+                  "flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold",
+                  reached
+                    ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                    : "border-slate-200 bg-white text-slate-400",
+                  active ? "ring-4 ring-emerald-100" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                {reached ? (
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  index + 1
+                )}
+              </div>
+              <div className="min-w-[140px]">
+                <p className={`text-sm font-semibold ${active ? "text-slate-900" : "text-slate-500"}`}>
+                  {STATUS_LABELS[step]}
+                </p>
+                <p className="text-xs text-slate-400">{PIPELINE_DESCRIPTIONS[step]}</p>
+              </div>
+              {!isLast ? (
+                <span
+                  className={[
+                    "hidden h-px w-14 sm:block",
+                    reached ? "bg-emerald-400" : "bg-slate-200",
+                  ].join(" ")}
+                />
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+      {isRejected ? (
+        <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">
+          Hồ sơ đã bị đánh dấu <span className="font-semibold">đã từ chối</span>. Bạn có thể thêm ghi chú để giải thích lý do hoặc mở lại pipeline bằng cách tạo hồ sơ mới.
+        </p>
+      ) : null}
+    </div>
+  );
 }
 
 function formatMoney(value: number | null | undefined, currency: string | null | undefined) {
@@ -208,7 +278,7 @@ export default async function ApplicationDetailsPage({
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6">
         <Link
           href={ROUTES.recruiterDashboard}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition-colors hover:text-blue-700"
+          className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-blue-600 transition-colors hover:text-blue-700"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -393,7 +463,7 @@ export default async function ApplicationDetailsPage({
       </section>
 
       <section className="mt-8 space-y-6">
-        <article className="rounded-2xl border border-gray-200/60 bg-white/90 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
+        <article className="rounded-2xl border border-gray-200/60 bg-white/90 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl space-y-8">
           <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
@@ -409,32 +479,15 @@ export default async function ApplicationDetailsPage({
             </div>
             <PipelineTimeline currentStatus={application.status as ApplicationStatus} />
           </div>
+
+          <StatusUpdateForm
+            applicationId={application.id}
+            currentStatus={application.status as ApplicationStatus}
+          />
         </article>
 
         <article className="rounded-2xl border border-gray-200/60 bg-white/90 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
-                <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">Cập nhật trạng thái</h3>
-                <p className="text-sm text-gray-600">
-                  Điền thông tin bắt buộc rồi nhấn chuyển bước để hệ thống gửi thông báo tự động.
-                </p>
-              </div>
-            </div>
-            <StatusUpdateForm
-              applicationId={application.id}
-              currentStatus={application.status as ApplicationStatus}
-            />
-          </div>
-        </article>
-
-        <article className="rounded-2xl border border-gray-200/60 bg-white/90 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
             <section className="space-y-3 rounded-2xl border border-blue-100/80 bg-blue-50/40 p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
@@ -591,8 +644,7 @@ export default async function ApplicationDetailsPage({
           </div>
         </article>
       </section>
-      </section>
-    </div>
+      </div>
     </div>
   );
 }

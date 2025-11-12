@@ -58,7 +58,7 @@ export function OfferDecisionForm({ applicationId, disabled }: OfferDecisionForm
       <button
         type="submit"
         disabled={isDisabled}
-        className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:from-indigo-700 hover:to-purple-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full cursor-pointer rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:from-indigo-700 hover:to-purple-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
       >
         {pending ? "Đang gửi phản hồi..." : "Gửi phản hồi"}
       </button>

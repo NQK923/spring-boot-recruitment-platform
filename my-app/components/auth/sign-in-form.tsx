@@ -61,7 +61,7 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
             Mật khẩu
           </label>
           <Link
-            className="text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline"
+            className="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:underline"
             href={ROUTES.forgotPassword}
           >
             Quên mật khẩu?
@@ -86,7 +86,7 @@ export function SignInForm({ defaultNext }: SignInFormProps) {
       </Button>
       <div className="text-center text-sm font-medium text-slate-600">
         Chưa có tài khoản?{" "}
-        <Link className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline" href={ROUTES.register}>
+        <Link className="cursor-pointer font-bold text-indigo-600 hover:text-indigo-700 hover:underline" href={ROUTES.register}>
           Tạo ngay
         </Link>
       </div>

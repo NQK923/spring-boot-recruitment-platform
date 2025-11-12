@@ -50,7 +50,7 @@ export function RegisterForm() {
       </Button>
       <div className="text-center text-sm font-medium text-slate-600">
         Đã có tài khoản?{" "}
-        <Link className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline" href={ROUTES.signIn}>
+        <Link className="cursor-pointer font-bold text-indigo-600 hover:text-indigo-700 hover:underline" href={ROUTES.signIn}>
           Đăng nhập
         </Link>
       </div>

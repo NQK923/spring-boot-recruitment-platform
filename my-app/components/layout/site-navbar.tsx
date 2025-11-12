@@ -182,7 +182,7 @@ export function SiteNavbar({
             href={item.href}
             onClick={handleClick}
             className={[
-              "group relative inline-flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-150",
+              "group relative inline-flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 transition-colors duration-150",
               active ? palette.active : palette.inactive,
             ]
               .filter(Boolean)
