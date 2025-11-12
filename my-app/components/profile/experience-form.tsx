@@ -6,6 +6,7 @@ import type { EmploymentType, Experience } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TagInput } from "@/components/profile/tag-input";
+import { AutoResizeTextarea } from "@/components/ui/auto-resize-textarea";
 
 type ExperiencesFormProps = {
   experiences: Experience[];
@@ -174,13 +175,13 @@ export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
 
             <label className="text-sm text-muted">
               <span className="mb-1 block font-semibold text-text">Mô tả trách nhiệm chính</span>
-              <textarea
+              <AutoResizeTextarea
                 value={experience.description}
                 onChange={(event) => handleChange(index, "description", event.target.value)}
-                rows={3}
                 placeholder="Tóm tắt ngắn gọn phạm vi công việc và bối cảnh đội nhóm."
-                className="w-full rounded-2xl border border-border bg-bg/70 px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
                 disabled={pending}
+                minRows={3}
+                maxRows={10}
               />
             </label>
 
@@ -188,13 +189,13 @@ export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
               <span className="mb-1 block font-semibold text-text">
                 Thành tựu / Kết quả chính (mỗi dòng một bullet, ưu tiên số liệu)
               </span>
-              <textarea
+              <AutoResizeTextarea
                 value={experience.achievements}
                 onChange={(event) => handleChange(index, "achievements", event.target.value)}
-                rows={3}
                 placeholder="- Tăng tỉ lệ chuyển đổi +25%...\n- Rút ngắn thời gian xử lý 3 tuần → 5 ngày..."
-                className="w-full rounded-2xl border border-border bg-bg/70 px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
                 disabled={pending}
+                minRows={3}
+                maxRows={12}
               />
             </label>
 
@@ -207,15 +208,17 @@ export function ExperiencesForm({ experiences }: ExperiencesFormProps) {
             />
 
             <div className="flex justify-end">
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                size="sm"
                 onClick={() => removeExperience(index)}
                 disabled={pending || items.length === 1}
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+                title="Xóa kinh nghiệm"
               >
-                Xoá mục này
-              </Button>
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
             </div>
           </div>
         ))}

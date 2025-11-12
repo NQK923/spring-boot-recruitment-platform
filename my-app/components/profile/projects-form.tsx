@@ -11,6 +11,7 @@ import type { Project } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TagInput } from "@/components/profile/tag-input";
+import { AutoResizeTextarea } from "@/components/ui/auto-resize-textarea";
 
 type ProjectsFormProps = {
   projects: Project[];
@@ -95,36 +96,36 @@ function EditableProjectCard({ project }: { project: Project }) {
 
       <label className="text-sm text-muted">
         <span className="mb-1 block font-semibold text-text">Tóm tắt mục tiêu / phạm vi</span>
-        <textarea
+        <AutoResizeTextarea
           name="summary"
           defaultValue={project.summary ?? ""}
-          rows={3}
           disabled={pending}
-          className="w-full rounded-2xl border border-border bg-bg/70 px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+          minRows={3}
+          maxRows={10}
         />
       </label>
 
       <label className="text-sm text-muted">
         <span className="mb-1 block font-semibold text-text">Trách nhiệm chính</span>
-        <textarea
+        <AutoResizeTextarea
           name="responsibilities"
           defaultValue={project.responsibilities ?? ""}
-          rows={3}
           disabled={pending}
           placeholder="- Dẫn dắt squad 8 người...\n- Làm việc với khối vận hành..."
-          className="w-full rounded-2xl border border-border bg-bg/70 px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+          minRows={3}
+          maxRows={10}
         />
       </label>
 
       <label className="text-sm text-muted">
         <span className="mb-1 block font-semibold text-text">Thành tựu nổi bật</span>
-        <textarea
+        <AutoResizeTextarea
           name="achievements"
           defaultValue={project.achievements ?? ""}
-          rows={3}
           disabled={pending}
           placeholder="- Giảm 35% chi phí lưu trữ...\n- Tăng 22% NPS khách hàng..."
-          className="w-full rounded-2xl border border-border bg-bg/70 px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+          minRows={3}
+          maxRows={10}
         />
       </label>
 
@@ -172,16 +173,17 @@ function EditableProjectCard({ project }: { project: Project }) {
         <Button type="submit" size="sm" disabled={pending}>
           {pending ? "Đang lưu..." : "Lưu dự án"}
         </Button>
-        <Button
+        <button
           type="submit"
           formAction={deleteAction}
-          size="sm"
-          variant="ghost"
-          className="text-red-600 hover:text-red-700"
           disabled={deletePending}
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+          title="Xóa dự án"
         >
-          {deletePending ? "Đang xoá..." : "Xoá dự án"}
-        </Button>
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
       </div>
       {deleteState?.error ? (
         <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -220,12 +222,12 @@ function CreateProjectCard() {
         />
         Dự án đang chạy
       </label>
-      <textarea
+      <AutoResizeTextarea
         name="summary"
-        rows={3}
         placeholder="Mục tiêu dự án, bối cảnh kinh doanh..."
         disabled={pending}
-        className="w-full rounded-2xl border border-border bg-bg/70 px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+        minRows={3}
+        maxRows={8}
       />
       <TagInput
         label="Tech stack"

@@ -5,6 +5,7 @@ import { updateEducationAction, type EducationInput, type ProfileFormState } fro
 import type { Education } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AutoResizeTextarea } from "@/components/ui/auto-resize-textarea";
 
 type EducationFormProps = {
   education: Education[];
@@ -139,38 +140,40 @@ export function EducationForm({ education }: EducationFormProps) {
 
             <label className="text-sm text-muted">
               <span className="mb-1 block font-semibold text-text">Danh hiệu / Học bổng</span>
-              <textarea
+              <AutoResizeTextarea
                 value={item.honors}
                 onChange={(event) => handleChange(index, "honors", event.target.value)}
-                rows={2}
                 placeholder="- Top 5% khoá K63\n- Scholarship for Outstanding Performance..."
-                className="w-full rounded-2xl border border-border bg-bg/70 px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
                 disabled={pending}
+                minRows={2}
+                maxRows={8}
               />
             </label>
 
             <label className="text-sm text-muted">
               <span className="mb-1 block font-semibold text-text">Hoạt động nổi bật</span>
-              <textarea
+              <AutoResizeTextarea
                 value={item.activities}
                 onChange={(event) => handleChange(index, "activities", event.target.value)}
-                rows={2}
                 placeholder="- Lead CLB Học thuật...\n- Tình nguyện tại..."
-                className="w-full rounded-2xl border border-border bg-bg/70 px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
                 disabled={pending}
+                minRows={2}
+                maxRows={8}
               />
             </label>
 
             <div className="flex justify-end">
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                size="sm"
                 onClick={() => removeEducation(index)}
                 disabled={pending || items.length === 1}
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+                title="Xóa học vấn"
               >
-                Xoá mục này
-              </Button>
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
             </div>
           </div>
         ))}

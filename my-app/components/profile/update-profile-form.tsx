@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { updateProfileDetailsAction, type ProfileFormState } from "@/app/candidate/profile/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AutoResizeTextarea } from "@/components/ui/auto-resize-textarea";
 
 type Props = {
   fullName?: string | null;
@@ -151,13 +152,13 @@ export function UpdateProfileForm({
 
       <label className="flex flex-col gap-2 text-sm font-semibold text-gray-900">
         Tóm tắt bản thân
-        <textarea
+        <AutoResizeTextarea
           name="summary"
           defaultValue={summary ?? ""}
           placeholder="Tóm tắt 3-4 câu về thành tựu nổi bật, số liệu chính và giá trị bạn mang lại."
           disabled={pending}
-          rows={4}
-          className="min-h-[120px] rounded-2xl border border-primary-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm outline-none transition focus:border-primary-400 focus:ring-2 focus:ring-primary-200"
+          minRows={4}
+          maxRows={15}
         />
       </label>
 

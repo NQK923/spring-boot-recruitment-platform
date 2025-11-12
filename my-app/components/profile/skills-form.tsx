@@ -68,51 +68,49 @@ export function SkillsForm({ skills }: SkillsFormProps) {
         {items.map((item, index) => (
           <div
             key={`skill-${index}`}
-            className="space-y-3 rounded-2xl border border-primary-200/60 bg-white/80 px-4 py-4 shadow-sm"
+            className="flex flex-col gap-3 rounded-2xl border border-primary-200/60 bg-white/80 px-4 py-4 shadow-sm sm:flex-row sm:items-center sm:gap-4"
           >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-              <Input
-                value={item.skillName}
-                onChange={(event) => handleChange(index, "skillName", event.target.value)}
-                placeholder="Product discovery"
-                disabled={pending}
-                className="flex-[2] min-w-0"
-              />
-              <select
-                value={item.proficiency}
-                onChange={(event) => handleChange(index, "proficiency", event.target.value)}
-                disabled={pending}
-                className="flex-1 rounded-2xl border border-border bg-white px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
-              >
-                <option value="">Trình độ</option>
-                {SKILL_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <Input
-                type="number"
-                min={0}
-                max={60}
-                value={item.years}
-                onChange={(event) => handleChange(index, "years", event.target.value)}
-                placeholder="Số năm"
-                disabled={pending}
-                className="w-20 sm:w-24"
-              />
-            </div>
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => removeSkill(index)}
-                disabled={pending || items.length === 1}
-              >
-                Xoá mục này
-              </Button>
-            </div>
+            <Input
+              value={item.skillName}
+              onChange={(event) => handleChange(index, "skillName", event.target.value)}
+              placeholder="Product discovery"
+              disabled={pending}
+              className="flex-[2] min-w-0"
+            />
+            <select
+              value={item.proficiency}
+              onChange={(event) => handleChange(index, "proficiency", event.target.value)}
+              disabled={pending}
+              className="flex-1 rounded-2xl border border-border bg-white px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+            >
+              <option value="">Trình độ</option>
+              {SKILL_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <Input
+              type="number"
+              min={0}
+              max={60}
+              value={item.years}
+              onChange={(event) => handleChange(index, "years", event.target.value)}
+              placeholder="Số năm"
+              disabled={pending}
+              className="w-20 sm:w-24"
+            />
+            <button
+              type="button"
+              onClick={() => removeSkill(index)}
+              disabled={pending || items.length === 1}
+              className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+              title="Xóa kỹ năng"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
           </div>
         ))}
       </div>

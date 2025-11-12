@@ -49,58 +49,55 @@ function EditableLanguageRow({ language }: { language: ProfileLanguage }) {
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-3 rounded-2xl border border-primary-200/60 bg-white/80 px-4 py-4 shadow-sm sm:flex-row sm:items-center"
+      className="flex flex-col gap-3 rounded-2xl border border-primary-200/60 bg-white/80 px-4 py-4 shadow-sm sm:flex-row sm:items-center sm:gap-4"
     >
       <input type="hidden" name="languageId" value={String(language.id)} />
-      <div className="flex-1 space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-3">
-        <Input
-          name="language"
-          defaultValue={language.language ?? ""}
-          placeholder="Ngôn ngữ"
-          disabled={pending}
-          className="flex-1"
-        />
-        <select
-          name="proficiency"
-          defaultValue={language.proficiency ?? ""}
-          disabled={pending}
-          className="flex-1 rounded-2xl border border-border bg-white px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
-        >
-          <option value="">Trình độ</option>
-          {LANGUAGE_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="flex flex-wrap items-center gap-3 sm:justify-end">
-        <Button type="submit" size="sm" disabled={pending}>
-          {pending ? "Đang lưu..." : "Lưu"}
-        </Button>
-        <Button
-          type="submit"
-          formAction={deleteAction}
-          size="sm"
-          variant="ghost"
-          className="text-red-600 hover:text-red-700"
-          disabled={deletePending}
-        >
-          {deletePending ? "Đang xoá..." : "Xoá"}
-        </Button>
-      </div>
+      <Input
+        name="language"
+        defaultValue={language.language ?? ""}
+        placeholder="Ngôn ngữ"
+        disabled={pending}
+        className="flex-1"
+      />
+      <select
+        name="proficiency"
+        defaultValue={language.proficiency ?? ""}
+        disabled={pending}
+        className="flex-1 rounded-2xl border border-border bg-white px-3 py-2 text-sm text-text focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-400/30"
+      >
+        <option value="">Trình độ</option>
+        {LANGUAGE_OPTIONS.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <Button type="submit" size="sm" disabled={pending} className="sm:w-auto">
+        {pending ? "Đang lưu..." : "Lưu"}
+      </Button>
+      <button
+        type="submit"
+        formAction={deleteAction}
+        disabled={deletePending}
+        className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+        title="Xóa ngoại ngữ"
+      >
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      </button>
       {state?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="w-full rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {state.error}
         </p>
       ) : null}
       {state?.success ? (
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+        <p className="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
           {state.success}
         </p>
       ) : null}
       {deleteState?.error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="w-full rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {deleteState.error}
         </p>
       ) : null}

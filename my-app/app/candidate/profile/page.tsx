@@ -1,7 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import type { Profile } from "@/lib/types";
 import { deleteCvFormAction } from "@/app/candidate/profile/actions";
-import { AvatarUploader } from "@/components/profile/avatar-uploader";
 import { UpdateProfileForm } from "@/components/profile/update-profile-form";
 import { UploadCvForm } from "@/components/profile/upload-cv-form";
 import { GenerateCvForm } from "@/components/profile/generate-cv-form";
@@ -11,6 +10,7 @@ import { SkillsForm } from "@/components/profile/skills-form";
 import { ProjectsForm } from "@/components/profile/projects-form";
 import { CertificationsForm } from "@/components/profile/certifications-form";
 import { LanguagesForm } from "@/components/profile/languages-form";
+import { CollapsibleSection } from "@/components/profile/collapsible-section";
 
 async function getProfile(): Promise<Profile | null> {
   try {
@@ -126,23 +126,32 @@ export default async function CandidateProfilePage() {
           </div>
         </header>
 
-      <section className="space-y-6 rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600">
-              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+      <CollapsibleSection
+        defaultOpen={false}
+        icon={
+          <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        }
+        title="Thông tin chung"
+        description="Hãy sử dụng email chuyên nghiệp, cập nhật vị trí mong muốn và các đường dẫn quan trọng."
+        summary={
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-700">Họ tên:</span>
+              <span className="text-gray-900">{profile.fullName || "Chưa cập nhật"}</span>
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Thông tin chung</h2>
-              <p className="text-sm text-gray-600">
-                Hãy sử dụng email chuyên nghiệp, cập nhật vị trí mong muốn và các đường dẫn quan trọng.
-              </p>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-700">Email:</span>
+              <span className="text-gray-900">{profile.emailForCv || "Chưa cập nhật"}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-700">Vị trí mong muốn:</span>
+              <span className="text-gray-900">{profile.desiredPosition || "Chưa cập nhật"}</span>
             </div>
           </div>
-          <AvatarUploader avatarUrl={profile.avatarUrl} fullName={profile.fullName} />
-        </div>
+        }
+      >
         <UpdateProfileForm
           fullName={profile.fullName}
           phoneNumber={profile.phoneNumber}
@@ -159,7 +168,7 @@ export default async function CandidateProfilePage() {
           openToRelocate={profile.openToRelocate}
           preferredCvLanguage={profile.preferredCvLanguage}
         />
-      </section>
+      </CollapsibleSection>
 
       <section id="cvs" className="space-y-6 rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
         <div className="flex items-center gap-3">
@@ -245,81 +254,115 @@ export default async function CandidateProfilePage() {
         </div>
       </section>
 
-      <section className="space-y-6 rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600">
-            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+      <CollapsibleSection
+        defaultOpen={false}
+        gradientFrom="from-amber-500"
+        gradientTo="to-orange-600"
+        icon={
+          <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        }
+        title="Kinh nghiệm nổi bật"
+        description="Viết thành tựu dạng bullet với số liệu (%, ₫, thời gian) để ATS và Gemini hiểu rõ đóng góp của bạn."
+        summary={
+          <div className="text-sm text-gray-700">
+            {experiences.length > 0 ? (
+              <p className="font-semibold">
+                {experiences.length} kinh nghiệm làm việc · Gần nhất: {experiences[0]?.title || "Chưa rõ"}
+              </p>
+            ) : (
+              <p className="text-gray-500">Chưa có kinh nghiệm nào. Hãy thêm để tăng cơ hội được chú ý.</p>
+            )}
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">Kinh nghiệm nổi bật</h2>
-            <p className="text-sm text-gray-600">
-              Viết thành tựu dạng bullet với số liệu (%, ₫, thời gian) để ATS và Gemini hiểu rõ đóng góp của bạn.
-            </p>
-          </div>
-        </div>
+        }
+      >
         <ExperiencesForm experiences={experiences} />
-      </section>
+      </CollapsibleSection>
 
-      <section className="space-y-6 rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600">
-            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-            </svg>
+      <CollapsibleSection
+        defaultOpen={false}
+        gradientFrom="from-cyan-500"
+        gradientTo="to-blue-600"
+        icon={
+          <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+        }
+        title="Dự án tiêu biểu"
+        description="Nêu rõ vai trò, phạm vi và kết quả đo bằng dữ liệu. Thêm đường dẫn demo/repo nếu có."
+        summary={
+          <div className="text-sm text-gray-700">
+            {profile.projects.length > 0 ? (
+              <p className="font-semibold">{profile.projects.length} dự án</p>
+            ) : (
+              <p className="text-gray-500">Chưa có dự án nào.</p>
+            )}
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">Dự án tiêu biểu</h2>
-            <p className="text-sm text-gray-600">
-              Nêu rõ vai trò, phạm vi và kết quả đo bằng dữ liệu. Thêm đường dẫn demo/repo nếu có.
-            </p>
-          </div>
-        </div>
+        }
+      >
         <ProjectsForm projects={profile.projects} />
-      </section>
+      </CollapsibleSection>
 
-      <section className="space-y-6 rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-600">
-            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
-            </svg>
+      <CollapsibleSection
+        defaultOpen={false}
+        gradientFrom="from-purple-500"
+        gradientTo="to-pink-600"
+        icon={
+          <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+          </svg>
+        }
+        title="Học vấn & chứng chỉ"
+        description="Điền GPA, danh hiệu, học bổng và chứng chỉ để thuyết phục ATS ở phần nền tảng học thuật."
+        summary={
+          <div className="text-sm text-gray-700">
+            {education.length > 0 || profile.certifications.length > 0 ? (
+              <p className="font-semibold">
+                {education.length} học vấn · {profile.certifications.length} chứng chỉ
+              </p>
+            ) : (
+              <p className="text-gray-500">Chưa có thông tin học vấn hoặc chứng chỉ.</p>
+            )}
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">Học vấn & chứng chỉ</h2>
-            <p className="text-sm text-gray-600">
-              Điền GPA, danh hiệu, học bổng và chứng chỉ để thuyết phục ATS ở phần nền tảng học thuật.
-            </p>
-          </div>
-        </div>
+        }
+      >
         <EducationForm education={education} />
         <div className="border-t border-dashed border-primary-100 pt-6">
           <CertificationsForm certifications={profile.certifications} />
         </div>
-      </section>
+      </CollapsibleSection>
 
-      <section className="space-y-6 rounded-2xl border border-gray-200/50 bg-white/80 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-red-600">
-            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-            </svg>
+      <CollapsibleSection
+        defaultOpen={false}
+        gradientFrom="from-rose-500"
+        gradientTo="to-red-600"
+        icon={
+          <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          </svg>
+        }
+        title="Kỹ năng & ngoại ngữ"
+        description="Gắn trình độ cho từng kỹ năng và nêu rõ số năm. Đối với ngoại ngữ, chọn thang CEFR/Fluent/Native."
+        summary={
+          <div className="text-sm text-gray-700">
+            {skills.length > 0 || profile.languages.length > 0 ? (
+              <p className="font-semibold">
+                {skills.length} kỹ năng · {profile.languages.length} ngoại ngữ
+              </p>
+            ) : (
+              <p className="text-gray-500">Chưa có kỹ năng hoặc ngoại ngữ.</p>
+            )}
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">Kỹ năng & ngoại ngữ</h2>
-            <p className="text-sm text-gray-600">
-              Gắn trình độ cho từng kỹ năng và nêu rõ số năm. Đối với ngoại ngữ, chọn thang CEFR/Fluent/Native.
-            </p>
-          </div>
-        </div>
+        }
+      >
         <SkillsForm skills={skills} />
         <div className="border-t border-dashed border-primary-100 pt-6">
           <LanguagesForm languages={profile.languages} />
         </div>
-      </section>
+      </CollapsibleSection>
     </div>
   </div>
   );
