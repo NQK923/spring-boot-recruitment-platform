@@ -13,6 +13,12 @@ import java.time.Instant;
 public class ApplicationDetailsDto {
     private Long id;
     private Long jobPostingId;
+    private String jobTitleSnapshot;
+    private String jobDescriptionSnapshot;
+    private String jobLocationSnapshot;
+    private String jobDepartmentSnapshot;
+    private String jobWorkTypeSnapshot;
+    private String jobSalarySnapshot;
     private Long candidateId;
     private String candidateName;
     private Long ownerUserId;
@@ -26,6 +32,12 @@ public class ApplicationDetailsDto {
         return new ApplicationDetailsDto(
                 app.getId(),
                 app.getJobPostingId(),
+                app.getJobTitleSnapshot(),
+                app.getJobDescriptionSnapshot(),
+                app.getJobLocationSnapshot(),
+                app.getJobDepartmentSnapshot(),
+                app.getJobWorkTypeSnapshot(),
+                app.getJobSalarySnapshot(),
                 app.getCandidateId(),
                 null,
                 app.getOwnerUserId(),

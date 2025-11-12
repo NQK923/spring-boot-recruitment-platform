@@ -62,6 +62,12 @@ export type Application = {
   status: ApplicationStatus;
   ownerUserId: number | null;
   appliedAt: string | null;
+  jobTitleSnapshot?: string | null;
+  jobDescriptionSnapshot?: string | null;
+  jobLocationSnapshot?: string | null;
+  jobDepartmentSnapshot?: string | null;
+  jobWorkTypeSnapshot?: string | null;
+  jobSalarySnapshot?: string | null;
 };
 
 export type ApplicationInterviewDetails = {

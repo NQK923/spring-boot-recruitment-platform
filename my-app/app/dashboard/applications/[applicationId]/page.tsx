@@ -10,7 +10,6 @@ import type {
   ApplicationDetails,
   ApplicationNote,
   ApplicationStatus,
-  JobPostingPublic,
   Profile,
 } from "@/lib/types";
 
@@ -34,22 +33,6 @@ async function getApplicationNotes(applicationId: string): Promise<ApplicationNo
     return Array.isArray(data) ? (data as ApplicationNote[]) : [];
   } catch {
     return [];
-  }
-}
-
-async function getJobSummary(jobId: number): Promise<JobPostingPublic | null> {
-  try {
-    const response = await apiFetch(`/api/jobs/public/${jobId}`, {
-      method: "GET",
-      skipAuthHeaders: true,
-    });
-    if (response.status === 404) {
-      return null;
-    }
-    const data = await response.json();
-    return data && typeof data === "object" ? (data as JobPostingPublic) : null;
-  } catch {
-    return null;
   }
 }
 
@@ -245,11 +228,13 @@ export default async function ApplicationDetailsPage({
   }
   const companyId = await getViewerCompanyId();
 
-  const [job, notes, profile] = await Promise.all([
-    getJobSummary(application.jobPostingId),
+  const [notes, profile] = await Promise.all([
     getApplicationNotes(applicationId),
     getCandidateProfile(application.candidateId, companyId),
   ]);
+  const jobTitle = application.jobTitleSnapshot ?? "Hồ sơ ứng tuyển";
+  const jobDepartment = application.jobDepartmentSnapshot ?? "Chưa xác định";
+
   const profileCvs = profile?.cvs ?? [];
   const attachedCv = application.cvId ? profileCvs.find((cv) => cv.id === application.cvId) : null;
   const attachedCvLink =
@@ -292,7 +277,7 @@ export default async function ApplicationDetailsPage({
               {formatStatus(application.status)}
             </span>
             <h1 className="text-4xl font-bold text-gray-900">
-              {job?.title ?? "Hồ sơ ứng tuyển"}
+              {jobTitle}
             </h1>
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
               <div className="flex items-center gap-2">
@@ -307,7 +292,7 @@ export default async function ApplicationDetailsPage({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 <span className="font-medium">Đội tuyển dụng:</span>
-                <span>{job?.department ?? "Chưa xác định"}</span>
+                <span>{jobDepartment}</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

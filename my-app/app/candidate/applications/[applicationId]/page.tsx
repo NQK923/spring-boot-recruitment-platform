@@ -4,7 +4,7 @@ import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import { dateFormatter, dateTimeFormatter } from "@/lib/dates";
 import { OfferDecisionForm } from "@/components/candidate/OfferDecisionForm";
-import type { ApplicationDetails, Interview, JobPostingPublic } from "@/lib/types";
+import type { ApplicationDetails, Interview } from "@/lib/types";
 
 async function getApplication(applicationId: string): Promise<ApplicationDetails | null> {
   try {
@@ -14,22 +14,6 @@ async function getApplication(applicationId: string): Promise<ApplicationDetails
     }
     const data = await response.json();
     return data && typeof data === "object" ? (data as ApplicationDetails) : null;
-  } catch {
-    return null;
-  }
-}
-
-async function getJobSummary(jobId: number): Promise<JobPostingPublic | null> {
-  try {
-    const response = await apiFetch(`/api/jobs/public/${jobId}`, {
-      method: "GET",
-      skipAuthHeaders: true,
-    });
-    if (response.status === 404) {
-      return null;
-    }
-    const data = await response.json();
-    return data && typeof data === "object" ? (data as JobPostingPublic) : null;
   } catch {
     return null;
   }
@@ -87,10 +71,7 @@ export default async function CandidateApplicationDetailsPage({
     notFound();
   }
 
-  const [job, interviews] = await Promise.all([
-    getJobSummary(application.jobPostingId),
-    getInterviewsForApplication(application.id),
-  ]);
+  const interviews = await getInterviewsForApplication(application.id);
 
   const nextInterview = interviews
     .slice()
@@ -99,6 +80,8 @@ export default async function CandidateApplicationDetailsPage({
       const bTime = b.scheduleTime ? new Date(b.scheduleTime).getTime() : Infinity;
       return aTime - bTime;
     })[0];
+
+  const jobTitle = application.jobTitleSnapshot ?? "Vị trí đã đóng tuyển";
 
   const calendarHref = nextInterview ? `/api/interviews/${nextInterview.id}/calendar` : null;
   const structuredInterview = application.interviewDetails ?? null;
@@ -135,7 +118,7 @@ export default async function CandidateApplicationDetailsPage({
               {formatStatus(application.status)}
             </span>
             <h1 className="text-4xl font-bold text-gray-900">
-              {job?.title ?? "Vị trí đã đóng tuyển"}
+              {jobTitle}
             </h1>
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
               <div className="flex items-center gap-2">
@@ -143,7 +126,7 @@ export default async function CandidateApplicationDetailsPage({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 <span className="font-medium">Vị trí tuyển dụng:</span>
-                <span>{job?.title ?? "Vị trí đã đóng tuyển"}</span>
+                <span>{jobTitle}</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -5,12 +5,7 @@ import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import { dateFormatter, dateTimeFormatter } from "@/lib/dates";
-import type { Application, Interview, JobPostingPublic, Profile } from "@/lib/types";
-
-type EnrichedApplication = Application & {
-  jobTitle: string;
-  jobDescription: string | null;
-};
+import type { Application, Interview, Profile } from "@/lib/types";
 
 type NextStep = {
   title: string;
@@ -29,43 +24,14 @@ async function getApplications(): Promise<Application[]> {
   }
 }
 
-async function getJobSummary(jobId: number): Promise<JobPostingPublic | null> {
-  try {
-    const response = await apiFetch(`/api/jobs/public/${jobId}`, {
-      method: "GET",
-      skipAuthHeaders: true,
-    });
-    if (response.status === 404) {
-      return null;
-    }
-    const data = await response.json();
-    return data && typeof data === "object" ? (data as JobPostingPublic) : null;
-  } catch {
-    return null;
-  }
+function getJobTitle(application: Application): string {
+  const raw = application.jobTitleSnapshot ?? "";
+  return raw.trim().length > 0 ? raw : "Vị trí đã đóng tuyển";
 }
 
-async function enrichApplications(applications: Application[]): Promise<EnrichedApplication[]> {
-  const jobIds = Array.from(new Set(applications.map((app) => app.jobPostingId)));
-  const jobMap = new Map<number, JobPostingPublic>();
-
-  await Promise.all(
-    jobIds.map(async (jobId) => {
-      const summary = await getJobSummary(jobId);
-      if (summary) {
-        jobMap.set(jobId, summary);
-      }
-    })
-  );
-
-  return applications.map((app) => {
-    const job = jobMap.get(app.jobPostingId);
-    return {
-      ...app,
-      jobTitle: job?.title ?? "Vị trí đã đóng tuyển",
-      jobDescription: job?.description ?? null,
-    };
-  });
+function getJobDescription(application: Application): string {
+  const raw = application.jobDescriptionSnapshot ?? "";
+  return raw.trim().length > 0 ? raw : "Đang cập nhật mô tả công việc...";
 }
 
 async function getInterviews(): Promise<Interview[]> {
@@ -160,7 +126,7 @@ function formatProfileDate(value: string | null | undefined, fallback: string) {
 
 export default async function CandidatePortalPage() {
   const [applications, interviews, profile] = await Promise.all([
-    getApplications().then(enrichApplications),
+    getApplications(),
     getInterviews(),
     getProfile(),
   ]);
@@ -250,7 +216,7 @@ export default async function CandidatePortalPage() {
   );
 
   const applicationTitleMap = new Map<number, string>(
-    applications.map((application) => [application.id, application.jobTitle])
+    applications.map((application) => [application.id, getJobTitle(application)])
   );
 
   const resolveApplicationTitle = (applicationId: number) =>
@@ -587,7 +553,7 @@ export default async function CandidatePortalPage() {
                       <div className="flex items-start gap-3">
                         <div className="flex-1">
                           <p className="text-base font-semibold text-gray-900 group-hover:text-primary-600 transition-colors mb-1">
-                            {application.jobTitle}
+                            {getJobTitle(application)}
                           </p>
                           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
                             <span className="flex items-center gap-1">
@@ -611,7 +577,7 @@ export default async function CandidatePortalPage() {
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                        {application.jobDescription ?? "Đang cập nhật mô tả công việc..."}
+                        {getJobDescription(application)}
                       </p>
                     </div>
                   </div>

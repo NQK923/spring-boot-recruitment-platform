@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2025-11-12-job-snapshot-columns" author="assistant">
+        <addColumn tableName="applications">
+            <column name="job_title_snapshot" type="varchar(255)"/>
+            <column name="job_description_snapshot" type="text"/>
+            <column name="job_location_snapshot" type="varchar(255)"/>
+            <column name="job_department_snapshot" type="varchar(255)"/>
+            <column name="job_work_type_snapshot" type="varchar(100)"/>
+            <column name="job_salary_snapshot" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

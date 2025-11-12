@@ -22,5 +22,17 @@ public class Application {
     private ApplicationStatus status;
     private Long ownerUserId;
     private Instant appliedAt = Instant.now();
+    @Column(name = "job_title_snapshot")
+    private String jobTitleSnapshot;
+    @Column(name = "job_description_snapshot", columnDefinition = "text")
+    private String jobDescriptionSnapshot;
+    @Column(name = "job_location_snapshot")
+    private String jobLocationSnapshot;
+    @Column(name = "job_department_snapshot")
+    private String jobDepartmentSnapshot;
+    @Column(name = "job_work_type_snapshot")
+    private String jobWorkTypeSnapshot;
+    @Column(name = "job_salary_snapshot")
+    private String jobSalarySnapshot;
 
 }

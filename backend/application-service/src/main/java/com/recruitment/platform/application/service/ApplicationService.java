@@ -99,6 +99,7 @@ public class ApplicationService {
         app.setCvId(request.cvId());
         app.setSource(request.source());
         app.setStatus(ApplicationStatus.APPLIED);
+        applyJobSnapshot(app, job);
 
         Application savedApp = applicationRepository.save(app);
 
@@ -179,7 +180,9 @@ public class ApplicationService {
     }
 
     public List<Application> findApplicationsByCandidateId(Long candidateId) {
-        return applicationRepository.findByCandidateId(candidateId);
+        List<Application> applications = applicationRepository.findByCandidateId(candidateId);
+        hydrateJobSnapshots(applications);
+        return applications;
     }
 
     public Optional<Application> findById(Long applicationId) {
@@ -191,6 +194,7 @@ public class ApplicationService {
         if (applications.isEmpty()) {
             return Collections.emptyList();
         }
+        hydrateJobSnapshots(applications);
 
         Map<Long, String> candidateNames = fetchCandidateNames(
                 applications.stream().map(Application::getCandidateId).distinct().toList()
@@ -264,6 +268,7 @@ public class ApplicationService {
     public ApplicationDetailsDto getApplicationDetails(Long applicationId) {
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new NotFoundException("Application not found"));
+        hydrateJobSnapshot(application);
         Map<Long, String> candidateNames = fetchCandidateNames(List.of(application.getCandidateId()));
         ApplicationDetailsDto dto = ApplicationDetailsDto.fromApplication(application);
         enrichWithCandidateName(dto, candidateNames);
@@ -350,6 +355,56 @@ public class ApplicationService {
                 .map(ApplicationOfferDetailsDto::fromEntity)
                 .ifPresent(dto::setOfferDetails);
         return dto;
+    }
+
+    private void hydrateJobSnapshots(List<Application> applications) {
+        if (applications == null || applications.isEmpty()) {
+            return;
+        }
+        Map<Long, JobSummaryDto> jobCache = new HashMap<>();
+        for (Application application : applications) {
+            if (hasJobSnapshot(application)) {
+                continue;
+            }
+            JobSummaryDto job = jobCache.computeIfAbsent(
+                    application.getJobPostingId(),
+                    this::fetchJobSummaryForSnapshot
+            );
+            applyJobSnapshot(application, job);
+        }
+    }
+
+    private void hydrateJobSnapshot(Application application) {
+        if (application == null || hasJobSnapshot(application)) {
+            return;
+        }
+        JobSummaryDto job = fetchJobSummaryForSnapshot(application.getJobPostingId());
+        applyJobSnapshot(application, job);
+    }
+
+    private boolean hasJobSnapshot(Application application) {
+        return application.getJobTitleSnapshot() != null;
+    }
+
+    private void applyJobSnapshot(Application application, JobSummaryDto job) {
+        if (application == null || job == null) {
+            return;
+        }
+        application.setJobTitleSnapshot(job.title());
+        application.setJobDescriptionSnapshot(job.description());
+        application.setJobLocationSnapshot(job.location());
+        application.setJobDepartmentSnapshot(job.department());
+        application.setJobWorkTypeSnapshot(job.workType());
+        application.setJobSalarySnapshot(job.salaryRange());
+    }
+
+    private JobSummaryDto fetchJobSummaryForSnapshot(Long jobPostingId) {
+        try {
+            return jobServiceClient.getJobById(jobPostingId);
+        } catch (Exception ex) {
+            log.warn("Unable to hydrate job snapshot for {}: {}", jobPostingId, ex.getMessage());
+            return null;
+        }
     }
 
     private JobSummaryDto getJobSummaryOrThrow(Long jobPostingId) {

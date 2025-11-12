@@ -2,7 +2,17 @@ package com.recruitment.platform.application.client.dto;
 
 import java.util.Locale;
 
-public record JobSummaryDto(Long id, Long companyId, String status) {
+public record JobSummaryDto(
+        Long id,
+        Long companyId,
+        String status,
+        String title,
+        String description,
+        String location,
+        String department,
+        String workType,
+        String salaryRange
+) {
 
     public boolean isOpen() {
         if (status == null) {

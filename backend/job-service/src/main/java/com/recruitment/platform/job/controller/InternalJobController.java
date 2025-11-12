@@ -2,6 +2,7 @@ package com.recruitment.platform.job.controller;
 
 import com.recruitment.platform.job.dto.JobInternalDetails;
 import com.recruitment.platform.job.model.JobPosting;
+import com.recruitment.platform.job.model.JobPosition;
 import com.recruitment.platform.job.service.JobPostingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,18 @@ public class InternalJobController {
     }
 
     private JobInternalDetails mapToInternalDetails(JobPosting jobPosting) {
-        return new JobInternalDetails(jobPosting.getId(), jobPosting.getCompanyId(), jobPosting.getStatus());
+        JobPosition position = jobPosting.getJobPosition();
+        String department = position != null ? position.getDepartment() : null;
+        return new JobInternalDetails(
+                jobPosting.getId(),
+                jobPosting.getCompanyId(),
+                jobPosting.getStatus(),
+                jobPosting.getTitle(),
+                jobPosting.getDescription(),
+                jobPosting.getLocation(),
+                jobPosting.getWorkType(),
+                jobPosting.getSalaryRange(),
+                department
+        );
     }
 }
