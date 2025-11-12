@@ -102,6 +102,15 @@ public class NotificationEventListener {
             }
             String candidateEmail = users.get(0).email();
 
+            String jobTitle = safeString(event.jobTitle());
+            String jobLocation = safeString(event.jobLocation());
+            String jobLabel = jobTitle.isBlank()
+                    ? "vị trí #" + event.jobPostingId()
+                    : jobTitle;
+            String jobDisplay = jobLocation.isBlank()
+                    ? jobLabel
+                    : jobLabel + " – " + jobLocation;
+
             String normalizedStatus = event.newStatus() != null ? event.newStatus().toUpperCase() : "UNKNOWN";
             Map<String, Object> metadata = event.metadata() != null ? event.metadata() : Map.of();
 
@@ -113,11 +122,11 @@ public class NotificationEventListener {
                     String timezone = safeString(metadata.get("interviewTimezone"));
                     String location = safeString(metadata.get("interviewLocation"));
                     String instructions = safeString(metadata.get("interviewInstructions"));
-                    subject = String.format("Lịch phỏng vấn cho hồ sơ #%d", event.applicationId());
+                    subject = "Lịch phỏng vấn: " + jobLabel;
                     text = """
                             Xin chào!
 
-                            Đội ngũ tuyển dụng đã lên lịch phỏng vấn cho vị trí #%d.
+                            Đội ngũ tuyển dụng đã lên lịch phỏng vấn cho %s.
 
                             • Thời gian: %s %s
                             • Địa điểm / liên kết: %s
@@ -125,7 +134,7 @@ public class NotificationEventListener {
 
                             Nếu bạn cần thay đổi lịch, vui lòng trả lời email này hoặc liên hệ với nhà tuyển dụng.
                             """.formatted(
-                            event.jobPostingId(),
+                            jobDisplay,
                             timeText,
                             timezone.isBlank() ? "" : "(" + timezone + ")",
                             location.isBlank() ? "Sẽ được cập nhật" : location,
@@ -137,11 +146,11 @@ public class NotificationEventListener {
                     String currency = safeString(metadata.get("offerCurrency"));
                     String notes = safeString(metadata.get("offerNotes"));
                     String expires = formatIso(metadata.get("offerExpiresAt"));
-                    subject = String.format("Đề nghị cho hồ sơ #%d", event.applicationId());
+                    subject = "Đề nghị làm việc: " + jobLabel;
                     text = """
                             Xin chào!
 
-                            Chúng tôi rất vui được gửi tới bạn đề nghị làm việc cho vị trí #%d.
+                            Chúng tôi rất vui được gửi tới bạn đề nghị làm việc cho %s.
 
                             • Mức lương đề nghị: %s %s
                             • Thời hạn phản hồi: %s
@@ -149,7 +158,7 @@ public class NotificationEventListener {
 
                             Hãy đăng nhập TalentFlow để chấp nhận hoặc từ chối đề nghị.
                             """.formatted(
-                            event.jobPostingId(),
+                            jobDisplay,
                             salaryAmount.isBlank() ? "Đang cập nhật" : salaryAmount,
                             currency.isBlank() ? "VND" : currency,
                             expires.isBlank() ? "Sẽ được thông báo" : expires,
@@ -185,13 +194,13 @@ public class NotificationEventListener {
                                 Nếu muốn ứng tuyển vị trí khác trong tương lai, bạn luôn được chào đón quay lại TalentFlow.
                                 """;
                     } else {
-                        subject = String.format("Cập nhật hồ sơ #%d", event.applicationId());
-                        text = String.format("Xin chào!%n%nHồ sơ của bạn cho vị trí #%d đã chuyển sang trạng thái: %s.", event.jobPostingId(), normalizedStatus);
+                        subject = "Cập nhật hồ sơ: " + jobLabel;
+                        text = String.format("Xin chào!%n%nHồ sơ của bạn cho %s đã chuyển sang trạng thái: %s.", jobDisplay, normalizedStatus);
                     }
                 }
                 default -> {
-                    subject = String.format("Cập nhật hồ sơ #%d", event.applicationId());
-                    text = String.format("Xin chào!%n%nTrạng thái hồ sơ của bạn cho vị trí #%d đã cập nhật thành: %s.", event.jobPostingId(), normalizedStatus);
+                    subject = "Cập nhật hồ sơ: " + jobLabel;
+                    text = String.format("Xin chào!%n%nTrạng thái hồ sơ của bạn cho %s đã cập nhật thành: %s.", jobDisplay, normalizedStatus);
                 }
             }
 
@@ -208,9 +217,30 @@ public class NotificationEventListener {
             List<AuthServiceClient.UserEmailInfo> users = authServiceClient.getUsersByIds(new AuthServiceClient.BatchUserIdsRequest(event.participantUserIds()));
             Map<Long, String> userIdToEmailMap = users.stream().collect(Collectors.toMap(AuthServiceClient.UserEmailInfo::id, AuthServiceClient.UserEmailInfo::email));
 
-            String subject = "An interview has been scheduled";
-            String text = String.format("Hello!\n\nAn interview for your application #%d has been scheduled for %s at %s.\n\nLocation/Link: %s",
-                    event.applicationId(), event.scheduleTime(), event.timezone(), event.locationOrLink());
+            String jobTitle = safeString(event.jobTitle());
+            String jobLocation = safeString(event.jobLocation());
+            String jobLabel = jobTitle.isBlank() ? "hồ sơ #" + event.applicationId() : jobTitle;
+            String jobDisplay = jobLocation.isBlank() ? jobLabel : jobLabel + " – " + jobLocation;
+            String scheduleTime = formatIso(event.scheduleTime());
+            String timezone = safeString(event.timezone());
+            String location = safeString(event.locationOrLink());
+
+            String subject = "Lịch phỏng vấn: " + jobLabel;
+            String text = """
+                    Xin chào!
+
+                    Buổi phỏng vấn cho %s đã được sắp xếp.
+
+                    • Thời gian: %s %s
+                    • Địa điểm / liên kết: %s
+
+                    Nếu bạn không thể tham dự, vui lòng phản hồi email này hoặc cập nhật trực tiếp trên TalentFlow.
+                    """.formatted(
+                    jobDisplay,
+                    scheduleTime,
+                    timezone.isBlank() ? "" : "(" + timezone + ")",
+                    location.isBlank() ? "Sẽ được cập nhật" : location
+            );
 
             event.participantUserIds().forEach(userId -> {
                 String participantEmail = userIdToEmailMap.get(userId);
@@ -231,9 +261,30 @@ public class NotificationEventListener {
             List<AuthServiceClient.UserEmailInfo> users = authServiceClient.getUsersByIds(new AuthServiceClient.BatchUserIdsRequest(event.participantUserIds()));
             Map<Long, String> userIdToEmailMap = users.stream().collect(Collectors.toMap(AuthServiceClient.UserEmailInfo::id, AuthServiceClient.UserEmailInfo::email));
 
-            String subject = "Interview schedule updated";
-            String text = String.format("Hello!\n\nYour interview for application #%d has been rescheduled for %s (%s).\n\nUpdated Location/Link: %s",
-                    event.applicationId(), event.newScheduleTime(), event.timezone(), event.locationOrLink());
+            String jobTitle = safeString(event.jobTitle());
+            String jobLocation = safeString(event.jobLocation());
+            String jobLabel = jobTitle.isBlank() ? "hồ sơ #" + event.applicationId() : jobTitle;
+            String jobDisplay = jobLocation.isBlank() ? jobLabel : jobLabel + " – " + jobLocation;
+            String newTime = formatIso(event.newScheduleTime());
+            String timezone = safeString(event.timezone());
+            String location = safeString(event.locationOrLink());
+
+            String subject = "Cập nhật lịch phỏng vấn: " + jobLabel;
+            String text = """
+                    Xin chào!
+
+                    Buổi phỏng vấn cho %s đã được cập nhật thời gian mới.
+
+                    • Thời gian mới: %s %s
+                    • Địa điểm / liên kết: %s
+
+                    Nếu lịch mới không phù hợp, hãy phản hồi email này để chúng tôi hỗ trợ sắp xếp lại.
+                    """.formatted(
+                    jobDisplay,
+                    newTime,
+                    timezone.isBlank() ? "" : "(" + timezone + ")",
+                    location.isBlank() ? "Sẽ được cập nhật" : location
+            );
 
             event.participantUserIds().forEach(userId -> {
                 String participantEmail = userIdToEmailMap.get(userId);

@@ -1,5 +1,6 @@
 package com.recruitment.platform.application.controller;
 
+import com.recruitment.platform.application.dto.ApplicationSummaryDto;
 import com.recruitment.platform.application.service.ApplicationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,5 +27,10 @@ public class InternalApplicationController {
     @GetMapping("/jobs/{jobPostingId}/hired-count")
     public ResponseEntity<Long> countHiredApplications(@PathVariable Long jobPostingId) {
         return ResponseEntity.ok(applicationService.countHiredApplications(jobPostingId));
+    }
+
+    @GetMapping("/{applicationId}/summary")
+    public ResponseEntity<ApplicationSummaryDto> getApplicationSummary(@PathVariable Long applicationId) {
+        return ResponseEntity.ok(applicationService.getApplicationSummary(applicationId));
     }
 }

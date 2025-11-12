@@ -1,6 +1,8 @@
 package com.recruitment.platform.interview.service;
 
 import com.recruitment.platform.common.exception.NotFoundException;
+import com.recruitment.platform.interview.client.ApplicationServiceClient;
+import com.recruitment.platform.interview.client.dto.ApplicationSummaryDto;
 import com.recruitment.platform.interview.dto.FeedbackRequest;
 import com.recruitment.platform.interview.dto.InterviewFeedbackResponse;
 import com.recruitment.platform.interview.dto.InterviewParticipantResponse;
@@ -41,13 +43,16 @@ public class InterviewService {
     private final InterviewRepository interviewRepository;
     private final InterviewFeedbackRepository feedbackRepository;
     private final StreamBridge streamBridge;
+    private final ApplicationServiceClient applicationServiceClient;
 
     public InterviewService(InterviewRepository interviewRepository,
                              InterviewFeedbackRepository feedbackRepository,
-                             StreamBridge streamBridge) {
+                             StreamBridge streamBridge,
+                             ApplicationServiceClient applicationServiceClient) {
         this.interviewRepository = interviewRepository;
         this.feedbackRepository = feedbackRepository;
         this.streamBridge = streamBridge;
+        this.applicationServiceClient = applicationServiceClient;
     }
 
     @Transactional
@@ -77,13 +82,17 @@ public class InterviewService {
                 request.interviewerIds().stream()
         ).toList();
 
+        JobContext jobContext = resolveJobContext(savedInterview.getApplicationId());
+
         var event = new InterviewScheduledEvent(
                 savedInterview.getId(),
                 savedInterview.getApplicationId(),
                 savedInterview.getScheduleTime(),
                 savedInterview.getTimezone(),
                 savedInterview.getLocationOrLink(),
-                allParticipantIds
+                allParticipantIds,
+                jobContext.title(),
+                jobContext.location()
         );
         streamBridge.send("interviewScheduled-out-0", event);
         log.info("Published InterviewScheduledEvent for interview {}", savedInterview.getId());
@@ -148,13 +157,17 @@ public class InterviewService {
                 .map(InterviewParticipant::getUserId)
                 .toList();
 
+        JobContext jobContext = resolveJobContext(savedInterview.getApplicationId());
+
         var event = new InterviewRescheduledEvent(
                 savedInterview.getId(),
                 savedInterview.getApplicationId(),
                 savedInterview.getScheduleTime(),
                 savedInterview.getTimezone(),
                 savedInterview.getLocationOrLink(),
-                participantIds
+                participantIds,
+                jobContext.title(),
+                jobContext.location()
         );
         streamBridge.send("interviewRescheduled-out-0", event);
         log.info("Published InterviewRescheduledEvent for interview {}", savedInterview.getId());
@@ -201,6 +214,28 @@ public class InterviewService {
     public String generateCalendarForUser(Long userId) {
         List<Interview> interviews = interviewRepository.findAllByParticipantUserId(userId);
         return buildCalendarFeed(interviews);
+    }
+
+    private JobContext resolveJobContext(Long applicationId) {
+        if (applicationId == null) {
+            return JobContext.empty();
+        }
+        try {
+            ApplicationSummaryDto summary = applicationServiceClient.getApplicationSummary(applicationId);
+            if (summary == null) {
+                return JobContext.empty();
+            }
+            return new JobContext(summary.jobTitle(), summary.jobLocation());
+        } catch (Exception ex) {
+            log.warn("Unable to fetch job summary for application {}: {}", applicationId, ex.getMessage());
+            return JobContext.empty();
+        }
+    }
+
+    private record JobContext(String title, String location) {
+        private static JobContext empty() {
+            return new JobContext(null, null);
+        }
     }
 
     private String buildCalendarFeed(List<Interview> interviews) {

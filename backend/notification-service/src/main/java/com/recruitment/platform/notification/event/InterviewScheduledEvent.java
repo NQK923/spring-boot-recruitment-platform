@@ -9,6 +9,8 @@ public record InterviewScheduledEvent(
     Instant scheduleTime,
     String timezone,
     String locationOrLink,
-    List<Long> participantUserIds
+    List<Long> participantUserIds,
+    String jobTitle,
+    String jobLocation
 ) {
 }

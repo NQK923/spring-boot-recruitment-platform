@@ -7,6 +7,7 @@ import com.recruitment.platform.application.client.dto.UserProfileDto;
 import com.recruitment.platform.application.dto.ApplicationDetailsDto;
 import com.recruitment.platform.application.dto.ApplicationInterviewDetailsDto;
 import com.recruitment.platform.application.dto.ApplicationOfferDetailsDto;
+import com.recruitment.platform.application.dto.ApplicationSummaryDto;
 import com.recruitment.platform.application.dto.ApplyRequest;
 import com.recruitment.platform.application.dto.OfferDecisionRequest;
 import com.recruitment.platform.application.dto.UpdateApplicationStatusRequest;
@@ -187,6 +188,19 @@ public class ApplicationService {
 
     public Optional<Application> findById(Long applicationId) {
         return applicationRepository.findById(applicationId);
+    }
+
+    public ApplicationSummaryDto getApplicationSummary(Long applicationId) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new NotFoundException("Application not found"));
+        hydrateJobSnapshot(application);
+        return new ApplicationSummaryDto(
+                application.getId(),
+                application.getCandidateId(),
+                application.getJobPostingId(),
+                application.getJobTitleSnapshot(),
+                application.getJobLocationSnapshot()
+        );
     }
 
     public List<ApplicationDetailsDto> findApplicationsByJobPostingId(Long jobPostingId) {
@@ -439,6 +453,8 @@ public class ApplicationService {
                 app.getId(),
                 app.getCandidateId(),
                 app.getJobPostingId(),
+                app.getJobTitleSnapshot(),
+                app.getJobLocationSnapshot(),
                 oldStatus != null ? oldStatus.name() : null,
                 app.getStatus().name(),
                 changedByUserId,

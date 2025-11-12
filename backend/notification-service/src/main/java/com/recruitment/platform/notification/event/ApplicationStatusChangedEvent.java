@@ -6,6 +6,8 @@ public record ApplicationStatusChangedEvent(
     Long applicationId,
     Long candidateId,
     Long jobPostingId,
+    String jobTitle,
+    String jobLocation,
     String oldStatus,
     String newStatus,
     Long changedByUserId,
