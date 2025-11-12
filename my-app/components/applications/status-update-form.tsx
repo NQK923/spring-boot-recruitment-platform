@@ -15,6 +15,13 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   REJECTED: "Đã từ chối",
 };
 
+function getNowForDateTimeInput(): string {
+  const now = new Date();
+  const offsetMinutes = now.getTimezoneOffset();
+  const local = new Date(now.getTime() - offsetMinutes * 60 * 1000);
+  return local.toISOString().slice(0, 16);
+}
+
 type Props = {
   applicationId: number;
   currentStatus: ApplicationStatus;
@@ -42,6 +49,7 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
     }
     return "Asia/Ho_Chi_Minh";
   }, []);
+  const minDateTimeValue = useMemo(() => getNowForDateTimeInput(), []);
 
   const nextStatus = getNextStatus(currentStatus);
   const needsInterviewDetails = nextStatus === "INTERVIEWING";
@@ -72,6 +80,7 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
                   type="datetime-local"
                   name="interviewScheduledAt"
                   required
+                  min={minDateTimeValue}
                   className="rounded-xl border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                   disabled={pending}
                 />
@@ -147,6 +156,7 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
                 <input
                   type="datetime-local"
                   name="offerExpiresAt"
+                  min={minDateTimeValue}
                   className="rounded-xl border border-amber-200 bg-white px-3 py-2 text-sm font-medium text-amber-900 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                   disabled={pending}
                 />

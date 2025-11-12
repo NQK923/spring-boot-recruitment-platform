@@ -72,7 +72,7 @@ async function getCandidateCvs(): Promise<CandidateCvSummary[]> {
     }
     return (data as Cv[]).map((cv) => ({
       id: cv.id,
-      versionName: (cv.versionName ?? "").trim() || `CV #${cv.id}`,
+      versionName: (cv.versionName ?? "").trim() || "CV chưa đặt tên",
       isDefault: Boolean(cv.isDefault),
       createdAt: cv.createdAt ?? null,
     }));

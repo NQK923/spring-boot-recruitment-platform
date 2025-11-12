@@ -62,7 +62,7 @@ async function enrichApplications(applications: Application[]): Promise<Enriched
     const job = jobMap.get(app.jobPostingId);
     return {
       ...app,
-      jobTitle: job?.title ?? `Job #${app.jobPostingId}`,
+      jobTitle: job?.title ?? "Vị trí đã đóng tuyển",
       jobDescription: job?.description ?? null,
     };
   });
@@ -249,7 +249,15 @@ export default async function CandidatePortalPage() {
     (application) => !["REJECTED", "WITHDRAWN"].includes(application.status)
   );
 
+  const applicationTitleMap = new Map<number, string>(
+    applications.map((application) => [application.id, application.jobTitle])
+  );
+
+  const resolveApplicationTitle = (applicationId: number) =>
+    applicationTitleMap.get(applicationId) ?? "Vị trí đã đóng tuyển";
+
   const nextInterview = upcomingInterviews[0] ?? null;
+  const nextInterviewTitle = nextInterview ? resolveApplicationTitle(nextInterview.applicationId) : null;
 
   const completionChecks = [
     Boolean(profileData.fullName),
@@ -343,7 +351,9 @@ export default async function CandidatePortalPage() {
   if (nextInterview) {
     addNextStep({
       title: "Chuẩn bị cho buổi phỏng vấn tiếp theo",
-      description: `Xem lại kế hoạch và thông tin chi tiết cho buổi phỏng vấn của đơn ứng tuyển #${nextInterview.applicationId}.`,
+      description: nextInterviewTitle
+        ? `Xem lại kế hoạch và thông tin chi tiết cho buổi phỏng vấn vị trí "${nextInterviewTitle}".`
+        : "Xem lại kế hoạch và thông tin chi tiết cho buổi phỏng vấn sắp diễn ra.",
       href: `${ROUTES.candidateApplications}/${nextInterview.applicationId}`,
       actionLabel: "Xem chi tiết phỏng vấn",
     });
@@ -788,7 +798,7 @@ export default async function CandidatePortalPage() {
                           </p>
                         ) : null}
                         <p className="text-xs text-gray-600">
-                          Đơn ứng tuyển #{interview.applicationId}
+                          Ứng tuyển: {resolveApplicationTitle(interview.applicationId)}
                         </p>
                       </div>
                     </div>

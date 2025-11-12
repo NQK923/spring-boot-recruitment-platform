@@ -135,15 +135,15 @@ export default async function CandidateApplicationDetailsPage({
               {formatStatus(application.status)}
             </span>
             <h1 className="text-4xl font-bold text-gray-900">
-              {job?.title ?? `Đơn ứng tuyển #${application.id}`}
+              {job?.title ?? "Vị trí đã đóng tuyển"}
             </h1>
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
               <div className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span className="font-medium">Công việc #</span>
-                <span>{application.jobPostingId}</span>
+                <span className="font-medium">Vị trí tuyển dụng:</span>
+                <span>{job?.title ?? "Vị trí đã đóng tuyển"}</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg className="h-5 w-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +210,7 @@ export default async function CandidateApplicationDetailsPage({
             {structuredInterview.instructions ? (
               <div className="rounded-xl border border-blue-100 bg-white/80 px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 mb-2">Hướng dẫn</p>
-                <p className="text-sm text-gray-700">{structuredInterview.instructions}</p>
+                <p className="text-sm text-gray-700 whitespace-pre-line">{structuredInterview.instructions}</p>
               </div>
             ) : null}
             <div className="flex items-start gap-2 rounded-lg bg-blue-100/50 px-3 py-2">
@@ -297,7 +297,7 @@ export default async function CandidateApplicationDetailsPage({
                 <p className="mt-1 text-base font-bold text-emerald-900">{offerStatusLabel}</p>
               </div>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-4">
               <div className="rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-widest text-blue-600">Hạn phản hồi</p>
                 <p className="mt-1 text-sm font-medium text-blue-900">
@@ -306,7 +306,7 @@ export default async function CandidateApplicationDetailsPage({
               </div>
               <div className="rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 px-4 py-3">
                 <p className="text-xs font-semibold uppercase tracking-widest text-purple-600">Ghi chú</p>
-                <p className="mt-1 text-sm font-medium text-purple-900">
+                <p className="mt-1 text-sm font-medium text-purple-900 whitespace-pre-line">
                   {offerDetails.notes ?? "Không có ghi chú thêm"}
                 </p>
               </div>

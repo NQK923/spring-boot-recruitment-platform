@@ -487,7 +487,7 @@ export default async function ApplicationDetailsPage({
         </article>
 
         <article className="rounded-2xl border border-gray-200/60 bg-white/90 p-8 shadow-lg shadow-gray-200/50 backdrop-blur-xl">
-          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+          <div className="space-y-6">
             <section className="space-y-3 rounded-2xl border border-blue-100/80 bg-blue-50/40 p-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white">
@@ -518,7 +518,7 @@ export default async function ApplicationDetailsPage({
                   {interviewDetails.instructions ? (
                     <div>
                       <dt className="text-xs font-semibold uppercase tracking-wider text-blue-600">Ghi chú gửi ứng viên</dt>
-                      <dd className="rounded-xl border border-blue-100/70 bg-white/80 px-3 py-2 font-medium text-gray-800">
+                      <dd className="rounded-xl border border-blue-100/70 bg-white/80 px-3 py-2 font-medium text-gray-800 whitespace-pre-line">
                         {interviewDetails.instructions}
                       </dd>
                     </div>
@@ -572,7 +572,7 @@ export default async function ApplicationDetailsPage({
                   {offerDetails.notes ? (
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wider text-amber-600">Ghi chú gửi ứng viên</p>
-                      <p className="rounded-xl border border-amber-100/70 bg-white/80 px-3 py-2 font-medium text-gray-800">
+                      <p className="rounded-xl border border-amber-100/70 bg-white/80 px-3 py-2 font-medium text-gray-800 whitespace-pre-line">
                         {offerDetails.notes}
                       </p>
                     </div>
