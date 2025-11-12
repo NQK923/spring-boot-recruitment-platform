@@ -139,9 +139,14 @@ const ChatWidgetContext = createContext<ChatWidgetStoreValue | null>(null);
 export function ChatWidgetProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const hydratedRef = useRef(false);
+  const [isMounted, setIsMounted] = React.useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined" || hydratedRef.current) {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || hydratedRef.current || !isMounted) {
       return;
     }
 
@@ -180,7 +185,7 @@ export function ChatWidgetProvider({ children }: { children: React.ReactNode }) 
 
     dispatch({ type: "HYDRATE", payload });
     hydratedRef.current = true;
-  }, []);
+  }, [isMounted]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !state.storageHydrated) {

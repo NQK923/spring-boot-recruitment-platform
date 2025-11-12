@@ -1,8 +1,16 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AccountMenu } from "@/components/layout/account-menu";
 import { ROUTES } from "@/lib/routes";
-import { getCurrentUser } from "@/lib/current-user";
+
+type User = {
+  id: number;
+  email: string;
+  roles?: string[];
+} | null;
 
 function describePrimaryRole(roles: string[] | undefined) {
   if (!roles || roles.length === 0) {
@@ -15,8 +23,20 @@ function describePrimaryRole(roles: string[] | undefined) {
   return roles[0];
 }
 
-export async function NavigationActions() {
-  const currentUser = await getCurrentUser();
+export function NavigationActions({ currentUser }: { currentUser: User }) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="h-9 w-20 animate-pulse rounded-lg bg-gray-200" />
+      </div>
+    );
+  }
 
   if (!currentUser) {
     return (

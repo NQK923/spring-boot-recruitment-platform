@@ -329,8 +329,10 @@ export default async function CandidateProfilePage() {
           </div>
         }
       >
-        <EducationForm education={education} />
-        <div className="border-t border-dashed border-primary-100 pt-6">
+        <div className="pb-6">
+          <EducationForm education={education} />
+        </div>
+        <div className="border-t border-dashed border-primary-200 pt-6">
           <CertificationsForm certifications={profile.certifications} />
         </div>
       </CollapsibleSection>
@@ -358,8 +360,10 @@ export default async function CandidateProfilePage() {
           </div>
         }
       >
-        <SkillsForm skills={skills} />
-        <div className="border-t border-dashed border-primary-100 pt-6">
+        <div className="pb-6">
+          <SkillsForm skills={skills} />
+        </div>
+        <div className="border-t border-dashed border-primary-200 pt-6">
           <LanguagesForm languages={profile.languages} />
         </div>
       </CollapsibleSection>

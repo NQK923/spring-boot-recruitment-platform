@@ -104,7 +104,7 @@ export function SkillsForm({ skills }: SkillsFormProps) {
               type="button"
               onClick={() => removeSkill(index)}
               disabled={pending || items.length === 1}
-              className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-600 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-lg border-2 border-red-300 bg-red-50 text-red-700 transition-all hover:border-red-400 hover:bg-red-100 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
               title="Xóa kỹ năng"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

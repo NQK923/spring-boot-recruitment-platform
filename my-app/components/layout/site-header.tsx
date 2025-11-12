@@ -45,11 +45,11 @@ export async function SiteHeader() {
   const isAuthenticated = Boolean(currentUser);
 
   if (roles.includes("SUPER_ADMIN")) {
-    return <SuperAdminHeader />;
+    return <SuperAdminHeader currentUser={currentUser} />;
   }
 
   if (roles.includes("COMPANY_ADMIN")) {
-    return <CompanyAdminHeader />;
+    return <CompanyAdminHeader currentUser={currentUser} />;
   }
 
   const navItems = buildNavigation({ roles, isAuthenticated });
@@ -72,7 +72,7 @@ export async function SiteHeader() {
         </Link>
         <SiteNavbar items={navItems} />
         <div className="flex items-center gap-2 sm:gap-3">
-          <NavigationActions />
+          <NavigationActions currentUser={currentUser} />
           <MobileNav items={navItems} />
         </div>
       </Container>

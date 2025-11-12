@@ -4,6 +4,7 @@ import { SiteNavbar, type NavItem } from "@/components/layout/site-navbar";
 import { NavigationActions } from "@/components/layout/navigation-actions";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { ROUTES } from "@/lib/routes";
+import type { MeResponse } from "@/lib/types";
 
 const companyAdminNavigation: NavItem[] = [
   { href: `${ROUTES.companyAdminDashboard}#overview`, label: "Tổng quan" },
@@ -13,7 +14,11 @@ const companyAdminNavigation: NavItem[] = [
   { href: `${ROUTES.companyAdminDashboard}#invites`, label: "Lời mời" },
 ];
 
-export function CompanyAdminHeader() {
+type CompanyAdminHeaderProps = {
+  currentUser: MeResponse | null;
+};
+
+export function CompanyAdminHeader({ currentUser }: CompanyAdminHeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-surface shadow-lg backdrop-blur-md supports-[backdrop-filter]:bg-surface/80">
       <Container className="flex h-16 items-center justify-between gap-4 sm:h-20">
@@ -32,7 +37,7 @@ export function CompanyAdminHeader() {
         </Link>
         <SiteNavbar items={companyAdminNavigation} />
         <div className="flex items-center gap-2 sm:gap-3">
-          <NavigationActions />
+          <NavigationActions currentUser={currentUser} />
           <MobileNav items={companyAdminNavigation} />
         </div>
       </Container>

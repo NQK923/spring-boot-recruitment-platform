@@ -17,15 +17,15 @@ const sizeClasses: Record<Size, string> = {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 text-white shadow-md hover:shadow-lg",
+    "bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-600 hover:from-indigo-700 hover:via-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0",
   secondary:
-    "border-2 border-indigo-200 bg-white text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 shadow-sm",
+    "border-2 border-indigo-300 bg-white text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400 hover:shadow-md shadow-sm",
   outline: 
-    "border-2 border-slate-300 bg-transparent text-slate-700 hover:bg-slate-50 hover:border-slate-400",
+    "border-2 border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-sm",
   ghost: 
-    "text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700",
+    "text-indigo-700 hover:bg-indigo-100/80",
   destructive: 
-    "bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white shadow-md hover:shadow-lg",
+    "bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0",
 };
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {

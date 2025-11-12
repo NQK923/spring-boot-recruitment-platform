@@ -20,18 +20,23 @@ type Position = {
 
 export function ChatWidget() {
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !isMounted) {
       return;
     }
     const frame = requestAnimationFrame(() => {
       setPortalElement(document.body);
     });
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [isMounted]);
 
-  if (!portalElement) {
+  if (!isMounted || !portalElement) {
     return null;
   }
 
