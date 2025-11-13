@@ -319,9 +319,9 @@ export default async function DashboardPage() {
       description: "Xác nhận lịch, chia sẻ agenda và phân công người theo dõi.",
     },
     {
-      label: "Theo dõi hiệu quả tuyển dụng",
-      href: "#job-health",
-      description: "Xem vị trí nào cần bổ sung nguồn ứng viên hoặc phản hồi nhanh hơn.",
+      label: "Quản lý danh mục việc làm",
+      href: "#jobs",
+      description: "Xem trạng thái các vị trí tuyển dụng và số lượng hồ sơ ứng tuyển.",
     },
   ];
 
@@ -432,7 +432,7 @@ export default async function DashboardPage() {
             <Link
               key={action.label}
               href={action.href}
-              className="group flex flex-col gap-3 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-5 shadow-sm transition-all hover:border-blue-300 hover:shadow-xl hover:-translate-y-0.5"
+              className="group flex flex-col gap-3 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-5 shadow-sm transition-all hover:border-blue-300 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
             >
               <span className="text-lg font-bold text-gray-900 group-hover:text-blue-700 transition-colors">
                 {action.label}
@@ -452,7 +452,7 @@ export default async function DashboardPage() {
         <header className="space-y-3">
           <h2 className="text-2xl font-bold text-gray-900">Danh mục việc làm</h2>
           <p className="text-base text-gray-800 leading-relaxed">
-            Rà soát các vị trí bạn đang hỗ trợ tuyển dụng. {canAdminJobs
+            Rà soát các vị trí bạn đang hỗ trợ tuyển dụng với trạng thái và số lượng hồ sơ ứng tuyển. {canAdminJobs
               ? "Chuyển sang không gian làm việc quản trị công ty khi cần đăng, tạm dừng hoặc chỉnh sửa bài tuyển dụng."
               : "Chỉ quản trị viên công ty mới có thể tạo hoặc chỉnh sửa bài đăng. Hãy liên hệ quản trị khi cần thay đổi."}
           </p>
@@ -477,41 +477,52 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {jobs.map((job) => (
-              <div
-                key={job.id}
-                className="space-y-3 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-6 shadow-sm hover:shadow-lg hover:border-blue-300 transition-all"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div className="space-y-2">
-                    <p className="text-lg font-bold text-gray-900">{job.title}</p>
-                    <p className="text-sm text-gray-800">
-                      Trạng thái {formatStatus(job.status)} • Cập nhật {formatDate(job.updatedAt)}
-                    </p>
+            {jobs.map((job) => {
+              const applications = applicationsByJob.get(job.id) ?? [];
+              return (
+                <div
+                  key={job.id}
+                  className="space-y-3 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 p-6 shadow-sm hover:shadow-lg hover:border-blue-300 transition-all"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="space-y-2 flex-1">
+                      <p className="text-lg font-bold text-gray-900">{job.title}</p>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 border border-blue-200">
+                          {formatStatus(job.status)}
+                        </span>
+                        <span className="text-sm text-gray-800">
+                          {applications.length} hồ sơ ứng tuyển
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          • Cập nhật {formatDate(job.updatedAt)}
+                        </span>
+                      </div>
+                    </div>
+                    <Link
+                      href={`${ROUTES.jobs}/${job.id}`}
+                      className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 transition hover:text-blue-700 hover:gap-3 cursor-pointer"
+                    >
+                      Xem bài tuyển dụng
+                      <span aria-hidden>→</span>
+                    </Link>
                   </div>
-                  <Link
-                    href={`${ROUTES.jobs}/${job.id}`}
-                    className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 transition hover:text-blue-700 hover:gap-3"
-                  >
-                    Xem bài tuyển dụng
-                    <span aria-hidden>→</span>
-                  </Link>
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-800">
+                    {job.location ? <span className="flex items-center gap-1.5">📍 {job.location}</span> : null}
+                    {job.workType ? (
+                      <span className="flex items-center gap-1.5">
+                        💼 {job.workType.toLowerCase()}
+                      </span>
+                    ) : null}
+                    {job.salaryRange ? (
+                      <span className="flex items-center gap-1.5">
+                        💰 {job.salaryRange}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-3 text-sm text-gray-800">
-                  {job.location ? <span className="flex items-center gap-1.5">📍 {job.location}</span> : null}
-                  {job.workType ? (
-                    <span className="flex items-center gap-1.5">
-                      💼 {job.workType.toLowerCase()}
-                    </span>
-                  ) : null}
-                  {job.salaryRange ? (
-                    <span className="flex items-center gap-1.5">
-                      💰 {job.salaryRange}
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -599,7 +610,7 @@ export default async function DashboardPage() {
               <Link
                 key={application.id}
                 href={`${ROUTES.recruiterDashboard}/applications/${application.id}`}
-                className="flex items-center justify-between rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 px-6 py-5 transition-all hover:border-blue-300 hover:shadow-xl hover:-translate-y-0.5"
+                className="flex items-center justify-between rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30 px-6 py-5 transition-all hover:border-blue-300 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
               >
                 <div className="space-y-1.5">
                   <p className="font-bold text-gray-900">Hồ sơ #{application.id}</p>
@@ -615,52 +626,6 @@ export default async function DashboardPage() {
                 </span>
               </Link>
             ))}
-          </div>
-        )}
-      </div>
-
-      {/* Job Health */}
-      <div id="job-health" className="space-y-5 rounded-3xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-2 border-blue-100 p-8 shadow-md">
-        <header className="space-y-2">
-          <h2 className="text-2xl font-bold text-gray-900">Sức khỏe tuyển dụng</h2>
-          <p className="text-base text-gray-800">
-            Theo dõi số lượng hồ sơ theo từng vị trí và nhận diện các vai trò cần thêm nguồn ứng viên hoặc phản hồi nhanh hơn.
-          </p>
-        </header>
-
-        {jobs.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-blue-200 bg-white/50 px-6 py-8 text-center text-base text-gray-800">
-            Chưa có vị trí nào cho công ty của bạn. Tạo bài đăng tuyển dụng để hiển thị dữ liệu.
-          </div>
-        ) : (
-          <div className="overflow-hidden rounded-2xl border-2 border-blue-100 shadow-md">
-            <table className="min-w-full divide-y divide-blue-200">
-              <thead className="bg-gradient-to-r from-blue-100 to-indigo-100">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-blue-900">
-                    Vị trí
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-blue-900">
-                    Trạng thái
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-blue-900">
-                    Số hồ sơ
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-blue-100 bg-gradient-to-br from-white to-blue-50/30">
-                {jobs.map((job) => {
-                  const applications = applicationsByJob.get(job.id) ?? [];
-                  return (
-                    <tr key={job.id} className="hover:bg-blue-50/50 transition-colors">
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{job.title}</td>
-                      <td className="px-6 py-4 text-sm text-gray-800">{formatStatus(job.status)}</td>
-                      <td className="px-6 py-4 text-right text-sm font-bold text-gray-900">{applications.length}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
           </div>
         )}
       </div>

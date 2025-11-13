@@ -87,19 +87,23 @@ async function getCompanyUsers(): Promise<CompanyUser[]> {
       return [];
     }
     type CompanyUserApi = Partial<CompanyUser> & {
+      userId?: number | string | null;
       roleName?: string | null;
       joinedAt?: string | null;
       createdAt?: string | null;
       created_at?: string | null;
       locked?: boolean | null;
     };
-    return (data as CompanyUserApi[]).map((user, index) => ({
-      id: Number(user.id ?? index),
+    return (data as CompanyUserApi[]).map((user, index) => {
+      const resolvedId = user.userId ?? user.id ?? index;
+      return {
+        id: Number(resolvedId),
       email: String(user.email ?? "unknown@talentflow.app"),
       role: String(user.role ?? user.roleName ?? "Unknown"),
       joinedAt: user.joinedAt ?? user.createdAt ?? user.created_at ?? null,
       locked: Boolean(user.locked),
-    }));
+      };
+    });
   } catch {
     return [];
   }

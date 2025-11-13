@@ -92,21 +92,6 @@ export function JobGrid({ jobs }: JobGridProps) {
                   ) : null}
                   <p className="text-sm text-slate-600 line-clamp-2">{getJobSummary(job)}</p>
                 </div>
-                <div className="mt-4 flex items-center justify-between text-sm">
-                  <Button
-                    asChild
-                    size="sm"
-                    variant="ghost"
-                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-bold"
-                    data-analytics-id="job_apply_click"
-                    data-section="jobs"
-                    data-job-id={job.id}
-                  >
-                    <Link href={`/jobs/${job.id}`} aria-label={`Ứng tuyển vào vị trí ${job.title}`}>
-                      Ứng tuyển →
-                    </Link>
-                  </Button>
-                </div>
               </Card>
             ))}
           </div>

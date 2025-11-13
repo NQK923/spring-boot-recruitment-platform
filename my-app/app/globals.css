@@ -2,6 +2,8 @@
 
 :root {
   color-scheme: light;
+  --font-geist-sans: "Geist", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-geist-mono: "Geist Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 
   /* Neutral surfaces */
   --bg: #FFFFFF;
@@ -90,6 +92,17 @@ a {
 
 a:hover {
   color: var(--primary-600);
+}
+
+/* Prevent global link styles from overriding button text colors */
+button a,
+a.inline-flex {
+  color: inherit !important;
+}
+
+button a:hover,
+a.inline-flex:hover {
+  color: inherit !important;
 }
 
 .brand-gradient {

@@ -37,20 +37,6 @@ export function CompanyMembersPanel({ users }: Props) {
     []
   );
 
-  const formatJoinedAt = useCallback(
-    (value?: string | null) => {
-      if (!value) {
-        return "Mới được thêm";
-      }
-      try {
-        return dateFormatter.format(new Date(value));
-      } catch {
-        return value;
-      }
-    },
-    [dateFormatter]
-  );
-
   const mutateMember = useCallback((userId: number, payload: Parameters<typeof updateCompanyUserAction>[1]) => {
     setAlert(null);
     setPendingUserId(userId);
@@ -113,7 +99,6 @@ export function CompanyMembersPanel({ users }: Props) {
           >
             <div className="space-y-2">
               <p className="text-base font-bold text-slate-900">{user.email}</p>
-              <p className="text-sm text-slate-600">Tham gia {formatJoinedAt(user.joinedAt)}</p>
               <div className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wider">
                 <span className="rounded-full border-2 border-blue-200 bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-2 text-white shadow-sm">{formatRole(user.role)}</span>
                 <span
