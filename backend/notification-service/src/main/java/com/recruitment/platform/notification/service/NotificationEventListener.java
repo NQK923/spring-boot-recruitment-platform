@@ -2,6 +2,8 @@ package com.recruitment.platform.notification.service;
 
 import com.recruitment.platform.notification.client.AuthServiceClient;
 import com.recruitment.platform.notification.event.ApplicationStatusChangedEvent;
+import com.recruitment.platform.notification.event.CompanyStatusChangedEvent;
+import com.recruitment.platform.notification.event.CompanyUserLockedEvent;
 import com.recruitment.platform.notification.event.InterviewRescheduledEvent;
 import com.recruitment.platform.notification.event.InterviewScheduledEvent;
 import com.recruitment.platform.notification.event.PasswordResetRequestedEvent;
@@ -21,6 +23,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -205,6 +208,117 @@ public class NotificationEventListener {
             }
 
             sendEmail(candidateEmail, subject, text);
+        };
+    }
+
+    @Bean
+    public Consumer<CompanyUserLockedEvent> companyUserLockedEventConsumer() {
+        return event -> {
+            if (!event.locked()) {
+                return;
+            }
+            try {
+                List<AuthServiceClient.UserEmailInfo> infos = authServiceClient.getUsersByIds(
+                        new AuthServiceClient.BatchUserIdsRequest(List.of(event.userId())));
+                String recipient = infos == null ? null :
+                        infos.stream()
+                                .filter(info -> info.id() != null && info.id().equals(event.userId()))
+                                .map(AuthServiceClient.UserEmailInfo::email)
+                                .filter(email -> email != null && !email.isBlank())
+                                .findFirst()
+                                .orElse(null);
+
+                if (recipient == null) {
+                    log.warn("Cannot send lock notification, email not found for user {}", event.userId());
+                    return;
+                }
+
+                String companyLabel = Optional.ofNullable(event.companyName())
+                        .filter(name -> !name.isBlank())
+                        .orElse("công ty của bạn");
+                String lockedAt = event.occurredAt() != null
+                        ? OTP_EXPIRY_FORMATTER.format(event.occurredAt()) + " (UTC)"
+                        : "thời điểm gần đây";
+
+                String subject = "Tài khoản tuyển dụng của bạn đã bị khóa";
+                String text = String.format(
+                        "Xin chào,%n%nTài khoản tuyển dụng của bạn tại %s đã bị quản trị viên khóa vào %s.%n" +
+                                "Bạn sẽ không thể đăng nhập hoặc thao tác trên TalentFlow cho đến khi được mở khóa.%n" +
+                                "Vui lòng liên hệ quản trị viên công ty để được hỗ trợ mở khóa.%n%nTrân trọng,%nTalentFlow",
+                        companyLabel,
+                        lockedAt
+                );
+
+                sendEmail(recipient, subject, text);
+            } catch (Exception ex) {
+                log.warn("Failed to process CompanyUserLockedEvent for user {}: {}", event.userId(), ex.getMessage());
+            }
+        };
+    }
+
+    @Bean
+    public Consumer<CompanyStatusChangedEvent> companyStatusChangedEventConsumer() {
+        return event -> {
+            if (event.adminUserIds() == null || event.adminUserIds().isEmpty()) {
+                log.info("Skip status change email for company {} because no admins found in event payload", event.companyId());
+                return;
+            }
+            try {
+                List<AuthServiceClient.UserEmailInfo> infos = authServiceClient.getUsersByIds(
+                        new AuthServiceClient.BatchUserIdsRequest(event.adminUserIds()));
+
+                Map<Long, String> emailMap = infos == null ? Map.of() :
+                        infos.stream()
+                                .filter(info -> info.id() != null && info.email() != null && !info.email().isBlank())
+                                .collect(Collectors.toMap(AuthServiceClient.UserEmailInfo::id, AuthServiceClient.UserEmailInfo::email));
+
+                List<String> recipients = event.adminUserIds().stream()
+                        .map(emailMap::get)
+                        .filter(email -> email != null && !email.isBlank())
+                        .distinct()
+                        .toList();
+
+                if (recipients.isEmpty()) {
+                    log.warn("No admin emails resolved for company {}", event.companyId());
+                    return;
+                }
+
+                String companyLabel = Optional.ofNullable(event.companyName())
+                        .filter(name -> !name.isBlank())
+                        .orElse("công ty của bạn");
+                String previousStatus = resolveStatusLabel(event.previousStatus());
+                String newStatus = resolveStatusLabel(event.newStatus());
+                String timestamp = event.occurredAt() != null
+                        ? OTP_EXPIRY_FORMATTER.format(event.occurredAt()) + " (UTC)"
+                        : "thời điểm gần đây";
+
+                String subject = String.format("Trạng thái %s đã thay đổi", companyLabel);
+                String text = String.format(
+                        "Xin chào,%n%nTrạng thái của %s vừa được cập nhật vào %s.%n- Trước đó: %s%n- Hiện tại: %s%n%n" +
+                                "Vui lòng đăng nhập TalentFlow để kiểm tra các yêu cầu bổ sung (nếu có).%n%nTrân trọng,%nTalentFlow",
+                        companyLabel,
+                        timestamp,
+                        previousStatus,
+                        newStatus
+                );
+
+                recipients.forEach(recipient -> sendEmail(recipient, subject, text));
+            } catch (Exception ex) {
+                log.warn("Failed to process CompanyStatusChangedEvent for company {}: {}", event.companyId(), ex.getMessage());
+            }
+        };
+    }
+
+    private String resolveStatusLabel(String status) {
+        if (status == null || status.isBlank()) {
+            return "Chưa xác định";
+        }
+        return switch (status.toUpperCase()) {
+            case "ACTIVE" -> "Đang hoạt động";
+            case "PENDING" -> "Chờ duyệt";
+            case "SUSPENDED" -> "Tạm ngưng";
+            case "INACTIVE" -> "Không hoạt động";
+            default -> status;
         };
     }
 

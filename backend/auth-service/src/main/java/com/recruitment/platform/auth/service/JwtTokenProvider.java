@@ -12,9 +12,11 @@ import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
+    private static final String LOCKED_USER_MESSAGE = "Tài khoản đã bị khóa bởi quản trị viên công ty. Vui lòng liên hệ để mở khóa.";
 
     @Value("${app.jwt.secret}")
     private String jwtSecret;
@@ -87,7 +90,13 @@ public class JwtTokenProvider {
             if (membership == null || membership.getId() == null) {
                 return null;
             }
+            if (membership.isLocked()) {
+                log.info("Blocked JWT issuance for locked company user {}", userId);
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, LOCKED_USER_MESSAGE);
+            }
             return membership.getId().getCompanyId();
+        } catch (ResponseStatusException forbidden) {
+            throw forbidden;
         } catch (FeignException.NotFound notFound) {
             // User simply does not belong to a company (e.g., candidate or super admin)
             return null;

@@ -7,6 +7,8 @@ import com.recruitment.platform.company.dto.CompanyUserResponse;
 import com.recruitment.platform.company.dto.CreateCompanyRequest;
 import com.recruitment.platform.company.dto.UpdateCompanyRequest;
 import com.recruitment.platform.company.dto.UserInviteRequest;
+import com.recruitment.platform.company.event.CompanyStatusChangedEvent;
+import com.recruitment.platform.company.event.CompanyUserLockedEvent;
 import com.recruitment.platform.company.model.Company;
 import com.recruitment.platform.company.model.CompanyStatus;
 import com.recruitment.platform.company.model.CompanyUser;
@@ -14,9 +16,13 @@ import com.recruitment.platform.company.model.CompanyUserPK;
 import com.recruitment.platform.common.exception.NotFoundException;
 import com.recruitment.platform.company.repository.CompanyRepository;
 import com.recruitment.platform.company.repository.CompanyUserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,16 +33,23 @@ import java.util.stream.Collectors;
 @Service
 public class CompanyService {
 
+    private static final Logger log = LoggerFactory.getLogger(CompanyService.class);
+    private static final String COMPANY_USER_LOCKED_BINDING = "companyUserLocked-out-0";
+    private static final String COMPANY_STATUS_CHANGED_BINDING = "companyStatusChanged-out-0";
+
     private final AuthServiceClient authServiceClient;
     private final CompanyUserRepository companyUserRepository;
     private final CompanyRepository companyRepository;
+    private final StreamBridge streamBridge;
 
     public CompanyService(AuthServiceClient authServiceClient,
                           CompanyUserRepository companyUserRepository,
-                          CompanyRepository companyRepository) {
+                          CompanyRepository companyRepository,
+                          StreamBridge streamBridge) {
         this.authServiceClient = authServiceClient;
         this.companyUserRepository = companyUserRepository;
         this.companyRepository = companyRepository;
+        this.streamBridge = streamBridge;
     }
 
     public void inviteUser(Long companyId, Long createdByUserId, UserInviteRequest inviteRequest) {
@@ -90,6 +103,9 @@ public class CompanyService {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new NotFoundException("Company not found"));
 
+        CompanyStatus previousStatus = company.getStatus();
+        boolean statusWillChange = request.status() != null && !request.status().equals(previousStatus);
+
         if (request.name() != null) {
             company.setName(request.name());
         }
@@ -111,7 +127,13 @@ public class CompanyService {
         if (request.status() != null) {
             company.setStatus(request.status());
         }
-        return companyRepository.save(company);
+        Company saved = companyRepository.save(company);
+
+        if (statusWillChange) {
+            publishCompanyStatusChangedEvent(saved, previousStatus, saved.getStatus());
+        }
+
+        return saved;
     }
 
     public List<Company> findAllCompanies() {
@@ -167,11 +189,63 @@ public class CompanyService {
         if (role != null && !role.isBlank()) {
             companyUser.setRole(role);
         }
+        boolean publishLockEvent = false;
         if (locked != null) {
+            boolean previousLocked = companyUser.isLocked();
             companyUser.setLocked(locked);
+            publishLockEvent = locked && !previousLocked;
         }
 
-        return companyUserRepository.save(companyUser);
+        CompanyUser saved = companyUserRepository.save(companyUser);
+
+        if (publishLockEvent) {
+            String companyName = companyRepository.findById(companyId)
+                    .map(Company::getName)
+                    .orElse(null);
+            publishCompanyUserLockedEvent(companyId, companyName, userId);
+        }
+
+        return saved;
+    }
+
+    private void publishCompanyUserLockedEvent(Long companyId, String companyName, Long userId) {
+        CompanyUserLockedEvent event = new CompanyUserLockedEvent(
+                companyId,
+                companyName,
+                userId,
+                true,
+                Instant.now()
+        );
+        boolean accepted = streamBridge.send(COMPANY_USER_LOCKED_BINDING, event);
+        if (!accepted) {
+            log.warn("Failed to publish company user locked event for user {} in company {}", userId, companyId);
+        }
+    }
+
+    private void publishCompanyStatusChangedEvent(Company company,
+                                                  CompanyStatus previousStatus,
+                                                  CompanyStatus newStatus) {
+        List<Long> adminUserIds = getCompanyAdminUserIds(company.getId());
+        CompanyStatusChangedEvent event = new CompanyStatusChangedEvent(
+                company.getId(),
+                company.getName(),
+                previousStatus,
+                newStatus,
+                adminUserIds,
+                Instant.now()
+        );
+        boolean accepted = streamBridge.send(COMPANY_STATUS_CHANGED_BINDING, event);
+        if (!accepted) {
+            log.warn("Failed to publish company status change for company {}", company.getId());
+        }
+    }
+
+    private List<Long> getCompanyAdminUserIds(Long companyId) {
+        return companyUserRepository.findById_CompanyId(companyId).stream()
+                .filter(member -> member.getRole() != null && member.getRole().equalsIgnoreCase("COMPANY_ADMIN"))
+                .map(member -> member.getId().getUserId())
+                .distinct()
+                .toList();
     }
 
     public Map<Long, CompanyStatus> getCompanyStatuses(List<Long> companyIds) {

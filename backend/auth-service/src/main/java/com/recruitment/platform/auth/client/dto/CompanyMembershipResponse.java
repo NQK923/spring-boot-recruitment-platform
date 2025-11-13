@@ -14,13 +14,19 @@ import java.io.Serializable;
 public class CompanyMembershipResponse {
     private CompanyMembershipResponseId id;
     private String role;
+    private boolean locked;
 
     public CompanyMembershipResponse() {
     }
 
     public CompanyMembershipResponse(CompanyMembershipResponseId id, String role) {
+        this(id, role, false);
+    }
+
+    public CompanyMembershipResponse(CompanyMembershipResponseId id, String role, boolean locked) {
         this.id = id;
         this.role = role;
+        this.locked = locked;
     }
 
     @Setter

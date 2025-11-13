@@ -11,7 +11,7 @@ spring:
     password: ${SPRING_RABBITMQ_PASSWORD:guest}
   cloud:
     function:
-      definition: userInvitedEventConsumer;userRegisteredEventConsumer;passwordResetRequestedEventConsumer;applicationStatusChangedEventConsumer;interviewScheduledEventConsumer;interviewRescheduledEventConsumer
+      definition: userInvitedEventConsumer;userRegisteredEventConsumer;passwordResetRequestedEventConsumer;applicationStatusChangedEventConsumer;interviewScheduledEventConsumer;interviewRescheduledEventConsumer;companyUserLockedEventConsumer;companyStatusChangedEventConsumer
     stream:
       defaultBinder: rabbit
       binders:
@@ -37,6 +37,12 @@ spring:
         interviewRescheduledEventConsumer-in-0:
           binder: rabbit
           destination: interview.rescheduled
+        companyUserLockedEventConsumer-in-0:
+          binder: rabbit
+          destination: company.user.locked
+        companyStatusChangedEventConsumer-in-0:
+          binder: rabbit
+          destination: company.status.changed
   mail:
     host: ${MAIL_HOST:}
     port: ${MAIL_PORT:}

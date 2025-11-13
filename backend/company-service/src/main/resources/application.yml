@@ -33,6 +33,26 @@ spring:
       mode: always
       schema-locations: classpath:db/schema.sql
 
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+
+  cloud:
+    stream:
+      defaultBinder: rabbit
+      binders:
+        rabbit:
+          type: rabbit
+      bindings:
+        companyUserLocked-out-0:
+          binder: rabbit
+          destination: company.user.locked
+        companyStatusChanged-out-0:
+          binder: rabbit
+          destination: company.status.changed
+
   security:
     oauth2:
       resourceserver:
