@@ -3,6 +3,7 @@
 .vscode
 /frontend/**/packages/**
 AGENTS.md
+HOWTOWORK.md
 account.txt
 DESIGN_CHANGELOG.md
 .fleet
