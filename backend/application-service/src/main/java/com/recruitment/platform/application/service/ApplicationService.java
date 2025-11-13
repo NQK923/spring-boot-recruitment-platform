@@ -120,6 +120,10 @@ public class ApplicationService {
 
         assertRecruiterAccessToJob(application.getJobPostingId(), companyId);
 
+        if (!Objects.equals(application.getOwnerUserId(), changedByUserId)) {
+            application.setOwnerUserId(changedByUserId);
+        }
+
         ApplicationStatus oldStatus = application.getStatus();
         if (request.newStatus() == null) {
             throw new IllegalArgumentException("Thiếu trạng thái mới.");

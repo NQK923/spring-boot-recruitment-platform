@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
+import { getCurrentUser } from "@/lib/current-user";
 
 export type ActionState = {
   error?: string;
@@ -111,4 +112,29 @@ export async function addNoteAction(
 
   revalidatePath(`${ROUTES.recruiterDashboard}/applications/${applicationId}`);
   return { success: "Đã thêm ghi chú." };
+}
+
+export async function takeOwnershipAction(
+  applicationId: number,
+  _prevState: ActionState,
+  _formData?: FormData
+): Promise<ActionState> {
+  const viewer = await getCurrentUser();
+  if (!viewer) {
+    return { error: "Bạn cần đăng nhập để tiếp nhận hồ sơ." };
+  }
+
+  try {
+    await apiFetch(`/api/applications/${applicationId}/owner`, {
+      method: "PATCH",
+      body: JSON.stringify({ ownerUserId: viewer.id }),
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Không thể tiếp nhận hồ sơ.";
+    return { error: message };
+  }
+
+  revalidatePath(`${ROUTES.recruiterDashboard}/applications/${applicationId}`);
+  return { success: "Bạn đã tiếp nhận hồ sơ." };
 }

@@ -28,32 +28,30 @@ export function CompanyMembersPanel({ users }: Props) {
   const [alert, setAlert] = useState<AlertState>(null);
   const [pendingUserId, setPendingUserId] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
+    useMemo(
+        () =>
+            new Intl.DateTimeFormat(undefined, {
+                dateStyle: "medium",
+            }),
+        []
+    );
 
-  const dateFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(undefined, {
-        dateStyle: "medium",
-      }),
-    []
-  );
-
-  const mutateMember = useCallback((userId: number, payload: Parameters<typeof updateCompanyUserAction>[1]) => {
-    setAlert(null);
-    setPendingUserId(userId);
-    startTransition(() => {
-      void (async () => {
-        const result = await updateCompanyUserAction(userId, payload);
-        if (result.error) {
-          setAlert({ type: "error", message: result.error });
-        } else if (result.success) {
-          setAlert({ type: "success", message: result.success });
-        }
-        setPendingUserId(null);
-      })();
-    });
-  }, []);
-
-  const handleLockToggle = useCallback(
+    const mutateMember = useCallback((userId: number, payload: Parameters<typeof updateCompanyUserAction>[1]) => {
+        setAlert(null);
+        setPendingUserId(userId);
+        startTransition(() => {
+            void (async () => {
+                const result = await updateCompanyUserAction(userId, payload);
+                if (result.error) {
+                    setAlert({ type: "error", message: result.error });
+                } else if (result.success) {
+                    setAlert({ type: "success", message: result.success });
+                }
+                setPendingUserId(null);
+            })();
+        });
+    }, []);
+    const handleLockToggle = useCallback(
     (userId: number, shouldLock: boolean) => {
       mutateMember(userId, { locked: shouldLock });
     },

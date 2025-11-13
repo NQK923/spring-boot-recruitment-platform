@@ -5,12 +5,14 @@ import { ROUTES } from "@/lib/routes";
 import { getCurrentUser } from "@/lib/current-user";
 import { StatusUpdateForm } from "@/components/applications/status-update-form";
 import { AddNoteForm } from "@/components/applications/add-note-form";
+import { TakeOwnershipButton } from "@/components/applications/take-ownership-button";
 import { dateFormatter, dateTimeFormatter } from "@/lib/dates";
 import type {
   ApplicationDetails,
   ApplicationNote,
   ApplicationStatus,
   Profile,
+  MeResponse,
 } from "@/lib/types";
 
 async function getApplication(applicationId: string): Promise<ApplicationDetails | null> {
@@ -58,16 +60,16 @@ async function getCandidateProfile(candidateId: number | null | undefined, compa
   }
 }
 
-async function getViewerCompanyId(): Promise<number | null> {
-  const viewer = await getCurrentUser();
-  if (!viewer) {
+async function getViewerCompanyId(viewer?: MeResponse | null): Promise<number | null> {
+  const resolvedViewer = viewer ?? (await getCurrentUser());
+  if (!resolvedViewer) {
     return null;
   }
-  if (typeof viewer.companyId === "number") {
-    return viewer.companyId;
+  if (typeof resolvedViewer.companyId === "number") {
+    return resolvedViewer.companyId;
   }
   try {
-    const response = await apiFetch(`/api/internal/companies/users/${viewer.id}/company`, { method: "GET" });
+    const response = await apiFetch(`/api/internal/companies/users/${resolvedViewer.id}/company`, { method: "GET" });
     const data = await response.json();
     const companyId = data?.id?.companyId ?? data?.companyId ?? null;
     return typeof companyId === "number" ? companyId : null;
@@ -226,7 +228,8 @@ export default async function ApplicationDetailsPage({
   if (!application) {
     notFound();
   }
-  const companyId = await getViewerCompanyId();
+  const viewer = await getCurrentUser();
+  const companyId = await getViewerCompanyId(viewer);
 
   const [notes, profile] = await Promise.all([
     getApplicationNotes(applicationId),
@@ -257,6 +260,17 @@ export default async function ApplicationDetailsPage({
     : [];
   const latestExperience = sortedExperiences[0] ?? null;
   const primarySkills = profile?.skills?.slice(0, 5) ?? [];
+  const viewerOwnsApplication = Boolean(viewer && application.ownerUserId === viewer.id);
+  const viewerHasOwnershipRole =
+    viewer?.roles?.some((role) =>
+      role === "RECRUITER" || role === "COMPANY_ADMIN" || role === "SUPER_ADMIN"
+    ) ?? false;
+  const canTakeOwnership = viewerHasOwnershipRole && !viewerOwnsApplication;
+  const ownershipLabel = viewerOwnsApplication
+    ? "Bạn đang phụ trách"
+    : application.ownerUserId
+      ? "Đã phân công"
+      : "Chưa gán";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50/30 to-purple-50/20 py-8">
@@ -351,9 +365,14 @@ export default async function ApplicationDetailsPage({
                 <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3">
                   <span className="text-sm font-medium text-gray-700">Phụ trách</span>
                   <span className="font-bold text-emerald-700">
-                    {application.ownerUserId ? "Đã phân công" : "Chưa gán"}
+                    {ownershipLabel}
                   </span>
                 </div>
+                {canTakeOwnership ? (
+                  <div className="flex justify-end">
+                    <TakeOwnershipButton applicationId={application.id} />
+                  </div>
+                ) : null}
               </div>
             </div>
           </article>
