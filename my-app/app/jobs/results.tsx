@@ -107,6 +107,8 @@ export function JobsResults({
     }
   };
 
+  const shouldShowPagination = !hasClientFilters;
+
   return (
     <div className="space-y-6">
       <Panel padding="lg" className="space-y-6 border-2 border-blue-200 bg-gradient-to-br from-white to-blue-50">
@@ -219,16 +221,18 @@ export function JobsResults({
         </div>
       )}
 
-      <PaginationControls
-        page={currentPage}
-        totalPages={totalPages}
-        hasNext={pageData.hasNext}
-        hasPrevious={pageData.hasPrevious}
-        onPageChange={onPageChange}
-        isPending={isSearching}
-        totalItems={totalItems}
-        pageSize={pageSize}
-      />
+      {shouldShowPagination ? (
+        <PaginationControls
+          page={currentPage}
+          totalPages={totalPages}
+          hasNext={pageData.hasNext}
+          hasPrevious={pageData.hasPrevious}
+          onPageChange={onPageChange}
+          isPending={isSearching}
+          totalItems={totalItems}
+          pageSize={pageSize}
+        />
+      ) : null}
     </div>
   );
 }
