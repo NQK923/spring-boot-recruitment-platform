@@ -22,7 +22,7 @@ public class EmbeddingService {
         String sanitized = StringUtils.hasText(text) ? text : "Thông tin chưa được cung cấp.";
         try {
             float[] vector = embeddingModel.embed(sanitized);
-            if (vector == null || vector.length == 0) {
+            if (vector.length == 0) {
                 LOG.warn("Nhận được embedding rỗng từ Gemini, trả về vector mặc định.");
                 return new float[DEFAULT_VECTOR_DIMENSION];
             }

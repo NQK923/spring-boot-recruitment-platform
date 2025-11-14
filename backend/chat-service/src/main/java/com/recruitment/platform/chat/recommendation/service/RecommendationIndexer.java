@@ -60,15 +60,13 @@ public class RecommendationIndexer {
 
     String buildJobContent(JobDto job) {
         List<String> benefitList = splitToList(job.benefits());
-        StringBuilder builder = new StringBuilder();
-        builder.append(String.format("%s - %s%n", safe(job.title()), safe(job.companyName())));
-        builder.append("Mô tả: ").append(safe(job.description())).append('\n');
-        builder.append("Yêu cầu: ").append(safe(job.requirements())).append('\n');
-        builder.append("Địa điểm: ").append(safe(job.location()))
-            .append("; Hình thức làm việc: ").append(safe(job.workType())).append('\n');
-        builder.append("Phúc lợi: ").append(benefitList.isEmpty() ? "Chưa cập nhật" : String.join(", ", benefitList)).append('\n');
-        builder.append("Mức lương: ").append(safe(job.salaryRange()));
-        return builder.toString();
+        return String.format("%s - %s%n", safe(job.title()), safe(job.companyName())) +
+                "Mô tả: " + safe(job.description()) + '\n' +
+                "Yêu cầu: " + safe(job.requirements()) + '\n' +
+                "Địa điểm: " + safe(job.location()) +
+                "; Hình thức làm việc: " + safe(job.workType()) + '\n' +
+                "Phúc lợi: " + (benefitList.isEmpty() ? "Chưa cập nhật" : String.join(", ", benefitList)) + '\n' +
+                "Mức lương: " + safe(job.salaryRange());
     }
 
     ObjectNode buildJobMetadata(JobDto job) {

@@ -36,9 +36,7 @@ public class GeminiEmbeddingModel implements EmbeddingModel {
 
     @Override
     public EmbeddingResponse call(EmbeddingRequest request) {
-        List<String> texts = request != null && request.getInstructions() != null
-            ? request.getInstructions()
-            : Collections.emptyList();
+        List<String> texts = request.getInstructions();
         if (texts.isEmpty()) {
             return new EmbeddingResponse(Collections.emptyList());
         }
@@ -51,9 +49,6 @@ public class GeminiEmbeddingModel implements EmbeddingModel {
 
     @Override
     public float[] embed(Document document) {
-        if (document == null) {
-            return embedSingleText(null);
-        }
         String content = document.isText() ? document.getText() : document.getFormattedContent();
         return embedSingleText(content);
     }

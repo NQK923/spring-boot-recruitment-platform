@@ -1,7 +1,11 @@
 package com.recruitment.platform.chat.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@Setter
+@Getter
 @ConfigurationProperties(prefix = "services")
 public class ServiceClientProperties {
 
@@ -10,11 +14,4 @@ public class ServiceClientProperties {
      */
     private String gatewayBaseUrl = "http://gateway-service:8080";
 
-    public String getGatewayBaseUrl() {
-        return gatewayBaseUrl;
-    }
-
-    public void setGatewayBaseUrl(String gatewayBaseUrl) {
-        this.gatewayBaseUrl = gatewayBaseUrl;
-    }
 }

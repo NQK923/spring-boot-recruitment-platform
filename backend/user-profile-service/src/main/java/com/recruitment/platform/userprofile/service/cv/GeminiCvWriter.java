@@ -20,13 +20,11 @@ public class GeminiCvWriter {
     private static final Logger LOG = LoggerFactory.getLogger(GeminiCvWriter.class);
 
     private final ObjectMapper objectMapper;
-    private final GeminiProperties properties;
     private final ChatClient chatClient;
 
     public GeminiCvWriter(GeminiProperties properties,
                           ObjectMapper objectMapper,
                           ChatClient chatClient) {
-        this.properties = properties;
         this.objectMapper = objectMapper;
         this.chatClient = chatClient;
         if (!StringUtils.hasText(properties.getApiKey())) {
