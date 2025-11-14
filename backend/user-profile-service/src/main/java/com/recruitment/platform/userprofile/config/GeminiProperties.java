@@ -5,6 +5,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 @Getter
@@ -35,9 +36,9 @@ public class GeminiProperties {
     private String promptVersion = "v1";
 
     public String modelName() {
-        if (model == null || model.isBlank()) {
+        if (!StringUtils.hasText(model)) {
             return model;
         }
-        return model.startsWith("models/") ? model : "models/" + model;
+        return model.startsWith("models/") ? model.substring("models/".length()) : model;
     }
 }
