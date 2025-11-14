@@ -42,7 +42,7 @@ export function CreateJobForm({ positions }: Props) {
         />
       </label>
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-5 md:grid-cols-3">
         <label className="flex flex-col gap-2 text-sm text-slate-900">
           <span className="font-bold">Hình thức làm việc</span>
           <select
@@ -64,6 +64,22 @@ export function CreateJobForm({ positions }: Props) {
           <input
             name="location"
             placeholder="Ho Chi Minh City (Hybrid)"
+            disabled={pending}
+            className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+          />
+        </label>
+
+        <label className="flex flex-col gap-2 text-sm text-slate-900">
+          <span className="font-bold">Số lượng tuyển</span>
+          <input
+            name="hiringQuantity"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            step={1}
+            defaultValue={1}
+            placeholder="Ví dụ: 3"
+            required
             disabled={pending}
             className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
           />

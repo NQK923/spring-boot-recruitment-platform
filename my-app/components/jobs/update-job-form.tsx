@@ -52,7 +52,7 @@ export function UpdateJobForm({ job, positions }: Props) {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         <label className="flex flex-col gap-2 text-sm">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Trạng thái</span>
           <select
@@ -83,6 +83,21 @@ export function UpdateJobForm({ job, positions }: Props) {
               </option>
             ))}
           </select>
+        </label>
+
+        <label className="flex flex-col gap-2 text-sm">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Số lượng tuyển</span>
+          <input
+            name="hiringQuantity"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            step={1}
+            defaultValue={String(Math.max(job.hiringQuantity ?? 1, 1))}
+            required
+            disabled={pending}
+            className="rounded-2xl border-2 border-blue-100 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+          />
         </label>
       </div>
 

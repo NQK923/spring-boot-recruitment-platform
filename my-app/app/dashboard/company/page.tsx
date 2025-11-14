@@ -5,6 +5,8 @@ import { InviteMemberForm } from "@/components/company-admin/invite-member-form"
 import { CompanyMembersPanel } from "@/components/company-admin/company-members-panel";
 import { CompanyJobCard } from "@/components/company-admin/company-job-card";
 import { CreateJobForm } from "@/components/jobs/create-job-form";
+import { CreateJobPositionForm } from "@/components/jobs/create-job-position-form";
+import { CollapsibleSection } from "@/components/profile/collapsible-section";
 import { apiFetch } from "@/lib/api";
 import { ROUTES } from "@/lib/routes";
 import type { JobPosting, JobPosition } from "@/lib/types";
@@ -347,17 +349,11 @@ export default async function CompanyAdminDashboardPage() {
       </div>
 
       <div id="company" className="space-y-8 rounded-3xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-10 shadow-md">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-slate-900">Tổng quan công ty</h2>
-            <p className="mt-3 text-base text-slate-600">
-              Kiểm tra lại thông tin thương hiệu, địa điểm tuyển dụng và lộ trình mở vị trí trước khi mời thêm thành viên.
-            </p>
-          </div>
-          <Link href={ROUTES.docs} className="group inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all duration-200 hover:shadow-lg hover:scale-105">
-            Hướng dẫn cập nhật
-            <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
-          </Link>
+        <div className="space-y-4">
+          <h2 className="text-3xl font-bold text-slate-900">Tổng quan công ty</h2>
+          <p className="text-base text-slate-600">
+            Kiểm tra lại thông tin thương hiệu, địa điểm tuyển dụng và lộ trình mở vị trí trước khi mời thêm thành viên.
+          </p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 text-sm">
           <div className="space-y-6 rounded-2xl border-2 border-blue-100 bg-white px-7 py-6 shadow-md transition-all duration-200 hover:shadow-lg">
@@ -427,9 +423,31 @@ export default async function CompanyAdminDashboardPage() {
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border-2 border-blue-100 bg-white p-7 shadow-md">
+        <CollapsibleSection
+          icon={
+            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7l9-4 9 4-9 4-9-4z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10l-9 4-9-4m18 4l-9 4-9-4" />
+            </svg>
+          }
+          title="Cập nhật hồ sơ thương hiệu"
+          description="Điều chỉnh thông tin hiển thị công khai để ứng viên hiểu đúng về doanh nghiệp."
+          gradientFrom="from-blue-600"
+          gradientTo="to-sky-500"
+          summary={
+            <div className="space-y-1 text-sm text-slate-700">
+              <p>
+                <span className="font-semibold text-slate-900">Tên:</span> {profile?.name ?? "Chưa đặt"}
+              </p>
+              <p>
+                <span className="font-semibold text-slate-900">Website:</span>{" "}
+                {profile?.website ?? "Chưa khai báo"}
+              </p>
+            </div>
+          }
+        >
           <UpdateCompanyForm profile={profileForForm} />
-        </div>
+        </CollapsibleSection>
       </div>
 
       <div id="team" className="space-y-8 rounded-3xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-10 shadow-md">
@@ -452,9 +470,29 @@ export default async function CompanyAdminDashboardPage() {
             ) : null}
           </div>
         </div>
-        <div className="rounded-2xl border-2 border-blue-100 bg-white p-7 shadow-sm">
+        <CollapsibleSection
+          icon={
+            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v6M6 9v6M9 18h6M9 6h6" />
+            </svg>
+          }
+          title="Mời thêm thành viên"
+          description="Gửi lời mời vai trò quản trị hoặc tuyển dụng chỉ với email."
+          gradientFrom="from-purple-600"
+          gradientTo="to-indigo-600"
+          summary={
+            <div className="space-y-1 text-sm text-slate-700">
+              <p>
+                <span className="font-semibold text-slate-900">Đang hoạt động:</span> {users.length} thành viên
+              </p>
+              <p>
+                <span className="font-semibold text-slate-900">Lời mời chờ:</span> {pendingInvitationCount}
+              </p>
+            </div>
+          }
+        >
           <InviteMemberForm />
-        </div>
+        </CollapsibleSection>
         <CompanyMembersPanel users={users} />
       </div>
 
@@ -473,7 +511,45 @@ export default async function CompanyAdminDashboardPage() {
           </p>
         </div>
 
-        <CreateJobForm positions={positions} />
+        <div className="space-y-6">
+          <CollapsibleSection
+            icon={
+              <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            }
+            title="Thư viện vị trí chuẩn hóa"
+            description="Thêm danh mục chức danh chuẩn để tái sử dụng khi đăng việc."
+            gradientFrom="from-sky-500"
+            gradientTo="to-blue-600"
+            summary={
+              <p className="text-sm text-slate-700">
+                Đang có <span className="font-semibold text-slate-900">{positions.length}</span> vị trí chuẩn hóa.
+              </p>
+            }
+          >
+            <CreateJobPositionForm />
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            icon={
+              <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            }
+            title="Đăng bài tuyển dụng mới"
+            description="Tạo việc làm hiển thị ngay cho đội ngũ và trang public."
+            gradientFrom="from-teal-500"
+            gradientTo="to-emerald-600"
+            summary={
+              <p className="text-sm text-slate-700">
+                Tổng cộng <span className="font-semibold text-slate-900">{jobs.length}</span> việc làm trong workspace.
+              </p>
+            }
+          >
+            <CreateJobForm positions={positions} />
+          </CollapsibleSection>
+        </div>
 
         {jobs.length === 0 ? (
           <div className="rounded-2xl border-2 border-blue-100 bg-white px-8 py-16 text-center shadow-md">

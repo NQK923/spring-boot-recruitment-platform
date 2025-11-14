@@ -50,11 +50,12 @@ export function Button({
     return cloneElement(child, {
       ...(props as Record<string, unknown>),
       className: cx(child.props.className, classes),
+      "data-button": "true",
     });
   }
 
   return (
-    <button type={type} className={classes} {...props}>
+    <button type={type} className={classes} {...props} data-button="true">
       {children}
     </button>
   );
