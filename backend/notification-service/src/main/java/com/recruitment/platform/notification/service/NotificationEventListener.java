@@ -21,6 +21,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,6 +39,15 @@ public class NotificationEventListener {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    @Value("${app.frontend-base-url:http://localhost:3000}")
+    private String frontendBaseUrl;
+
+    @Value("${app.brand-name:TalentFlow}")
+    private String configuredBrandName;
+
+    @Value("${app.support-email:support@talentflow.app}")
+    private String configuredSupportEmail;
+
     public NotificationEventListener(JavaMailSender mailSender, AuthServiceClient authServiceClient) {
         this.mailSender = mailSender;
         this.authServiceClient = authServiceClient;
@@ -47,9 +57,18 @@ public class NotificationEventListener {
     public Consumer<UserInvitedEvent> userInvitedEventConsumer() {
         return event -> {
             log.info("Received UserInvitedEvent for email: {}", event.email());
-            String subject = "You have been invited to the Recruitment Platform";
-            String invitationUrl = "http://localhost:3000/accept-invite?token=" + event.token(); // Frontend URL
-            String text = String.format("Hello!\n\nYou have been invited to join as a %s. Please click the link below to accept:\n%s", event.roleToGrant(), invitationUrl);
+            String subject = "Lời mời tham gia " + brandName();
+            String invitationUrl = buildFrontendUrl("/accept-invite?token=" + event.token());
+            String text = buildEmailTemplate(
+                    subject,
+                    List.of(
+                            String.format("Bạn nhận được lời mời gia nhập không gian tuyển dụng với vai trò %s.", safeString(event.roleToGrant())),
+                            "Hãy xác nhận để bắt đầu cộng tác và sử dụng đầy đủ tính năng của nền tảng."
+                    ),
+                    "Chấp nhận lời mời",
+                    invitationUrl,
+                    "Liên kết chỉ sử dụng một lần nhằm đảm bảo bảo mật tài khoản."
+            );
             sendEmail(event.email(), subject, text);
         };
     }
@@ -58,14 +77,20 @@ public class NotificationEventListener {
     public Consumer<PasswordResetRequestedEvent> passwordResetRequestedEventConsumer() {
         return event -> {
             log.info("Received PasswordResetRequestedEvent for email: {}", event.email());
-            String subject = "Password reset request";
+            String subject = "Xác nhận đặt lại mật khẩu";
             String expiryText = event.expiresAt() != null
-                    ? "This code expires at " + OTP_EXPIRY_FORMATTER.format(event.expiresAt()) + " (UTC)."
-                    : "This code will expire shortly.";
-            String text = String.format(
-                    "Hello!%n%nWe received a request to reset your password. Use the code below to continue:%n%s%n%s%n%nIf you didn't request a password reset, please ignore this email.",
-                    event.otp(),
-                    expiryText
+                    ? "Mã sẽ hết hạn lúc " + OTP_EXPIRY_FORMATTER.format(event.expiresAt()) + " (UTC)."
+                    : "Mã chỉ có hiệu lực trong vài phút.";
+            String text = buildEmailTemplate(
+                    "Xác nhận đặt lại mật khẩu",
+                    List.of(
+                            "Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản " + brandName() + " của bạn.",
+                            "Mã OTP xác thực: " + event.otp(),
+                            expiryText
+                    ),
+                    null,
+                    null,
+                    "Nếu bạn không phải là người gửi yêu cầu, hãy bỏ qua email này và bảo vệ thông tin đăng nhập."
             );
             sendEmail(event.email(), subject, text);
         };
@@ -79,15 +104,30 @@ public class NotificationEventListener {
             String text;
             if (event.verificationCode() != null) {
                 String expiryText = event.expiresAt() != null
-                        ? "This code expires at " + OTP_EXPIRY_FORMATTER.format(event.expiresAt()) + " (UTC)."
-                        : "This code will expire shortly.";
-                text = String.format(
-                        "Hello!%n%nThank you for registering. Your email verification code is: %s%n%s%n%nIf you didn't create an account, please ignore this email.",
-                        event.verificationCode(),
-                        expiryText
+                        ? "Mã sẽ hết hạn lúc " + OTP_EXPIRY_FORMATTER.format(event.expiresAt()) + " (UTC)."
+                        : "Mã sẽ hết hạn trong ít phút tới.";
+                text = buildEmailTemplate(
+                        "Hoàn tất xác minh email",
+                        List.of(
+                                "Cảm ơn bạn đã tạo tài khoản trên " + brandName() + ".",
+                                "Mã xác minh: " + event.verificationCode(),
+                                expiryText
+                        ),
+                        "Truy cập " + brandName(),
+                        buildFrontendUrl("/login"),
+                        "Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này."
                 );
             } else {
-                text = "Hello!\n\nThank you for registering. We are excited to have you on board.";
+                text = buildEmailTemplate(
+                        "Chào mừng bạn đến với " + brandName(),
+                        List.of(
+                                "Tài khoản của bạn đã được tạo thành công.",
+                                "Đăng nhập để cập nhật hồ sơ và bắt đầu quản lý quy trình tuyển dụng."
+                        ),
+                        "Đăng nhập",
+                        buildFrontendUrl("/login"),
+                        null
+                );
             }
             sendEmail(event.email(), subject, text);
         };
@@ -117,8 +157,15 @@ public class NotificationEventListener {
             String normalizedStatus = event.newStatus() != null ? event.newStatus().toUpperCase() : "UNKNOWN";
             Map<String, Object> metadata = event.metadata() != null ? event.metadata() : Map.of();
 
-            String subject;
-            String text;
+            String candidatePortalUrl = buildFrontendUrl("/candidate/applications");
+            String actionUrl = candidatePortalUrl;
+            String actionLabel = "Xem trạng thái hồ sơ";
+            String subject = "Cập nhật hồ sơ: " + jobLabel;
+            String headline = subject;
+            String closing = null;
+            List<String> paragraphs = new ArrayList<>();
+            paragraphs.add("Chúng tôi vừa cập nhật trạng thái hồ sơ của bạn cho " + jobDisplay + " thành: " + normalizedStatus + ".");
+
             switch (normalizedStatus) {
                 case "INTERVIEWING" -> {
                     String timeText = formatIso(metadata.get("interviewScheduledAt"));
@@ -126,23 +173,16 @@ public class NotificationEventListener {
                     String location = safeString(metadata.get("interviewLocation"));
                     String instructions = safeString(metadata.get("interviewInstructions"));
                     subject = "Lịch phỏng vấn: " + jobLabel;
-                    text = """
-                            Xin chào!
-
-                            Đội ngũ tuyển dụng đã lên lịch phỏng vấn cho %s.
-
-                            • Thời gian: %s %s
-                            • Địa điểm / liên kết: %s
-                            %s
-
-                            Nếu bạn cần thay đổi lịch, vui lòng trả lời email này hoặc liên hệ với nhà tuyển dụng.
-                            """.formatted(
-                            jobDisplay,
-                            timeText,
-                            timezone.isBlank() ? "" : "(" + timezone + ")",
-                            location.isBlank() ? "Sẽ được cập nhật" : location,
-                            instructions.isBlank() ? "" : ("• Ghi chú: " + instructions)
-                    );
+                    headline = "Lịch phỏng vấn cho " + jobDisplay;
+                    paragraphs.clear();
+                    paragraphs.add("Đội ngũ tuyển dụng đã sắp xếp một buổi phỏng vấn mới.");
+                    paragraphs.add("• Thời gian: " + (timeText.isBlank() ? "Sẽ được cập nhật" : timeText) + (timezone.isBlank() ? "" : " (" + timezone + ")"));
+                    paragraphs.add("• Địa điểm / liên kết: " + (location.isBlank() ? "Sẽ được gửi sau" : location));
+                    if (!instructions.isBlank()) {
+                        paragraphs.add("• Ghi chú: " + instructions);
+                    }
+                    actionLabel = "Xem lịch phỏng vấn";
+                    actionUrl = candidatePortalUrl;
                 }
                 case "OFFERED" -> {
                     String salaryAmount = safeString(metadata.get("offerSalaryAmount"));
@@ -150,63 +190,56 @@ public class NotificationEventListener {
                     String notes = safeString(metadata.get("offerNotes"));
                     String expires = formatIso(metadata.get("offerExpiresAt"));
                     subject = "Đề nghị làm việc: " + jobLabel;
-                    text = """
-                            Xin chào!
-
-                            Chúng tôi rất vui được gửi tới bạn đề nghị làm việc cho %s.
-
-                            • Mức lương đề nghị: %s %s
-                            • Thời hạn phản hồi: %s
-                            %s
-
-                            Hãy đăng nhập TalentFlow để chấp nhận hoặc từ chối đề nghị.
-                            """.formatted(
-                            jobDisplay,
-                            salaryAmount.isBlank() ? "Đang cập nhật" : salaryAmount,
-                            currency.isBlank() ? "VND" : currency,
-                            expires.isBlank() ? "Sẽ được thông báo" : expires,
-                            notes.isBlank() ? "" : ("• Ghi chú thêm: " + notes)
-                    );
+                    headline = "Đề nghị làm việc cho " + jobDisplay;
+                    paragraphs.clear();
+                    paragraphs.add("Chúng tôi rất vui được gửi tới bạn đề nghị làm việc chính thức.");
+                    paragraphs.add("• Mức lương đề nghị: " + (salaryAmount.isBlank() ? "Đang cập nhật" : salaryAmount) + " " + (currency.isBlank() ? "VND" : currency));
+                    paragraphs.add("• Thời hạn phản hồi: " + (expires.isBlank() ? "Sẽ được thông báo" : expires));
+                    if (!notes.isBlank()) {
+                        paragraphs.add("• Ghi chú thêm: " + notes);
+                    }
+                    actionLabel = "Xem chi tiết đề nghị";
+                    actionUrl = candidatePortalUrl;
                 }
                 case "HIRED" -> {
                     String decision = safeString(metadata.get("offerDecision"));
                     boolean accepted = "ACCEPTED".equalsIgnoreCase(decision);
                     subject = "Chúc mừng bạn đã nhận việc!";
-                    text = accepted
-                            ? """
-                            Xin chúc mừng!
-
-                            Bạn đã xác nhận đồng ý với đề nghị tuyển dụng và hồ sơ hiện ở trạng thái ĐÃ TUYỂN.
-                            Bộ phận nhân sự sẽ sớm liên hệ để hoàn tất các bước tiếp theo.
-                            """
-                            : """
-                            Xin chúc mừng!
-
-                            Đội ngũ tuyển dụng đã chuyển hồ sơ sang trạng thái ĐÃ TUYỂN.
-                            Chúng tôi sẽ tiếp tục đồng hành cùng bạn trong quá trình nhận việc.
-                            """;
+                    headline = subject;
+                    paragraphs.clear();
+                    if (accepted) {
+                        paragraphs.add("Bạn đã xác nhận đồng ý với đề nghị tuyển dụng và hồ sơ đang ở trạng thái ĐÃ TUYỂN.");
+                    } else {
+                        paragraphs.add("Đội ngũ tuyển dụng đã chuyển hồ sơ sang trạng thái ĐÃ TUYỂN.");
+                    }
+                    paragraphs.add("Bộ phận nhân sự sẽ sớm liên hệ để hướng dẫn các bước tiếp theo.");
+                    actionLabel = null;
+                    actionUrl = null;
                 }
                 case "REJECTED" -> {
                     String decision = safeString(metadata.get("offerDecision"));
+                    paragraphs.clear();
                     if ("DECLINED".equalsIgnoreCase(decision)) {
                         subject = "Bạn đã từ chối đề nghị";
-                        text = """
-                                Cảm ơn bạn đã phản hồi!
-
-                                Chúng tôi đã ghi nhận quyết định từ chối đề nghị tuyển dụng.
-                                Nếu muốn ứng tuyển vị trí khác trong tương lai, bạn luôn được chào đón quay lại TalentFlow.
-                                """;
+                        headline = subject;
+                        paragraphs.add("Chúng tôi đã ghi nhận quyết định từ chối đề nghị tuyển dụng của bạn.");
+                        paragraphs.add("Rất mong sẽ tiếp tục đồng hành với bạn trong những cơ hội phù hợp khác.");
+                        actionLabel = null;
+                        actionUrl = null;
                     } else {
                         subject = "Cập nhật hồ sơ: " + jobLabel;
-                        text = String.format("Xin chào!%n%nHồ sơ của bạn cho %s đã chuyển sang trạng thái: %s.", jobDisplay, normalizedStatus);
+                        headline = subject;
+                        paragraphs.add("Rất tiếc hồ sơ của bạn cho " + jobDisplay + " đã được chuyển sang trạng thái khác: " + normalizedStatus + ".");
+                        paragraphs.add("Đừng nản lòng – bạn có thể tiếp tục theo dõi các vị trí mới trên " + brandName() + ".");
                     }
                 }
                 default -> {
                     subject = "Cập nhật hồ sơ: " + jobLabel;
-                    text = String.format("Xin chào!%n%nTrạng thái hồ sơ của bạn cho %s đã cập nhật thành: %s.", jobDisplay, normalizedStatus);
+                    headline = subject;
                 }
             }
 
+            String text = buildEmailTemplate(headline, paragraphs, actionLabel, actionUrl, closing);
             sendEmail(candidateEmail, subject, text);
         };
     }
@@ -241,12 +274,15 @@ public class NotificationEventListener {
                         : "thời điểm gần đây";
 
                 String subject = "Tài khoản tuyển dụng của bạn đã bị khóa";
-                String text = String.format(
-                        "Xin chào,%n%nTài khoản tuyển dụng của bạn tại %s đã bị quản trị viên khóa vào %s.%n" +
-                                "Bạn sẽ không thể đăng nhập hoặc thao tác trên TalentFlow cho đến khi được mở khóa.%n" +
-                                "Vui lòng liên hệ quản trị viên công ty để được hỗ trợ mở khóa.%n%nTrân trọng,%nTalentFlow",
-                        companyLabel,
-                        lockedAt
+                String text = buildEmailTemplate(
+                        subject,
+                        List.of(
+                                String.format("Tài khoản tại %s đã bị quản trị viên khóa vào %s.", companyLabel, lockedAt),
+                                "Bạn sẽ không thể đăng nhập hay thao tác trên " + brandName() + " cho tới khi được mở lại quyền truy cập."
+                        ),
+                        null,
+                        null,
+                        "Vui lòng liên hệ quản trị viên công ty để được hỗ trợ mở khóa."
                 );
 
                 sendEmail(recipient, subject, text);
@@ -293,13 +329,16 @@ public class NotificationEventListener {
                         : "thời điểm gần đây";
 
                 String subject = String.format("Trạng thái %s đã thay đổi", companyLabel);
-                String text = String.format(
-                        "Xin chào,%n%nTrạng thái của %s vừa được cập nhật vào %s.%n- Trước đó: %s%n- Hiện tại: %s%n%n" +
-                                "Vui lòng đăng nhập TalentFlow để kiểm tra các yêu cầu bổ sung (nếu có).%n%nTrân trọng,%nTalentFlow",
-                        companyLabel,
-                        timestamp,
-                        previousStatus,
-                        newStatus
+                String text = buildEmailTemplate(
+                        subject,
+                        List.of(
+                                String.format("Trạng thái của %s vừa được cập nhật vào %s.", companyLabel, timestamp),
+                                "• Trước đó: " + previousStatus,
+                                "• Hiện tại: " + newStatus
+                        ),
+                        "Đăng nhập để kiểm tra",
+                        buildFrontendUrl("/dashboard/company"),
+                        "Nếu có yêu cầu bổ sung, vui lòng hoàn tất sớm để quy trình tuyển dụng không bị gián đoạn."
                 );
 
                 recipients.forEach(recipient -> sendEmail(recipient, subject, text));
@@ -340,20 +379,17 @@ public class NotificationEventListener {
             String location = safeString(event.locationOrLink());
 
             String subject = "Lịch phỏng vấn: " + jobLabel;
-            String text = """
-                    Xin chào!
-
-                    Buổi phỏng vấn cho %s đã được sắp xếp.
-
-                    • Thời gian: %s %s
-                    • Địa điểm / liên kết: %s
-
-                    Nếu bạn không thể tham dự, vui lòng phản hồi email này hoặc cập nhật trực tiếp trên TalentFlow.
-                    """.formatted(
-                    jobDisplay,
-                    scheduleTime,
-                    timezone.isBlank() ? "" : "(" + timezone + ")",
-                    location.isBlank() ? "Sẽ được cập nhật" : location
+            String text = buildEmailTemplate(
+                    subject,
+                    List.of(
+                            "Buổi phỏng vấn cho " + jobDisplay + " đã được sắp xếp.",
+                            "• Thời gian: " + (scheduleTime.isBlank() ? "Sẽ được cập nhật" : scheduleTime) + (timezone.isBlank() ? "" : " (" + timezone + ")"),
+                            "• Địa điểm / liên kết: " + (location.isBlank() ? "Sẽ được gửi thêm" : location),
+                            "Nếu bạn không thể tham dự, vui lòng phản hồi email này hoặc cập nhật trực tiếp trên " + brandName() + "."
+                    ),
+                    "Xem lịch phỏng vấn",
+                    buildFrontendUrl("/dashboard/interviews"),
+                    null
             );
 
             event.participantUserIds().forEach(userId -> {
@@ -384,20 +420,17 @@ public class NotificationEventListener {
             String location = safeString(event.locationOrLink());
 
             String subject = "Cập nhật lịch phỏng vấn: " + jobLabel;
-            String text = """
-                    Xin chào!
-
-                    Buổi phỏng vấn cho %s đã được cập nhật thời gian mới.
-
-                    • Thời gian mới: %s %s
-                    • Địa điểm / liên kết: %s
-
-                    Nếu lịch mới không phù hợp, hãy phản hồi email này để chúng tôi hỗ trợ sắp xếp lại.
-                    """.formatted(
-                    jobDisplay,
-                    newTime,
-                    timezone.isBlank() ? "" : "(" + timezone + ")",
-                    location.isBlank() ? "Sẽ được cập nhật" : location
+            String text = buildEmailTemplate(
+                    subject,
+                    List.of(
+                            "Buổi phỏng vấn cho " + jobDisplay + " vừa được cập nhật thời gian mới.",
+                            "• Thời gian mới: " + (newTime.isBlank() ? "Sẽ được cập nhật" : newTime) + (timezone.isBlank() ? "" : " (" + timezone + ")"),
+                            "• Địa điểm / liên kết: " + (location.isBlank() ? "Sẽ được gửi thêm" : location),
+                            "Nếu lịch mới không phù hợp, hãy phản hồi email này để chúng tôi hỗ trợ sắp xếp lại."
+                    ),
+                    "Xem lịch phỏng vấn",
+                    buildFrontendUrl("/dashboard/interviews"),
+                    null
             );
 
             event.participantUserIds().forEach(userId -> {
@@ -409,6 +442,72 @@ public class NotificationEventListener {
                 }
             });
         };
+    }
+
+    private String buildEmailTemplate(String headline,
+                                      List<String> paragraphs,
+                                      String actionLabel,
+                                      String actionUrl,
+                                      String closingNote) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("━━━━━━━━━━━━━━━━━━━━━━━━━━").append(System.lineSeparator());
+        builder.append(brandName()).append(" – Thông báo").append(System.lineSeparator());
+        builder.append("━━━━━━━━━━━━━━━━━━━━━━━━━━").append(System.lineSeparator()).append(System.lineSeparator());
+        builder.append(headline == null || headline.isBlank() ? "Thông tin cập nhật" : headline.trim())
+                .append(System.lineSeparator())
+                .append(System.lineSeparator());
+        if (paragraphs != null) {
+            paragraphs.stream()
+                    .filter(para -> para != null && !para.isBlank())
+                    .forEach(para -> builder.append(para.trim()).append(System.lineSeparator()).append(System.lineSeparator()));
+        }
+        if (actionLabel != null && !actionLabel.isBlank() && actionUrl != null && !actionUrl.isBlank()) {
+            builder.append(actionLabel.trim())
+                    .append(":")
+                    .append(System.lineSeparator())
+                    .append(actionUrl.trim())
+                    .append(System.lineSeparator())
+                    .append(System.lineSeparator());
+        }
+        String closing = closingNote == null || closingNote.isBlank()
+                ? "Nếu bạn cần hỗ trợ thêm, vui lòng phản hồi email này để được đội ngũ " + brandName() + " hỗ trợ."
+                : closingNote.trim();
+        builder.append(closing)
+                .append(System.lineSeparator())
+                .append(System.lineSeparator())
+                .append("Trân trọng,")
+                .append(System.lineSeparator())
+                .append(brandName())
+                .append(System.lineSeparator())
+                .append(supportEmail());
+        return builder.toString();
+    }
+
+    private String brandName() {
+        return configuredBrandName == null || configuredBrandName.isBlank() ? "TalentFlow" : configuredBrandName;
+    }
+
+    private String supportEmail() {
+        return configuredSupportEmail == null || configuredSupportEmail.isBlank() ? "support@talentflow.app" : configuredSupportEmail;
+    }
+
+    private String buildFrontendUrl(String path) {
+        String base = frontendBaseUrl == null || frontendBaseUrl.isBlank() ? "http://localhost:3000" : frontendBaseUrl;
+        if (path == null || path.isBlank()) {
+            return base;
+        }
+        if (path.startsWith("http://") || path.startsWith("https://")) {
+            return path;
+        }
+        boolean baseEndsWithSlash = base.endsWith("/");
+        boolean pathStartsWithSlash = path.startsWith("/");
+        if (baseEndsWithSlash && pathStartsWithSlash) {
+            return base + path.substring(1);
+        }
+        if (!baseEndsWithSlash && !pathStartsWithSlash) {
+            return base + "/" + path;
+        }
+        return base + path;
     }
 
     private void sendEmail(String to, String subject, String text) {
