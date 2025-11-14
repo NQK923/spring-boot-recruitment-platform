@@ -246,7 +246,7 @@ export default async function ApplicationDetailsPage({
   const interviewDetails = application.interviewDetails ?? null;
   const offerDetails = application.offerDetails ?? null;
   const offerStatusLabel = offerDetails
-    ? OFFER_STATUS_LABELS[offerDetails.status] ?? offerDetails.status
+    ? OFFER_STATUS_LABELS[offerDetails.status] ?? "Đang chờ ứng viên phản hồi"
     : null;
 
   const sortedExperiences = profile?.experiences
@@ -557,7 +557,9 @@ export default async function ApplicationDetailsPage({
                   </div>
                   <div className="flex items-center justify-between rounded-xl bg-white/80 px-3 py-2">
                     <span className="text-xs font-semibold uppercase tracking-wider text-amber-600">Trạng thái</span>
-                    <span className="font-semibold text-gray-900">{offerStatusLabel ?? offerDetails.status}</span>
+                    <span className="font-semibold text-gray-900">
+                      {offerStatusLabel ?? "Đang chờ ứng viên phản hồi"}
+                    </span>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>

@@ -4,7 +4,7 @@ import { useActionState, useMemo } from "react";
 import { updateStatusAction, type ActionState } from "@/app/dashboard/applications/[applicationId]/actions";
 import type { ApplicationStatus } from "@/lib/types";
 
-const LINEAR_STATUSES: ApplicationStatus[] = ["APPLIED", "SCREENING", "INTERVIEWING", "OFFERED", "HIRED"];
+const LINEAR_STATUSES: ApplicationStatus[] = ["APPLIED", "SCREENING", "INTERVIEWING", "OFFERED"];
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
   APPLIED: "Đã nộp",
@@ -54,6 +54,8 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
   const nextStatus = getNextStatus(currentStatus);
   const needsInterviewDetails = nextStatus === "INTERVIEWING";
   const needsOfferDetails = nextStatus === "OFFERED";
+  const awaitingCandidateDecision = currentStatus === "OFFERED" && !nextStatus;
+  const canReject = currentStatus !== "REJECTED" && currentStatus !== "HIRED";
 
   return (
     <div className="space-y-6">
@@ -193,24 +195,35 @@ export function StatusUpdateForm({ applicationId, currentStatus }: Props) {
             </button>
           </form>
 
-          <div className="border-t border-slate-200 pt-4">
-            <form action={formAction}>
-              <input type="hidden" name="status" value="REJECTED" />
-              <button
-                type="submit"
-                disabled={pending}
-                className="w-full cursor-pointer rounded-xl border border-rose-300 bg-white px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-sm transition hover:border-rose-400 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                Từ chối ứng viên
-              </button>
-            </form>
-          </div>
+        </div>
+      ) : awaitingCandidateDecision ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-5 text-sm text-amber-800">
+          <p className="font-semibold text-amber-900">Đang chờ ứng viên phản hồi offer.</p>
+          <p className="mt-1">
+            Bạn sẽ nhận thông báo ngay khi ứng viên chấp nhận. Nếu cần rút lại offer, hãy đánh dấu từ chối bên dưới.
+          </p>
         </div>
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
           Hồ sơ đã ở bước cuối cùng hoặc đã bị đánh dấu từ chối. Không thể tiến thêm trạng thái nào khác.
         </div>
       )}
+
+      {canReject ? (
+        <div className="rounded-2xl border border-rose-100 bg-white px-4 py-4 shadow-sm">
+          <form action={formAction} className="space-y-3">
+            <input type="hidden" name="status" value="REJECTED" />
+            <p className="text-sm font-medium text-rose-700">Từ chối ứng viên</p>
+            <button
+              type="submit"
+              disabled={pending}
+              className="w-full cursor-pointer rounded-xl border border-rose-300 bg-white px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-sm transition hover:border-rose-400 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Đánh dấu từ chối
+            </button>
+          </form>
+        </div>
+      ) : null}
 
       {state?.error ? (
         <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

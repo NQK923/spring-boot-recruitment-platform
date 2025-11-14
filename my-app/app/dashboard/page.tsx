@@ -499,13 +499,15 @@ export default async function DashboardPage() {
                         </span>
                       </div>
                     </div>
-                    <Link
-                      href={`${ROUTES.jobs}/${job.id}`}
-                      className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 transition hover:text-blue-700 hover:gap-3 cursor-pointer"
-                    >
-                      Xem bài tuyển dụng
-                      <span aria-hidden>→</span>
-                    </Link>
+                    {job.status?.toUpperCase() === "PUBLISHED" ? (
+                      <Link
+                        href={`${ROUTES.jobs}/${job.id}`}
+                        className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 transition hover:text-blue-700 hover:gap-3 cursor-pointer"
+                      >
+                        Xem bài tuyển dụng
+                        <span aria-hidden>→</span>
+                      </Link>
+                    ) : null}
                   </div>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-800">
                     {job.location ? <span className="flex items-center gap-1.5">📍 {job.location}</span> : null}

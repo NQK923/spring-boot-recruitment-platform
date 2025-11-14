@@ -62,13 +62,15 @@ export function CompanyJobCard({ job, positions }: CompanyJobCardProps) {
               {formatStatusLabel(job.status ?? "DRAFT")}
             </span>
           </div>
-          <Link
-            href={`${ROUTES.jobs}/${job.id}`}
-            className="inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-blue-600 transition hover:text-blue-700"
-          >
-            Xem
-            <span aria-hidden>↗</span>
-          </Link>
+          {job.status === "PUBLISHED" ? (
+            <Link
+              href={`${ROUTES.jobs}/${job.id}`}
+              className="inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-blue-600 transition hover:text-blue-700"
+            >
+              Xem
+              <span aria-hidden>↗</span>
+            </Link>
+          ) : null}
         </div>
 
         <div className="flex min-h-[2.5rem] flex-wrap items-center gap-3 text-sm text-slate-700">
