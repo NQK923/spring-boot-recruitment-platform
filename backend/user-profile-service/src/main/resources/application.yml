@@ -65,6 +65,7 @@ app:
 gemini:
   api-key: ${GEMINI_API_KEY:}
   model: ${GEMINI_MODEL:gemini-1.5-pro}
+  base-url: ${GEMINI_BASE:https://generativelanguage.googleapis.com/v1beta}
   temperature: 0.7
   top-k: 40
   top-p: 0.9

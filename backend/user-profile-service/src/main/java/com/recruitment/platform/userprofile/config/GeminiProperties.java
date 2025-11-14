@@ -19,6 +19,9 @@ public class GeminiProperties {
     @NotBlank
     private String model;
 
+    @NotBlank
+    private String baseUrl = "https://generativelanguage.googleapis.com/v1beta";
+
     @PositiveOrZero
     private double temperature = 0.7;
 
