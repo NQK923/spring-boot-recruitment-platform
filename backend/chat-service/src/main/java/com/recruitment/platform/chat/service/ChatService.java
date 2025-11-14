@@ -1,69 +1,81 @@
 package com.recruitment.platform.chat.service;
 
-import com.recruitment.platform.chat.client.GeminiClient;
 import com.recruitment.platform.chat.dto.ChatHistoryMessage;
 import com.recruitment.platform.chat.model.ChatLanguage;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
 public class ChatService {
 
-    private final GeminiClient geminiClient;
+    private final ChatClient chatClient;
 
-    public ChatService(GeminiClient geminiClient) {
-        this.geminiClient = geminiClient;
+    public ChatService(ChatClient chatClient) {
+        this.chatClient = chatClient;
     }
 
     public Mono<String> generateResponse(List<ChatHistoryMessage> messages, ChatLanguage language) {
-        List<GeminiClient.GeminiContent> contents = buildContents(messages, language);
-        return geminiClient.generateContent(contents)
+        Prompt prompt = new Prompt(buildMessages(messages, language));
+        return Mono.fromCallable(() -> chatClient.prompt(prompt).call().content())
+            .subscribeOn(Schedulers.boundedElastic())
             .defaultIfEmpty("");
     }
 
     public Flux<String> streamResponse(List<ChatHistoryMessage> messages, ChatHistoryMessage currentQuestion, ChatLanguage language) {
-        List<ChatHistoryMessage> consolidated = new ArrayList<>(messages);
+        List<ChatHistoryMessage> consolidated = messages != null ? new ArrayList<>(messages) : new ArrayList<>();
         if (currentQuestion != null) {
             consolidated.add(currentQuestion);
         }
-        List<GeminiClient.GeminiContent> contents = buildContents(consolidated, language);
-        return geminiClient.streamContent(contents);
+        Prompt prompt = new Prompt(buildMessages(consolidated, language));
+        return chatClient.prompt(prompt).stream().content();
     }
 
-    private List<GeminiClient.GeminiContent> buildContents(List<ChatHistoryMessage> history, ChatLanguage language) {
+    private List<Message> buildMessages(List<ChatHistoryMessage> history, ChatLanguage language) {
         if (history == null || history.isEmpty()) {
-            return Collections.singletonList(asContent("user", "Chào bạn!"));
+            List<Message> defaults = new ArrayList<>();
+            defaults.add(new UserMessage("Chào bạn!"));
+            if (language == ChatLanguage.EN) {
+                defaults.add(new UserMessage("Please respond in English."));
+            }
+            return defaults;
         }
-        List<GeminiClient.GeminiContent> contents = new ArrayList<>();
+
+        List<Message> messages = new ArrayList<>();
         history.stream()
             .map(this::normalize)
-            .map(message -> asContent(message.role(), message.content()))
-            .forEach(contents::add);
+            .map(this::toMessage)
+            .forEach(messages::add);
 
         if (language == ChatLanguage.EN) {
-            contents.add(asContent("user", "Please respond in English."));
+            messages.add(new UserMessage("Please respond in English."));
         }
 
-        return contents;
+        return messages;
     }
 
     private ChatHistoryMessage normalize(ChatHistoryMessage message) {
         if (message == null) {
             return new ChatHistoryMessage("user", "");
         }
-        String role = "assistant".equals(message.role()) || "model".equals(message.role()) ? "model" : "user";
+        String role = "assistant".equals(message.role()) || "model".equals(message.role()) ? "assistant" : "user";
         return new ChatHistoryMessage(role, message.content());
     }
 
-    private GeminiClient.GeminiContent asContent(String role, String text) {
-        return new GeminiClient.GeminiContent(
-            role,
-            Collections.singletonList(new GeminiClient.GeminiPart(text == null ? "" : text))
-        );
+    private Message toMessage(ChatHistoryMessage message) {
+        String content = message.content() == null ? "" : message.content();
+        if ("assistant".equals(message.role())) {
+            return new AssistantMessage(content);
+        }
+        return new UserMessage(content);
     }
 }
