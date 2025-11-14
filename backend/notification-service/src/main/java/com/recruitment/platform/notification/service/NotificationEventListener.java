@@ -9,14 +9,15 @@ import com.recruitment.platform.notification.event.InterviewScheduledEvent;
 import com.recruitment.platform.notification.event.PasswordResetRequestedEvent;
 import com.recruitment.platform.notification.event.UserInvitedEvent;
 import com.recruitment.platform.notification.event.UserRegisteredEvent;
+import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -35,6 +36,7 @@ public class NotificationEventListener {
     private static final DateTimeFormatter OTP_EXPIRY_FORMATTER = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy").withZone(ZoneOffset.UTC);
     private final JavaMailSender mailSender;
     private final AuthServiceClient authServiceClient;
+    private final EmailTemplateRenderer emailTemplateRenderer;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -42,24 +44,21 @@ public class NotificationEventListener {
     @Value("${app.frontend-base-url:http://localhost:3000}")
     private String frontendBaseUrl;
 
-    @Value("${app.brand-name:TalentFlow}")
-    private String configuredBrandName;
-
-    @Value("${app.support-email:support@talentflow.app}")
-    private String configuredSupportEmail;
-
-    public NotificationEventListener(JavaMailSender mailSender, AuthServiceClient authServiceClient) {
+    public NotificationEventListener(JavaMailSender mailSender,
+                                     AuthServiceClient authServiceClient,
+                                     EmailTemplateRenderer emailTemplateRenderer) {
         this.mailSender = mailSender;
         this.authServiceClient = authServiceClient;
+        this.emailTemplateRenderer = emailTemplateRenderer;
     }
 
     @Bean
     public Consumer<UserInvitedEvent> userInvitedEventConsumer() {
         return event -> {
             log.info("Received UserInvitedEvent for email: {}", event.email());
-            String subject = "Lời mời tham gia " + brandName();
+            String subject = "Lời mời tham gia " + emailTemplateRenderer.getBrandName();
             String invitationUrl = buildFrontendUrl("/accept-invite?token=" + event.token());
-            String text = buildEmailTemplate(
+            String text = emailTemplateRenderer.render(
                     subject,
                     List.of(
                             String.format("Bạn nhận được lời mời gia nhập không gian tuyển dụng với vai trò %s.", safeString(event.roleToGrant())),
@@ -81,10 +80,10 @@ public class NotificationEventListener {
             String expiryText = event.expiresAt() != null
                     ? "Mã sẽ hết hạn lúc " + OTP_EXPIRY_FORMATTER.format(event.expiresAt()) + " (UTC)."
                     : "Mã chỉ có hiệu lực trong vài phút.";
-            String text = buildEmailTemplate(
+            String text = emailTemplateRenderer.render(
                     "Xác nhận đặt lại mật khẩu",
                     List.of(
-                            "Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản " + brandName() + " của bạn.",
+                            "Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản " + emailTemplateRenderer.getBrandName() + " của bạn.",
                             "Mã OTP xác thực: " + event.otp(),
                             expiryText
                     ),
@@ -106,20 +105,20 @@ public class NotificationEventListener {
                 String expiryText = event.expiresAt() != null
                         ? "Mã sẽ hết hạn lúc " + OTP_EXPIRY_FORMATTER.format(event.expiresAt()) + " (UTC)."
                         : "Mã sẽ hết hạn trong ít phút tới.";
-                text = buildEmailTemplate(
+                text = emailTemplateRenderer.render(
                         "Hoàn tất xác minh email",
                         List.of(
-                                "Cảm ơn bạn đã tạo tài khoản trên " + brandName() + ".",
+                                "Cảm ơn bạn đã tạo tài khoản trên " + emailTemplateRenderer.getBrandName() + ".",
                                 "Mã xác minh: " + event.verificationCode(),
                                 expiryText
                         ),
-                        "Truy cập " + brandName(),
+                        "Truy cập " + emailTemplateRenderer.getBrandName(),
                         buildFrontendUrl("/login"),
                         "Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này."
                 );
             } else {
-                text = buildEmailTemplate(
-                        "Chào mừng bạn đến với " + brandName(),
+                text = emailTemplateRenderer.render(
+                        "Chào mừng bạn đến với " + emailTemplateRenderer.getBrandName(),
                         List.of(
                                 "Tài khoản của bạn đã được tạo thành công.",
                                 "Đăng nhập để cập nhật hồ sơ và bắt đầu quản lý quy trình tuyển dụng."
@@ -148,7 +147,7 @@ public class NotificationEventListener {
             String jobTitle = safeString(event.jobTitle());
             String jobLocation = safeString(event.jobLocation());
             String jobLabel = jobTitle.isBlank()
-                    ? "vị trí #" + event.jobPostingId()
+                    ? "một vị trí đang tuyển"
                     : jobTitle;
             String jobDisplay = jobLocation.isBlank()
                     ? jobLabel
@@ -230,7 +229,7 @@ public class NotificationEventListener {
                         subject = "Cập nhật hồ sơ: " + jobLabel;
                         headline = subject;
                         paragraphs.add("Rất tiếc hồ sơ của bạn cho " + jobDisplay + " đã được chuyển sang trạng thái khác: " + normalizedStatus + ".");
-                        paragraphs.add("Đừng nản lòng – bạn có thể tiếp tục theo dõi các vị trí mới trên " + brandName() + ".");
+                        paragraphs.add("Đừng nản lòng – bạn có thể tiếp tục theo dõi các vị trí mới trên " + emailTemplateRenderer.getBrandName() + ".");
                     }
                 }
                 default -> {
@@ -239,7 +238,7 @@ public class NotificationEventListener {
                 }
             }
 
-            String text = buildEmailTemplate(headline, paragraphs, actionLabel, actionUrl, closing);
+            String text = emailTemplateRenderer.render(headline, paragraphs, actionLabel, actionUrl, closing);
             sendEmail(candidateEmail, subject, text);
         };
     }
@@ -274,11 +273,11 @@ public class NotificationEventListener {
                         : "thời điểm gần đây";
 
                 String subject = "Tài khoản tuyển dụng của bạn đã bị khóa";
-                String text = buildEmailTemplate(
+                String text = emailTemplateRenderer.render(
                         subject,
                         List.of(
                                 String.format("Tài khoản tại %s đã bị quản trị viên khóa vào %s.", companyLabel, lockedAt),
-                                "Bạn sẽ không thể đăng nhập hay thao tác trên " + brandName() + " cho tới khi được mở lại quyền truy cập."
+                                "Bạn sẽ không thể đăng nhập hay thao tác trên " + emailTemplateRenderer.getBrandName() + " cho tới khi được mở lại quyền truy cập."
                         ),
                         null,
                         null,
@@ -329,7 +328,7 @@ public class NotificationEventListener {
                         : "thời điểm gần đây";
 
                 String subject = String.format("Trạng thái %s đã thay đổi", companyLabel);
-                String text = buildEmailTemplate(
+                String text = emailTemplateRenderer.render(
                         subject,
                         List.of(
                                 String.format("Trạng thái của %s vừa được cập nhật vào %s.", companyLabel, timestamp),
@@ -372,20 +371,20 @@ public class NotificationEventListener {
 
             String jobTitle = safeString(event.jobTitle());
             String jobLocation = safeString(event.jobLocation());
-            String jobLabel = jobTitle.isBlank() ? "hồ sơ #" + event.applicationId() : jobTitle;
+            String jobLabel = jobTitle.isBlank() ? "một vị trí đang tuyển" : jobTitle;
             String jobDisplay = jobLocation.isBlank() ? jobLabel : jobLabel + " – " + jobLocation;
             String scheduleTime = formatIso(event.scheduleTime());
             String timezone = safeString(event.timezone());
             String location = safeString(event.locationOrLink());
 
             String subject = "Lịch phỏng vấn: " + jobLabel;
-            String text = buildEmailTemplate(
+            String text = emailTemplateRenderer.render(
                     subject,
                     List.of(
                             "Buổi phỏng vấn cho " + jobDisplay + " đã được sắp xếp.",
                             "• Thời gian: " + (scheduleTime.isBlank() ? "Sẽ được cập nhật" : scheduleTime) + (timezone.isBlank() ? "" : " (" + timezone + ")"),
                             "• Địa điểm / liên kết: " + (location.isBlank() ? "Sẽ được gửi thêm" : location),
-                            "Nếu bạn không thể tham dự, vui lòng phản hồi email này hoặc cập nhật trực tiếp trên " + brandName() + "."
+                            "Nếu bạn không thể tham dự, vui lòng phản hồi email này hoặc cập nhật trực tiếp trên " + emailTemplateRenderer.getBrandName() + "."
                     ),
                     "Xem lịch phỏng vấn",
                     buildFrontendUrl("/dashboard/interviews"),
@@ -413,14 +412,14 @@ public class NotificationEventListener {
 
             String jobTitle = safeString(event.jobTitle());
             String jobLocation = safeString(event.jobLocation());
-            String jobLabel = jobTitle.isBlank() ? "hồ sơ #" + event.applicationId() : jobTitle;
+            String jobLabel = jobTitle.isBlank() ? "một vị trí đang tuyển" : jobTitle;
             String jobDisplay = jobLocation.isBlank() ? jobLabel : jobLabel + " – " + jobLocation;
             String newTime = formatIso(event.newScheduleTime());
             String timezone = safeString(event.timezone());
             String location = safeString(event.locationOrLink());
 
             String subject = "Cập nhật lịch phỏng vấn: " + jobLabel;
-            String text = buildEmailTemplate(
+            String text = emailTemplateRenderer.render(
                     subject,
                     List.of(
                             "Buổi phỏng vấn cho " + jobDisplay + " vừa được cập nhật thời gian mới.",
@@ -444,53 +443,6 @@ public class NotificationEventListener {
         };
     }
 
-    private String buildEmailTemplate(String headline,
-                                      List<String> paragraphs,
-                                      String actionLabel,
-                                      String actionUrl,
-                                      String closingNote) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("━━━━━━━━━━━━━━━━━━━━━━━━━━").append(System.lineSeparator());
-        builder.append(brandName()).append(" – Thông báo").append(System.lineSeparator());
-        builder.append("━━━━━━━━━━━━━━━━━━━━━━━━━━").append(System.lineSeparator()).append(System.lineSeparator());
-        builder.append(headline == null || headline.isBlank() ? "Thông tin cập nhật" : headline.trim())
-                .append(System.lineSeparator())
-                .append(System.lineSeparator());
-        if (paragraphs != null) {
-            paragraphs.stream()
-                    .filter(para -> para != null && !para.isBlank())
-                    .forEach(para -> builder.append(para.trim()).append(System.lineSeparator()).append(System.lineSeparator()));
-        }
-        if (actionLabel != null && !actionLabel.isBlank() && actionUrl != null && !actionUrl.isBlank()) {
-            builder.append(actionLabel.trim())
-                    .append(":")
-                    .append(System.lineSeparator())
-                    .append(actionUrl.trim())
-                    .append(System.lineSeparator())
-                    .append(System.lineSeparator());
-        }
-        String closing = closingNote == null || closingNote.isBlank()
-                ? "Nếu bạn cần hỗ trợ thêm, vui lòng phản hồi email này để được đội ngũ " + brandName() + " hỗ trợ."
-                : closingNote.trim();
-        builder.append(closing)
-                .append(System.lineSeparator())
-                .append(System.lineSeparator())
-                .append("Trân trọng,")
-                .append(System.lineSeparator())
-                .append(brandName())
-                .append(System.lineSeparator())
-                .append(supportEmail());
-        return builder.toString();
-    }
-
-    private String brandName() {
-        return configuredBrandName == null || configuredBrandName.isBlank() ? "TalentFlow" : configuredBrandName;
-    }
-
-    private String supportEmail() {
-        return configuredSupportEmail == null || configuredSupportEmail.isBlank() ? "support@talentflow.app" : configuredSupportEmail;
-    }
-
     private String buildFrontendUrl(String path) {
         String base = frontendBaseUrl == null || frontendBaseUrl.isBlank() ? "http://localhost:3000" : frontendBaseUrl;
         if (path == null || path.isBlank()) {
@@ -510,7 +462,7 @@ public class NotificationEventListener {
         return base + path;
     }
 
-    private void sendEmail(String to, String subject, String text) {
+    private void sendEmail(String to, String subject, String htmlBody) {
         String host = null;
         Integer port = null;
         String username = fromEmail;
@@ -524,12 +476,13 @@ public class NotificationEventListener {
 
         log.debug("Attempting to send email [subject='{}'] from {} to {} via {}:{}", subject, username, to, host, port);
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(text);
-            mailSender.send(message);
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
+            mailSender.send(mimeMessage);
             log.info("Successfully sent email to {} (subject='{}') via {}:{}", to, subject, host, port);
         } catch (Exception e) {
             log.error(

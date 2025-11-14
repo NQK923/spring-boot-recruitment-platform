@@ -20,6 +20,7 @@ export async function forgotPasswordAction(
   try {
     const response = await apiFetch("/api/auth/password/forgot", {
       method: "POST",
+      skipAuthHeaders: true,
       body: JSON.stringify({ email }),
     });
 

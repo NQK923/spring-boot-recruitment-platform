@@ -219,6 +219,7 @@ export default async function CandidateProfilePage() {
                       {downloadHref ? (
                         <a
                           href={downloadHref}
+                          data-button="true"
                           className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-1.5 text-sm font-semibold text-white transition-all hover:from-blue-700 hover:to-indigo-700"
                           target="_blank"
                           rel="noreferrer"
