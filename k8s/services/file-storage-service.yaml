@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-storage-service
+  namespace: recruitment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-storage-service
+  template:
+    metadata:
+      labels:
+        app: file-storage-service
+    spec:
+      containers:
+        - name: file-storage-service
+          image: asia-southeast1-docker.pkg.dev/glass-respect-478307-a3/nqk/file-storage-service:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+            - name: APP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: APP_JWT_SECRET
+            - name: SUPABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_HOST
+            - name: SUPABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_PORT
+            - name: SUPABASE_DB
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_DB
+            - name: SUPABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_USERNAME
+            - name: SUPABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_PASSWORD
+            - name: SUPABASE_PROJECT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_PROJECT_URL
+            - name: SUPABASE_SERVICE_ROLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_SERVICE_ROLE_KEY
+            - name: SUPABASE_AVATAR_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_AVATAR_BUCKET
+            - name: SUPABASE_CV_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_CV_BUCKET
+            - name: SUPABASE_STORAGE_SIGNED_URL_TTL
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_STORAGE_SIGNED_URL_TTL
+          volumeMounts:
+            - name: uploads
+              mountPath: /uploads
+          ports:
+            - containerPort: 8080
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: file-storage-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-storage-service
+  namespace: recruitment
+spec:
+  selector:
+    app: file-storage-service
+  ports:
+    - port: 8080
+      targetPort: 8080

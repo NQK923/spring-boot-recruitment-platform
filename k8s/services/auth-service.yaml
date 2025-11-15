@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: recruitment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: asia-southeast1-docker.pkg.dev/glass-respect-478307-a3/nqk/auth-service:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+            - name: SPRING_RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: SPRING_RABBITMQ_HOST
+            - name: SPRING_RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: SPRING_RABBITMQ_PORT
+            - name: SPRING_RABBITMQ_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: SPRING_RABBITMQ_USERNAME
+            - name: SPRING_RABBITMQ_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: SPRING_RABBITMQ_PASSWORD
+            - name: APP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: APP_JWT_SECRET
+            - name: SUPABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_HOST
+            - name: SUPABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_PORT
+            - name: SUPABASE_DB
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_DB
+            - name: SUPABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_USERNAME
+            - name: SUPABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_PASSWORD
+            - name: GATEWAY_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: GATEWAY_BASE_URL
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: GOOGLE_CLIENT_SECRET
+            - name: GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: GITHUB_CLIENT_ID
+            - name: GITHUB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: GITHUB_CLIENT_SECRET
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: recruitment
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - port: 8080
+      targetPort: 8080

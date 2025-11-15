@@ -47,7 +47,7 @@ app:
     secret: ${APP_JWT_SECRET:}
   chat:
     rate-limit:
-      requests-per-minute: ${CHAT_REQUESTS_PER_MINUTE:10}
+      requests-per-minute: ${CHAT_REQUESTS_PER_MINUTE:5}
   recommend:
     topK: ${CHAT_RECOMMEND_TOP_K:50}
     finalK: ${CHAT_RECOMMEND_FINAL_K:5}

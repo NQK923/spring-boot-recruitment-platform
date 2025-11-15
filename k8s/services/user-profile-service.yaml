@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-profile-service
+  namespace: recruitment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-profile-service
+  template:
+    metadata:
+      labels:
+        app: user-profile-service
+    spec:
+      containers:
+        - name: user-profile-service
+          image: asia-southeast1-docker.pkg.dev/glass-respect-478307-a3/nqk/user-profile-service:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+            - name: SPRING_RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: SPRING_RABBITMQ_HOST
+            - name: SPRING_RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: SPRING_RABBITMQ_PORT
+            - name: SPRING_RABBITMQ_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: SPRING_RABBITMQ_USERNAME
+            - name: SPRING_RABBITMQ_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: SPRING_RABBITMQ_PASSWORD
+            - name: APP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: APP_JWT_SECRET
+            - name: SUPABASE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_HOST
+            - name: SUPABASE_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_PORT
+            - name: SUPABASE_DB
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_DB
+            - name: SUPABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_USERNAME
+            - name: SUPABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: SUPABASE_PASSWORD
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: GEMINI_API_KEY
+            - name: GEMINI_MODEL
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: GEMINI_MODEL
+            - name: GEMINI_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: recruitment-secrets
+                  key: GEMINI_BASE
+            - name: CV_FONT_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: CV_FONT_PATH
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+              value: http://gateway-service:8080/api/auth
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-profile-service
+  namespace: recruitment
+spec:
+  selector:
+    app: user-profile-service
+  ports:
+    - port: 8080
+      targetPort: 8080
