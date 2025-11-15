@@ -1,0 +1,28 @@
+# Bỏ mọi metadata của Git/IDE khỏi build context
+.git
+.gitignore
+.idea
+.vscode
+.fleet
+*.iml
+
+# Không gửi file cấu hình bí mật
+.env
+my-app/.env.local
+
+# Maven output
+backend/**/target
+
+# Node/Next.js artifacts
+node_modules
+**/node_modules
+my-app/.next
+my-app/.turbo
+my-app/.vercel
+my-app/.pnpm-store
+my-app/dist
+
+# Logs, caches và dữ liệu runtime
+**/*.log
+**/.DS_Store
+docker-entrypoint-initdb.d

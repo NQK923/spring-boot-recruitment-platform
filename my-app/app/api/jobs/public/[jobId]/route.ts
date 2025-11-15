@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { apiFetch } from "@/lib/api";
 
 type Params = {
   jobId: string;
 };
+type ParamsOrPromise = Params | Promise<Params>;
 
 export async function GET(
-  _request: Request,
-  { params }: { params: Params }
+  _request: NextRequest,
+  context: { params: ParamsOrPromise }
 ) {
+  const params = await context.params;
   try {
     const response = await apiFetch(`/api/jobs/public/${params.jobId}`, {
       method: "GET",

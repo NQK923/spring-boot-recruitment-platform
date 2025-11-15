@@ -15,7 +15,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/discovery-service/target/discovery-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/discovery-service
     container_name: discovery-service
     ports:
       - "8761:8761"
@@ -27,7 +27,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/gateway-service/target/gateway-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/gateway-service
     container_name: gateway-service
     ports:
       - "8080:8080"
@@ -44,7 +44,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/auth-service/target/auth-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/auth-service
     container_name: auth-service
     depends_on:
       - discovery-service
@@ -71,7 +71,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/company-service/target/company-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/company-service
     container_name: company-service
     depends_on: [discovery-service]
     environment:
@@ -90,7 +90,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/user-profile-service/target/user-profile-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/user-profile-service
     container_name: user-profile-service
     depends_on: [discovery-service, rabbitmq]
     environment:
@@ -114,7 +114,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/job-service/target/job-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/job-service
     container_name: job-service
     depends_on: [discovery-service]
     environment:
@@ -132,7 +132,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/application-service/target/application-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/application-service
     container_name: application-service
     depends_on: [discovery-service, rabbitmq]
     environment:
@@ -151,7 +151,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/interview-service/target/interview-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/interview-service
     container_name: interview-service
     depends_on: [discovery-service, rabbitmq]
     environment:
@@ -170,7 +170,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/notification-service/target/notification-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/notification-service
     container_name: notification-service
     depends_on: [discovery-service, rabbitmq]
     environment:
@@ -187,7 +187,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/file-storage-service/target/file-storage-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/file-storage-service
     container_name: file-storage-service
     depends_on: [discovery-service]
     environment:
@@ -212,7 +212,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        JAR_FILE_PATH: backend/chat-service/target/chat-service-1.0.0-SNAPSHOT.jar
+        SERVICE_MODULE: backend/chat-service
     container_name: chat-service
     depends_on:
       - discovery-service
@@ -237,6 +237,23 @@ services:
       - PRIVACY_URL=${PRIVACY_URL}
       - PUBLIC_HR_MAILBOX=${PUBLIC_HR_MAILBOX}
       - CHAT_REQUESTS_PER_MINUTE=${CHAT_REQUESTS_PER_MINUTE}
+    networks:
+      - recruitment-net
+
+  frontend:
+    build:
+      context: ./my-app
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://gateway-service:8080}
+    container_name: frontend
+    depends_on:
+      - gateway-service
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-http://gateway-service:8080}
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
     networks:
       - recruitment-net
 

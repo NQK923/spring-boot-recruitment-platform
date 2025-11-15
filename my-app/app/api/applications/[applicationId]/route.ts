@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { apiFetch } from "@/lib/api";
 
 type Params = {
   applicationId: string;
 };
+type ParamsOrPromise = Params | Promise<Params>;
 
 export async function GET(
-  _request: Request,
-  { params }: { params: Params }
+  _request: NextRequest,
+  context: { params: ParamsOrPromise }
 ) {
+  const params = await context.params;
   try {
     const response = await apiFetch(`/api/applications/${params.applicationId}`, {
       method: "GET",
@@ -23,9 +26,10 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: Request,
-  { params }: { params: Params }
+  request: NextRequest,
+  context: { params: ParamsOrPromise }
 ) {
+  const params = await context.params;
   try {
     const payload = await request.json();
     const response = await apiFetch(`/api/applications/${params.applicationId}/status`, {
