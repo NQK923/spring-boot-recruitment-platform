@@ -18,6 +18,8 @@ spec:
           image: asia-southeast1-docker.pkg.dev/glass-respect-478307-a3/nqk/notification-service:latest
           imagePullPolicy: IfNotPresent
           env:
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "true"
             - name: SERVER_PORT
               value: "8080"
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
