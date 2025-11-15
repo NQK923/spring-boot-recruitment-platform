@@ -99,6 +99,13 @@ spec:
               value: http://gateway-service:8080/api/auth
           ports:
             - containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
 ---
 apiVersion: v1
 kind: Service

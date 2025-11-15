@@ -56,3 +56,7 @@ docker push $env:REG/frontend:latest
 # Áp dụng manifest Kubernetes
 kubectl apply -f k8s/base
 kubectl apply -f k8s/services
+
+ kubectl get pods -n recruitment
+
+kubectl patch service frontend -n recruitment -p `'{"spec":{"type":"LoadBalancer"}}'

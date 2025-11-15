@@ -122,6 +122,13 @@ spec:
                   key: CHAT_REQUESTS_PER_MINUTE
           ports:
             - containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
 ---
 apiVersion: v1
 kind: Service

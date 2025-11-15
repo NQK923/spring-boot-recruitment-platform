@@ -25,6 +25,13 @@ spec:
                   key: NEXT_PUBLIC_API_BASE_URL
           ports:
             - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -32,6 +39,7 @@ metadata:
   name: frontend
   namespace: recruitment
 spec:
+  type: LoadBalancer
   selector:
     app: frontend
   ports:

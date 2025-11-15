@@ -17,8 +17,3 @@ spec:
                 name: gateway-service
                 port:
                   number: 8080
-  # Thêm TLS nếu có chứng chỉ: uncomment và thay secretName
-  # tls:
-  #   - hosts:
-  #       - recruitment.local
-  #     secretName: gateway-tls
