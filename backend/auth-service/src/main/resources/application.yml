@@ -76,7 +76,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
 
 app:
   jwt:
@@ -84,7 +84,8 @@ app:
     expiration-ms: 86400000 # 24 hours
   clients:
     gateway-base-url: ${GATEWAY_BASE_URL:http://localhost:8080}
+    public-gateway-base-url: ${GATEWAY_PUBLIC_BASE_URL:${NEXT_PUBLIC_API_BASE_URL:http://localhost:8080}}
   oauth:
     github:
       redirect-uri: ${GITHUB_REDIRECT_URI:recruitment-platform://auth/callback}
-      authorize-redirect-uri: ${GITHUB_AUTHORIZE_REDIRECT_URI:http://localhost:8080/api/auth/oauth/github/callback}
+      authorize-redirect-uri: ${GITHUB_AUTHORIZE_REDIRECT_URI:${app.clients.public-gateway-base-url}/api/auth/oauth/github/callback}

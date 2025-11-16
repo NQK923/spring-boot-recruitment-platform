@@ -30,7 +30,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/api/auth
+          issuer-uri: ${GATEWAY_BASE_URL:http://gateway-service:8080}/api/auth
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
@@ -40,7 +40,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
 
 app:
   jwt:
@@ -53,7 +53,7 @@ app:
     finalK: ${CHAT_RECOMMEND_FINAL_K:5}
     freshnessDays: ${CHAT_RECOMMEND_FRESHNESS_DAYS:21}
     bootstrapSize: ${CHAT_RECOMMEND_BOOTSTRAP_SIZE:50}
-    jobDetailBaseUrl: ${CHAT_JOB_DETAIL_BASE_URL:http://localhost:3000/jobs}
+    jobDetailBaseUrl: ${CHAT_JOB_DETAIL_BASE_URL:${FRONTEND_BASE_URL:http://localhost:3000}/jobs}
   gateway:
     base-url: ${GATEWAY_BASE_URL:http://gateway-service:8080}
 

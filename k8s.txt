@@ -10,12 +10,12 @@ docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/discovery-service 
 docker push $env:REG/discovery-service:latest
 
 # Build & push gateway-service
-docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/gateway-service -t $env:REG/gateway-service:latest .
-docker push $env:REG/gateway-service:latest
+docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/gateway-service -t $env:REG/gateway-service:v1 .
+docker push $env:REG/gateway-service:v1
 
 # Build & push auth-service
-docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/auth-service -t $env:REG/auth-service:latest .
-docker push $env:REG/auth-service:latest
+docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/auth-service -t $env:REG/auth-service:v1 .
+docker push $env:REG/auth-service:v1
 
 # Build & push company-service
 docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/company-service -t $env:REG/company-service:latest .
@@ -38,16 +38,16 @@ docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/interview-service 
 docker push $env:REG/interview-service:latest
 
 # Build & push notification-service
-docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/notification-service -t $env:REG/notification-service:latest .
-docker push $env:REG/notification-service:latest
+docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/notification-service -t $env:REG/notification-service:v1 .
+docker push $env:REG/notification-service:v1
 
 # Build & push file-storage-service
 docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/file-storage-service -t $env:REG/file-storage-service:latest .
 docker push $env:REG/file-storage-service:latest
 
 # Build & push chat-service
-docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/chat-service -t $env:REG/chat-service:latest .
-docker push $env:REG/chat-service:latest
+docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/chat-service -t $env:REG/chat-service:v1 .
+docker push $env:REG/chat-service:v1
 
 # Build & push frontend
 docker build -f my-app/Dockerfile -t $env:REG/frontend:latest my-app
@@ -60,3 +60,6 @@ kubectl apply -f k8s/services
  kubectl get pods -n recruitment
 
 kubectl patch service frontend -n recruitment -p `'{"spec":{"type":"LoadBalancer"}}'
+
+
+kubectl rollout restart deployment notification-service -n recruitment

@@ -98,15 +98,14 @@ spring:
             cors-configurations:
               '[/**]':
                 allow-credentials: true
-                allowed-origins:
-                  - http://localhost:3000
+                allowed-origin-patterns: ${GATEWAY_ALLOWED_ORIGIN_PATTERNS:http://localhost:3000}
                 allowed-methods: "*"
                 allowed-headers: "*"
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
 
 app:
   jwt:
