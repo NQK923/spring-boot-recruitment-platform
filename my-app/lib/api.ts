@@ -1,6 +1,8 @@
 import { getAccessTokenFromCookies } from "@/lib/session";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const PUBLIC_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const INTERNAL_API_BASE_URL =
+  process.env.NEXT_SERVER_API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
 
 type ApiFetchOptions = RequestInit & {
   skipAuthHeaders?: boolean;
@@ -10,7 +12,10 @@ type ApiFetchOptions = RequestInit & {
  * Wrapper around fetch that targets the gateway-service base URL and forwards credentials.
  */
 export async function apiFetch(path: string, options: ApiFetchOptions = {}) {
-  if (!API_BASE_URL) {
+  const baseUrl =
+    typeof window === "undefined" ? INTERNAL_API_BASE_URL : PUBLIC_API_BASE_URL;
+
+  if (!baseUrl) {
     throw new Error(
       "Missing NEXT_PUBLIC_API_BASE_URL. Define it in your .env.local to point at the gateway-service."
     );
@@ -52,7 +57,7 @@ export async function apiFetch(path: string, options: ApiFetchOptions = {}) {
     }
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${baseUrl}${path}`, {
     ...requestInit,
     headers: requestHeaders,
     credentials: "include",

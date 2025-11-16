@@ -17,7 +17,9 @@ cp .env.local.example .env.local
 
 | Key                        | Description                                      |
 | -------------------------- | ------------------------------------------------ |
-| `NEXT_PUBLIC_API_BASE_URL` | Gateway base URL (e.g. `http://localhost:8080`). |
+| `NEXT_PUBLIC_API_BASE_URL` | Gateway base URL for the browser (e.g. `http://localhost:8080`). |
+| `NEXT_SERVER_API_BASE_URL` | Internal gateway URL for server components (defaults to `NEXT_PUBLIC_API_BASE_URL`). |
+| `ACCESS_TOKEN_COOKIE_SECURE` | `true` to mark auth cookie as secure (set `false` when testing over pure HTTP). |
 
 The helper in `lib/api.ts` throws if the variable is missing so misconfiguration is caught during development.
 

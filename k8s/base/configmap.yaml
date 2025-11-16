@@ -6,9 +6,14 @@ metadata:
 data:
   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-service:8761/eureka/
   GATEWAY_BASE_URL: http://gateway-service:8080
+  GATEWAY_PUBLIC_BASE_URL: http://34.126.129.31:8080
+  GATEWAY_ALLOWED_ORIGIN_PATTERNS: http://localhost:3000,http://talentflow-vn.online
   SPRING_RABBITMQ_HOST: rabbitmq
   SPRING_RABBITMQ_PORT: "5672"
   SPRING_RABBITMQ_USERNAME: guest
   SPRING_RABBITMQ_PASSWORD: guest
   CV_FONT_PATH: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+  FRONTEND_BASE_URL: http://talentflow-vn.online
   NEXT_PUBLIC_API_BASE_URL: http://34.126.129.31:8080
+  NEXT_SERVER_API_BASE_URL: http://gateway-service:8080
+  ACCESS_TOKEN_COOKIE_SECURE: "false"

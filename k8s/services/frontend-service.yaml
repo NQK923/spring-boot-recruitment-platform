@@ -25,6 +25,21 @@ spec:
                 configMapKeyRef:
                   name: recruitment-config
                   key: NEXT_PUBLIC_API_BASE_URL
+            - name: NEXT_SERVER_API_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: NEXT_SERVER_API_BASE_URL
+            - name: ACCESS_TOKEN_COOKIE_SECURE
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: ACCESS_TOKEN_COOKIE_SECURE
+            - name: SITE_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: FRONTEND_BASE_URL
           ports:
             - containerPort: 3000
           resources:

@@ -11,6 +11,19 @@ type GoogleAuthState = {
   nextPath: string | null;
 };
 
+function withTrailingSlash(base: string) {
+  return base.endsWith("/") ? base : `${base}/`;
+}
+
+function getSiteOrigin(url: URL) {
+  return (
+    process.env.SITE_BASE_URL ??
+    process.env.FRONTEND_BASE_URL ??
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    url.origin
+  );
+}
+
 function isSafeRelativePath(value: string | null | undefined): value is string {
   return !!value && value.startsWith("/") && !value.startsWith("//");
 }
@@ -52,7 +65,7 @@ function buildFailureRedirect(
   errorCode: "google_sign_in_failed" | "google_missing_credential",
   nextHint?: string | null
 ) {
-  const redirectUrl = new URL(ROUTES.signIn, `${url.origin}/`);
+  const redirectUrl = new URL(ROUTES.signIn, withTrailingSlash(getSiteOrigin(url)));
   redirectUrl.searchParams.set("error", errorCode);
 
   const nextParam = isSafeRelativePath(nextHint) ? nextHint : url.searchParams.get("next");
@@ -67,7 +80,7 @@ function buildFailureRedirect(
 
 function buildSuccessRedirect(url: URL, nextPath: string | null) {
   const redirectPath = isSafeRelativePath(nextPath) ? nextPath : ROUTES.candidatePortal;
-  const redirectUrl = new URL(redirectPath, `${url.origin}/`);
+  const redirectUrl = new URL(redirectPath, withTrailingSlash(getSiteOrigin(url)));
   const response = NextResponse.redirect(redirectUrl);
   clearStateCookie(response);
   return response;
@@ -100,7 +113,7 @@ export async function GET(request: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         code,
-        redirectUri: `${url.origin}/api/auth/oauth/google/redirect`,
+        redirectUri: `${withTrailingSlash(getSiteOrigin(url))}api/auth/oauth/google/redirect`,
       }),
     });
 

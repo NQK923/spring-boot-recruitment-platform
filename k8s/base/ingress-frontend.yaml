@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: gce
   rules:
-    - host: frontend.local
+    - host: talentflow-vn.online
       http:
         paths:
           - path: /

@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-    - host: recruitment.local
+    - host: api.talentflow-vn.online
       http:
         paths:
           - path: /

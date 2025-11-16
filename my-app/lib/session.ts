@@ -1,11 +1,14 @@
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN_COOKIE, AUTH_COOKIE_MAX_AGE_SECONDS } from "@/lib/constants";
 
+const cookieSecureFlag =
+  (process.env.ACCESS_TOKEN_COOKIE_SECURE ?? "true").toLowerCase() !== "false";
+
 export async function setAccessToken(token: string) {
   const cookieStore = await cookies();
   cookieStore.set(ACCESS_TOKEN_COOKIE, token, {
     httpOnly: true,
-    secure: true,
+    secure: cookieSecureFlag,
     sameSite: "lax",
     path: "/",
     maxAge: AUTH_COOKIE_MAX_AGE_SECONDS,

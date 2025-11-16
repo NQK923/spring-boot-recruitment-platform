@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: asia-southeast1-docker.pkg.dev/glass-respect-478307-a3/nqk/auth-service:latest
+          image: asia-southeast1-docker.pkg.dev/glass-respect-478307-a3/nqk/auth-service:v1
           imagePullPolicy: IfNotPresent
           env:
             - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
@@ -82,6 +82,11 @@ spec:
                 configMapKeyRef:
                   name: recruitment-config
                   key: GATEWAY_BASE_URL
+            - name: GATEWAY_PUBLIC_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: recruitment-config
+                  key: GATEWAY_PUBLIC_BASE_URL
             - name: GOOGLE_CLIENT_ID
               valueFrom:
                 secretKeyRef:

@@ -62,4 +62,6 @@ kubectl apply -f k8s/services
 kubectl patch service frontend -n recruitment -p `'{"spec":{"type":"LoadBalancer"}}'
 
 
-kubectl rollout restart deployment notification-service -n recruitment
+kubectl rollout restart deployment frontend -n recruitment
+
+kubectl rollout restart deployment -n recruitment
