@@ -17,3 +17,4 @@ data:
   NEXT_PUBLIC_API_BASE_URL: http://34.126.129.31:8080
   NEXT_SERVER_API_BASE_URL: http://gateway-service:8080
   ACCESS_TOKEN_COOKIE_SECURE: "false"
+  NEXT_PUBLIC_SUPABASE_PROJECT_URL: https://npynwsukvsxrsmxssikx.supabase.co

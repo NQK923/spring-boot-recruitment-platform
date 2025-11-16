@@ -10,6 +10,8 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_BASE_URL=http://gateway-service:8080
 ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+ARG NEXT_PUBLIC_SUPABASE_PROJECT_URL=https://npynwsukvsxrsmxssikx.supabase.co
+ENV NEXT_PUBLIC_SUPABASE_PROJECT_URL=${NEXT_PUBLIC_SUPABASE_PROJECT_URL}
 COPY package*.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -23,6 +25,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ARG NEXT_PUBLIC_API_BASE_URL=http://gateway-service:8080
 ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+ARG NEXT_PUBLIC_SUPABASE_PROJECT_URL=https://npynwsukvsxrsmxssikx.supabase.co
+ENV NEXT_PUBLIC_SUPABASE_PROJECT_URL=${NEXT_PUBLIC_SUPABASE_PROJECT_URL}
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules

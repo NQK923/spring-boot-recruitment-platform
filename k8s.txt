@@ -50,8 +50,8 @@ docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/chat-service -t $e
 docker push $env:REG/chat-service:v1
 
 # Build & push frontend
-docker build -f my-app/Dockerfile -t $env:REG/frontend:latest my-app
-docker push $env:REG/frontend:latest
+docker build -f my-app/Dockerfile -t $env:REG/frontend:v5 my-app
+docker push $env:REG/frontend:v5
 
 # Áp dụng manifest Kubernetes
 kubectl apply -f k8s/base
@@ -65,3 +65,6 @@ kubectl patch service frontend -n recruitment -p `'{"spec":{"type":"LoadBalancer
 kubectl rollout restart deployment frontend -n recruitment
 
 kubectl rollout restart deployment -n recruitment
+
+kubectl get deployment frontend -n recruitment -o yaml | findstr "image"
+
