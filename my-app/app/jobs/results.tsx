@@ -210,11 +210,6 @@ export function JobsResults({
                   </p>
                 )}
 
-                <p className="mt-auto pt-4 text-xs font-medium text-slate-500">
-                  {isRemoteFriendly(job.workType)
-                    ? "🏠 Đội ngũ làm việc linh hoạt, hỗ trợ làm việc từ xa."
-                    : "🏢 Đội ngũ phối hợp chặt chẽ với các hoạt động tại văn phòng."}
-                </p>
               </Panel>
             </div>
           ))}

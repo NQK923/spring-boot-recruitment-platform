@@ -50,8 +50,8 @@ docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/chat-service -t $e
 docker push $env:REG/chat-service:v1
 
 # Build & push frontend
-docker build -f my-app/Dockerfile -t $env:REG/frontend:v5 my-app
-docker push $env:REG/frontend:v5
+docker build -f my-app/Dockerfile -t $env:REG/frontend:v7 my-app
+docker push $env:REG/frontend:v7
 
 # Áp dụng manifest Kubernetes
 kubectl apply -f k8s/base
