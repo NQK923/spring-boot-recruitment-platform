@@ -9,4 +9,4 @@ DESIGN_CHANGELOG.md
 deployment-notes.md
 .fleet
 .env
-k8s/base/secrets.yaml
+/k8s/**/secret.yaml
