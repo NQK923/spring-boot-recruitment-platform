@@ -50,7 +50,7 @@ export default async function HomePage() {
   const jobs = await getLatestJobs({ limit: LATEST_JOBS_LIMIT });
 
   return (
-    <main className="flex flex-col bg-white text-slate-900">
+    <main className="flex flex-col home-shell text-slate-900">
       <Hero />
       <Stats />
       <Features />

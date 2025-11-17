@@ -36,7 +36,7 @@ const FAQ_ITEMS = [
 
 export function FAQ() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-white py-16 pb-20">
+    <section className="relative overflow-hidden home-section py-16 pb-20">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute top-20 right-20 h-72 w-72 rounded-full bg-gradient-to-br from-purple-300 to-blue-300 opacity-15 blur-3xl"

@@ -9,7 +9,7 @@ const STATS = [
 
 export function Stats() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 py-16">
+    <section className="relative overflow-hidden home-section py-16">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute top-10 right-10 h-72 w-72 rounded-full bg-gradient-to-br from-blue-300 to-purple-300 opacity-20 blur-3xl"

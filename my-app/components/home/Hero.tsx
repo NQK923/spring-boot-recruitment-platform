@@ -12,7 +12,7 @@ const STATS = [
 ] as const;
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pb-20 pt-24 md:pb-24 md:pt-28">
+    <section className="relative overflow-hidden home-section pb-20 pt-24 md:pb-24 md:pt-28">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-24 right-24 h-96 w-96 rounded-full bg-gradient-to-br from-blue-400 to-indigo-400 opacity-30 blur-3xl"
@@ -87,12 +87,12 @@ export function Hero() {
           <Card className="rounded-2xl border-2 border-blue-200 bg-white p-6 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
             <div className="space-y-4">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100">
-                <span className="text-2xl">📋</span>
+                <span className="text-2xl">🧭</span>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">Đăng tin đa kênh</h3>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Quản lý pipeline ứng viên</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Đẩy tin lên trang tuyển dụng, mạng xã hội và TalentFlow chỉ trong một thao tác
+                  Theo dõi trạng thái, lịch sử thay đổi và nhiệm vụ trong cùng một board tuyển dụng, giảm thất lạc hồ sơ.
                 </p>
               </div>
             </div>
@@ -102,12 +102,12 @@ export function Hero() {
           <Card className="rounded-2xl border-2 border-purple-200 bg-white p-6 shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
             <div className="space-y-4">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100">
-                <span className="text-2xl">🗓️</span>
+                <span className="text-2xl">🗂️</span>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">Phối hợp phỏng vấn</h3>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Hồ sơ & CV tập trung</h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Kéo thả lịch, mời hội đồng phỏng vấn, nhận phản hồi theo thời gian thực
+                  Lưu trữ thông tin ứng viên, CV tải lên và phiên bản tạo từ AI để toàn bộ đội ngũ dễ dàng tra cứu.
                 </p>
               </div>
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SVGProps } from "react";
 import { createPortal } from "react-dom";
 import { SiteNavbar, type NavItem } from "@/components/layout/site-navbar";
 
@@ -26,14 +26,21 @@ export function MobileNav({ items }: MobileNavProps) {
     };
   }, [open, canUseDom]);
 
+  const toggleLabel = open ? "Đóng thanh điều hướng" : "Mở thanh điều hướng";
   const toggleButton = (
     <button
       type="button"
-      aria-label="Mở hoặc đóng thanh điều hướng"
-      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-text shadow-sm transition hover:border-border hover:shadow-md sm:hidden"
+      aria-expanded={open}
+      aria-label={toggleLabel}
+      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-text shadow-sm transition hover:border-border hover:shadow-md sm:hidden"
       onClick={() => setOpen((prev) => !prev)}
     >
-      {open ? "Đóng" : "Mở"}
+      <span className="sr-only">{toggleLabel}</span>
+      {open ? (
+        <CloseIcon className="h-5 w-5 text-text" aria-hidden="true" />
+      ) : (
+        <MenuIcon className="h-5 w-5 text-text" aria-hidden="true" />
+      )}
     </button>
   );
 
@@ -55,10 +62,11 @@ export function MobileNav({ items }: MobileNavProps) {
                   <button
                     type="button"
                     aria-label="Đóng thanh điều hướng"
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-xs font-semibold uppercase tracking-[0.2em] text-text transition hover:border-border hover:shadow-md"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-text transition hover:border-border hover:shadow-md"
                     onClick={() => setOpen(false)}
                   >
-                    Đóng
+                    <span className="sr-only">Đóng thanh điều hướng</span>
+                    <CloseIcon className="h-5 w-5 text-text" aria-hidden="true" />
                   </button>
                 </div>
                 <div className="mt-6">
@@ -70,5 +78,40 @@ export function MobileNav({ items }: MobileNavProps) {
           )
         : null}
     </>
+  );
+}
+
+function MenuIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M4 6h16" />
+      <path d="M4 12h16" />
+      <path d="M4 18h16" />
+    </svg>
+  );
+}
+
+function CloseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M6 6l12 12" />
+      <path d="M6 18L18 6" />
+    </svg>
   );
 }

@@ -30,7 +30,7 @@ const TESTIMONIALS: Testimonial[] = [
 
 export function Testimonials() {
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-white via-pink-50 to-purple-50 py-16">
+        <section className="relative overflow-hidden home-section py-16">
             <Container className="space-y-8">
                 <div className="mx-auto max-w-2xl text-center space-y-3">
                     <p className="text-xs uppercase tracking-wider text-pink-600 font-bold">

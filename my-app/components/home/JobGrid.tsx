@@ -19,7 +19,7 @@ const BADGES = ["Product", "Hybrid", "Mid-level", "Growth team"] as const;
 
 export function JobGrid({ jobs }: JobGridProps) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-pink-50 via-blue-50 to-indigo-50 py-16">
+    <section className="relative overflow-hidden home-section py-16">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute top-20 left-20 h-96 w-96 rounded-full bg-gradient-to-br from-blue-300 to-indigo-300 opacity-20 blur-3xl"

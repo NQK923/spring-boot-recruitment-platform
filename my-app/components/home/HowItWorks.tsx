@@ -51,7 +51,7 @@ export function HowItWorks() {
   const data = FLOWS[flow];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 py-16">
+    <section className="relative overflow-hidden home-section py-16">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute top-1/3 right-10 h-96 w-96 rounded-full bg-gradient-to-br from-purple-300 to-blue-300 opacity-20 blur-3xl"

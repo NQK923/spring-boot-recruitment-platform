@@ -40,7 +40,7 @@ export function Features() {
   return (
     <section
       aria-labelledby="home-features"
-      className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-16"
+      className="relative overflow-hidden home-section py-16"
     >
       <div
         aria-hidden="true"
