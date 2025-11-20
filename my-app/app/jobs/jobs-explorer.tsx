@@ -12,8 +12,8 @@ type JobsExplorerProps = {
   pageSize: number;
 };
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const FALLBACK_ERROR = "Không thể tải danh sách công việc. Vui lòng thử lại sau.";
+const JOBS_PROXY_PATH = "/api/jobs/public";
 
 export function JobsExplorer({ initialQuery, initialPageData, pageSize }: JobsExplorerProps) {
   const router = useRouter();
@@ -50,9 +50,6 @@ export function JobsExplorer({ initialQuery, initialPageData, pageSize }: JobsEx
 
   const fetchJobs = useCallback(
     async (query: string, nextUiPage: number) => {
-      if (!API_BASE_URL) {
-        throw new Error("Thiếu NEXT_PUBLIC_API_BASE_URL.");
-      }
       const params = new URLSearchParams();
       const trimmed = query.trim();
       if (trimmed.length > 0) {
@@ -60,7 +57,9 @@ export function JobsExplorer({ initialQuery, initialPageData, pageSize }: JobsEx
       }
       params.set("page", String(Math.max(nextUiPage - 1, 0)));
       params.set("size", String(effectivePageSize));
-      const response = await fetch(`${API_BASE_URL}/api/jobs/public?${params.toString()}`, {
+      const search = params.toString();
+      const targetUrl = search.length > 0 ? `${JOBS_PROXY_PATH}?${search}` : JOBS_PROXY_PATH;
+      const response = await fetch(targetUrl, {
         method: "GET",
         credentials: "include",
         cache: "no-store",
