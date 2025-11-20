@@ -30,6 +30,6 @@ public class RecommendationProperties {
     private int bootstrapSize = 50;
 
     @NotBlank
-    private String jobDetailBaseUrl = "http://localhost:3000/jobs";
+    private String jobDetailBaseUrl = "https://talentflow-vn.online/jobs";
 
 }

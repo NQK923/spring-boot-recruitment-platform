@@ -12,8 +12,10 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,15 @@ public class RecommendationEngine {
         "onsite",
         "hybrid"
     );
+    private static final Map<String, List<String>> ROLE_KEYWORDS = Map.of(
+        "frontend", List.of("frontend", "front-end", "front end", "fe", "react", "vue", "angular", "javascript", "typescript"),
+        "backend", List.of("backend", "back-end", "back end", "be", "java", "spring", "node", "golang", "go", "python", ".net", "dotnet"),
+        "mobile", List.of("mobile", "ios", "android", "flutter", "react native"),
+        "data", List.of("data", "data engineer", "data scientist", "machine learning", "ml", "analyst"),
+        "devops", List.of("devops", "sre", "site reliability", "infra"),
+        "design", List.of("designer", "ui", "ux", "product design"),
+        "product", List.of("product manager", "pm", "product owner")
+    );
 
     public RecommendationEngine(RecJobRepository jobRepository,
                                 EmbeddingService embeddingService,
@@ -56,7 +67,8 @@ public class RecommendationEngine {
         if (hits.isEmpty()) {
             return List.of();
         }
-        List<RecJobRepository.JobHit> prioritizedHits = prioritizeByLocation(hits, userQuery);
+        List<RecJobRepository.JobHit> prioritizedHits = prioritizeByRole(hits, userQuery);
+        prioritizedHits = prioritizeByLocation(prioritizedHits, userQuery);
         int finalSize = desiredFinalK > 0 ? desiredFinalK : properties.getFinalK();
         return prioritizedHits.stream()
             .limit(finalSize)
@@ -70,7 +82,7 @@ public class RecommendationEngine {
         String company = text(metadata, "companyName", "Doanh nghiệp ẩn danh");
         String location = text(metadata, "location", "Nhiều địa điểm");
         String workType = text(metadata, "workType", "Chưa cập nhật");
-        String url = text(metadata, "jobUrl", "");
+        String url = resolveJobUrl(hit.jobId(), text(metadata, "jobUrl", ""));
         String reason = buildReason(metadata, query);
         return new JobSuggestion(hit.jobId(), title, company, location, workType, url, reason, hit.score());
     }
@@ -89,6 +101,10 @@ public class RecommendationEngine {
         if (!matchedSkills.isEmpty()) {
             reasons.add("Kỹ năng trùng khớp: " + String.join(", ", matchedSkills) + ".");
         }
+        List<String> roleReasons = matchRoleHints(metadata, query);
+        if (!roleReasons.isEmpty()) {
+            reasons.add("Khớp lĩnh vực: " + String.join(", ", roleReasons) + ".");
+        }
         String salaryNote = buildSalaryReason(metadata);
         if (queryAsksForSalary(query) && salaryNote != null) {
             reasons.add(salaryNote);
@@ -97,6 +113,65 @@ public class RecommendationEngine {
             reasons.add("Điểm tương đồng cao với câu hỏi của bạn và đang mở tuyển.");
         }
         return String.join(" ", reasons);
+    }
+
+    private List<RecJobRepository.JobHit> prioritizeByRole(List<RecJobRepository.JobHit> hits, String query) {
+        Set<String> desiredRoles = extractDesiredRoles(query);
+        if (desiredRoles.isEmpty()) {
+            return hits;
+        }
+        List<RecJobRepository.JobHit> matched = new ArrayList<>();
+        List<RecJobRepository.JobHit> others = new ArrayList<>();
+        for (RecJobRepository.JobHit hit : hits) {
+            if (matchesDesiredRoles(hit.metadata(), desiredRoles)) {
+                matched.add(hit);
+            } else {
+                others.add(hit);
+            }
+        }
+        if (matched.isEmpty()) {
+            return hits;
+        }
+        List<RecJobRepository.JobHit> reordered = new ArrayList<>(hits.size());
+        reordered.addAll(matched);
+        reordered.addAll(others);
+        return reordered;
+    }
+
+    private Set<String> extractDesiredRoles(String query) {
+        if (!StringUtils.hasText(query)) {
+            return Set.of();
+        }
+        String normalized = query.toLowerCase(Locale.ROOT);
+        Set<String> roles = new LinkedHashSet<>();
+        ROLE_KEYWORDS.forEach((role, keywords) -> {
+            for (String keyword : keywords) {
+                if (normalized.contains(keyword)) {
+                    roles.add(role);
+                    break;
+                }
+            }
+        });
+        return roles;
+    }
+
+    private boolean matchesDesiredRoles(JsonNode metadata, Set<String> desiredRoles) {
+        if (metadata == null || desiredRoles.isEmpty()) {
+            return false;
+        }
+        String haystack = (text(metadata, "title", "") + " "
+            + text(metadata, "department", "") + " "
+            + text(metadata, "level", "") + " "
+            + text(metadata, "workType", "")).toLowerCase(Locale.ROOT);
+        for (String role : desiredRoles) {
+            List<String> keywords = ROLE_KEYWORDS.getOrDefault(role, List.of(role));
+            for (String keyword : keywords) {
+                if (haystack.contains(keyword)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private List<RecJobRepository.JobHit> prioritizeByLocation(List<RecJobRepository.JobHit> hits, String query) {
@@ -197,6 +272,28 @@ public class RecommendationEngine {
             .collect(Collectors.toList());
     }
 
+    private List<String> matchRoleHints(JsonNode metadata, String query) {
+        Set<String> desiredRoles = extractDesiredRoles(query);
+        if (metadata == null || desiredRoles.isEmpty()) {
+            return List.of();
+        }
+        String haystack = (text(metadata, "title", "") + " "
+            + text(metadata, "department", "") + " "
+            + text(metadata, "level", "") + " "
+            + text(metadata, "workType", "")).toLowerCase(Locale.ROOT);
+        List<String> matches = new ArrayList<>();
+        for (String role : desiredRoles) {
+            List<String> keywords = ROLE_KEYWORDS.getOrDefault(role, List.of(role));
+            for (String keyword : keywords) {
+                if (haystack.contains(keyword)) {
+                    matches.add(capitalize(role));
+                    break;
+                }
+            }
+        }
+        return matches.stream().distinct().limit(3).collect(Collectors.toList());
+    }
+
     private Set<String> extractKeywords(String text) {
         if (!StringUtils.hasText(text)) {
             return Set.of();
@@ -261,6 +358,22 @@ public class RecommendationEngine {
         }
         return Character.toUpperCase(value.charAt(0)) + value.substring(1);
     }
+
+    private String resolveJobUrl(Long jobId, String originalUrl) {
+        String base = properties.getJobDetailBaseUrl();
+        boolean originalLooksLocalhost = originalUrl != null && originalUrl.toLowerCase(Locale.ROOT).contains("localhost");
+
+        if (StringUtils.hasText(originalUrl) && !originalLooksLocalhost) {
+            return originalUrl;
+        }
+
+        if (!StringUtils.hasText(base) || jobId == null) {
+            return originalUrl;
+        }
+        String trimmedBase = base.trim();
+        String separator = trimmedBase.endsWith("/") ? "" : "/";
+        return trimmedBase + separator + jobId;
+    }
     private boolean queryAsksForSalary(String query) {
         if (!StringUtils.hasText(query)) {
             return false;
@@ -275,8 +388,3 @@ public class RecommendationEngine {
             || normalized.contains("pay");
     }
 }
-
-
-
-
-

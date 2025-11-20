@@ -46,8 +46,8 @@ docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/file-storage-servi
 docker push $env:REG/file-storage-service:latest
 
 # Build & push chat-service
-docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/chat-service -t $env:REG/chat-service:v1 .
-docker push $env:REG/chat-service:v1
+docker build -f Dockerfile --build-arg SERVICE_MODULE=backend/chat-service -t $env:REG/chat-service:v3 .
+docker push $env:REG/chat-service:v3
 
 # Build & push frontend
 docker build -f my-app/Dockerfile -t $env:REG/frontend:v8 my-app
@@ -57,7 +57,7 @@ docker push $env:REG/frontend:v8
 kubectl apply -f k8s/base
 kubectl apply -f k8s/services
 
- kubectl get pods -n recruitment
+kubectl get pods -n recruitment
 
 kubectl patch service frontend -n recruitment -p `'{"spec":{"type":"LoadBalancer"}}'
 
