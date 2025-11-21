@@ -13,7 +13,7 @@ data:
   SPRING_RABBITMQ_USERNAME: guest
   SPRING_RABBITMQ_PASSWORD: guest
   CV_FONT_PATH: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
-  FRONTEND_BASE_URL: http://talentflow-vn.online
+  FRONTEND_BASE_URL: https://talentflow-vn.online
   NEXT_PUBLIC_API_BASE_URL: http://34.126.129.31:8080
   NEXT_SERVER_API_BASE_URL: http://gateway-service:8080
   ACCESS_TOKEN_COOKIE_SECURE: "false"
