@@ -157,9 +157,3 @@ Các API nội bộ khác chạy qua gateway (`/api/internal/**`) để bảo to
 3. Cập nhật manifest trong `k8s/` để tham chiếu image mới, apply bằng `kubectl apply -f k8s/`.
 4. Kubernetes Deployment tạo Pod/Container, Service (ClusterIP/LoadBalancer) và ConfigMap/Secret tương ứng.
 5. Lấy `EXTERNAL-IP` từ Service hoặc Ingress, cấu hình DNS (ví dụ `talentflow-vn.online`) trỏ về IP này.
-
-## 8. Ghi chú vận hành nhanh
-- Gateway bỏ qua `/api/internal/**` ở tầng JWT, nên cần bảo vệ bằng network ACL/mTLS khi triển khai production.
-- Khi RabbitMQ hoặc Supabase tạm thời gián đoạn, các service log cảnh báo và tiếp tục xử lý best-effort; nên bổ sung DLQ hoặc retry theo nhu cầu SLA.
-- Chạy lệnh PowerShell `chcp 65001` trước khi `Get-Content` log để giữ tiếng Việt hiển thị đúng.
-- Theo dõi dung lượng Supabase Storage và cân nhắc cron dọn file cũ ở file-storage-service nếu cần.
