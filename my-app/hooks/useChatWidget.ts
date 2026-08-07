@@ -639,5 +639,5 @@ function formatJobSuggestionMessage(items: JobSuggestionEventPayload[]): string 
 }
 
 function escapeMarkdownLinkLabel(text: string): string {
-  return text.replace(/\[/g, "\\[").replace(/\]/g, "\\]");
+  return text.replace(/\\/g, "\\\\").replace(/\[/g, "\\[").replace(/\]/g, "\\]");
 }
